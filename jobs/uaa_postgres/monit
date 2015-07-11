@@ -1,0 +1,6 @@
+check process uaa_postgres
+  with pidfile /var/vcap/sys/run/uaa_postgres/uaa_postgres.pid
+  start program "/var/vcap/jobs/uaa_postgres/bin/postgres_ctl start" timeout 780 seconds
+  stop program "/var/vcap/jobs/uaa_postgres/bin/postgres_ctl stop"
+  group vcap
+

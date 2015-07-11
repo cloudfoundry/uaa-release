@@ -1,0 +1,3 @@
+[submodule "src/uaa"]
+	path = src/uaa
+	url = https://github.com/cloudfoundry/uaa

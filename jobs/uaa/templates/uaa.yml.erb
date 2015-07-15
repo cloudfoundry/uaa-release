@@ -1,7 +1,7 @@
 ---
 <% uaa_db = properties.uaadb.databases.find { |db| db.tag == "uaa" } %>
 <% uaa_role = properties.uaadb.roles.find { |role| role.tag == "admin" } %>
-<% protocol = (properties.login && properties.login.protocol) ? properties.login.protocol : "http" %>
+<% protocol = properties.login.protocol %>
 
 <%
   # The login secret is defined in one of two properties
@@ -25,11 +25,11 @@ database:
   url: jdbc:<%= properties.uaadb.db_scheme %>://<%= properties.uaadb.address %>:<%= properties.uaadb.port %>/<%= uaa_db.name %>
   username: <%= uaa_role.name %>
   password: "<%= uaa_role.password %>"
-  maxactive: <%= (properties.uaa.database && properties.uaa.database.max_connections) ? properties.uaa.database.max_connections : 100 %>
-  maxidle:  <%= (properties.uaa.database && properties.uaa.database.max_idle_connections) ? properties.uaa.database.max_idle_connections : 10 %>
-  removeabandoned: <%= (properties.uaa.database && properties.uaa.database.remove_abandoned) ? true : false %>
-  logabandoned: <%= (properties.uaa.database && properties.uaa.database.log_abandoned) ? true : false %>
-  abandonedtimeout: <%= (properties.uaa.database && properties.uaa.database.abandoned_timeout) ? properties.uaa.database.abandoned_timeout : 300 %>
+  maxactive: <%= properties.uaa.database.max_connections %>
+  maxidle:  <%= properties.uaa.database.max_idle_connections %>
+  removeabandoned: <%= properties.uaa.database.remove_abandoned %>
+  logabandoned: <%= properties.uaa.database.log_abandoned %>
+  abandonedtimeout: <%= properties.uaa.database.abandoned_timeout %>
   <%= (properties.uaa.database && !(properties.uaa.database.case_insensitive.nil?)) ? 'caseinsensitive: ' + properties.uaa.database.case_insensitive.to_s : '' %>
 
 <% if properties.uaa && properties.uaa.ldap && ((properties.uaa.ldap.enabled &&  (properties.uaa.ldap.enabled==true)) || (properties.uaa.spring_profiles && properties.uaa.spring_profiles.eql?('ldap'))) %>
@@ -59,13 +59,11 @@ jwt:
     verification-key: "<%= properties.uaa.cc.token_secret %>"
 <% end %>
 
-<% if properties.uaa.authentication && properties.uaa.authentication.policy %>
 authentication:
   policy:
-    lockoutAfterFailures: <%= properties.uaa.authentication.policy.lockoutAfterFailures ? properties.uaa.authentication.policy.lockoutAfterFailures : 5%>
-    countFailuresWithinSeconds: <%= properties.uaa.authentication.policy.countFailuresWithinSeconds ? properties.uaa.authentication.policy.countFailuresWithinSeconds : 3600 %>
-    lockoutPeriodSeconds: <%= properties.uaa.authentication.policy.lockoutPeriodSeconds ? properties.uaa.authentication.policy.lockoutPeriodSeconds : 300%>
-<% end %>
+    lockoutAfterFailures: <%= properties.uaa.authentication.policy.lockoutAfterFailures %>
+    countFailuresWithinSeconds: <%= properties.uaa.authentication.policy.countFailuresWithinSeconds %>
+    lockoutPeriodSeconds: <%= properties.uaa.authentication.policy.lockoutPeriodSeconds %>
 
 password:
   policy:
@@ -158,12 +156,10 @@ scim:
     - <%= user %><% end %>
 <% end %>
 
-<% if properties.uaa && properties.uaa.zones && properties.uaa.zones.internal &&  properties.uaa.zones.internal.hostnames then %>
 zones:
   internal:
     hostnames:<% properties.uaa.zones.internal.hostnames.each do |hostname| %>
       - <%= hostname %><% end %>
-<% end %>
 
 <% if properties.uaa.scim && properties.uaa.scim.external_groups then %>
   external_groups: <% properties.uaa.scim.external_groups.each do |group| %>

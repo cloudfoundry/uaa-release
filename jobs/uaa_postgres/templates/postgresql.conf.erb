@@ -14,8 +14,8 @@
 #     static_ips:
 #     - 9.8.7.6
 listen_addresses = '0.0.0.0'
-port = <%= p("databases.port") %>
-max_connections = <%= p("databases.max_connections") %>
+port = <%= p("postgres.port") %>
+max_connections = <%= p("postgres.max_connections") %>
 external_pid_file = '/var/vcap/sys/run/uaa_postgres/uaa_postgres.pid'
 authentication_timeout = 1min
 
@@ -27,7 +27,7 @@ max_files_per_process = 1000
 logging_collector = on
 log_directory = '/var/vcap/sys/log/uaa_postgres'
 log_filename = 'postgresql.log'
-log_line_prefix = '<%= p("databases.log_line_prefix") %>'
+log_line_prefix = '<%= p("postgres.log_line_prefix") %>'
 
 datestyle = 'iso, mdy'
 

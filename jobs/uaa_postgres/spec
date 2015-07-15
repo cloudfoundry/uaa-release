@@ -14,20 +14,18 @@ packages:
   - uaa_postgres-9.4.2
 
 properties:
-  databases.db_scheme:
-    description: "The database scheme"
-  databases.port:
+  postgres.port:
     description: "The database port"
     default: 5524
-  databases.address:
+  postgres.address:
     description: "The database address"
-  databases.databases:
+  postgres.databases:
     description: "A list of databases and associated properties to create"
-  databases.roles:
+  postgres.roles:
     description: "A list of database roles and associated properties to create"
-  databases.max_connections:
+  postgres.max_connections:
     description: "Maximum number of database connections"
     default: 500
-  databases.log_line_prefix:
+  postgres.log_line_prefix:
     description: "The postgres `printf` style string that is output at the beginning of each log line"
     default: "%m: "

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+## BEGIN CERTIFICATE INSTALLATION
+
+#define the certificate to import
+CERT_FILE=/var/vcap/jobs/uaa/config/$1
+
+#define the key store
+KEY_STORE_FILE=/home/vcap/uaa_keystore.p12
+
+#define the alias
+CERT_ALIAS=uaa_ssl_cert
+
+#install ssl certificate into key store
+openssl pkcs12 -export -name $CERT_ALIAS -in $CERT_FILE -out $KEY_STORE_FILE -password pass:k0*l*s3cur1tyr0ck$

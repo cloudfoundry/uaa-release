@@ -89,6 +89,11 @@ case $1 in
     echo $$ > $PIDFILE
     chown vcap:vcap $PIDFILE
 
+    # Install the server's ssl certificate
+    <% if properties.login.protocol == 'https' %>
+    /var/vcap/jobs/uaa/bin/install_uaa_crt uaa.crt
+    <% end %>
+
     <% if properties.uaa && properties.uaa.ldap &&  properties.uaa.ldap.sslCertificate %>
     /var/vcap/jobs/uaa/bin/install_crt ldap.crt ldapcert
     <% elsif properties.login && properties.login.ldap &&  properties.login.ldap.sslCertificate %>

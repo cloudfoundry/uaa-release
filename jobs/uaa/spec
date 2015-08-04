@@ -195,7 +195,7 @@ properties:
     description: "when true, uaa uses http, otherwise it uses https"
     default: false
   uaa.url:
-    description:
+    description: The base url of the UAA
   uaa.issuer:
     description: "The url to use as the issuer URI"
   uaa.dump_requests:
@@ -382,7 +382,7 @@ properties:
     default: 8080
     description:
   login.uaa_base:
-    description: "Location of the UAA."
+    description: "Deprecated. Use uaa.url for setting the location of UAA."
   login.signups_enabled:
     description: "Enable account creation flow in the login server. Enabled by default."
   login.invitations_enabled:

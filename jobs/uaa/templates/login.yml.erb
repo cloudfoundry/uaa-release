@@ -22,11 +22,13 @@ logging:
 %>
 
 <% protocol = properties.login.protocol  %>
-<% if !properties.login || !properties.login.uaa_base
-  # Fix this to https when SSL certs are working in dev and staging
-  uaa_base = "#{protocol}://uaa.#{properties.domain}"
-else
-  uaa_base = properties.login.uaa_base
+<% if (!properties.login && !properties.uaa) #|| (properties.login && !properties.login.uaa_base) && (properties.uaa && !properties.uaa.url)
+    # Fix this to https when SSL certs are working in dev and staging
+    uaa_base = "#{protocol}://uaa.#{properties.domain}"
+  elsif (properties.uaa && properties.uaa.url)
+    uaa_base = properties.uaa.url
+  elsif (properties.login &&_properties.login.uaa_base)
+    uaa_base = properties.login.uaa_base
 end %>
 uaa:
   url: <%= uaa_base %>
@@ -84,7 +86,7 @@ logout:
 
 login:
   brand: <%= properties.login.brand %>
-  url: <%= "#{protocol}://login.#{properties.domain}" %>
+  url: <%= (properties.uaa.url) ? properties.uaa.url : "#{protocol}://login.#{properties.domain}" %>
   entityBaseURL: <%= (properties.login && properties.login.saml.entity_base_url) ? "#{protocol}://#{properties.login.saml.entity_base_url}" : "#{protocol}://login.#{properties.domain}" %>
   entityID: <%= (properties.login && properties.login.saml.entityid) ? properties.login.saml.entityid : properties.login.entity_id ? properties.login.entity_id : "login.#{properties.domain}" %>
   <% if !properties.login.invitations_enabled.nil? %>
@@ -121,7 +123,7 @@ login:
       connectionManagerTimeout: <%= properties.login.saml.socket.connectionManagerTimeout %>
       soTimeout: <%= properties.login.saml.socket.soTimeout %>
   authorize:
-    url: <%= "#{protocol}://login.#{properties.domain}/oauth/authorize" %>
+    url: <%= (properties.uaa.url) ? "#{properties.uaa.url}/oauth/authorize" : "#{protocol}://login.#{properties.domain}/oauth/authorize" %>
 
 <% if properties.login.analytics && properties.login.analytics.code && properties.login.analytics.domain %>
 analytics:

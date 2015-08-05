@@ -4,7 +4,7 @@ See [docs](https://github.com/cloudfoundry/bosh-micro-cli/blob/master/docs/uaa.m
 
 ## Configuring UAA to run on https with SSL
 
-By default UAA is configured to use SSL with a self-signed certificate and will be started on port 8443 .
+By default UAA is configured to use SSL with a self-signed certificate and will be started on port 8443.
 
 ## Using your own certificate
 

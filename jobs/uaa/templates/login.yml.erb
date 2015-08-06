@@ -3,6 +3,16 @@ name: login
 
 <%
   config_artifacts_path = "/var/vcap/jobs/login/config/security"
+  protocol = p('login.protocol')
+
+  uaa_base = nil
+  if_p('uaa.url') do |uaa_url|
+    uaa_base = uaa_url
+  end.else_if_p('login.uaa_base') do |login_uaa_base|
+    uaa_base = login_uaa_base
+  end.else do
+    uaa_base = "#{protocol}://uaa.#{p('domain')}"
+  end
 %>
 
 logging:
@@ -21,15 +31,6 @@ logging:
   end
 %>
 
-<% protocol = properties.login.protocol  %>
-<% if (!properties.login && !properties.uaa) #|| (properties.login && !properties.login.uaa_base) && (properties.uaa && !properties.uaa.url)
-    # Fix this to https when SSL certs are working in dev and staging
-    uaa_base = "#{protocol}://uaa.#{properties.domain}"
-  elsif (properties.uaa && properties.uaa.url)
-    uaa_base = properties.uaa.url
-  elsif (properties.login &&_properties.login.uaa_base)
-    uaa_base = properties.login.uaa_base
-end %>
 uaa:
   url: <%= uaa_base %>
   token:
@@ -40,49 +41,40 @@ uaa:
     url: <%= uaa_base %>/clientinfo
   approvals:
     url: <%= uaa_base %>/approvals
-<% if properties.login and properties.login.links then %>
-links: <% properties.login.links.marshal_dump.each do |id,url| %>
+<% if_p('login.links') do |login_links| %>
+links: <% login_links.each do |id,url| %>
   <%= id %>: <%= url %><% end %>
 <% end %>
-<% if properties.login and properties.login.smtp then %>
-smtp: <% properties.login.smtp.marshal_dump.each do |key,val| %>
+<% if_p('login.smtp') do |login_smtp| %>
+smtp: <% login_smtp.each do |key,val| %>
   <%= key %>: <%= val %><% end %>
 <% end %>
-<% if properties.login and properties.login.tiles then %>
-tiles: <% properties.login.tiles.each do |tile| %>
-- <% tile.marshal_dump.each do |key,val| %><%= key %>: <%= val %>
+<% if_p('login.tiles') do |login_tiles| %>
+tiles: <% login_tiles.each do |tile| %>
+- <% tile.each do |key,val| %><%= key %>: <%= val %>
   <% end %>
 <% end %>
 <% end %>
 
 # The secret that this login server will use to authenticate to the uaa
 LOGIN_SECRET: <%= login_secret %>
-<% if !properties.uaa.require_https.nil? %>
-require_https: <%= properties.uaa.require_https %>
-<% end %>
-<% if !properties.uaa.dump_requests.nil? %>
-dump_requests: <%= properties.uaa.dump_requests %>
-<% end %>
+require_https: <%= p('uaa.require_https') %>
+dump_requests: <%= p('uaa.dump_requests') %>
+assetBaseUrl: <%= p('login.asset_base_url') %>
 
-<% if properties.login && properties.login.asset_base_url %>
-assetBaseUrl: <%= properties.login.asset_base_url %>
-<% end %>
-
-<% if properties.login.notifications && properties.login.notifications.url %>
+<% if_p('login.notifications.url') do |login_notifications_url| %>
 notifications:
-  url: <%= properties.login.notifications.url %>
+  url: <%= login_notifications_url %>
 <% end %>
 
-<% if properties.login && properties.login.logout && properties.login.logout.redirect %>
 logout:
   redirect:
-    url: <%= (properties.login.logout.redirect.url) ? properties.login.logout.redirect.url : "/login" %>
+    url: <%= p('login.logout.redirect.url') %>
     parameter:
       disable: <%= (properties.login.logout.redirect.parameter && (!properties.login.logout.redirect.parameter.disable.nil?)) ? properties.login.logout.redirect.parameter.disable : "true" %><% if (properties.login.logout.redirect.parameter && (!properties.login.logout.redirect.parameter.whitelist.nil?)) %>
       whitelist: <% properties.login.logout.redirect.parameter.whitelist.each do |whitelistedurl| %>
       - <%= whitelistedurl %><% end %>
    <% end %>
-<% end %>
 
 login:
   brand: <%= properties.login.brand %>

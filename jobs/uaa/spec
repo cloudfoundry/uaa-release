@@ -142,7 +142,8 @@ properties:
     default: true
   uaa.scim.users:
     description: "A list of users to be bootstrapped with default authority (uaa.user). Each entry has the following format: username|password|email|firstName|lastName"
-    example: - marissa|koala|marissa@test.org|Marissa|Bloggs
+    example:
+      - marissa|koala|marissa@test.org|Marissa|Bloggs
   uaa.scim.external_groups:
     description: "A list of external group mappings. Pipe delimited. A value may look as '- internal.read|cn=developers,ou=scopes,dc=test,dc=com'"
   domain:
@@ -345,14 +346,13 @@ properties:
     description: "A hash of home/passwd/signup URLS (see commented examples below)"
   login.links.home:
     description: URL for primary console/dashboard for users
+    default: '/'
   login.links.passwd:
     description: URL for requesting password reset
+    default: '/forgot_password'
   login.links.signup:
     description: URL for requesting to signup/register for an account
-  login.links.network:
-    description: URL for Pivotal Network
-  login.links.signup-network:
-    description: URL for requesting to signup/register for an account at Pivotal Network
+    default: '/create_account'
   login.tiles:
     description: "A list of links to other services to show on the landing page after logging in and/or signing up, depending on whether login-link and/or signup-link is specified."
   login.uaa_base:
@@ -369,7 +369,7 @@ properties:
   login.saml.entityid:
     description: "The ID to represent this server"
   login.saml.entity_base_url:
-    description: "The URL for which SAML identity providers will post assertions to. If set it overrides the default. This URL should NOT have the schema (http:// or https:// prefix in it) instead just the hostname. The schema is derived by login.protocol property. The default value is #{protocol}://#{properties.uaa.url} if uaa.url is set otherwise is #{protocol}://#{properties.login.uaa_base}"
+    description: "The URL for which SAML identity providers will post assertions to. If set it overrides the default. This URL should NOT have the schema (http:// or https:// prefix in it) instead just the hostname. The schema is derived by login.protocol property. The default value is #{protocol}://#{properties.uaa.url} if uaa.url is set otherwise is #{protocol}://#{login.uaa_base}"
   login.saml.idpEntityAlias:
     description: "Deprecated. Use login.saml.providers list objects"
   login.entity_id:

@@ -102,12 +102,13 @@ properties:
   uaa.catalina_opts:
     description: "The options that will be passed to th "
     default: -Xmx768m -XX:MaxPermSize=256m
-  uaa.cc.client_secret:
-    description: "Deprecated"
-  uaa.cc.token_secret:
-    description: "Deprecated"
   uaa.client.autoapprove:
     description: "Deprecated"
+    default:
+      - cf
+      - login
+      - developer_console
+      - support-signon
   uaa.user.authorities:
     description: "Contains a list of the default authorities/scopes assigned to a user"
     default:

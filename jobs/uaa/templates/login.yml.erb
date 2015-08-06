@@ -13,6 +13,11 @@ name: login
   end.else do
     uaa_base = "#{protocol}://uaa.#{p('domain')}"
   end
+
+  login_url = p('uaa.url') ? p('uaa.url') : "#{protocol}://login.#{properties.domain}"
+  login_entityBaseUrl = (properties.login && properties.login.saml.entity_base_url) ? "#{protocol}://#{properties.login.saml.entity_base_url}" : "#{protocol}://login.#{properties.domain}"
+  login_entityId = (properties.login && properties.login.saml.entityid) ? properties.login.saml.entityid : properties.login.entity_id ? properties.login.entity_id : "login.#{properties.domain}"
+  login_authorizeUrl = (properties.uaa.url) ? "#{properties.uaa.url}/oauth/authorize" : "#{protocol}://login.#{properties.domain}/oauth/authorize"
 %>
 
 logging:
@@ -78,9 +83,9 @@ logout:
 
 login:
   brand: <%= properties.login.brand %>
-  url: <%= (properties.uaa.url) ? properties.uaa.url : "#{protocol}://login.#{properties.domain}" %>
-  entityBaseURL: <%= (properties.login && properties.login.saml.entity_base_url) ? "#{protocol}://#{properties.login.saml.entity_base_url}" : "#{protocol}://login.#{properties.domain}" %>
-  entityID: <%= (properties.login && properties.login.saml.entityid) ? properties.login.saml.entityid : properties.login.entity_id ? properties.login.entity_id : "login.#{properties.domain}" %>
+  url: <%= login_url %>
+  entityBaseURL: <%= login_entityBaseUrl %>
+  entityID: <%= login_entityId %>
   <% if !properties.login.invitations_enabled.nil? %>
   invitationsEnabled: <%= properties.login.invitations_enabled %>
   <% end %>
@@ -115,7 +120,7 @@ login:
       connectionManagerTimeout: <%= properties.login.saml.socket.connectionManagerTimeout %>
       soTimeout: <%= properties.login.saml.socket.soTimeout %>
   authorize:
-    url: <%= (properties.uaa.url) ? "#{properties.uaa.url}/oauth/authorize" : "#{protocol}://login.#{properties.domain}/oauth/authorize" %>
+    url: <%= login_authorizeUrl %>
 
 <% if properties.login.analytics && properties.login.analytics.code && properties.login.analytics.domain %>
 analytics:

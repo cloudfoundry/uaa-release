@@ -183,7 +183,7 @@ properties:
   uaa.database.case_insensitive:
     description: "Set to true if you don't want to be using LOWER() SQL functions in search queries/filters, because you know that your DB is case insensitive. If this property is null, then it will be set to true if the UAA DB is MySQL and false otherwise, but even on MySQL you can override it by setting it explicitly to false"
   uaa.no_ssl:
-    description: "Deprecated. Use login.protocol instead to use https or http"
+    description: "Deprecated (and unused). Use login.protocol instead to use https or http"
     default: false
   uaa.url:
     description: "The base url of the UAA"
@@ -193,9 +193,7 @@ properties:
     description: "When set to true dumps UAA requests to uaa.log"
     default: false
   uaa.login.client_secret:
-    description: 'Deprecated. Default login client secret, if no login client is defined'
-  uaa.clients.login.secret:
-    description: 'Deprecated. Default login client secret, if no login client is defined. Overrides uaa.login.client_secret'
+    description: 'Default login client secret, if no login client is defined'
   uaa.require_https:
     description: "Request came in on a secure connection. Expect the load balancer/proxy to set the proper headers (x-forwarded-for, x-forwarded-proto)"
     default: false
@@ -359,7 +357,7 @@ properties:
   login.uaa_base:
     description: "Deprecated. Use uaa.url for setting the location of UAA."
   login.signups_enabled:
-    description: "Deprecated. Use login.self_service_links_enabled. Use Enable account creation flow in the login server. Enabled by default."
+    description: "Deprecated. Use login.self_service_links_enabled. Instructs UAA to use 'enable account creation flow'. Enabled by default."
     default: true
   login.invitations_enabled:
     description: "Allows users to send invitations to email addresses outside the system and invite them to create an account. Disabled by default."

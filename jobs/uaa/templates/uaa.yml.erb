@@ -3,8 +3,7 @@
   uaa_db = properties.uaadb.databases.find { |db| db.tag == "uaa" }
   uaa_role = properties.uaadb.roles.find { |role| role.tag == "admin" }
   protocol = properties.login.protocol
-  scheme = p("uaa.no_ssl") ? "http" : "https"
-  issuer_uri = p("uaa.issuer", p("uaa.url", "#{scheme}://uaa.#{properties.domain}"))
+  issuer_uri = p("uaa.issuer", p("uaa.url", "#{protocol}://uaa.#{properties.domain}"))
   oauth_clientsLoginRedirectUri = "#{protocol}://login.#{properties.domain}"
 %>
 

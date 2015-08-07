@@ -1,7 +1,11 @@
 ---
-<% uaa_db = properties.uaadb.databases.find { |db| db.tag == "uaa" } %>
-<% uaa_role = properties.uaadb.roles.find { |role| role.tag == "admin" } %>
-<% protocol = properties.login.protocol %>
+<%
+  uaa_db = properties.uaadb.databases.find { |db| db.tag == "uaa" }
+  uaa_role = properties.uaadb.roles.find { |role| role.tag == "admin" }
+  protocol = properties.login.protocol
+  issuer_uri = p("uaa.issuer", p("uaa.url", "#{protocol}://uaa.#{properties.domain}"))
+  oauth_clientsLoginRedirectUri = "#{protocol}://login.#{properties.domain}"
+%>
 
 <%
   # The login secret is defined in one of two properties
@@ -52,11 +56,6 @@ jwt:
 <%= "        " + properties.uaa.jwt.signing_key.gsub("\n", "\n        ") %>
     verification-key: |
 <%= "        " + properties.uaa.jwt.verification_key.gsub("\n", "\n        ") %>
-<% elsif properties.uaa.cc && properties.uaa.cc.token_secret %>
-jwt:
-  token:
-    signing-key: "<%= properties.uaa.cc.token_secret %>"
-    verification-key: "<%= properties.uaa.cc.token_secret %>"
 <% end %>
 
 authentication:
@@ -83,25 +82,16 @@ password:
       requireSpecialCharacter: <%= properties.uaa.password.policy.requireSpecialCharacter %>
       expirePasswordInMonths: <%= properties.uaa.password.policy.expirePasswordInMonths %>
 
-<% scheme = p("uaa.no_ssl") ? "http" : "https" %>
-issuer.uri: <%= p("uaa.issuer", p("uaa.url", "#{scheme}://uaa.#{properties.domain}")) %>
+issuer.uri: <%= issuer_uri %>
 
 oauth:
-  <% unless properties.uaa.no_ssl %>
+  <% if protocol == "https" %>
   authorize:
     ssl: true
   <% end %>
   client:
-  <% if properties.uaa.client && properties.uaa.client.autoapprove %>
     autoapprove: <% properties.uaa.client.autoapprove.each do |client_id| %>
       - <%= client_id %><% end %>
-  <% else %>
-    autoapprove:
-      - cf
-      - login
-      - developer_console
-      - support-signon
-  <% end %>
   clients:
 <% if properties.uaa.clients then properties.uaa.clients.marshal_dump.each do |id,client| %>
     <% next unless client %>
@@ -114,14 +104,6 @@ oauth:
       authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
       id: admin
       secret: "<%= properties.uaa.admin.client_secret %>"
-<% end %>
-<% if !properties.uaa.clients || !properties.uaa.clients.cloud_controller %>
-    cloud_controller:
-      authorized-grant-types: client_credentials
-      authorities: scim.read,scim.write,password.write
-      id: cloud_controller
-      secret: "<%= properties.uaa.cc.client_secret %>"
-      access-token-validity: 604800
 <% end %>
 <% if !properties.uaa.clients || !properties.uaa.clients.cf %>
     cf:
@@ -141,7 +123,7 @@ oauth:
       authorized-grant-types: authorization_code,client_credentials,refresh_token
       authorities: oauth.login,notifications.write,critical_notifications.write,emails.write
       scope: openid,oauth.approvals
-      redirect-uri: <%= "#{protocol}://login.#{properties.domain}" %>
+      redirect-uri: <%= oauth_clientsLoginRedirectUri %>
 <% end %>
   user:
     authorities: <% properties.uaa.user.authorities.each do |authority| %>

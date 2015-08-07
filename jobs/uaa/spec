@@ -27,6 +27,64 @@ packages:
   - uaa
 
 properties:
+  # General server properties
+  domain:
+    description: "Deprecated. Use uaa.url for setting the location of UAA"
+  uaa.catalina_opts:
+    description: "The options used to configure Tomcat"
+    default: -Xmx768m -XX:MaxPermSize=256m
+  uaa.port:
+    description: "Port that uaa will accept connections on"
+    default: 8443
+  uaa.url:
+    description: "The base url of the UAA"
+  login.uaa_base:
+    description: "Deprecated. Use uaa.url for setting the location of UAA."
+  uaa.issuer:
+    description: "Deprecated. The url to use as the issuer URI"
+  uaa.zones.internal.hostnames:
+    description: |
+      A list of hostnames that are routed to the UAA, specifically the default zone in the UAA. The UAA will reject any Host headers that it doesn't recognize.
+      By default the UAA recognizes:
+        The hostname from the property uaa.url
+        The hostname from the property login.url
+        localhost (in order to accept health checks)
+      Any hostnames added as a list are additive to the default hostnames allowed.
+    example:
+      - hostname1
+      - hostname2.localhost
+      - hostname3.example.com
+  uaa.restricted_ips_regex:
+    description: "A pipe delimited set of regular expressions of IP addresses that can reach the listening HTTP port of the server."
+    default: 10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}
+  uaa.newrelic:
+    description: |
+      To enable newrelic monitoring, the sub element of this property will be placed in
+      a configuration file called newrelic.yml in the jobs config directory.
+      The syntax that must adhere to documentation in https://docs.newrelic.com/docs/agents/java-agent/configuration/java-agent-configuration-config-file
+      The JVM option -javaagent:/path/to/newrelic.jar will be added to Apache Tomcat's startup script
+      The enablement of the NewRelic agent in the UAA is triggered by the property uaa.newrelic.common.license_key
+      The property uaa.newrelic.common.license_key must be set!
+  uaa.dump_requests:
+    description: "When set to true dumps UAA requests to uaa.log"
+    default: false
+  env.http_proxy:
+    description: "The http_proxy across the VMs"
+  env.https_proxy:
+    description: "The https_proxy across the VMs"
+  env.no_proxy:
+    description: "Set No_Proxy across the VMs"
+
+  # SSL
+  login.protocol:
+    description: "Scheme to use for HTTP communication (http/https)"
+    default: https
+  uaa.no_ssl:
+    description: "Deprecated (and unused). Use login.protocol instead to use https or http"
+    default: false
+  uaa.require_https:
+    description: "Request came in on a secure connection. Expect the load balancer/proxy to set the proper headers (x-forwarded-for, x-forwarded-proto)"
+    default: false
   uaa.sslCertificate:
     description: "The server's ssl certificate. The default is a self-signed certificate and should always be replaced for production deployments"
     example: |
@@ -67,8 +125,92 @@ properties:
       oyCimvs0CgUOknhTmJJSkwJBAPaI298JxTnWncC3Zu7d5QYCJXjU403Aj4LdcVeI
       6A15MzQdj5Hm82vlmpC4LzXofLjiN4E5ZLluzEw+1TjRE7c=
       -----END RSA PRIVATE KEY-----
+
+  #Branding/Customization
+  login.brand:
+    description: "The brand to use for the reset password emails, available values are oss and pivotal"
+    default: oss
+  login.asset_base_url:
+    description: "Base url for static assets, allows custom styling of the login server.  Use '/resources/pivotal' for Pivotal style."
+    default: /resources/oss
+  login.links:
+    description: "A hash of home/passwd/signup URLS (see commented examples below)"
+  login.links.home:
+    description: URL for primary console/dashboard for users
+    default: '/'
+  login.links.passwd:
+    description: URL for requesting password reset
+    default: '/forgot_password'
+  login.links.signup:
+    description: URL for requesting to signup/register for an account
+    default: '/create_account'
+  login.tiles:
+    description: "A list of links to other services to show on the landing page after logging in and/or signing up, depending on whether login-link and/or signup-link is specified."
+  login.signups_enabled:
+    description: "Deprecated. Use login.self_service_links_enabled. Instructs UAA to use 'enable account creation flow'. Enabled by default."
+    default: true
+  login.invitations_enabled:
+    description: "Allows users to send invitations to email addresses outside the system and invite them to create an account. Disabled by default."
+  login.analytics.code:
+    description: "Google analytics code. If Google Analytics is desired set both login.analytics.code and login.analytics.domain"
+  login.analytics.domain:
+    description: "Google analytics domain. If Google Analytics is desired set both login.analytics.code and login.analytics.domain"
+  login.messages:
+    description: |
+      A nested or flat hash of messages that the login server uses to display UI message
+      This will be flattened into a java.util.Properties file. The example below will lead
+      to four properties, where the key is the concatenated value delimited by dot, for example scope.tokens.read=message
+    example:
+      messages:
+        scope:
+          tokens:
+            read: View details of your approvals you have granted to this and other applications
+            write: Cancel the approvals like this one that you have granted to this and other applications
+      scope.tokens.read: View details of your approvals you have granted to this and other applications
+      scope.tokens.write: Cancel the approvals like this one that you have granted to this and other applications
+  login.logout.redirect.url:
+    description: "The Location of the redirect header following a logout of the the UAA (/logout.do)."
+    default: /login
+  login.logout.redirect.parameter.disable:
+    description: "When set to false, this allows an operator to leverage an open redirect on the UAA (/logout.do?redirect=google.com). No open redirect enabled"
+    default: true
+  login.logout.redirect.parameter.whitelist:
+    description: "A list of URLs. When this list is non null, including empty, and disable=false,
+    logout redirects are allowed, but limited to the whitelist URLs. If a redirect parameter value is not white
+    listed, redirect will be to the default URL."
+
+  # Email
+  login.notifications.url:
+    description: "The url for the notifications service (configure to use Notifications Service instead of SMTP server)"
+  login.smtp:
+    description: "SMTP server configuration, for password reset emails etc."
+  login.smtp.host:
+    description: "SMTP server host address"
+    default: localhost
+  login.smtp.port:
+    description: "SMTP server port"
+    default: 2525
+  login.smtp.user:
+    description: "SMTP server username"
+  login.smtp.password:
+    description: "SMTP server password"
+
+  # Clients
+  uaa.clients:
+    description: "List of OAuth2 clients that the UAA will be bootstrapped with"
   uaa.admin.client_secret:
     description: "Secret of the admin client - a client named admin with uaa.admin as an authority"
+  uaa.client.autoapprove:
+    description: "Deprecated"
+    default:
+      - cf
+      - login
+      - developer_console
+      - support-signon
+  uaa.login.client_secret:
+    description: 'Default login client secret, if no login client is defined'
+
+  # Security policies
   uaa.authentication.policy.lockoutAfterFailures:
     description: "Number of allowed failures before account is locked"
     default: 5
@@ -99,16 +241,6 @@ properties:
   uaa.password.policy.expirePasswordInMonths:
     description: "Number of months after which current password expires"
     default: 0
-  uaa.catalina_opts:
-    description: "The options that will be passed to th "
-    default: -Xmx768m -XX:MaxPermSize=256m
-  uaa.client.autoapprove:
-    description: "Deprecated"
-    default:
-      - cf
-      - login
-      - developer_console
-      - support-signon
   uaa.user.authorities:
     description: "Contains a list of the default authorities/scopes assigned to a user"
     default:
@@ -126,15 +258,10 @@ properties:
   uaa.openid.fallbackToAuthcode:
     description: "Deprecated. When using the hybrid flow to get a id_token, suppress the exception if the client doesn't have the implicit grant"
     default: true
-  uaa.clients:
-    description: "List of OAuth2 clients that the UAA will be bootstrapped with"
   uaa.jwt.signing_key:
     description: "The key used to sign the JWT-based OAuth2 tokens"
   uaa.jwt.verification_key:
     description: "The key used to verify JWT-based OAuth2 tokens"
-  uaa.port:
-    description: "Port that uaa will accept connections on"
-    default: 8443
   uaa.scim.user.override:
     description: "If true override users defined in uaa.scim.users found in the database."
     default: true
@@ -147,14 +274,8 @@ properties:
       - marissa|koala|marissa@test.org|Marissa|Bloggs
   uaa.scim.external_groups:
     description: "A list of external group mappings. Pipe delimited. A value may look as '- internal.read|cn=developers,ou=scopes,dc=test,dc=com'"
-  domain:
-    description: "Deprecated. Use uaa.url for setting the location of UAA"
-  env.http_proxy:
-    description: "The http_proxy across the VMs"
-  env.https_proxy:
-    description: "The https_proxy across the VMs"
-  env.no_proxy:
-    description: "Set No_Proxy across the VMs"
+
+  # Database
   uaadb.address:
     description: "The UAA database IP address"
   uaadb.databases:
@@ -182,21 +303,8 @@ properties:
     default: true
   uaa.database.case_insensitive:
     description: "Set to true if you don't want to be using LOWER() SQL functions in search queries/filters, because you know that your DB is case insensitive. If this property is null, then it will be set to true if the UAA DB is MySQL and false otherwise, but even on MySQL you can override it by setting it explicitly to false"
-  uaa.no_ssl:
-    description: "Deprecated (and unused). Use login.protocol instead to use https or http"
-    default: false
-  uaa.url:
-    description: "The base url of the UAA"
-  uaa.issuer:
-    description: "Deprecated. The url to use as the issuer URI"
-  uaa.dump_requests:
-    description: "When set to true dumps UAA requests to uaa.log"
-    default: false
-  uaa.login.client_secret:
-    description: 'Default login client secret, if no login client is defined'
-  uaa.require_https:
-    description: "Request came in on a secure connection. Expect the load balancer/proxy to set the proper headers (x-forwarded-for, x-forwarded-proto)"
-    default: false
+
+  # LDAP
   uaa.spring_profiles:
     description: "Deprecated. Use 'uaa.ldap.enabled' instead. Sets the Spring profiles on the UAA web application. This gets combined with the 'uaadb.db_scheme' property if and only if the value is exactly 'ldap' in order to setup the database, for example 'ldap,mysql'. If spring_profiles contains more than just 'ldap' it will be used to overwrite spring_profiles and db_scheme ignored. See uaa.yml.erb."
   uaa.ldap.enabled:
@@ -264,29 +372,6 @@ properties:
   uaa.ldap.groups.maxSearchDepth:
     description: "Set to number of levels a nested group search should go. Set to 1 to disable nested groups (default)"
     default: "1"
-  uaa.zones.internal.hostnames:
-    description: |
-      A list of hostnames that are routed to the UAA, specifically the default zone in the UAA. The UAA will reject any Host headers that it doesn't recognize.
-      By default the UAA recognizes:
-        The hostname from the property uaa.url
-        The hostname from the property login.url
-        localhost (in order to accept health checks)
-      Any hostnames added as a list are additive to the default hostnames allowed.
-    example:
-      - hostname1
-      - hostname2.localhost
-      - hostname3.example.com
-  uaa.newrelic:
-    description: |
-      To enable newrelic monitoring, the sub element of this property will be placed in
-      a configuration file called newrelic.yml in the jobs config directory.
-      The syntax that must adhere to documentation in https://docs.newrelic.com/docs/agents/java-agent/configuration/java-agent-configuration-config-file
-      The JVM option -javaagent:/path/to/newrelic.jar will be added to Apache Tomcat's startup script
-      The enablement of the NewRelic agent in the UAA is triggered by the property uaa.newrelic.common.license_key
-      The property uaa.newrelic.common.license_key must be set!
-  login.protocol:
-    description: "Scheme to use for HTTP communication (http/https)"
-    default: https
   login.ldap.profile_type:
     description: "Deprecated. Use uaa.ldap.profile_type - login.ldap prefix is used for backwards compatibility to enable ldap from login config"
   login.ldap.url:
@@ -318,49 +403,8 @@ properties:
     description: "Deprecated. Use uaa.ldap.sslCertificateAlias - login.ldap prefix is used for backwards compatibility to enable ldap from login config"
   login.spring_profiles:
     description: "Deprecated. Use uaa.spring_profiles - login.spring_profiles is used for backwards compatibility to enable ldap from login config"
-  uaa.restricted_ips_regex:
-    description: "A pipe delimited set of regular expressions of IP addresses that can reach the listening HTTP port of the server."
-    default: 10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}
-  login.brand:
-    description: "The brand to use for the reset password emails, available values are oss and pivotal"
-    default: oss
-  login.asset_base_url:
-    description: "Base url for static assets, allows custom styling of the login server.  Use '/resources/pivotal' for Pivotal style."
-    default: /resources/oss
-  login.notifications.url:
-    description: "The url for the notifications service (configure to use Notifications Service instead of SMTP server)"
-  login.smtp:
-    description: "SMTP server configuration, for password reset emails etc."
-  login.smtp.host:
-    description: "SMTP server host address"
-    default: localhost
-  login.smtp.port:
-    description: "SMTP server port"
-    default: 2525
-  login.smtp.user:
-    description: "SMTP server username"
-  login.smtp.password:
-    description: "SMTP server password"
-  login.links:
-    description: "A hash of home/passwd/signup URLS (see commented examples below)"
-  login.links.home:
-    description: URL for primary console/dashboard for users
-    default: '/'
-  login.links.passwd:
-    description: URL for requesting password reset
-    default: '/forgot_password'
-  login.links.signup:
-    description: URL for requesting to signup/register for an account
-    default: '/create_account'
-  login.tiles:
-    description: "A list of links to other services to show on the landing page after logging in and/or signing up, depending on whether login-link and/or signup-link is specified."
-  login.uaa_base:
-    description: "Deprecated. Use uaa.url for setting the location of UAA."
-  login.signups_enabled:
-    description: "Deprecated. Use login.self_service_links_enabled. Instructs UAA to use 'enable account creation flow'. Enabled by default."
-    default: true
-  login.invitations_enabled:
-    description: "Allows users to send invitations to email addresses outside the system and invite them to create an account. Disabled by default."
+
+  # Saml
   login.saml.idpMetadataURL:
     description: "Deprecated. Use login.saml.providers list objects"
   login.saml.idp_metadata_file:
@@ -465,30 +509,3 @@ properties:
   login.saml.signRequest:
     description: "Global property to sign Local/SP requests"
     default: true
-  login.analytics.code:
-    description: "Google analytics code. If Google Analytics is desired set both login.analytics.code and login.analytics.domain"
-  login.analytics.domain:
-    description: "Google analytics domain. If Google Analytics is desired set both login.analytics.code and login.analytics.domain"
-  login.messages:
-    description: |
-      A nested or flat hash of messages that the login server uses to display UI message
-      This will be flattened into a java.util.Properties file. The example below will lead
-      to four properties, where the key is the concatenated value delimited by dot, for example scope.tokens.read=message
-    example:
-      messages:
-        scope:
-          tokens:
-            read: View details of your approvals you have granted to this and other applications
-            write: Cancel the approvals like this one that you have granted to this and other applications
-      scope.tokens.read: View details of your approvals you have granted to this and other applications
-      scope.tokens.write: Cancel the approvals like this one that you have granted to this and other applications
-  login.logout.redirect.url:
-    description: "The Location of the redirect header following a logout of the the UAA (/logout.do)."
-    default: /login
-  login.logout.redirect.parameter.disable:
-    description: "When set to false, this allows an operator to leverage an open redirect on the UAA (/logout.do?redirect=google.com). No open redirect enabled"
-    default: true
-  login.logout.redirect.parameter.whitelist:
-    description: "A list of URLs. When this list is non null, including empty, and disable=false,
-    logout redirects are allowed, but limited to the whitelist URLs. If a redirect parameter value is not white
-    listed, redirect will be to the default URL."

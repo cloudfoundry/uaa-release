@@ -85,7 +85,7 @@ password:
 issuer.uri: <%= issuer_uri %>
 
 oauth:
-  <% unless properties.uaa.no_ssl %>
+  <% if protocol == "https" %>
   authorize:
     ssl: true
   <% end %>

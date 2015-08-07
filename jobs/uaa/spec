@@ -79,9 +79,6 @@ properties:
   login.protocol:
     description: "Scheme to use for HTTP communication (http/https)"
     default: https
-  uaa.no_ssl:
-    description: "Deprecated (and unused). Use login.protocol instead to use https or http"
-    default: false
   uaa.require_https:
     description: "Request came in on a secure connection. Expect the load balancer/proxy to set the proper headers (x-forwarded-for, x-forwarded-proto)"
     default: false
@@ -203,9 +200,7 @@ properties:
   uaa.client.autoapprove:
     description: "Deprecated"
     default:
-      - cf
       - login
-      - developer_console
       - support-signon
   uaa.login.client_secret:
     description: 'Default login client secret, if no login client is defined'

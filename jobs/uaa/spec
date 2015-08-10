@@ -23,7 +23,7 @@ templates:
 
 
 packages:
-  - common
+  - utils
   - uaa
 
 properties:

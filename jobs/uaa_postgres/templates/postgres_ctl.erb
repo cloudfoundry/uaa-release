@@ -15,7 +15,7 @@ LOG_DIR=/var/vcap/sys/log/uaa_postgres
 # overwriting $PIDFILE with actual DB server pid
 PIDFILE=$RUN_DIR/uaa_postgres.pid
 
-source /var/vcap/packages/common/utils.sh
+source /var/vcap/packages/utils/utils.sh
 
 case "$1" in
   start)

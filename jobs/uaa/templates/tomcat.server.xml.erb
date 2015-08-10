@@ -13,7 +13,7 @@
                port="<%= p("uaa.port") %>"
                <% if p("login.protocol") == 'https' then %> <%=
                'SSLEnabled="true" secure="true" clientAuth="false" sslProtocol="TLS"
-               keystoreFile="/home/vcap/uaa_keystore.p12" keystoreType="PKCS12" keyAlias="uaa_ssl_cert" keystorePass="k0*l*s3cur1tyr0ck$"' %>
+               keystoreFile="/var/vcap/data/uaa/uaa_keystore.p12" keystoreType="PKCS12" keyAlias="uaa_ssl_cert" keystorePass="k0*l*s3cur1tyr0ck$"' %>
                <% end %>
     />
     <Connector protocol="org.apache.coyote.http11.Http11NioProtocol" connectionTimeout="20000" port="8989" address="127.0.0.1" />

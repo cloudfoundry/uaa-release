@@ -28,8 +28,6 @@ packages:
 
 properties:
   # General server properties
-  domain:
-    description: "Deprecated. Use uaa.url for setting the location of UAA"
   uaa.catalina_opts:
     description: "The options used to configure Tomcat"
     default: -Xmx768m -XX:MaxPermSize=256m
@@ -38,10 +36,6 @@ properties:
     default: 8443
   uaa.url:
     description: "The base url of the UAA"
-  login.uaa_base:
-    description: "Deprecated. Use uaa.url for setting the location of UAA."
-  uaa.issuer:
-    description: "Deprecated. The url to use as the issuer URI"
   uaa.zones.internal.hostnames:
     description: |
       A list of hostnames that are routed to the UAA, specifically the default zone in the UAA. The UAA will reject any Host headers that it doesn't recognize.
@@ -74,6 +68,13 @@ properties:
     description: "The https_proxy across the VMs"
   env.no_proxy:
     description: "Set No_Proxy across the VMs"
+    example: "localhost,127.0.0.0/8,127.0.1.1"
+  uaa.issuer:
+    description: "The url to use as the issuer URI"
+  domain:
+    description: "Deprecated. Use uaa.url for setting the location of UAA"
+  login.uaa_base:
+    description: "Deprecated. Use uaa.url for setting the location of UAA."
 
   # SSL
   login.protocol:
@@ -142,10 +143,7 @@ properties:
     description: URL for requesting to signup/register for an account
     default: '/create_account'
   login.tiles:
-    description: "A list of links to other services to show on the landing page after logging in and/or signing up, depending on whether login-link and/or signup-link is specified."
-  login.signups_enabled:
-    description: "Deprecated. Use login.self_service_links_enabled. Instructs UAA to use 'enable account creation flow'. Enabled by default."
-    default: true
+    description: "A list of links to other services to show on the landing page after log in."
   login.invitations_enabled:
     description: "Allows users to send invitations to email addresses outside the system and invite them to create an account. Disabled by default."
   login.analytics.code:
@@ -175,6 +173,9 @@ properties:
     description: "A list of URLs. When this list is non null, including empty, and disable=false,
     logout redirects are allowed, but limited to the whitelist URLs. If a redirect parameter value is not white
     listed, redirect will be to the default URL."
+  login.signups_enabled:
+    description: "Deprecated. Use login.self_service_links_enabled. Instructs UAA to use 'enable account creation flow'. Enabled by default."
+    default: true
 
   # Email
   login.notifications.url:
@@ -197,13 +198,13 @@ properties:
     description: "List of OAuth2 clients that the UAA will be bootstrapped with"
   uaa.admin.client_secret:
     description: "Secret of the admin client - a client named admin with uaa.admin as an authority"
+  uaa.login.client_secret:
+    description: 'Default login client secret, if no login client is defined'
   uaa.client.autoapprove:
     description: "Deprecated"
     default:
       - login
       - support-signon
-  uaa.login.client_secret:
-    description: 'Default login client secret, if no login client is defined'
 
   # Security policies
   uaa.authentication.policy.lockoutAfterFailures:
@@ -250,9 +251,6 @@ properties:
       - oauth.approvals
       - notification_preferences.read
       - notification_preferences.write
-  uaa.openid.fallbackToAuthcode:
-    description: "Deprecated. When using the hybrid flow to get a id_token, suppress the exception if the client doesn't have the implicit grant"
-    default: true
   uaa.jwt.signing_key:
     description: "The key used to sign the JWT-based OAuth2 tokens"
   uaa.jwt.verification_key:
@@ -264,11 +262,14 @@ properties:
     description: "Enables the endpoint `/ids/Users` that allows consumers to translate user ids to name"
     default: true
   uaa.scim.users:
-    description: "A list of users to be bootstrapped with default authority (uaa.user). Each entry has the following format: username|password|email|firstName|lastName"
+    description: "A list of users to be bootstrapped with default authority. Each entry has the following format: username|password|email|firstName|lastName"
     example:
       - marissa|koala|marissa@test.org|Marissa|Bloggs
   uaa.scim.external_groups:
     description: "A list of external group mappings. Pipe delimited. A value may look as '- internal.read|cn=developers,ou=scopes,dc=test,dc=com'"
+  uaa.openid.fallbackToAuthcode:
+    description: "Deprecated. When using the hybrid flow to get a id_token, suppress the exception if the client doesn't have the implicit grant"
+    default: true
 
   # Database
   uaadb.address:
@@ -300,8 +301,6 @@ properties:
     description: "Set to true if you don't want to be using LOWER() SQL functions in search queries/filters, because you know that your DB is case insensitive. If this property is null, then it will be set to true if the UAA DB is MySQL and false otherwise, but even on MySQL you can override it by setting it explicitly to false"
 
   # LDAP
-  uaa.spring_profiles:
-    description: "Deprecated. Use 'uaa.ldap.enabled' instead. Sets the Spring profiles on the UAA web application. This gets combined with the 'uaadb.db_scheme' property if and only if the value is exactly 'ldap' in order to setup the database, for example 'ldap,mysql'. If spring_profiles contains more than just 'ldap' it will be used to overwrite spring_profiles and db_scheme ignored. See uaa.yml.erb."
   uaa.ldap.enabled:
     description: "Set to true to enable LDAP"
     default: false
@@ -398,20 +397,14 @@ properties:
     description: "Deprecated. Use uaa.ldap.sslCertificateAlias - login.ldap prefix is used for backwards compatibility to enable ldap from login config"
   login.spring_profiles:
     description: "Deprecated. Use uaa.spring_profiles - login.spring_profiles is used for backwards compatibility to enable ldap from login config"
+  uaa.spring_profiles:
+    description: "Deprecated. Use 'uaa.ldap.enabled' instead. Sets the Spring profiles on the UAA web application. This gets combined with the 'uaadb.db_scheme' property if and only if the value is exactly 'ldap' in order to setup the database, for example 'ldap,mysql'. If spring_profiles contains more than just 'ldap' it will be used to overwrite spring_profiles and db_scheme ignored. See uaa.yml.erb."
 
   # Saml
-  login.saml.idpMetadataURL:
-    description: "Deprecated. Use login.saml.providers list objects"
-  login.saml.idp_metadata_file:
-    description: "Deprecated. Use login.saml.providers list objects"
   login.saml.entityid:
-    description: "The ID to represent this server"
+    description: "This is used as the SAML Service Provider Entity ID"
   login.saml.entity_base_url:
-    description: "The URL for which SAML identity providers will post assertions to. If set it overrides the default. This URL should NOT have the schema (http:// or https:// prefix in it) instead just the hostname. The schema is derived by login.protocol property. The default value is #{protocol}://#{properties.uaa.url} if uaa.url is set otherwise is #{protocol}://#{login.uaa_base}"
-  login.saml.idpEntityAlias:
-    description: "Deprecated. Use login.saml.providers list objects"
-  login.entity_id:
-    description: "Deprecated. Use login.saml.entityid"
+    description: "The URL for which SAML identity providers will post assertions to. If set it overrides the default. This URL should NOT have the schema (http:// or https:// prefix in it) instead just the hostname. The schema is derived by login.protocol property. The default value is #{protocol}://#{properties.uaa.url} if uaa.url is set."
   login.saml.keystore_name:
     description: "Name of the SAML login server keystore."
     example: "samlKeystore.jks"
@@ -470,15 +463,6 @@ properties:
       iVxQ1sYjo4kCugHBsWo+MpFH9VBLFzsMlP3eIDuVKe8aPXFKYCGhctZEJdQTKlja
       lshe50nayKrT
       -----END CERTIFICATE----
-  login.saml.assertionConsumerIndex:
-    description: "Deprecated. Use login.saml.providers list objects"
-    default: 1
-  login.saml.nameidFormat:
-    description: "Deprecated. Use login.saml.providers list objects"
-    default: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
-  login.saml.metadataTrustCheck:
-    description: "Deprecated. Use login.saml.providers list objects"
-    default: true
   login.saml.providers:
     description: "Contains a hash of SAML Identity Providers, the key is the IDP Alias, followed by key/value pairs. To learn more about how to setup a saml identity provider go to https://simplesamlphp.org"
     example:
@@ -504,3 +488,20 @@ properties:
   login.saml.signRequest:
     description: "Global property to sign Local/SP requests"
     default: true
+  login.saml.idpMetadataURL:
+    description: "Deprecated. Use login.saml.providers list objects"
+  login.saml.idp_metadata_file:
+    description: "Deprecated. Use login.saml.providers list objects"
+  login.saml.assertionConsumerIndex:
+    description: "Deprecated. Use login.saml.providers list objects"
+    default: 1
+  login.saml.nameidFormat:
+    description: "Deprecated. Use login.saml.providers list objects"
+    default: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+  login.saml.metadataTrustCheck:
+    description: "Deprecated. Use login.saml.providers list objects"
+    default: true
+  login.saml.idpEntityAlias:
+    description: "Deprecated. Use login.saml.providers list objects"
+  login.entity_id:
+    description: "Deprecated. Use login.saml.entityid"

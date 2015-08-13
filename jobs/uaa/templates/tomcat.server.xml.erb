@@ -26,7 +26,7 @@
                internalProxies="<%= properties.uaa.restricted_ips_regex %>"
         />
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="/var/vcap/sys/log/uaa"
-               prefix="localhost_access." suffix=".log" rotatable="true" pattern="%h %l %u %t &quot;%r&quot; %s %b"/>
+               prefix="localhost_access" suffix=".log" rotatable="false" pattern="%h %l %u %t &quot;%r&quot; %s %b"/>
 
       </Host>
     </Engine>

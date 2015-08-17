@@ -396,7 +396,7 @@ properties:
   login.ldap.sslCertificateAlias:
     description: "Deprecated. Use uaa.ldap.sslCertificateAlias - login.ldap prefix is used for backwards compatibility to enable ldap from login config"
   login.spring_profiles:
-    description: "Deprecated. Use uaa.spring_profiles - login.spring_profiles is used for backwards compatibility to enable ldap from login config"
+    description: "Deprecated. Use uaa.ldap.enabled - login.spring_profiles is used for backwards compatibility to enable ldap from login config"
   uaa.spring_profiles:
     description: "Deprecated. Use 'uaa.ldap.enabled' instead. Sets the Spring profiles on the UAA web application. This gets combined with the 'uaadb.db_scheme' property if and only if the value is exactly 'ldap' in order to setup the database, for example 'ldap,mysql'. If spring_profiles contains more than just 'ldap' it will be used to overwrite spring_profiles and db_scheme ignored. See uaa.yml.erb."
 
@@ -405,15 +405,6 @@ properties:
     description: "This is used as the SAML Service Provider Entity ID"
   login.saml.entity_base_url:
     description: "The URL for which SAML identity providers will post assertions to. If set it overrides the default. This URL should NOT have the schema (http:// or https:// prefix in it) instead just the hostname. The schema is derived by login.protocol property. The default value is #{protocol}://#{properties.uaa.url} if uaa.url is set."
-  login.saml.keystore_name:
-    description: "Name of the SAML login server keystore."
-    example: "samlKeystore.jks"
-  login.saml.keystore_key:
-    description: "Key name of the SAML login server keystore."
-    example: "selfsigned"
-  login.saml.keystore_password:
-    description: "Key password to the SAML login server keystore."
-    example: "password"
   login.saml.serviceProviderKey:
     description: "Private key for the service provider certificate."
     example: |

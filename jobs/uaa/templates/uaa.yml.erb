@@ -63,6 +63,10 @@ authentication:
     lockoutAfterFailures: <%= properties.uaa.authentication.policy.lockoutAfterFailures %>
     countFailuresWithinSeconds: <%= properties.uaa.authentication.policy.countFailuresWithinSeconds %>
     lockoutPeriodSeconds: <%= properties.uaa.authentication.policy.lockoutPeriodSeconds %>
+    global:
+      lockoutAfterFailures: <%= properties.uaa.authentication.policy.lockoutAfterFailures %>
+      countFailuresWithinSeconds: <%= properties.uaa.authentication.policy.countFailuresWithinSeconds %>
+      lockoutPeriodSeconds: <%= properties.uaa.authentication.policy.lockoutPeriodSeconds %>
 
 password:
   policy:

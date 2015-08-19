@@ -27,23 +27,24 @@ consul/consul_0.5.2_linux_amd64.zip:
   object_id: 74107b66-7502-4e06-bdc2-d2dbea1e73c6
   sha: b3ae610c670fc3b81737d44724ebde969da66ebf
   size: 4803609
-java-buildpack/java-buildpack-offline-v3.1.zip:
-  object_id: a82ef8d6-0c4b-47d7-9243-e0ce017abc31
-  sha: 7d965f711c19ff2db2245df196fad47cfb65c580
-  size: 332558508
-java-buildpack/java-buildpack-v3.1.zip:
-  object_id: 7413f0fd-f578-4490-93fb-873288283404
-  sha: c9272524ac27bacd00b66b8374fa9bf90b0c8068
-  size: 146572
-openjdk/openjdk-1.7.0_79.tar.gz:
-  object_id: b7c40a5c-6297-4158-b54a-23f89982f13a
-  sha: 2ca6e142325a3e054efbf5b72995cb9ce416d607
-  size: 36244117
-openjdk/openjdk-1.7.0-u40-unofficial-macosx-x86_64-bundle.tgz:
-  object_id: 6f065666-1889-4564-8dd9-8344b4a3e974
-  sha: ac7febc5bbff2dedf8add624a727a4c0ac6c3d10
-  size: 65991397
-openjdk/openjdk-1.7.0-u40-unofficial-linux-amd64.tgz:
-  object_id: 1c5d266f-9c90-4160-9fc5-b3b30f2c248a
-  sha: bb41c68e0dc26ad71635d4bff8da16246ded10f0
-  size: 42574624
+java-buildpack/java-buildpack-offline-v3.1.1.zip:
+  object_id: d5604cb2-c0fe-431e-b2fd-3e868e2b934c
+  sha: db5f96ce966e02c611da8222d4345d420da63655
+  size: 333418361
+java-buildpack/java-buildpack-v3.1.1.zip:
+  object_id: 8e1d1974-a796-4a1b-bc17-ed9ebadbaebc
+  sha: 8a0d6e7a1ed26a24abc2a1c7a0b2612d6efd0380
+  size: 146570
+openjdk/openjdk-1.8.0_51-x86_64-mountainlion.tar.gz:
+  object_id: dfb85520-0fcc-4ca1-bcb6-4dafb877fc9a
+  sha: 1d6fa87aca3599c15b07a7f96e77db4e0d45fa20
+  size: 81845477
+openjdk/openjdk-1.8.0_51-x86_64-trusty.tar.gz:
+  object_id: d5310553-5f23-4a34-8bbe-6cca4a2a66f5
+  sha: f467dc147e1774f9b4bf78aeca65d096d135e7b6
+  size: 77486128
+openjdk/openjdk-1.8.0_51.tar.gz:
+  object_id: d85dd2e6-cb0c-45a7-a089-b24a778878ad
+  sha: 2651c262b7cede077da23e00d3fe6ffd9849a1d6
+  size: 44707537
+

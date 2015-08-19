@@ -1,6 +1,5 @@
 ---
-final_name: tmp-bosh-uaa
-min_cli_version: 1.5.0.pre.1001
+final_name: uaa
 blobstore:
   provider: s3
   options:

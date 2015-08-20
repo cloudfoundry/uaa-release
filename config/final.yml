@@ -3,4 +3,4 @@ final_name: uaa
 blobstore:
   provider: s3
   options:
-    bucket_name: uaa-blobs-final
+    bucket_name: uaa-final-release-blobs

@@ -196,6 +196,15 @@ properties:
   # Clients
   uaa.clients:
     description: "List of OAuth2 clients that the UAA will be bootstrapped with"
+    example:
+      login:
+        id: login
+        override: true
+        secret: some-secret
+        authorized-grant-types: authorization_code,client_credentials,refresh_token
+        authorities: test.authority,blah.test
+        scope: test.scope,test2.scope
+        redirect-uri: http://login.example.com
   uaa.admin.client_secret:
     description: "Secret of the admin client - a client named admin with uaa.admin as an authority"
   uaa.login.client_secret:

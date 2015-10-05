@@ -28,6 +28,6 @@ uaa/newrelic.jar:
   sha: a5070963fc84bea27acc1d492cb9e3143f0c4715
   size: 7064901
 uaa/cloudfoundry-identity-statsd-1.0.0.war:
-  object_id: 03f0688e-c6f3-4a27-8d5c-694b4dda0907
-  sha: 038c11e503bdbc5194c76535b22f5d4b85aeb37f
-  size: 11163261
+  object_id: 928a8aca-a8f0-4036-aa0c-804c463fc895
+  sha: c26a49ef1c8c5d6b215bf57ca6267e4d7f9f1a53
+  size: 11163253

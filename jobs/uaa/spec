@@ -202,8 +202,8 @@ properties:
         override: true
         secret: some-secret
         authorized-grant-types: authorization_code,client_credentials,refresh_token
-        authorities: test.authority,blah.test
-        scope: test.scope,test2.scope
+        authorities: test_resource.test_action
+        scope: test_resource.test_action
         redirect-uri: http://login.example.com
   uaa.admin.client_secret:
     description: "Secret of the admin client - a client named admin with uaa.admin as an authority"

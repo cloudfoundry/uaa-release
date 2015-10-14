@@ -86,6 +86,9 @@ password:
       requireSpecialCharacter: <%= properties.uaa.password.policy.requireSpecialCharacter %>
       expirePasswordInMonths: <%= properties.uaa.password.policy.expirePasswordInMonths %>
 
+disableInternalAuth: <%= properties.uaa.disableInternalAuth %>
+disableInternalUserManagement: <%= properties.uaa.disableInternalUserManagement %>
+
 issuer.uri: <%= issuer_uri %>
 
 oauth:
@@ -182,6 +185,9 @@ ldap:
     mailAttributeName: '<%= properties.uaa.ldap.mailAttributeName%>'
     mailSubstitute: '<%= properties.uaa.ldap.mailSubstitute %>'
     mailSubstituteOverridesLdap: <%= properties.uaa.ldap.mailSubstituteOverridesLdap %>
+  <% if properties.uaa.ldap.emailDomain %>
+  emailDomain: <% properties.uaa.ldap.emailDomain.each do |domain| %>
+  - <%= domain %><% end %><% end %>
   <% if properties.uaa.ldap.sslCertificate %>
   ssl: 
     sslCertificate: ! <%= "'" + p("uaa.ldap.sslCertificate").gsub("\n", "\n\n    ") + "'" %>

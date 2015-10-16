@@ -266,6 +266,8 @@ properties:
       - oauth.approvals
       - notification_preferences.read
       - notification_preferences.write
+      - profile
+      - roles
   uaa.jwt.signing_key:
     description: "The key used to sign the JWT-based OAuth2 tokens"
   uaa.jwt.verification_key:

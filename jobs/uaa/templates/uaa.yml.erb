@@ -155,6 +155,11 @@ zones:
   external_groups: <% properties.uaa.scim.external_groups.each do |group| %>
     - <%= group %><% end %>
 <% end %>
+
+<% if_p('uaa.scim.groups') do |groups| %>
+  groups: <%= groups %>
+<% end %>
+ 
 <% if !properties.uaa.require_https.nil? %>
 require_https: <%= properties.uaa.require_https %>
 <% end %>

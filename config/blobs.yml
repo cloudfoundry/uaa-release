@@ -1,16 +1,4 @@
 ---
-openjdk/openjdk-1.8.0_51-x86_64-mountainlion.tar.gz:
-  object_id: edb882ac-0866-4e75-b73f-c7baf2e14a01
-  sha: 1d6fa87aca3599c15b07a7f96e77db4e0d45fa20
-  size: 81845477
-openjdk/openjdk-1.8.0_51-x86_64-trusty.tar.gz:
-  object_id: 0eeca279-0121-46a2-9281-cabff925251c
-  sha: f467dc147e1774f9b4bf78aeca65d096d135e7b6
-  size: 77486128
-openjdk/openjdk-1.8.0_51.tar.gz:
-  object_id: d4de894f-a25f-47b5-b362-ede560a0c1da
-  sha: 2651c262b7cede077da23e00d3fe6ffd9849a1d6
-  size: 44707537
 postgres/postgresql-9.4.2.tar.gz:
   object_id: 04bb6f1d-14f6-421c-8bc1-452b18c29665
   sha: 7a70474f9b44fea1b345e48bd5e4418bccf41f3f
@@ -31,3 +19,15 @@ uaa/cloudfoundry-identity-statsd-1.0.0.war:
   object_id: 928a8aca-a8f0-4036-aa0c-804c463fc895
   sha: c26a49ef1c8c5d6b215bf57ca6267e4d7f9f1a53
   size: 11163253
+openjdk/openjdk-1.8.0_65-x86_64-mountainlion.tar.gz:
+  object_id: 364b260b-2ce4-46f6-bf68-c64c264ffbae
+  sha: 0d0fef95aa7bdd494f8aac2fa4d94f84b2b3ee9d
+  size: 81922523
+openjdk/openjdk-1.8.0_65-x86_64-trusty.tar.gz:
+  object_id: 53ed8ef2-0d39-43eb-9187-2410a333d9c6
+  sha: 949812223e334ba6c360a097a44084776eaee418
+  size: 77611856
+openjdk/openjdk-1.8.0_65-x86_64-trusty-jre.tar.gz:
+  object_id: d2faa822-40b7-459c-be94-f97bf94eb374
+  sha: e5ecfe29a74bca1794eb18de03f2f98495c5cbc0
+  size: 77054579

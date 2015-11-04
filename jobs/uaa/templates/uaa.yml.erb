@@ -92,6 +92,8 @@ disableInternalUserManagement: <%= properties.uaa.disableInternalUserManagement 
 issuer.uri: <%= issuer_uri %>
 
 oauth:
+  id_token:
+    disable: <%= properties.uaa.id_token.disable %>
   <% if protocol == "https" %>
   authorize:
     ssl: true

@@ -10,7 +10,7 @@ templates:
   pg_hba.conf.erb: config/pg_hba.conf
 
 packages:
-  - utils
+  - uaa_utils
   - uaa_postgres-9.4.2
 
 properties:

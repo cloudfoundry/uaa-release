@@ -300,9 +300,6 @@ properties:
     description: "A list of external group mappings. Pipe delimited. A value may look as '- internal.read|cn=developers,ou=scopes,dc=test,dc=com'"
   uaa.scim.groups:
     description: Comma separated list of groups that should be added to the UAA db, but not assigned to a user by default.
-  uaa.id_token.disable:
-    description: When set to true, requests to /oauth/authorize will ignore the response_type=id_token parameter
-    default: true
 
   # Database
   uaadb.address:

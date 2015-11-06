@@ -88,7 +88,7 @@ properties:
     description: Set UAA logging level.  (e.g. TRACE, DEBUG, INFO)
     default: DEBUG
   uaa.logging_use_rfc3339:
-    description: Sets the time format for log messages to be rfc3339 compatible.
+    description: "Sets the time format for log messages to be yyyy-MM-dd'T'HH:mm:ss.SSSXXX instead of yyyy-MM-dd HH:mm:ss.SSS"
     default: false
   login.uaa_base:
     description: "Deprecated. Use uaa.url for setting the location of UAA."

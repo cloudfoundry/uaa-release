@@ -49,6 +49,14 @@ spring_profiles: <%= properties.uaadb.db_scheme %>
 logging:
   config: /var/vcap/jobs/uaa/config/log4j.properties
 
+token:
+  policy:
+    accessTokenValiditySeconds: <%= properties.uaa.token.policy.accessTokenValiditySeconds %>
+    refreshTokenValiditySeconds: <%= properties.uaa.token.policy.refreshTokenValiditySeconds %>
+    global:
+      accessTokenValiditySeconds: <%= properties.uaa.token.policy.global.accessTokenValiditySeconds %>
+      refreshTokenValiditySeconds: <%= properties.uaa.token.policy.global.refreshTokenValiditySeconds %>
+      
 <% if properties.uaa.jwt && properties.uaa.jwt.signing_key && properties.uaa.jwt.verification_key %>
 jwt:
   token:

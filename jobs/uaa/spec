@@ -282,6 +282,7 @@ properties:
       - notification_preferences.write
       - profile
       - roles
+      - user_attributes
   uaa.token.policy.accessTokenValiditySeconds:
     default: 43200
     description: "The access token validity for the default zone if nothing is configured on the client. Will override global validity policies for the default zone only."

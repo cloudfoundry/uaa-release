@@ -14,7 +14,6 @@ name: login
     uaa_base = "#{protocol}://uaa.#{p('domain')}"
   end
 
-  login_url = p('uaa.url') ? p('uaa.url') : "#{protocol}://login.#{properties.domain}"
   login_entityBaseUrl = (properties.login && properties.login.saml.entity_base_url) ? "#{protocol}://#{properties.login.saml.entity_base_url}" : "#{protocol}://login.#{properties.domain}"
   login_entityId = (properties.login && properties.login.saml.entityid) ? properties.login.saml.entityid : properties.login.entity_id ? properties.login.entity_id : "login.#{properties.domain}"
   login_authorizeUrl = (properties.uaa.url) ? "#{properties.uaa.url}/oauth/authorize" : "#{protocol}://login.#{properties.domain}/oauth/authorize"
@@ -38,14 +37,6 @@ logging:
 
 uaa:
   url: <%= uaa_base %>
-  token:
-    url: <%= uaa_base %>/oauth/token
-  login:
-    url: <%= uaa_base %>/authenticate
-  clientinfo:
-    url: <%= uaa_base %>/clientinfo
-  approvals:
-    url: <%= uaa_base %>/approvals
 <% if_p('login.links') do |login_links| %>
 links: <% login_links.each do |id,url| %>
   <%= id %>: <%= url %><% end %>
@@ -83,7 +74,6 @@ logout:
 
 login:
   brand: <%= properties.login.brand %>
-  url: <%= login_url %>
   entityBaseURL: <%= login_entityBaseUrl %>
   entityID: <%= login_entityId %>
   <% if !properties.login.invitations_enabled.nil? %>

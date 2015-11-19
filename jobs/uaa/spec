@@ -92,8 +92,6 @@ properties:
     default: false
   login.uaa_base:
     description: "Deprecated. Use uaa.url for setting the location of UAA."
-  login.url:
-    description: This can be set to a different value than uaa.url. The UAA will also consider this as a valid hostname.
 
   # SSL
   login.protocol:

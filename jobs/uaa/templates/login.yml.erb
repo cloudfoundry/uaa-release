@@ -14,10 +14,10 @@ name: login
     uaa_base = "#{protocol}://uaa.#{p('domain')}"
   end
 
-  login_url = p('login.url') ? p('login.url') : (p('uaa.url') ? p('uaa.url') : "#{protocol}://login.#{properties.domain}")
+  login_url = p('uaa.url') ? p('uaa.url') : "#{protocol}://login.#{properties.domain}"
   login_entityBaseUrl = (properties.login && properties.login.saml.entity_base_url) ? "#{protocol}://#{properties.login.saml.entity_base_url}" : "#{protocol}://login.#{properties.domain}"
   login_entityId = (properties.login && properties.login.saml.entityid) ? properties.login.saml.entityid : properties.login.entity_id ? properties.login.entity_id : "login.#{properties.domain}"
-  login_authorizeUrl = "#{login_url}/oauth/authorize"
+  login_authorizeUrl = (properties.uaa.url) ? "#{properties.uaa.url}/oauth/authorize" : "#{protocol}://login.#{properties.domain}/oauth/authorize"
 %>
 
 logging:

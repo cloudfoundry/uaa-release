@@ -48,30 +48,30 @@ spring_profiles: <%= properties.uaadb.db_scheme %>
 
 logging:
   config: /var/vcap/jobs/uaa/config/log4j.properties
-
-token:
-  policy:
-    accessTokenValiditySeconds: <%= properties.uaa.token.policy.accessTokenValiditySeconds %>
-    refreshTokenValiditySeconds: <%= properties.uaa.token.policy.refreshTokenValiditySeconds %>
-<% if_p("uaa.token.policy.keys") do |keys| %>
-    keys:
-  <% keys.marshal_dump.each do |kid,keyPair| %>
-    <% next unless keyPair %>
-    <%= kid %><% keyPair.marshal_dump.each do |key,value| %>
-      <%= key %>: |
-<%= "          " + value.gsub("\n", "\n          ") %><% end %><% end %>
-<% end %>
-    global:
-      accessTokenValiditySeconds: <%= properties.uaa.token.policy.global.accessTokenValiditySeconds %>
-      refreshTokenValiditySeconds: <%= properties.uaa.token.policy.global.refreshTokenValiditySeconds %>
       
-<% if properties.uaa.jwt && properties.uaa.jwt.signing_key && properties.uaa.jwt.verification_key %>
+<% if properties.uaa.jwt %>
 jwt:
   token:
+    policy:
+      accessTokenValiditySeconds: <%= properties.uaa.jwt.policy.accessTokenValiditySeconds %>
+      refreshTokenValiditySeconds: <%= properties.uaa.jwt.policy.refreshTokenValiditySeconds %>
+      global:
+        accessTokenValiditySeconds: <%= properties.uaa.jwt.policy.global.accessTokenValiditySeconds %>
+        refreshTokenValiditySeconds: <%= properties.uaa.jwt.policy.global.refreshTokenValiditySeconds %>
+  <% if_p("uaa.token.policy.keys") do |keys| %>
+      keys:
+    <% keys.marshal_dump.each do |kid,keyPair| %>
+      <% next unless keyPair %>
+      <%= kid %><% keyPair.marshal_dump.each do |key,value| %>
+        <%= key %>: |
+<%= "            " + value.gsub("\n", "\n            ") %><% end %><% end %>
+  <% end %>
+  <% if properties.uaa.jwt.signing_key && properties.uaa.jwt.verification_key %>
     signing-key: |
 <%= "        " + properties.uaa.jwt.signing_key.gsub("\n", "\n        ") %>
     verification-key: |
 <%= "        " + properties.uaa.jwt.verification_key.gsub("\n", "\n        ") %>
+  <% end %>
 <% end %>
 
 authentication:

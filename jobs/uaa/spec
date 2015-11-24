@@ -285,13 +285,13 @@ properties:
       - profile
       - roles
       - user_attributes
-  uaa.token.policy.accessTokenValiditySeconds:
+  uaa.jwt.policy.accessTokenValiditySeconds:
     default: 43200
     description: "The access token validity for the default zone if nothing is configured on the client. Will override global validity policies for the default zone only."
-  uaa.token.policy.refreshTokenValiditySeconds:
+  uaa.jwt.policy.refreshTokenValiditySeconds:
     default: 2592000
     description: "The refresh token validity for the default zone if nothing is configured on the client. Will override global validity policies for the default zone only."
-  uaa.token.policy.keys:
+  uaa.jwt.policy.keys:
     description: "Map of key ids to key pairs (signing and verification keys)"
     example:
       key-1:
@@ -317,10 +317,10 @@ properties:
           AnkyB06wFZ02sBLB7hko42LIsVEOyTuUBird/3vlyHFKytG7UEt60Fl88SbAEfsU
           JN1i1aSU
           -----END PUBLIC KEY-----
-  uaa.token.policy.global.accessTokenValiditySeconds:
+  uaa.jwt.policy.global.accessTokenValiditySeconds:
     default: 43200
     description: "The global access token validity for all zones if nothing is configured on the client"
-  uaa.token.policy.global.refreshTokenValiditySeconds:
+  uaa.jwt.policy.global.refreshTokenValiditySeconds:
     default: 2592000
     description: "The global refresh token validity for all zones if nothing is configured on the client"
   uaa.jwt.signing_key:

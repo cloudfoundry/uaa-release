@@ -79,11 +79,17 @@ login:
   <% if !properties.login.invitations_enabled.nil? %>
   invitationsEnabled: <%= properties.login.invitations_enabled %>
   <% end %>
+  <% if_p('login.saml.serviceProviderCertificate') do |serviceProviderCert| %>
   serviceProviderCertificate: |
-    <%= p("login.saml.serviceProviderCertificate").gsub("\n", "\n    ")%>
+    <%= serviceProviderCert.gsub("\n", "\n    ") %>
+  <% end %>
+  <% if_p('login.saml.serviceProvderKey') do |serviceProviderKey| %>
   serviceProviderKey: |
-    <%= p("login.saml.serviceProviderKey").gsub("\n", "\n    ")%>
-  serviceProviderKeyPassword: <%= properties.login.saml.serviceProviderKeyPassword %>
+    <%= serviceProviderKey.gsub("\n", "\n    ")%>
+  <% end %>
+  <% if_p('login.saml.serviceProviderKeyPassword') do |serviceProviderKeyPassword| %>
+  serviceProviderKeyPassword: <%= serviceProviderKeyPassword %>
+  <% end %>
   <% if !properties.login.self_service_links_enabled.nil? || !properties.login.signups_enabled.nil? %>
   selfServiceLinksEnabled: <%= properties.login.self_service_links_enabled.nil? ? properties.login.signups_enabled : properties.login.self_service_links_enabled %>
   <% end %>

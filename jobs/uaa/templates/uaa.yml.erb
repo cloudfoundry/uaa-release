@@ -65,6 +65,11 @@ jwt:
           <%= key %>: |
 <%= "            " + value.gsub("\n", "\n            ") %><% end %><% end %>
   <% end %>
+  <% if_p("uaa.jwt.claims.exclude") do |exclusions| %>
+    claims:
+      exclude: <% exclusions.each do |exclusion| %>
+      - <%= exclusion %><% end %>
+  <% end %>
   <% if properties.uaa.jwt.signing_key && properties.uaa.jwt.verification_key %>
     signing-key: |
 <%= "        " + properties.uaa.jwt.signing_key.gsub("\n", "\n        ") %>

@@ -162,8 +162,10 @@ scim:
 zones:
   internal:
     hostnames:
-    <% properties.uaa.subDomains.each do |subDomain| %>
-      - #{subDomain}.#{properties.domain}
+    <% if_p("properties.uaa.subDomains") do |subdomains| %>
+      <% subdomains.each do |subdomain| %>
+      - <%= subdomain %>.#{properties.domain}
+      <% end %>
     <% end %>  
     <% if !properties.uaa.zones.internal.hostnames.nil? %>
       <% properties.uaa.zones.internal.hostnames.each do |hostname| %>

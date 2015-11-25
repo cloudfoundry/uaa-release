@@ -82,8 +82,6 @@ properties:
     example: "localhost,127.0.0.0/8,127.0.1.1"
   uaa.issuer:
     description: "The url to use as the issuer URI"
-  uaa.subDomains:
-    description: A list of subdomains that will be used to construct hostnames that can be routed to the UAA.
   domain:
     description: "Deprecated. Use uaa.url for setting the location of UAA"
   uaa.logging_level:

@@ -58,12 +58,11 @@ jwt:
       global:
         accessTokenValiditySeconds: <%= properties.uaa.jwt.policy.global.accessTokenValiditySeconds %>
         refreshTokenValiditySeconds: <%= properties.uaa.jwt.policy.global.refreshTokenValiditySeconds %>
-  <% if_p("uaa.jwt.policy.keys") do |keys| %>
+  <% if properties.uaa.jwt.policy.keys then properties.uaa.jwt.policy.keys.marshal_dump.each do |kid,keyPair| %>
       keys:
-    <% keys.marshal_dump.each do |kid,keyPair| %>
       <% next unless keyPair %>
-      <%= kid %><% keyPair.marshal_dump.each do |key,value| %>
-        <%= key %>: |
+        <%= kid %>:<% keyPair.marshal_dump.each do |key,value| %>
+          <%= key %>: |
 <%= "            " + value.gsub("\n", "\n            ") %><% end %><% end %>
   <% end %>
   <% if properties.uaa.jwt.signing_key && properties.uaa.jwt.verification_key %>

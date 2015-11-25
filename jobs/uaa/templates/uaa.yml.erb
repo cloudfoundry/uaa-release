@@ -58,7 +58,7 @@ jwt:
       global:
         accessTokenValiditySeconds: <%= properties.uaa.jwt.policy.global.accessTokenValiditySeconds %>
         refreshTokenValiditySeconds: <%= properties.uaa.jwt.policy.global.refreshTokenValiditySeconds %>
-  <% if_p("uaa.token.policy.keys") do |keys| %>
+  <% if_p("uaa.jwt.policy.keys") do |keys| %>
       keys:
     <% keys.marshal_dump.each do |kid,keyPair| %>
       <% next unless keyPair %>

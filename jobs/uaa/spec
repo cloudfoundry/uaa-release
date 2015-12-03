@@ -327,6 +327,8 @@ properties:
     description: "The key used to verify JWT-based OAuth2 tokens"
   uaa.jwt.claims.exclude:
     description: "List of claims to exclude from the JWT-based OAuth2 tokens"
+    example:
+     - authorities
   uaa.scim.user.override:
     description: "If true override users defined in uaa.scim.users found in the database."
     default: true

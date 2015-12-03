@@ -166,7 +166,7 @@ scim:
 zones:
   internal:
     hostnames:
-    <% if_p('properties.domain') do |domain| %>
+    <% if_p('domain') do |domain| %>
       - <%= "login.#{domain}" %>
     <% end %>
     <% if !properties.uaa.zones.internal.hostnames.nil? %>

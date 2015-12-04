@@ -33,7 +33,7 @@ properties:
     default: -Xmx768m -XX:MaxPermSize=256m
   uaa.port:
     description: "Port that uaa will accept connections on"
-    default: 8443
+    default: 8080
   uaa.url:
     description: "The base url of the UAA"
   uaa.zones.internal.hostnames:
@@ -102,6 +102,7 @@ properties:
     default: true
   uaa.ssl.port:
     description: If this property Tomcat will listen to this port and expect https traffic. If null, tomcat will not listen to this port
+    default: 8443
   uaa.sslCertificate:
     description: "The server's ssl certificate. The default is a self-signed certificate and should always be replaced for production deployments"
     example: |

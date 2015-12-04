@@ -29,27 +29,18 @@
     end
     %>
 
-    <% if_p('uaa.port') do |uaa_ssl_port| %>
+    <% if properties.uaa.port != -1 %>
     <Connector class="org.apache.coyote.http11.Http11NioProtocol"
                protocol="HTTP/1.1"
                connectionTimeout="20000"
-               port="<%= uaa_port %>"
+               port="<%= properties.uaa.port %>"
     />
-    <!--
-    If you want Tomcat to think that the request is over SSL even when it isn't, you configure it like this
-        <Connector class="org.apache.coyote.http11.Http11NioProtocol"
-               protocol="HTTP/1.1"
-               connectionTimeout="20000"
-               port="<%= uaa_port %>"
-               scheme="https"
-               secure="true"
-    -->
     <% end %>
 
-    <% if_p('uaa.ssl.port') do |uaa_ssl_port| %>
+    <% if properties.uaa.ssl.port != -1  %>
     <Connector class="org.apache.coyote.http11.Http11NioProtocol" protocol="HTTP/1.1" connectionTimeout="20000"
                scheme="https"
-               port="<%= uaa_ssl_port %>"
+               port="<%= properties.uaa.ssl.port %>"
                SSLEnabled="true"
                secure="true"
                clientAuth="false"

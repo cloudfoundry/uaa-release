@@ -29,7 +29,7 @@
     end
     %>
 
-    <% if properties.uaa.port != -1 %>
+    <% if p("uaa.port") != -1 %>
     <Connector class="org.apache.coyote.http11.Http11NioProtocol"
                protocol="HTTP/1.1"
                connectionTimeout="20000"
@@ -37,7 +37,7 @@
     />
     <% end %>
 
-    <% if properties.uaa.ssl.port != -1  %>
+    <% if p("uaa.ssl.port") != -1  %>
     <Connector class="org.apache.coyote.http11.Http11NioProtocol" protocol="HTTP/1.1" connectionTimeout="20000"
                scheme="https"
                port="<%= properties.uaa.ssl.port %>"

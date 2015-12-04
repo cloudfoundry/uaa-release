@@ -9,9 +9,9 @@ def flatten_keys(key, value, flathash)
   end
 end
 
-if properties.login && !properties.login.messages.nil? then
+if_p("login.messages") do |messages|
   flathash = Hash.new
-  properties.login.messages.marshal_dump.each do |msgKey,msgText|
+  messages.marshal_dump.each do |msgKey,msgText|
     flatten_keys(msgKey, msgText, flathash)
   end
   flathash.each do |msgKey, msgText| %>

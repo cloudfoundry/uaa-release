@@ -5,14 +5,14 @@ description: "The UAA is the identity management service for Cloud Foundry. It's
 
 templates:
   uaa_ctl.erb: bin/uaa_ctl
-  install_crt: bin/install_crt
+  install_crt.erb: bin/install_crt
   dns_health_check.erb: bin/dns_health_check
-  install_uaa_crt: bin/install_uaa_crt
+  install_uaa_crt.erb: bin/install_uaa_crt
 
   uaa.yml.erb: config/uaa.yml
   newrelic.yml.erb: config/newrelic.yml
-  varz.yml: config/varz.yml
-  log4j.properties: config/log4j.properties
+  varz.yml.erb: config/varz.yml
+  log4j.properties.erb: config/log4j.properties
   varz.log4j.properties.erb: config/varz.log4j.properties
   tomcat.logging.properties: config/tomcat/logging.properties
   tomcat.server.xml.erb: config/tomcat/server.xml

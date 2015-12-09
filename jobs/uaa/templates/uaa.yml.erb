@@ -84,9 +84,9 @@ authentication:
     countFailuresWithinSeconds: <%= properties.uaa.authentication.policy.countFailuresWithinSeconds %>
     lockoutPeriodSeconds: <%= properties.uaa.authentication.policy.lockoutPeriodSeconds %>
     global:
-      lockoutAfterFailures: <%= properties.uaa.authentication.policy.lockoutAfterFailures %>
-      countFailuresWithinSeconds: <%= properties.uaa.authentication.policy.countFailuresWithinSeconds %>
-      lockoutPeriodSeconds: <%= properties.uaa.authentication.policy.lockoutPeriodSeconds %>
+      lockoutAfterFailures: <%= properties.uaa.authentication.policy.global.lockoutAfterFailures %>
+      countFailuresWithinSeconds: <%= properties.uaa.authentication.policy.global.countFailuresWithinSeconds %>
+      lockoutPeriodSeconds: <%= properties.uaa.authentication.policy.global.lockoutPeriodSeconds %>
 
 password:
   policy:
@@ -98,13 +98,13 @@ password:
     requireSpecialCharacter: <%= properties.uaa.password.policy.requireSpecialCharacter %>
     expirePasswordInMonths: <%= properties.uaa.password.policy.expirePasswordInMonths %>
     global:
-      minLength: <%= properties.uaa.password.policy.minLength %>
-      maxLength: <%= properties.uaa.password.policy.maxLength %>
-      requireUpperCaseCharacter: <%= properties.uaa.password.policy.requireUpperCaseCharacter %>
-      requireLowerCaseCharacter: <%= properties.uaa.password.policy.requireLowerCaseCharacter %>
-      requireDigit: <%= properties.uaa.password.policy.requireDigit %>
-      requireSpecialCharacter: <%= properties.uaa.password.policy.requireSpecialCharacter %>
-      expirePasswordInMonths: <%= properties.uaa.password.policy.expirePasswordInMonths %>
+      minLength: <%= properties.uaa.password.policy.global.minLength %>
+      maxLength: <%= properties.uaa.password.policy.global.maxLength %>
+      requireUpperCaseCharacter: <%= properties.uaa.password.policy.global.requireUpperCaseCharacter %>
+      requireLowerCaseCharacter: <%= properties.uaa.password.policy.global.requireLowerCaseCharacter %>
+      requireDigit: <%= properties.uaa.password.policy.global.requireDigit %>
+      requireSpecialCharacter: <%= properties.uaa.password.policy.global.requireSpecialCharacter %>
+      expirePasswordInMonths: <%= properties.uaa.password.policy.global.expirePasswordInMonths %>
 
 disableInternalAuth: <%= properties.uaa.disableInternalAuth %>
 disableInternalUserManagement: <%= properties.uaa.disableInternalUserManagement %>

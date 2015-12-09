@@ -1,1 +1,6 @@
-<%= p(["uaa.sslCertificate", "uaa.sslPrivateKey"], "") %>
+<% if properties.uaa && properties.uaa.sslCertificate then %>
+<%= p("uaa.sslCertificate", "") %>
+<% end %>
+<% if properties.uaa && properties.uaa.sslPrivateKey then %>
+<%= p("uaa.sslPrivateKey", "") %>
+<% end %>

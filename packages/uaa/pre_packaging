@@ -29,7 +29,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 #build cloud foundry war
 cd ${BUILD_DIR}/uaa
 #./gradlew assemble
-GIT_DIR=${RELEASE_DIR}/.git/modules/src/uaa ./gradlew :assemble
+GIT_DIR=$(find $RELEASE_DIR -path "*/modules/src/uaa") ./gradlew :assemble
 cp uaa/build/libs/cloudfoundry-identity-uaa-*.war ${BUILD_DIR}/uaa/cloudfoundry-identity-uaa.war
 
 #clean build data

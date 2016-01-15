@@ -116,7 +116,7 @@ case $1 in
     chown -R vcap:vcap $DATA_DIR
 
     # Install the server's ssl certificate
-    <% if properties.login.protocol == 'https' %>
+    <% if p("uaa.ssl.port") != -1 %>
         /var/vcap/jobs/uaa/bin/install_uaa_crt uaa.crt
     <% end %>
 

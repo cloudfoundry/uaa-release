@@ -5,15 +5,15 @@ description: "The UAA is the identity management service for Cloud Foundry. It's
 
 templates:
   uaa_ctl.erb: bin/uaa_ctl
-  install_crt.erb: bin/install_crt
+  install_crt: bin/install_crt
   dns_health_check.erb: bin/dns_health_check
-  install_uaa_crt.erb: bin/install_uaa_crt
+  install_uaa_crt: bin/install_uaa_crt
 
   uaa.yml.erb: config/uaa.yml
   newrelic.yml.erb: config/newrelic.yml
-  varz.yml.erb: config/varz.yml
+  varz.yml: config/varz.yml
   log4j.properties.erb: config/log4j.properties
-  varz.log4j.properties.erb: config/varz.log4j.properties
+  varz.log4j.properties: config/varz.log4j.properties
   tomcat.logging.properties: config/tomcat/logging.properties
   tomcat.server.xml.erb: config/tomcat/server.xml
   ldap.crt.erb: config/ldap.crt
@@ -33,7 +33,7 @@ properties:
     default: -Xmx768m -XX:MaxPermSize=256m
   uaa.port:
     description: "Port that uaa will accept connections on"
-    default: 8443
+    default: 8080
   uaa.url:
     description: "The base url of the UAA"
   uaa.zones.internal.hostnames:
@@ -100,6 +100,9 @@ properties:
   uaa.require_https:
     description: "Request came in on a secure connection. Expect the load balancer/proxy to set the proper headers (x-forwarded-for, x-forwarded-proto)"
     default: true
+  uaa.ssl.port:
+    description: If this property Tomcat will listen to this port and expect https traffic. If null, tomcat will not listen to this port
+    default: 8443
   uaa.sslCertificate:
     description: "The server's ssl certificate. The default is a self-signed certificate and should always be replaced for production deployments"
     example: |
@@ -229,7 +232,7 @@ properties:
       - login
       - support-signon
 
-  # Security policies
+  # Security policies (for the UAA zone)
   uaa.authentication.policy.lockoutAfterFailures:
     description: "Number of allowed failures before account is locked"
     default: 5
@@ -315,18 +318,54 @@ properties:
           AnkyB06wFZ02sBLB7hko42LIsVEOyTuUBird/3vlyHFKytG7UEt60Fl88SbAEfsU
           JN1i1aSU
           -----END PUBLIC KEY-----
-  uaa.jwt.policy.global.accessTokenValiditySeconds:
-    default: 43200
-    description: "The global access token validity for all zones if nothing is configured on the client"
-  uaa.jwt.policy.global.refreshTokenValiditySeconds:
-    default: 2592000
-    description: "The global refresh token validity for all zones if nothing is configured on the client"
   uaa.jwt.signing_key:
     description: "The key used to sign the JWT-based OAuth2 tokens"
   uaa.jwt.verification_key:
     description: "The key used to verify JWT-based OAuth2 tokens"
   uaa.jwt.claims.exclude:
     description: "List of claims to exclude from the JWT-based OAuth2 tokens"
+    example:
+     - authorities
+
+  # Global security policies (for all zones)
+  uaa.authentication.policy.global.lockoutAfterFailures:
+    description: "Number of allowed failures before account is locked"
+    default: 5
+  uaa.authentication.policy.global.countFailuresWithinSeconds:
+    description: "Number of seconds in which lockoutAfterFailures failures must occur in order for account to be locked"
+    default: 3600
+  uaa.authentication.policy.global.lockoutPeriodSeconds:
+    description: "Number of seconds to lock out an account when lockoutAfterFailures failures is exceeded"
+    default: 300
+  uaa.password.policy.global.minLength:
+    description: "Minimum number of characters required for password to be considered valid"
+    default: 0
+  uaa.password.policy.global.maxLength:
+    description: "Maximum number of characters required for password to be considered valid"
+    default: 255
+  uaa.password.policy.global.requireUpperCaseCharacter:
+    description: "Minimum number of uppercase characters required for password to be considered valid"
+    default: 0
+  uaa.password.policy.global.requireLowerCaseCharacter:
+    description: "Minimum number of lowercase characters required for password to be considered valid"
+    default: 0
+  uaa.password.policy.global.requireDigit:
+    description: "Minimum number of digits required for password to be considered valid"
+    default: 0
+  uaa.password.policy.global.requireSpecialCharacter:
+    description: "Minimum number of special characters required for password to be considered valid"
+    default: 0
+  uaa.password.policy.global.expirePasswordInMonths:
+    description: "Number of months after which current password expires"
+    default: 0
+  uaa.jwt.policy.global.accessTokenValiditySeconds:
+    default: 43200
+    description: "The global access token validity for all zones if nothing is configured on the client"
+  uaa.jwt.policy.global.refreshTokenValiditySeconds:
+    default: 2592000
+    description: "The global refresh token validity for all zones if nothing is configured on the client"
+
+  # Scim properties
   uaa.scim.user.override:
     description: "If true override users defined in uaa.scim.users found in the database."
     default: true

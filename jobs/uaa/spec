@@ -534,7 +534,7 @@ properties:
 
   # Saml
   login.saml.entityid:
-    description: "This is used as the SAML Service Provider Entity ID"
+    description: "This is used as the SAML Service Provider Entity ID. Each "
   login.saml.entity_base_url:
     description: "The URL for which SAML identity providers will post assertions to. If set it overrides the default. This URL should NOT have the schema (http:// or https:// prefix in it) instead just the hostname. The schema is derived by login.protocol property. The default value is #{protocol}://#{properties.uaa.url} if uaa.url is set."
   login.saml.serviceProviderKey:
@@ -611,6 +611,9 @@ properties:
   login.saml.signRequest:
     description: "Global property to sign Local/SP requests"
     default: true
+  login.saml.wantAssertionSigned:
+    description: "Global property to request that external IDPs sign their SAML assertion before sending them to the UAA"
+    default: false
   login.saml.idpMetadataURL:
     description: "Deprecated. Use login.saml.providers list objects"
   login.saml.idp_metadata_file:

@@ -170,7 +170,16 @@ zones:
 <% end %>
 
 <% if_p('uaa.scim.groups') do |groups| %>
+  <% if groups.is_a? String then %>
   groups: <%= groups %>
+  <% else 
+       group_str = ''
+       groups.each do |group_name, group_desc| 
+         group_str = group_str + "," + group_name + "|" + group_desc  
+       end 
+  %>
+  groups: <%= group_str %>  
+  <% end %>
 <% end %>
  
 <% if !properties.uaa.require_https.nil? %>

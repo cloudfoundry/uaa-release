@@ -158,12 +158,19 @@ scim:
   groups: <%= groups %>
   <% else
        group_str = ''
+       first = true
        groups.each do |group_name, group_desc|
-         group_str = group_str + "," + group_name + "|" + group_desc
+         group_str = group_str + (first ? "" : ",") + group_name + "|" + group_desc
+         first = false
        end
   %>
   groups: <%= group_str %>
   <% end %>
+<% end %>
+
+<% if properties.uaa.scim && properties.uaa.scim.external_groups then %>
+  external_groups: <% properties.uaa.scim.external_groups.each do |group| %>
+    - <%= group %><% end %>
 <% end %>
 
 zones:
@@ -176,11 +183,6 @@ zones:
       <% properties.uaa.zones.internal.hostnames.each do |hostname| %>
       - <%= hostname %><% end %>
     <% end %>
-
-<% if properties.uaa.scim && properties.uaa.scim.external_groups then %>
-  external_groups: <% properties.uaa.scim.external_groups.each do |group| %>
-    - <%= group %><% end %>
-<% end %>
 
 <% if !properties.uaa.require_https.nil? %>
 require_https: <%= properties.uaa.require_https %>
@@ -267,4 +269,3 @@ ldap:
     <% end %>
   <% end %>  
 <% end %>
-

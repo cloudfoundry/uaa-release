@@ -214,6 +214,7 @@ ldap:
     mailAttributeName: '<%= properties.uaa.ldap.mailAttributeName%>'
     mailSubstitute: '<%= properties.uaa.ldap.mailSubstitute %>'
     mailSubstituteOverridesLdap: <%= properties.uaa.ldap.mailSubstituteOverridesLdap %>
+    referral: <%= properties.uaa.ldap.referral %>
   <% if properties.uaa.ldap.emailDomain %>
   emailDomain: <% properties.uaa.ldap.emailDomain.each do |domain| %>
   - <%= domain %><% end %><% end %>

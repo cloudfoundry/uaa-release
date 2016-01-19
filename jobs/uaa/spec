@@ -464,6 +464,14 @@ properties:
   uaa.ldap.mailSubstituteOverridesLdap:
     description: "Set to true if you wish to override an LDAP user email address with a generated one"
     default: false
+  uaa.ldap.referral:
+    description: |
+      Configures the UAA LDAP referral behavior. The following values are possible:
+      - follow -> Referrals are followed
+      - ignore -> Referrals are ignored and the partial result is returned
+      - throw  -> An error is thrown and the authentication is aborted
+      Reference: http://docs.oracle.com/javase/jndi/tutorial/ldap/referral/jndi.html
+    default: follow
   uaa.ldap.groups.profile_type:
     description: "What type of group integration should be used. Values are: 'no-groups', 'groups-as-scopes', 'groups-map-to-scopes'"
     default: "no-groups"

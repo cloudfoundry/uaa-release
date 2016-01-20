@@ -373,7 +373,27 @@ properties:
     description: "Enables the endpoint `/ids/Users` that allows consumers to translate user ids to name"
     default: true
   uaa.scim.users:
-    description: "A list of users to be bootstrapped with default authority. Each entry has the following format: username|password|email|firstName|lastName"
+    description: |
+      A list of users to be bootstrapped with authorities.
+      Each entry supports the following format:
+        Short Pipe: username|password|comma,separated,groups
+        Long Pipe: username|password|email|firstName|lastName|comma,separated,groups|origin
+        Short OpenStruct:
+          - name: username
+            password: password
+            groups:
+              - group1
+              - group2
+        Long OpenStruct:
+          - name: username
+            password: password
+            groups:
+              - group1
+              - group2
+            firstName: first name
+            lastName: lastName
+            email: email
+            origin: origin-value - most commonly uaa
     example:
       - marissa|koala|marissa@test.org|Marissa|Bloggs
   uaa.scim.external_groups:

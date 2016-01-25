@@ -8,7 +8,7 @@ JDK_HOME=/var/vcap/packages/uaa/jdk
 CERT_FILE=/var/vcap/jobs/uaa/config/$1
 
 #define the trust store
-TRUST_STORE_FILE=$JDK_HOME/lib/security/cacerts
+TRUST_STORE_FILE=$JDK_HOME/jre/lib/security/cacerts
 
 #define the alias
 CERT_ALIAS=$2

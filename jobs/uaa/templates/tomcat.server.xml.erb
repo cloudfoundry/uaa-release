@@ -59,7 +59,7 @@
       <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="false">
         <Valve className="org.apache.catalina.valves.RemoteIpValve"
                remoteIpHeader="x-forwarded-for"
-               protocolHeader="x-forwarded-proto"
+               protocolHeader="<%= p('uaa.ssl.protocol_header') %>"
                internalProxies="<%= internalProxies %>"
         />
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="/var/vcap/sys/log/uaa"

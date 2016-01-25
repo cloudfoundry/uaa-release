@@ -373,14 +373,42 @@ properties:
     description: "Enables the endpoint `/ids/Users` that allows consumers to translate user ids to name"
     default: true
   uaa.scim.users:
-    description: "A list of users to be bootstrapped with default authority. Each entry has the following format: username|password|email|firstName|lastName"
+    description: |
+      A list of users to be bootstrapped with authorities.
+      Each entry supports the following format:
+        Short Pipe: username|password|comma,separated,groups
+        Long Pipe: username|password|email|firstName|lastName|comma,separated,groups|origin
+        Short OpenStruct:
+          - name: username
+            password: password
+            groups:
+              - group1
+              - group2
+        Long OpenStruct:
+          - name: username
+            password: password
+            groups:
+              - group1
+              - group2
+            firstName: first name
+            lastName: lastName
+            email: email
+            origin: origin-value - most commonly uaa
     example:
       - marissa|koala|marissa@test.org|Marissa|Bloggs
   uaa.scim.external_groups:
     description: "A list of external group mappings. Pipe delimited. A value may look as '- internal.read|cn=developers,ou=scopes,dc=test,dc=com'"
   uaa.scim.groups:
-    description: Comma separated list of groups that should be added to the UAA db, but not assigned to a user by default.
-
+    description: |
+      Contains a hash of group names and their descriptions. These groups will be added to the UAA database for the default zone but not associated with any user.
+      Example:
+        uaa:
+          scim:
+            groups:
+              my-test-group: 'My test group description'
+              another-group: 'Another group description'
+      Deprecated format(still supported, but may be removed in the future): 
+      Comma separated list of groups that should be added to the UAA db, but not assigned to a user by default.
   # Database
   uaadb.address:
     description: "The UAA database IP address"
@@ -456,6 +484,14 @@ properties:
   uaa.ldap.mailSubstituteOverridesLdap:
     description: "Set to true if you wish to override an LDAP user email address with a generated one"
     default: false
+  uaa.ldap.referral:
+    description: |
+      Configures the UAA LDAP referral behavior. The following values are possible:
+      - follow -> Referrals are followed
+      - ignore -> Referrals are ignored and the partial result is returned
+      - throw  -> An error is thrown and the authentication is aborted
+      Reference: http://docs.oracle.com/javase/jndi/tutorial/ldap/referral/jndi.html
+    default: follow
   uaa.ldap.groups.profile_type:
     description: "What type of group integration should be used. Values are: 'no-groups', 'groups-as-scopes', 'groups-map-to-scopes'"
     default: "no-groups"
@@ -526,7 +562,7 @@ properties:
 
   # Saml
   login.saml.entityid:
-    description: "This is used as the SAML Service Provider Entity ID"
+    description: "This is used as the SAML Service Provider Entity ID. Each "
   login.saml.entity_base_url:
     description: "The URL for which SAML identity providers will post assertions to. If set it overrides the default. This URL should NOT have the schema (http:// or https:// prefix in it) instead just the hostname. The schema is derived by login.protocol property. The default value is #{protocol}://#{properties.uaa.url} if uaa.url is set."
   login.saml.serviceProviderKey:
@@ -603,6 +639,9 @@ properties:
   login.saml.signRequest:
     description: "Global property to sign Local/SP requests"
     default: true
+  login.saml.wantAssertionSigned:
+    description: "Global property to request that external IDPs sign their SAML assertion before sending them to the UAA"
+    default: false
   login.saml.idpMetadataURL:
     description: "Deprecated. Use login.saml.providers list objects"
   login.saml.idp_metadata_file:

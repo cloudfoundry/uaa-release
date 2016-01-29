@@ -14,18 +14,34 @@ name: login
     uaa_base = "#{protocol}://uaa.#{p('domain')}"
   end
 
-  login_url = "#{protocol}://login.#{properties.domain}"
-  if_p('uaa.url') do |uaa_url_value|
-    login_url = uaa_url_value
-  end
+  entity_base_url_fallback = uaa_base.sub("://uaa.", "://login.")
+
+  login_entityBaseUrl =
+    (properties.login && properties.login.saml && properties.login.saml.entity_base_url) ?
+      "#{protocol}://#{properties.login.saml.entity_base_url}" :
+      entity_base_url_fallback
+
+  entity_id_fallback = login_entityBaseUrl.sub(/^http.*\:\/\//,"")
+
+  login_entityId = (properties.login && properties.login.saml && properties.login.saml.entityid) ?
+     properties.login.saml.entityid :
+     properties.login.entity_id ?
+       properties.login.entity_id :
+         entity_id_fallback
+
+  login_authorizeUrl = (properties.uaa.url) ? "#{properties.uaa.url}/oauth/authorize" : "#{entity_base_url_fallback}/oauth/authorize"
+
+  login_url = login_entityBaseUrl
   if_p('login.url') do |login_url_value|
     login_url = login_url_value
   end
-
-  login_entityBaseUrl = (properties.login && properties.login.saml.entity_base_url) ? "#{protocol}://#{properties.login.saml.entity_base_url}" : "#{protocol}://login.#{properties.domain}"
-  login_entityId = (properties.login && properties.login.saml.entityid) ? properties.login.saml.entityid : properties.login.entity_id ? properties.login.entity_id : "login.#{properties.domain}"
-  login_authorizeUrl = (properties.uaa.url) ? "#{properties.uaa.url}/oauth/authorize" : "#{protocol}://login.#{properties.domain}/oauth/authorize"
 %>
+
+#uaa_base: <%=uaa_base%>
+#entity_base_url_fallback: <%=entity_base_url_fallback%>
+#login_entityBaseUrl: <%=login_entityBaseUrl%>
+#entity_id_fallback: <%=entity_id_fallback%>
+#login_entityId: <%=login_entityId%>
 
 logging:
   config: /var/vcap/jobs/login/config/log4j.properties

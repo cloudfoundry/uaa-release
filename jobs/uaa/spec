@@ -233,6 +233,9 @@ properties:
         authorities: test_resource.test_action
         scope: test_resource.test_action
         redirect-uri: http://login.example.com
+        app-launch-url: http://myloginpage.com
+        show-on-homepage: true
+        app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
   uaa.admin.client_secret:
     description: "Secret of the admin client - a client named admin with uaa.admin as an authority"
   uaa.login.client_secret:

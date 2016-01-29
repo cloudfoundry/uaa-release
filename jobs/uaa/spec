@@ -145,9 +145,14 @@ properties:
       -----END RSA PRIVATE KEY-----
 
   #Branding/Customization
-  login.brand:
-    description: "The brand to use for the reset password emails, available values are oss and pivotal"
-    default: oss
+  login.branding.company_name: This name is used on the UAA Pages and in account management related communication in UAA
+  login.branding.product_logo: This is a base64 encoded PNG image which will be used as the logo on all UAA pages like Login, Sign Up etc.
+  login.branding.square_logo: This is a base64 encoded PNG image which will be used as the favicon for the UAA pages
+  login.branding.footer_legal_text: This text appears on the footer of all UAA pages
+  login.branding.footer_links: These links appear on the footer of all UAA pages. You may choose to add multiple urls for things like Support, Terms of Service etc.
+    example:
+      linkDisplayName: linkDisplayUrl
+      linkDisplayName: linkDisplayUrl
   login.asset_base_url:
     description: "Base url for static assets, allows custom styling of the login server.  Use '/resources/pivotal' for Pivotal style."
     default: /resources/oss
@@ -228,6 +233,9 @@ properties:
         authorities: test_resource.test_action
         scope: test_resource.test_action
         redirect-uri: http://login.example.com
+        app-launch-url: http://myloginpage.com
+        show-on-homepage: true
+        app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
   uaa.admin.client_secret:
     description: "Secret of the admin client - a client named admin with uaa.admin as an authority"
   uaa.login.client_secret:

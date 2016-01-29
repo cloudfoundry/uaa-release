@@ -97,7 +97,22 @@ logout:
    <% end %>
 
 login:
-  brand: <%= properties.login.brand %>
+  branding:
+  <% if_p('login.branding.company_name') do |company_name| %>
+    companyName: <%= company_name %>
+  <% end %>
+  <% if_p('login.branding.product_logo') do |product_logo| %>
+    productLogo: <%= product_logo %>
+  <% end %>
+  <% if_p('login.branding.square_logo') do |square_logo| %>
+    squareLogo: <%= square_logo %>
+  <% end %>
+  <% if_p('login.branding.footer_legal_text') do |footer_legal_text| %>
+    footerLegalText: <%= footer_legal_text %>
+  <% end %>
+  <% if_p('login.branding.footer_links') do |footer_links| %>
+    footerLinks: <%= footer_links %>
+  <% end %>
   url: <%= login_url %>
   entityBaseURL: <%= login_entityBaseUrl %>
   entityID: <%= login_entityId %>

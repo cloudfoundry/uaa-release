@@ -665,3 +665,11 @@ properties:
     description: "Deprecated. Use login.saml.providers list objects"
   login.entity_id:
     description: "Deprecated. Use login.saml.entityid"
+  login.url:
+    description: |
+      Set if you have an external login server.
+      The UAA will display this link in the cf --sso call if there is a SAML provider enabled
+      The UAA uses this link on by its email service to create links
+      The UAA uses this as a base domain for internal hostnames so that subdomain can be detected
+      This defaults to the uaa.url property, and if not set, to login.<domain>
+    default: ~

@@ -145,13 +145,17 @@ properties:
       -----END RSA PRIVATE KEY-----
 
   #Branding/Customization
-  login.branding.company_name: This name is used on the UAA Pages and in account management related communication in UAA
-  login.branding.product_logo: This is a base64 encoded PNG image which will be used as the logo on all UAA pages like Login, Sign Up etc.
-  login.branding.square_logo: This is a base64 encoded PNG image which will be used as the favicon for the UAA pages
-  login.branding.footer_legal_text: This text appears on the footer of all UAA pages
-  login.branding.footer_links: These links appear on the footer of all UAA pages. You may choose to add multiple urls for things like Support, Terms of Service etc.
+  login.branding.company_name:
+    description: This name is used on the UAA Pages and in account management related communication in UAA
+  login.branding.product_logo:
+    description: This is a base64 encoded PNG image which will be used as the logo on all UAA pages like Login, Sign Up etc.
+  login.branding.square_logo:
+    description: This is a base64 encoded PNG image which will be used as the favicon for the UAA pages
+  login.branding.footer_legal_text:
+    description: This text appears on the footer of all UAA pages
+  login.branding.footer_links:
+    description: These links appear on the footer of all UAA pages. You may choose to add multiple urls for things like Support, Terms of Service etc.
     example:
-      linkDisplayName: linkDisplayUrl
       linkDisplayName: linkDisplayUrl
   login.asset_base_url:
     description: "Base url for static assets, allows custom styling of the login server.  Use '/resources/pivotal' for Pivotal style."

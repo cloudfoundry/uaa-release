@@ -168,6 +168,8 @@ properties:
   login.links.signup:
     description: URL for requesting to signup/register for an account
     default: '/create_account'
+  login.home_redirect:
+    description: URL for configuring a custom home page
   login.tiles:
     description: "A list of links to other services to show on the landing page after log in."
   login.invitations_enabled:

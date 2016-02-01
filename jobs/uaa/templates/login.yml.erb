@@ -113,6 +113,9 @@ login:
   <% if_p('login.branding.footer_links') do |footer_links| %>
     footerLinks: <%= footer_links %>
   <% end %>
+<% if_p('login.home_redirect') do |home_redirect| %>
+  homeRedirect: <%= home_redirect %>
+<% end %>
   url: <%= login_url %>
   entityBaseURL: <%= login_entityBaseUrl %>
   entityID: <%= login_entityId %>

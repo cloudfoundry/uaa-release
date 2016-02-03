@@ -111,7 +111,8 @@ login:
     footerLegalText: <%= footer_legal_text %>
   <% end %>
   <% if_p('login.branding.footer_links') do |footer_links| %>
-    footerLinks: <%= footer_links %>
+    footerLinks: <% footer_links.each do |key,val| %>
+      <%= key %>: <%= val %><% end %>
   <% end %>
 <% if_p('login.home_redirect') do |home_redirect| %>
   homeRedirect: <%= home_redirect %>

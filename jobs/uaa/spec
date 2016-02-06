@@ -20,7 +20,7 @@ templates:
   login.yml.erb: config/login.yml
   messages.properties.erb: config/messages.properties
   uaa.crt.erb: config/uaa.crt
-
+  ca.crt.erb: config/ca.crt
 
 packages:
   - uaa_utils
@@ -143,6 +143,8 @@ properties:
       oyCimvs0CgUOknhTmJJSkwJBAPaI298JxTnWncC3Zu7d5QYCJXjU403Aj4LdcVeI
       6A15MzQdj5Hm82vlmpC4LzXofLjiN4E5ZLluzEw+1TjRE7c=
       -----END RSA PRIVATE KEY-----
+  uaa.root_ca_cert:
+    description: "general root CA certificate (e.g. for notifications server)"
 
   #Branding/Customization
   login.branding.company_name:

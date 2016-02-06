@@ -174,6 +174,8 @@ properties:
     description: "A list of links to other services to show on the landing page after log in."
   login.invitations_enabled:
     description: "Allows users to send invitations to email addresses outside the system and invite them to create an account. Disabled by default."
+  login.self_service_links_enabled:
+    description: "Enable self-service account creation and password resets links."
   login.analytics.code:
     description: "Google analytics code. If Google Analytics is desired set both login.analytics.code and login.analytics.domain"
   login.analytics.domain:

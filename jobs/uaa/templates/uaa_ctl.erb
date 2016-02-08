@@ -90,10 +90,6 @@ case $1 in
     echo $$ > $PIDFILE
     chown vcap:vcap $PIDFILE
 
-    <% if properties.uaa && properties.uaa.root_ca_cert %>
-    /var/vcap/jobs/uaa/bin/install_crt ca.crt cacert
-    <% end %>
-
     <% if properties.uaa && properties.uaa.ldap &&  properties.uaa.ldap.sslCertificate %>
     /var/vcap/jobs/uaa/bin/install_crt ldap.crt ldapcert
     <% elsif properties.login && properties.login.ldap &&  properties.login.ldap.sslCertificate %>

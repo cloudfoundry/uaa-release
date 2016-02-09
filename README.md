@@ -35,3 +35,22 @@ Add the following properties to your manifest:
 ## Notes
 
 - The property `uaa.port` can't be set to `8989` because this port is used by BOSH to monitor the server.
+
+## Contributing to uaa-release
+
+### General workflow
+
+1. [Fork](https://help.github.com/articles/fork-a-repo) the repository and make a local [clone](https://help.github.com/articles/fork-a-repo#step-2-create-a-local-clone-of-your-fork)
+2. Create a feature branch from the development branch
+
+   ```bash
+   cd uaa-release
+   git checkout develop
+   git submodule update
+   git checkout -b my_branch
+   ```
+3. Make changes on your branch
+4. Deploy your version of uaa-release to test the changes
+5. Push to your fork (`git push origin my_branch`) and
+   [submit a pull request](https://help.github.com/articles/creating-a-pull-request)
+   selecting `develop` as the target branch

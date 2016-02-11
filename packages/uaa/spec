@@ -3,5 +3,5 @@ name: uaa
 dependencies:
 files:
 - uaa/**/*
-- openjdk/openjdk-1.8.0_71-x86_64-mountainlion.tar.gz
-- openjdk/openjdk-1.8.0_71-x86_64-trusty.tar.gz
+- openjdk/openjdk-1.8.0_73-x86_64-mountainlion.tar.gz
+- openjdk/openjdk-1.8.0_73-x86_64-trusty.tar.gz

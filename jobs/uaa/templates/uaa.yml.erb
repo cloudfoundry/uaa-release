@@ -281,3 +281,9 @@ ldap:
     <% end %>
   <% end %>  
 <% end %>
+
+<% if_p("uaa.servlet.session-cookie") do |sessioncookie| %>
+servlet:
+  session-cookie:<% sessioncookie.each do |cookiename, cookievalue| %>
+    <%= cookiename %>: <%= cookievalue %><% end %>
+<% end %>

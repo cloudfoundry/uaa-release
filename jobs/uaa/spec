@@ -695,3 +695,15 @@ properties:
       The UAA uses this as a base domain for internal hostnames so that subdomain can be detected
       This defaults to the uaa.url property, and if not set, to login.<domain>
     default: ~
+  uaa.servlet.session-cookie:
+    description: |
+      Optional configuration of the UAA session cookie.
+      Defaults are the following key value pairs:
+        secure: <(boolean)this value if set, otherwise require_https>
+        http-only: <(boolean) - default to true. set HttpOnly flag on cookie.
+        max-age: <(int) lifetime in seconds of cookie - default to 30 minutes)
+        name: <(String) name of cookie, default is JSESSIONID>
+        comment: <(String) optional comment in cookie>
+        path: <(String) path for cookie, default is />
+        domain: <(String) domain for cookie, default is incoming request domain>
+    default: ~

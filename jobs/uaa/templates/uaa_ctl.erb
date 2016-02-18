@@ -21,7 +21,7 @@ else
     export KEYSTORE="/var/vcap/packages/uaa/jdk/jre/lib/security/cacerts"
 fi
 
-export KEYSTORE_OPTS="-Djavax.net.ssl.trustStore=$KEYSTORE"
+export KEYSTORE_OPTS="-Djavax.net.ssl.trustStore=$KEYSTORE -Djavax.net.ssl.trustStoreType=JKS"
 
 <% if properties.env %>
 # Proxy configuration

@@ -1,8 +1,9 @@
 #!/bin/bash
 
-healthz=$(curl 127.0.0.1:8989/healthz)
+HEALTH_RESPONSE=$(curl 127.0.0.1:8989/healthz)
+STATUS_FILE=/var/vcap/jobs/uaa/bin/status
 
-if [[ $healthz == "ok" ]]
+if [[ $HEALTH_RESPONSE == "ok" && -f $STATUS_FILE ]]
 then
   exit 0
 else

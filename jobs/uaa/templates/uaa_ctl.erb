@@ -6,6 +6,7 @@ LOG_DIR=/var/vcap/sys/log/uaa
 JOB_DIR=/var/vcap/jobs/uaa
 DATA_DIR=/var/vcap/data/uaa
 PIDFILE=$RUN_DIR/uaa.pid
+STATUS=/var/vcap/jobs/uaa/bin/status
 
 # Proxy configuration variable for the uaa
 HTTP_PROXY_JAVA_OPTIONS=""
@@ -88,6 +89,7 @@ case $1 in
 
   start)
     pid_guard $PIDFILE "UAA"
+    touch $STATUS
 
     mkdir -p $RUN_DIR
     mkdir -p $LOG_DIR
@@ -135,6 +137,8 @@ case $1 in
     ;;
 
   stop)
+    rm -f $STATUS
+    sleep 5
     kill_and_wait $PIDFILE
 
     ;;

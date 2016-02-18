@@ -20,10 +20,10 @@ uaa/cloudfoundry-identity-statsd-1.0.0.war:
   sha: c26a49ef1c8c5d6b215bf57ca6267e4d7f9f1a53
   size: 11163253
 openjdk/openjdk-1.8.0_73-x86_64-mountainlion.tar.gz:
-  object_id: 447f273a-53f6-4f4a-97d0-5115319a53af
-  sha: f5b5ddc984db76deff3cf2a32cf37a532509be2a
-  size: 43982327
+  object_id: 8e341e7a-3e96-4a30-90b3-2820bddc3bb6
+  sha: 9fe451af7b0497d195be197d1813b109a7bce600
+  size: 81961289
 openjdk/openjdk-1.8.0_73-x86_64-trusty.tar.gz:
-  object_id: ba08928b-b947-4bc1-95dc-0f44f4d89c9c
-  sha: 0a4a1540910085995cf12b111d815ec8192977dd
-  size: 45102657
+  object_id: 5aa0e92b-aad3-49cc-879e-94f4b47e2252
+  sha: 251144ff72db0b9c2f73446cbb0549b0ecf3d499
+  size: 77620313

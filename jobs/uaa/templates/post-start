@@ -1,0 +1,14 @@
+#!/bin/bash
+
+COUNT=0
+while [ $COUNT -lt 120 ]; do
+    /var/vcap/jobs/uaa/bin/health_check
+    if [ $? == 0 ]
+    then
+        exit 0
+    fi
+    COUNT++
+    sleep 1
+done
+
+exit 1

@@ -10,6 +10,7 @@ templates:
   health_check: bin/health_check
   install_uaa_crt: bin/install_uaa_crt
   pre-start: bin/pre-start
+  post-start: bin/post-start
 
   uaa.yml.erb: config/uaa.yml
   newrelic.yml.erb: config/newrelic.yml

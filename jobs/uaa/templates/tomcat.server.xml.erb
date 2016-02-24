@@ -34,6 +34,7 @@
                protocol="HTTP/1.1"
                connectionTimeout="20000"
                port="<%= properties.uaa.port %>"
+               bindOnInit="false"
     />
     <% end %>
 
@@ -49,14 +50,23 @@
                keystoreType="PKCS12"
                keyAlias="uaa_ssl_cert"
                keystorePass="k0*l*s3cur1tyr0ck$"
+               bindOnInit="false"
     />
     <% end %>
 
 
-    <Connector protocol="org.apache.coyote.http11.Http11NioProtocol" connectionTimeout="20000" port="8989" address="127.0.0.1" />
+    <Connector protocol="org.apache.coyote.http11.Http11NioProtocol"
+               connectionTimeout="20000"
+               port="8989"
+               address="127.0.0.1"
+               bindOnInit="false"/>
     <Engine name="Catalina" defaultHost="localhost">
 
-      <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="false">
+      <Host name="localhost"
+            appBase="webapps"
+            unpackWARs="true"
+            autoDeploy="false"
+            failCtxIfServletStartFails="true">
         <Valve className="org.apache.catalina.valves.RemoteIpValve"
                remoteIpHeader="x-forwarded-for"
                protocolHeader="x-forwarded-proto"

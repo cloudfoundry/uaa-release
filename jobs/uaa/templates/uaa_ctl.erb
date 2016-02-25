@@ -95,12 +95,12 @@ function ensure_no_more_tomcat() {
 case $1 in
 
   start)
+    pid_guard $PIDFILE "UAA"
+
     echo "[uaa-start] About to starting UAA"
     ensure_no_more_tomcat
 
-    pid_guard $PIDFILE "UAA"
     touch $STATUS
-
     echo "[uaa-start] Health check STATUS file created"
 
     mkdir -p $RUN_DIR

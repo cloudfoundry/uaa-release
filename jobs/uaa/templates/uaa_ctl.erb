@@ -83,9 +83,29 @@ end
 
 export NEWRELIC_OPTS
 
-source /var/vcap/packages/uaa_utils/utils.sh
+mkdir -p /var/vcap/sys/log
 
-function ensure_no_more_tomcat() {
+exec > >(tee -a >(logger -p user.info -t vcap.$(basename $0).stdout) | awk '{lineWithDate="echo [`date +\"%Y-%m-%d %H:%M:%S%z\"`] \"" $0 "\""; system(lineWithDate)  }' >>/var/vcap/sys/log/$(basename $0).log)
+exec 2> >(tee -a >(logger -p user.error -t vcap.$(basename $0).stderr) | awk '{lineWithDate="echo [`date +\"%Y-%m-%d %H:%M:%S%z\"`] \"" $0 "\""; system(lineWithDate)  }' >>/var/vcap/sys/log/$(basename $0).err.log)
+
+pid_guard() {
+  return_code=0
+  pidfile=$1
+  name=$2
+  if [ -f "$pidfile" ]; then
+    pid=$(head -1 "$pidfile")
+    if [ -n "$pid" ] && [ ps - $pid ]; then
+      echo "$name is already running, please stop it first"
+      return_code=1
+    else
+      echo "Removing stale pidfile..."
+      rm $pidfile
+    fi
+  fi
+  return $return_code
+}
+
+ensure_no_more_tomcat() {
     for java_pid in $(ps -ef |grep java| grep tomcat |grep -Po '\-DPID=\K[^ ]+'); do
       echo "[uaa-kill-tomcat] Found leftover Java process - killing `ps -fp $java_pid`"
       kill -9 $java_pid
@@ -95,7 +115,12 @@ function ensure_no_more_tomcat() {
 case $1 in
 
   start)
-    pid_guard $PIDFILE "UAA"
+    echo "[uaa-start] UAA start invoked - checking for running process"
+
+    if ! pid_guard $PIDFILE "UAA"
+    then
+      exit 1
+    fi
 
     echo "[uaa-start] About to starting UAA"
     ensure_no_more_tomcat

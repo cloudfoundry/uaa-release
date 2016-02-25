@@ -140,7 +140,7 @@ case $1 in
     rm -f $STATUS
     sleep 5
     if [ -f $PIDFILE ]; then
-      echo "[uaa-stop] Found PID file $PIDFILE - Killing "
+      echo "[uaa-stop] Found UAA Tomcat PID file $PIDFILE - Killing `cat $PIDFILE`"
       kill `cat $PIDFILE`
       rm -rf $PIDFILE
       sleep 5

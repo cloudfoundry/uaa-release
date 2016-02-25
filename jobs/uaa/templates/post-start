@@ -9,7 +9,7 @@ delete_ts_files() {
   echo "uaa-post-start - cleaned up timestamp files"
 }
 
-touch -d "2 minutes" $WHEN_FINISH
+touch -d "10 minutes" $WHEN_FINISH
 touch $WHEN_NOW
 EXPIRATION=`ls -la --full-time $WHEN_FINISH |awk '{print $6 " " $7}'`
 echo "uaa-post-start - performing post start healthcheck until $EXPIRATION"

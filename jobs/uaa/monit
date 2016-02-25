@@ -1,6 +1,6 @@
 check process uaa
   with pidfile /var/vcap/sys/run/uaa/uaa.pid
-  start program "/var/vcap/jobs/uaa/bin/uaa_ctl start"
+  start program "/var/vcap/jobs/uaa/bin/uaa_ctl check"
   stop program "/var/vcap/jobs/uaa/bin/uaa_ctl stop"
   group vcap
   if failed port 8989 protocol http

@@ -89,16 +89,16 @@ exec > >(tee -a >(logger -p user.info -t vcap.$(basename $0).stdout) | awk '{lin
 exec 2> >(tee -a >(logger -p user.error -t vcap.$(basename $0).stderr) | awk '{lineWithDate="echo [`date +\"%Y-%m-%d %H:%M:%S%z\"`] \"" $0 "\""; system(lineWithDate)  }' >>/var/vcap/sys/log/$(basename $0).err.log)
 
 pid_guard() {
-  return_code=0
+  local return_code=0
   pidfile=$1
   name=$2
   if [ -f "$pidfile" ]; then
     pid=$(head -1 "$pidfile")
     if [ -n "$pid" ] && [ ps - $pid ]; then
-      echo "$name is already running, please stop it first"
+      echo "[uaa-pid-guard] $name is already running, please stop it first"
       return_code=1
     else
-      echo "Removing stale pidfile..."
+      echo "[uaa-pid-guard] Removing stale pidfile..."
       rm $pidfile
     fi
   fi
@@ -114,13 +114,20 @@ ensure_no_more_tomcat() {
 
 case $1 in
 
+  check)
+    echo "[uaa-check] UAA check invoked - checking for running process"
+
+    if pid_guard $PIDFILE "UAA"
+    then
+      echo "[uaa-check] UAA apparently not running - check failed...."
+      exit 1
+    else
+      echo "[uaa-check] UAA already running - check successful...."
+      exit 0
+    fi
+    ;;
   start)
     echo "[uaa-start] UAA start invoked - checking for running process"
-
-    if ! pid_guard $PIDFILE "UAA"
-    then
-      exit 1
-    fi
 
     echo "[uaa-start] About to starting UAA"
     ensure_no_more_tomcat

@@ -13,5 +13,3 @@ for N in $(seq 0 $(($CERTS - 1))); do
       /var/vcap/packages/uaa/jdk/bin/keytool -noprompt -import -trustcacerts \
               -alias $ALIAS -keystore $TRUST_STORE_FILE -storepass changeit
 done
-
-/var/vcap/jobs/uaa/bin/uaa_ctl start

@@ -5,6 +5,6 @@ check process uaa
   group vcap
   if failed port 8989 protocol http
     request "/healthz"
-    with timeout 60 seconds for 10 cycles
+    with timeout 60 seconds for 15 cycles
   then restart
 

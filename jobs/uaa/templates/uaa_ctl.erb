@@ -139,8 +139,16 @@ case $1 in
   stop)
     rm -f $STATUS
     sleep 5
-    kill_and_wait $PIDFILE
-
+    if [ -f $PIDFILE ]; then
+      echo "[uaa-stop] Found PID file $PIDFILE - Killing "
+      kill `cat $PIDFILE`
+      rm -rf $PIDFILE
+      sleep 5
+    fi
+    for java_pid in $(ps -ef |grep java| grep tomcat |grep -Po '\-DPID=\K[^ ]+'); do
+      echo "[uaa-stop] Found leftover Java process - killing `ps -fp $java_pid`"
+      kill -9 $java_pid
+    done
     ;;
 
   *)

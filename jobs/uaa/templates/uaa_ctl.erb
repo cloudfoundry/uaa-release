@@ -85,9 +85,18 @@ export NEWRELIC_OPTS
 
 source /var/vcap/packages/uaa_utils/utils.sh
 
+function ensure_no_more_tomcat() {
+    for java_pid in $(ps -ef |grep java| grep tomcat |grep -Po '\-DPID=\K[^ ]+'); do
+      echo "[uaa-stop] Found leftover Java process - killing `ps -fp $java_pid`"
+      kill -9 $java_pid
+    done
+}
+
 case $1 in
 
   start)
+    ensure_no_more_tomcat
+
     pid_guard $PIDFILE "UAA"
     touch $STATUS
 
@@ -145,10 +154,7 @@ case $1 in
       rm -rf $PIDFILE
       sleep 5
     fi
-    for java_pid in $(ps -ef |grep java| grep tomcat |grep -Po '\-DPID=\K[^ ]+'); do
-      echo "[uaa-stop] Found leftover Java process - killing `ps -fp $java_pid`"
-      kill -9 $java_pid
-    done
+    ensure_no_more_tomcat
     ;;
 
   *)

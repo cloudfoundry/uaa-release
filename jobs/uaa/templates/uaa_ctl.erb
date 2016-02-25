@@ -87,7 +87,7 @@ source /var/vcap/packages/uaa_utils/utils.sh
 
 function ensure_no_more_tomcat() {
     for java_pid in $(ps -ef |grep java| grep tomcat |grep -Po '\-DPID=\K[^ ]+'); do
-      echo "[uaa-stop] Found leftover Java process - killing `ps -fp $java_pid`"
+      echo "[uaa-kill-tomcat] Found leftover Java process - killing `ps -fp $java_pid`"
       kill -9 $java_pid
     done
 }
@@ -95,10 +95,13 @@ function ensure_no_more_tomcat() {
 case $1 in
 
   start)
+    echo "[uaa-start] About to starting UAA"
     ensure_no_more_tomcat
 
     pid_guard $PIDFILE "UAA"
     touch $STATUS
+
+    echo "[uaa-start] Health check STATUS file created"
 
     mkdir -p $RUN_DIR
     mkdir -p $LOG_DIR
@@ -141,13 +144,16 @@ case $1 in
     <% end %>
 
     cd /var/vcap/data/uaa
+    echo "[uaa-start] Calling Tomcat start up command"
     exec chpst -u vcap:vcap tomcat/bin/catalina.sh run
-
+    echo "[uaa-start] Tomcat start up in progress"
     ;;
 
   stop)
+    echo "[uaa-stop] About to stop UAA"
     rm -f $STATUS
     sleep 5
+    echo "[uaa-stop] Health check STATUS file removed"
     if [ -f $PIDFILE ]; then
       echo "[uaa-stop] Found UAA Tomcat PID file $PIDFILE - Killing `cat $PIDFILE`"
       kill `cat $PIDFILE`

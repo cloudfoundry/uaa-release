@@ -584,6 +584,25 @@ properties:
   uaa.spring_profiles:
     description: "Deprecated. Use 'uaa.ldap.enabled' instead. Sets the Spring profiles on the UAA web application. This gets combined with the 'uaadb.db_scheme' property if and only if the value is exactly 'ldap' in order to setup the database, for example 'ldap,mysql'. If spring_profiles contains more than just 'ldap' it will be used to overwrite spring_profiles and db_scheme ignored. See uaa.yml.erb."
 
+  # OpenID Connect/OAuth
+
+  login.oauth.providers:
+    description: "Contains a hash of OpenID Connect/Oauth Identity Providers, the key will be used as the origin key for that provider, followed by key/value pairs. Presence of the userInfoUrl will mark it as an OpenID provider instead of OAuth."
+    example:
+      my-oauth-provider:
+        authUrl: http://my-auth.com
+        tokenUrl: http://my-token.com
+        tokenKey: my-token-key
+        tokenKeyUrl:
+        userInfoUrl:
+        linkText: My Oauth Provider
+        showLinkText: true
+        relyingPartyId: uaa
+        relyingPartySecret: secret
+        attributeMappings:
+          given_name: Marissa
+          family_name: Bloggs
+
   # Saml
   login.saml.entityid:
     description: "This is used as the SAML Service Provider Entity ID. Each "

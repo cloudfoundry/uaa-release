@@ -142,6 +142,16 @@ login:
   <% if !properties.login.self_service_links_enabled.nil? || !properties.login.signups_enabled.nil? %>
   selfServiceLinksEnabled: <%= properties.login.self_service_links_enabled.nil? ? properties.login.signups_enabled : properties.login.self_service_links_enabled %>
   <% end %>
+  oauth:
+    <% if_p('login.oauth.providers') do |providers| %>
+    providers: <% providers.each do |idpAlias, provider| %>
+      <%= idpAlias %> : <% provider.each do |key,value| %>
+        <% if key.to_s.include?("attributeMappings") then %>
+        attributeMappings: <% value.each do |key,val| %>
+          <%= key %>: <%= val %><% end %>
+        <% else %>
+        <%= key %>: <%= value %><% end %><% end %>
+    <% end %><% end %>
   saml:
     <% if !properties.login.saml.signMetaData.nil? %>
     signMetaData: <%= properties.login.saml.signMetaData %>

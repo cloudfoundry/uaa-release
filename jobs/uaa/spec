@@ -421,7 +421,24 @@ properties:
     example:
       - marissa|koala|marissa@test.org|Marissa|Bloggs
   uaa.scim.external_groups:
-    description: "A list of external group mappings. Pipe delimited. A value may look as '- internal.read|cn=developers,ou=scopes,dc=test,dc=com'"
+    description: |
+      External group mappings. Either formatted as an OpenStruct or a list of pipe-separated specifications. The list format is deprecated.
+      As an OpenStruct, the mapping additionally specifies an origin to which the mapping is applied:
+        origin1:
+          external_group1:
+            - internal_group1
+            - internal_group2
+            - internal_group3
+          external_group2:
+            - internal_group2
+            - internal_group4
+        origin2:
+          external_group3:
+            - internal_group3
+            - internal_group4
+            - internal_group5
+      As a list, each entry consists of the following (The origin defaults to ldap in this case.):
+        - internal_group_name|space_delimited_external_groups another_group another_group_etc
   uaa.scim.groups:
     description: |
       Contains a hash of group names and their descriptions. These groups will be added to the UAA database for the default zone but not associated with any user.
@@ -583,6 +600,25 @@ properties:
     description: "Deprecated. Use uaa.ldap.enabled - login.spring_profiles is used for backwards compatibility to enable ldap from login config"
   uaa.spring_profiles:
     description: "Deprecated. Use 'uaa.ldap.enabled' instead. Sets the Spring profiles on the UAA web application. This gets combined with the 'uaadb.db_scheme' property if and only if the value is exactly 'ldap' in order to setup the database, for example 'ldap,mysql'. If spring_profiles contains more than just 'ldap' it will be used to overwrite spring_profiles and db_scheme ignored. See uaa.yml.erb."
+
+  # OpenID Connect/OAuth
+
+  login.oauth.providers:
+    description: "Contains a hash of OpenID Connect/Oauth Identity Providers, the key will be used as the origin key for that provider, followed by key/value pairs. Presence of the userInfoUrl will mark it as an OpenID provider instead of OAuth."
+    example:
+      my-oauth-provider:
+        authUrl: http://my-auth.com
+        tokenUrl: http://my-token.com
+        tokenKey: my-token-key
+        tokenKeyUrl:
+        userInfoUrl:
+        linkText: My Oauth Provider
+        showLinkText: true
+        relyingPartyId: uaa
+        relyingPartySecret: secret
+        attributeMappings:
+          given_name: Marissa
+          family_name: Bloggs
 
   # Saml
   login.saml.entityid:

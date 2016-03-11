@@ -180,8 +180,15 @@ scim:
 <% end %>
 
 <% if properties.uaa.scim && properties.uaa.scim.external_groups then %>
+ <% if properties.uaa.scim.external_groups.is_a? Array %>
   external_groups: <% properties.uaa.scim.external_groups.each do |group| %>
     - <%= group %><% end %>
+ <% else %>
+  external_groups: <% properties.uaa.scim.external_groups.marshal_dump.each do |origin, mappings| %>
+    <%= origin %>: <% mappings.marshal_dump.each do |external, groups| %>
+      <%= external %>: <% groups.each do |group| %>
+        - <%= group %><%end%><%end%><%end%>
+ <% end %>
 <% end %>
 
 zones:

@@ -174,8 +174,6 @@ properties:
     description: URL for configuring a custom home page
   login.tiles:
     description: "A list of links to other services to show on the landing page after log in."
-  login.invitations_enabled:
-    description: "Allows users to send invitations to email addresses outside the system and invite them to create an account. Disabled by default."
   login.self_service_links_enabled:
     description: "Enable self-service account creation and password resets links."
   login.analytics.code:
@@ -555,13 +553,17 @@ properties:
     default: "1"
   uaa.ldap.emailDomain:
     description: "Sets the whitelist of emails domains that the LDAP identity provider handles"
+    example:
+      - whitelist-domain1.org
+      - whitelist-domain2.org
   uaa.ldap.attributeMappings:
     description: "Specifies how UAA user attributes map to LDAP attributes. given_name, family_name, and phone_number are UAA user attributes, while other attributes should be included using the prefix `user.attribute`"
     example:
       given_name: givenName
       family_name: sn
       phone_number: telephoneNumber
-      user.attribute.otherLdapAttributes: <other LDAP attributes>
+      user.attribute.name-of-attribute-in-uaa-id-token: name-of-attribute-in-ldap-record
+      user.attribute.name-of-other-attribute-in-uaa-id-token: name-of-other-attribute-in-ldap-record
   uaa.ldap.externalGroupsWhitelist:
     description: "Whitelist of external groups from LDAP that get added as roles in the ID Token"
     example:
@@ -617,12 +619,19 @@ properties:
         relyingPartyId: uaa
         relyingPartySecret: secret
         attributeMappings:
-          given_name: Marissa
-          family_name: Bloggs
+          given_name: first_name
+          family_name: last_name
+          user:
+            attribute:
+              name-of-attribute-in-uaa-id-token: name-of-attribute-in-provider-token
+              name-of-other-attribute-in-uaa-id-token: name-of-other-attribute-in-provider-token
 
   # Saml
   login.saml.entityid:
-    description: "This is used as the SAML Service Provider Entity ID. Each "
+    description: |
+      This is used as the SAML Service Provider Entity ID. Each zone has a unique entity ID. Zones other than
+      the default zone will derive their entity ID from this setting by prefexing it with the subdomain.
+    example:
   login.saml.entity_base_url:
     description: |
       The URL for which SAML identity providers will post assertions to.

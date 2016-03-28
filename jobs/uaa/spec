@@ -314,8 +314,11 @@ properties:
   uaa.jwt.policy.refreshTokenValiditySeconds:
     default: 2592000
     description: "The refresh token validity for the default zone if nothing is configured on the client. Will override global validity policies for the default zone only."
+  uaa.jwt.policy.active_key_id:
+    description: "The ID of the JWT signing key to be used when signing tokens."
+    example: "key-1"
   uaa.jwt.policy.keys:
-    description: "Map of key ids to key pairs (signing and verification keys)"
+    description: "Map of key IDs and signing keys, each defined with a property `signingKey`"
     example:
       key-1:
         signingKey: |
@@ -334,12 +337,6 @@ properties:
           oYaZoYWi6DzbQQUaIsKxAkEA2rXQjQFsfnSm+w/9067ChWg46p4lq5Na2NpcpFgH
           waZKhM1W0oB8MX78M+0fG3xGUtywTx0D4N7pr1Tk2GTgNw==
           -----END RSA PRIVATE KEY-----
-        verificationKey: |
-          -----BEGIN PUBLIC KEY-----
-          MIICXgIBAAKBgQDfTLadf6QgJeS2XXImEHMsa+1O7MmIt44xaL77N2K+J/JGpfV3
-          AnkyB06wFZ02sBLB7hko42LIsVEOyTuUBird/3vlyHFKytG7UEt60Fl88SbAEfsU
-          JN1i1aSU
-          -----END PUBLIC KEY-----
   uaa.jwt.signing_key:
     description: "The key used to sign the JWT-based OAuth2 tokens"
   uaa.jwt.verification_key:

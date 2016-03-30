@@ -610,6 +610,9 @@ properties:
         tokenUrl: http://my-token.com
         tokenKey: my-token-key
         tokenKeyUrl:
+        scope:
+          - openid
+          - scope.example
         userInfoUrl:
         linkText: My Oauth Provider
         showLinkText: true
@@ -618,6 +621,10 @@ properties:
         attributeMappings:
           given_name: first_name
           family_name: last_name
+          user_name: username
+          external_groups:
+            - scopes_example_group
+            - roles_example_group
           user:
             attribute:
               name-of-attribute-in-uaa-id-token: name-of-attribute-in-provider-token

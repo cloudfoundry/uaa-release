@@ -618,6 +618,7 @@ properties:
         showLinkText: true
         relyingPartyId: uaa
         relyingPartySecret: secret
+        skipSslValidation: true
         attributeMappings:
           given_name: first_name
           family_name: last_name

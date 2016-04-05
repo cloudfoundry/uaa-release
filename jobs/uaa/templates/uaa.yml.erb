@@ -61,8 +61,9 @@ jwt:
   <% if_p("uaa.jwt.policy.active_key_id") do |activeKeyId| %>
       activeKeyId: <%= activeKeyId %>
   <% end %>
-  <% if properties.uaa.jwt.policy.keys then properties.uaa.jwt.policy.keys.marshal_dump.each do |kid,keyPair| %>
+  <% if properties.uaa.jwt.policy.keys %>
       keys:
+    <% properties.uaa.jwt.policy.keys.marshal_dump.each do |kid,keyPair| %>
       <% next unless keyPair %>
         <%= kid %>:<% keyPair.marshal_dump.each do |key,value| %>
           <%= key %>: |

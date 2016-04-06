@@ -616,6 +616,7 @@ properties:
           - <other scope>
         linkText: My Oauth Provider
         showLinkText: true
+        addShadowUserOnLogin: true
         relyingPartyId: <OIDC Client ID>
         relyingPartySecret: <OIDC Client secret>
         skipSslValidation: false

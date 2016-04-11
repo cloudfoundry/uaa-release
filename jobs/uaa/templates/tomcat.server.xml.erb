@@ -11,14 +11,14 @@
     # Default private address proxy list
     defaultInternalProxies = "10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}"
     # If we have proxy list set. Use it
-    internalProxies = properties.uaa.proxy_ips_regex ? properties.uaa.proxy_ips_regex : ""
+    internalProxies = p('uaa.proxy_ips_regex', '')
     # Backwards Compatibility - Use the restricted IP list
-    if properties.uaa.restricted_ips_regex
-      internalProxies = internalProxies + "|" + properties.uaa.restricted_ips_regex
+    if_p('uaa.restricted_ips_regex') do |restricted_ips_regex|
+      internalProxies = internalProxies + "|" + restricted_ips_regex
     end
     # Look up Router IPs
-    if properties.uaa.proxy && properties.uaa.proxy.servers
-      properties.uaa.proxy.servers.each_with_index do |ip, index|
+    if_p('uaa.proxy.servers') do |proxyServers|
+      proxyServers.each do |ip|
         regExIp = ip.gsub(".","\\.").gsub(":","\\:")
         internalProxies = regExIp  + "|" + internalProxies
       end
@@ -33,7 +33,7 @@
     <Connector class="org.apache.coyote.http11.Http11NioProtocol"
                protocol="HTTP/1.1"
                connectionTimeout="20000"
-               port="<%= properties.uaa.port %>"
+               port="<%= p('uaa.port') %>"
                bindOnInit="false"
     />
     <% end %>
@@ -41,7 +41,7 @@
     <% if p("uaa.ssl.port") != -1  %>
     <Connector class="org.apache.coyote.http11.Http11NioProtocol" protocol="HTTP/1.1" connectionTimeout="20000"
                scheme="https"
-               port="<%= properties.uaa.ssl.port %>"
+               port="<%= p('uaa.ssl.port') %>"
                SSLEnabled="true"
                secure="true"
                clientAuth="false"

@@ -1,135 +1,142 @@
 ---
 <%
-  def p_opt(property)
-    p(property, nil)
-  end
+  uaa_db = properties.uaadb.databases.find { |db| db.tag == "uaa" }
+  uaa_role = properties.uaadb.roles.find { |role| role.tag == "admin" }
+  protocol = properties.login.protocol
+  issuer_uri = p("uaa.issuer", p("uaa.url", "#{protocol}://uaa.#{properties.domain}"))
+  oauth_clientsLoginRedirectUri = "#{protocol}://login.#{properties.domain}"
+%>
 
-  def p_arr(property)
-    p_opt(property) || []
-  end
-
-  uaa_db = p_arr('uaadb.databases').find { |db| db['tag'] == 'uaa' }
-  uaa_role = p_arr('uaadb.roles').find { |role| role['tag'] == 'admin' }
-  protocol = p('login.protocol')
-  issuer_uri = p('uaa.issuer', p('uaa.url', "#{protocol}://uaa.#{p_opt('domain')}"))
-  oauth_clientsLoginRedirectUri = "#{protocol}://login.#{p_opt('domain')}"
-
+<%
   # The login secret is defined in one of two properties
   # uaa.login.client_secret or uaa.clients.login.secret
   # If both of these are defined, then use the latter
-  login_secret = p('uaa.clients.login.secret', p_opt('uaa.login.client_secret'))
-  raise ArgumentError, 'uaa.login.client_secret or uaa.clients.login.secret must be set.' unless login_secret
+  if properties.uaa && properties.uaa.clients && properties.uaa.clients.login && properties.uaa.clients.login.secret
+    login_secret = properties.uaa.clients.login.secret
+  elsif properties.uaa && properties.uaa.login && properties.uaa.login.client_secret
+    login_secret = properties.uaa.login.client_secret
+  else
+    raise ArgumentError, 'uaa.login.client_secret or uaa.clients.login.secret must be set.'
+  end
+  if properties.uaa && properties.uaa.clients && properties.uaa.clients.login
+    properties.uaa.clients.login.secret = login_secret
+  end
 %>
 
 name: uaa
 
 database:
-  url: jdbc:<%= p('uaadb.db_scheme') %>://<%= p('uaadb.address') %>:<%= p('uaadb.port') %>/<%= uaa_db['name'] %>
-  username: <%= uaa_role['name'] %>
-  password: "<%= uaa_role['name'] %>"
-  maxactive: <%= p('uaa.database.max_connections') %>
-  maxidle:  <%= p('uaa.database.max_idle_connections') %>
-  removeabandoned: <%= p('uaa.database.remove_abandoned') %>
-  logabandoned: <%= p('uaa.database.log_abandoned') %>
-  abandonedtimeout: <%= p('uaa.database.abandoned_timeout') %>
-  <% if_p('uaa.database.case_insensitive') do |case_insensitive| %>caseinsensitive: <%= case_insensitive.to_s %><% end %>
+  url: jdbc:<%= properties.uaadb.db_scheme %>://<%= properties.uaadb.address %>:<%= properties.uaadb.port %>/<%= uaa_db.name %>
+  username: <%= uaa_role.name %>
+  password: "<%= uaa_role.password %>"
+  maxactive: <%= properties.uaa.database.max_connections %>
+  maxidle:  <%= properties.uaa.database.max_idle_connections %>
+  removeabandoned: <%= properties.uaa.database.remove_abandoned %>
+  logabandoned: <%= properties.uaa.database.log_abandoned %>
+  abandonedtimeout: <%= properties.uaa.database.abandoned_timeout %>
+  <%= (properties.uaa.database && !(properties.uaa.database.case_insensitive.nil?)) ? 'caseinsensitive: ' + properties.uaa.database.case_insensitive.to_s : '' %>
 
-spring_profiles: <%= p('uaadb.db_scheme') %><% if p_opt('uaa.ldap.enabled') then %>,ldap<% end %>
+<% if properties.uaa && properties.uaa.ldap && ((properties.uaa.ldap.enabled &&  (properties.uaa.ldap.enabled==true)) || (properties.uaa.spring_profiles && properties.uaa.spring_profiles.eql?('ldap'))) %>
+spring_profiles: <%= properties.uaadb.db_scheme %>,ldap
+<% elsif properties.uaa && properties.uaa.spring_profiles && properties.uaa.spring_profiles.include?('ldap') && properties.uaa.ldap %>
+spring_profiles: <%= properties.uaa.spring_profiles ? properties.uaa.spring_profiles : properties.uaadb.db_scheme %>
+<% elsif properties.login && properties.login.spring_profiles && properties.login.spring_profiles.include?('ldap') &&  properties.login.ldap && properties.login.ldap.profile_type %>
+spring_profiles: <%= properties.uaadb.db_scheme %>,ldap
+<% else %>
+spring_profiles: <%= properties.uaadb.db_scheme %>
+<% end %>
 
 logging:
   config: /var/vcap/jobs/uaa/config/log4j.properties
       
-<% if_p('uaa.jwt') do |jwt| %>
+<% if properties.uaa.jwt %>
 jwt:
   token:
     policy:
-      accessTokenValiditySeconds:  <%= p('uaa.jwt.policy.accessTokenValiditySeconds') %>
-      refreshTokenValiditySeconds: <%= p('uaa.jwt.policy.refreshTokenValiditySeconds') %>
+      accessTokenValiditySeconds: <%= properties.uaa.jwt.policy.accessTokenValiditySeconds %>
+      refreshTokenValiditySeconds: <%= properties.uaa.jwt.policy.refreshTokenValiditySeconds %>
       global:
-        accessTokenValiditySeconds: <%= p('uaa.jwt.policy.global.accessTokenValiditySeconds') %>
-        refreshTokenValiditySeconds: <%= p('uaa.jwt.policy.global.refreshTokenValiditySeconds') %>
-  <% if_p('uaa.jwt.policy.active_key_id') do |activeKeyId| %>
+        accessTokenValiditySeconds: <%= properties.uaa.jwt.policy.global.accessTokenValiditySeconds %>
+        refreshTokenValiditySeconds: <%= properties.uaa.jwt.policy.global.refreshTokenValiditySeconds %>
+  <% if_p("uaa.jwt.policy.active_key_id") do |activeKeyId| %>
       activeKeyId: <%= activeKeyId %>
   <% end %>
-  <% if_p('uaa.jwt.policy.keys') do |jwtKeys| %>
+  <% if properties.uaa.jwt.policy.keys %>
       keys:
-    <% jwtKeys.each do |kid,keyPair| %>
+    <% properties.uaa.jwt.policy.keys.marshal_dump.each do |kid,keyPair| %>
       <% next unless keyPair %>
-        <%= kid %>:<% keyPair.each do |keyProperty,value| %>
-          <%= keyProperty %>: |
-            <%= value.gsub("\n", "\n            ") %><% end %><% end %>
+        <%= kid %>:<% keyPair.marshal_dump.each do |key,value| %>
+          <%= key %>: |
+<%= "            " + value.gsub("\n", "\n            ") %><% end %><% end %>
   <% end %>
-  <% if_p('uaa.jwt.claims.exclude') do |exclusions| %>
+  <% if_p("uaa.jwt.claims.exclude") do |exclusions| %>
     claims:
       exclude: <% exclusions.each do |exclusion| %>
       - <%= exclusion %><% end %>
   <% end %>
-  <% if_p('uaa.jwt.signing_key') do |signingKey| %>
+  <% if properties.uaa.jwt.signing_key && properties.uaa.jwt.verification_key %>
     signing-key: |
-        <%= signingKey.gsub("\n", "\n        ") %>
-  <% end %>
-  <% if_p('uaa.jwt.verification_key') do |verificationKey| %>
+<%= "        " + properties.uaa.jwt.signing_key.gsub("\n", "\n        ") %>
     verification-key: |
-        <%= verificationKey.gsub("\n", "\n        ") %>
+<%= "        " + properties.uaa.jwt.verification_key.gsub("\n", "\n        ") %>
   <% end %>
 <% end %>
 
 authentication:
   policy:
-    lockoutAfterFailures: <%= p('uaa.authentication.policy.lockoutAfterFailures') %>
-    countFailuresWithinSeconds: <%= p('uaa.authentication.policy.countFailuresWithinSeconds') %>
-    lockoutPeriodSeconds: <%= p('uaa.authentication.policy.lockoutPeriodSeconds') %>
+    lockoutAfterFailures: <%= properties.uaa.authentication.policy.lockoutAfterFailures %>
+    countFailuresWithinSeconds: <%= properties.uaa.authentication.policy.countFailuresWithinSeconds %>
+    lockoutPeriodSeconds: <%= properties.uaa.authentication.policy.lockoutPeriodSeconds %>
     global:
-      lockoutAfterFailures: <%= p('uaa.authentication.policy.global.lockoutAfterFailures') %>
-      countFailuresWithinSeconds: <%= p('uaa.authentication.policy.global.countFailuresWithinSeconds') %>
-      lockoutPeriodSeconds: <%= p('uaa.authentication.policy.global.lockoutPeriodSeconds') %>
+      lockoutAfterFailures: <%= properties.uaa.authentication.policy.global.lockoutAfterFailures %>
+      countFailuresWithinSeconds: <%= properties.uaa.authentication.policy.global.countFailuresWithinSeconds %>
+      lockoutPeriodSeconds: <%= properties.uaa.authentication.policy.global.lockoutPeriodSeconds %>
 
 password:
   policy:
-    minLength: <%= p('uaa.password.policy.minLength') %>
-    maxLength: <%= p('uaa.password.policy.maxLength') %>
-    requireUpperCaseCharacter: <%= p('uaa.password.policy.requireUpperCaseCharacter') %>
-    requireLowerCaseCharacter: <%= p('uaa.password.policy.requireLowerCaseCharacter') %>
-    requireDigit: <%= p('uaa.password.policy.requireDigit') %>
-    requireSpecialCharacter: <%= p('uaa.password.policy.requireSpecialCharacter') %>
-    expirePasswordInMonths: <%= p('uaa.password.policy.expirePasswordInMonths') %>
+    minLength: <%= properties.uaa.password.policy.minLength %>
+    maxLength: <%= properties.uaa.password.policy.maxLength %>
+    requireUpperCaseCharacter: <%= properties.uaa.password.policy.requireUpperCaseCharacter %>
+    requireLowerCaseCharacter: <%= properties.uaa.password.policy.requireLowerCaseCharacter %>
+    requireDigit: <%= properties.uaa.password.policy.requireDigit %>
+    requireSpecialCharacter: <%= properties.uaa.password.policy.requireSpecialCharacter %>
+    expirePasswordInMonths: <%= properties.uaa.password.policy.expirePasswordInMonths %>
     global:
-      minLength: <%= p('uaa.password.policy.global.minLength') %>
-      maxLength: <%= p('uaa.password.policy.global.maxLength') %>
-      requireUpperCaseCharacter: <%= p('uaa.password.policy.global.requireUpperCaseCharacter') %>
-      requireLowerCaseCharacter: <%= p('uaa.password.policy.global.requireLowerCaseCharacter') %>
-      requireDigit: <%= p('uaa.password.policy.global.requireDigit') %>
-      requireSpecialCharacter: <%= p('uaa.password.policy.global.requireSpecialCharacter') %>
-      expirePasswordInMonths: <%= p('uaa.password.policy.global.expirePasswordInMonths') %>
+      minLength: <%= properties.uaa.password.policy.global.minLength %>
+      maxLength: <%= properties.uaa.password.policy.global.maxLength %>
+      requireUpperCaseCharacter: <%= properties.uaa.password.policy.global.requireUpperCaseCharacter %>
+      requireLowerCaseCharacter: <%= properties.uaa.password.policy.global.requireLowerCaseCharacter %>
+      requireDigit: <%= properties.uaa.password.policy.global.requireDigit %>
+      requireSpecialCharacter: <%= properties.uaa.password.policy.global.requireSpecialCharacter %>
+      expirePasswordInMonths: <%= properties.uaa.password.policy.global.expirePasswordInMonths %>
 
-disableInternalAuth: <%= p('uaa.disableInternalAuth') %>
-disableInternalUserManagement: <%= p('uaa.disableInternalUserManagement') %>
+disableInternalAuth: <%= properties.uaa.disableInternalAuth %>
+disableInternalUserManagement: <%= properties.uaa.disableInternalUserManagement %>
 
 issuer.uri: <%= issuer_uri %>
 
 oauth:
-  <% if protocol == 'https' %>
+  <% if protocol == "https" %>
   authorize:
     ssl: true
   <% end %>
-  <% if_p('uaa.client.autoapprove') do |autoapproveClients| %>
   client:
-    autoapprove: <% autoapproveClients.each do |client_id| %>
-      - <%= client_id %><% end %><% end %>
+    autoapprove: <% properties.uaa.client.autoapprove.each do |client_id| %>
+      - <%= client_id %><% end %>
   clients:
-<% if_p('uaa.clients') do |clients| clients.each do |id,client| %>
+<% if properties.uaa.clients then properties.uaa.clients.marshal_dump.each do |id,client| %>
     <% next unless client %>
-    <%= id %>:<% client.each do |key,value|%>
+    <%= id %>:<% client.marshal_dump.each do |key,value|%>
       <%= key %>: <%= value %><% end %><% end %>
 <% end %>
-<% unless p_opt('uaa.clients.admin') %>
+<% if !properties.uaa.clients || !properties.uaa.clients.admin %>
     admin:
       authorized-grant-types: client_credentials
       authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
       id: admin
-      secret: "<%= p_opt('uaa.admin.client_secret') %>"
+      secret: "<%= properties.uaa.admin.client_secret %>"
 <% end %>
-<% unless p_opt('uaa.clients.login') %>
+<% if !properties.uaa.clients || !properties.uaa.clients.login %>
     login:
       id: login
       override: true
@@ -140,29 +147,31 @@ oauth:
       redirect-uri: <%= oauth_clientsLoginRedirectUri %>
 <% end %>
   user:
-    authorities: <% p('uaa.user.authorities').each do |authority| %>
+    authorities: <% properties.uaa.user.authorities.each do |authority| %>
       - <%= authority %><% end %>
 scim:
-  userids_enabled: <%= p('uaa.scim.userids_enabled') %>
-  user.override: <%= p('uaa.scim.user.override') %>
-<% if_p('uaa.scim.users') do |users| %>
-  users: <% users.each do |user| %>
+  userids_enabled: <%= properties.uaa.scim.userids_enabled %>
+  user.override: <%= properties.uaa.scim.user.override %>
+<%
+ if properties.uaa.scim && properties.uaa.scim.users then %>
+  users: <% properties.uaa.scim.users.each do |user| %>
   <% if user.is_a? String then %>
     - <%= user %><%
      else
-       usr_name = user['name']
-       usr_password = user['password'] || ''
-       usr_fname = user['firstName'] || ''
-       usr_lname = user['lastName'] || ''
-       usr_email = user['email'] || usr_name
-       usr_origin = user['origin'] || 'uaa'
+       usr_name = user.name
+       usr_password = user.password || ''
+       usr_fname = user.firstName || ''
+       usr_lname = user.lastName || ''
+       usr_email = user.email || usr_name
+       usr_origin = user.origin || 'uaa'
        usr_groups = ''
-       if user['groups'] then usr_groups = user['groups'].join(',') end
-      %>
-    - <%= usr_name + '|' + usr_password + '|' + usr_email + '|' + usr_fname + '|' + usr_lname + '|' + usr_groups + '|' + usr_origin%>
-  <% end %>
- <% end %>
-<% end %>
+       if user.groups then
+         usr_groups = user.groups.join(',')
+       end %>
+    - <%= usr_name + '|' + usr_password + '|' + usr_email + '|' + usr_fname + '|' + usr_lname + '|' + usr_groups + '|' + usr_origin%><%
+     end %><%
+  end %><%
+ end %>
 
 <% if_p('uaa.scim.groups') do |groups| %>
   <% if groups.is_a? String then %>
@@ -174,13 +183,13 @@ scim:
   <% end %>
 <% end %>
 
-<% if_p('uaa.scim.external_groups') do |externalGroups| %>
- <% if externalGroups.is_a? Array %>
-  external_groups: <% externalGroups.each do |group| %>
+<% if properties.uaa.scim && properties.uaa.scim.external_groups then %>
+ <% if properties.uaa.scim.external_groups.is_a? Array %>
+  external_groups: <% properties.uaa.scim.external_groups.each do |group| %>
     - <%= group %><% end %>
  <% else %>
-  external_groups: <% externalGroups.each do |origin, mappings| %>
-    <%= origin %>: <% mappings.each do |external, groups| %>
+  external_groups: <% properties.uaa.scim.external_groups.marshal_dump.each do |origin, mappings| %>
+    <%= origin %>: <% mappings.marshal_dump.each do |external, groups| %>
       <%= external %>: <% groups.each do |group| %>
         - <%= group %><%end%><%end%><%end%>
  <% end %>
@@ -189,72 +198,102 @@ scim:
 zones:
   internal:
     hostnames:
-      <% if_p('domain') do |domain| %>- <%= "login.#{domain}" %><% end %>
-      <% p_arr('uaa.zones.internal.hostnames').each do |hostname| %>- <%= hostname %><% end %>
+    <% if_p('domain') do |domain| %>
+      - <%= "login.#{domain}" %>
+    <% end %>
+    <% if !properties.uaa.zones.internal.hostnames.nil? %>
+      <% properties.uaa.zones.internal.hostnames.each do |hostname| %>
+      - <%= hostname %><% end %>
+    <% end %>
 
-<% if_p('uaa.require_https') do |requireHttps| %>
-require_https: <%= requireHttps %>
+<% if !properties.uaa.require_https.nil? %>
+require_https: <%= properties.uaa.require_https %>
 <% end %>
-<% if_p('uaa.dump_requests') do |dumpRequests| %>
-dump_requests: <%= dumpRequests %>
+<% if !properties.uaa.dump_requests.nil? %>
+dump_requests: <%= properties.uaa.dump_requests %>
 <% end %>
-<% if p_opt('uaa.ldap.enabled') %>
+<% if properties.uaa && properties.uaa.ldap && ((properties.uaa.ldap.enabled &&  (properties.uaa.ldap.enabled==true)) || (properties.uaa.spring_profiles && properties.uaa.spring_profiles.include?('ldap'))) %>
 ldap:
   ldapdebug: 'Ldap configured through UAA'
   profile:
-    file: ldap/ldap-<%= p_opt('uaa.ldap.profile_type') %>.xml
+    file: <%= (properties.uaa.ldap.profile_type == 'simple-bind') ? 'ldap/ldap-simple-bind.xml' : (properties.uaa.ldap.profile_type == 'search-and-bind') ? 'ldap/ldap-search-and-bind.xml' : 'ldap/ldap-search-and-compare.xml' %>
   base:
-    url: '<%= p_opt('uaa.ldap.url') %>'
-    <% if p_opt('uaa.ldap.profile_type') == 'simple-bind' %>
-    userDnPattern: '<%= p_opt('uaa.ldap.userDNPattern') %>'
-    userDnPatternDelimiter: '<%= p_opt('uaa.ldap.userDNPatternDelimiter') %>'
+    url: '<%= properties.uaa.ldap.url %>'
+    <% if properties.uaa.ldap.profile_type == 'simple-bind' %> 
+    userDnPattern: '<%= properties.uaa.ldap.userDNPattern %>'
+    userDnPatternDelimiter: '<%= properties.uaa.ldap.userDNPatternDelimiter%>'
     <% else  %>
-    userDn: '<%= p_opt('uaa.ldap.userDN') %>'
-    password: '<%= p_opt('uaa.ldap.userPassword') %>'
-    searchBase: '<%= p_opt('uaa.ldap.searchBase') %>'
-    searchFilter: '<%= p_opt('uaa.ldap.searchFilter') %>'
+    userDn: '<%= properties.uaa.ldap.userDN %>'
+    password: '<%= properties.uaa.ldap.userPassword %>'
+    searchBase: '<%= properties.uaa.ldap.searchBase %>' 
+    searchFilter: '<%= properties.uaa.ldap.searchFilter %>'
     <% end %>
-    <% if p_opt('uaa.ldap.profile_type') == 'search-and-compare' %>
-    passwordAttributeName: <%= p_opt('uaa.ldap.passwordAttributeName') %>
-    passwordEncoder: <%= p_opt('uaa.ldap.passwordEncoder') %>
-    localPasswordCompare: <%= p_opt('uaa.ldap.localPasswordCompare') %>
+    <% if properties.uaa.ldap.profile_type == 'search-and-compare' %> 
+    passwordAttributeName: <%= properties.uaa.ldap.passwordAttributeName %>
+    passwordEncoder: <%= properties.uaa.ldap.passwordEncoder %>
+    localPasswordCompare: <%= properties.uaa.ldap.localPasswordCompare %>
     <% end %>
-    mailAttributeName: '<%= p_opt('uaa.ldap.mailAttributeName')%>'
-    mailSubstitute: '<%= p_opt('uaa.ldap.mailSubstitute') %>'
-    mailSubstituteOverridesLdap: <%= p_opt('uaa.ldap.mailSubstituteOverridesLdap') %>
-    referral: <%= p_opt('uaa.ldap.referral') %>
-  <% if_p('uaa.ldap.emailDomain') do |emailDomains| %>
-  emailDomain: <% emailDomains.each do |domain| %>
+    mailAttributeName: '<%= properties.uaa.ldap.mailAttributeName%>'
+    mailSubstitute: '<%= properties.uaa.ldap.mailSubstitute %>'
+    mailSubstituteOverridesLdap: <%= properties.uaa.ldap.mailSubstituteOverridesLdap %>
+    referral: <%= properties.uaa.ldap.referral %>
+  <% if properties.uaa.ldap.emailDomain %>
+  emailDomain: <% properties.uaa.ldap.emailDomain.each do |domain| %>
   - <%= domain %><% end %><% end %>
-  <% if_p('uaa.ldap.attributeMappings') do |attributeMappings| %>
-  attributeMappings: <% attributeMappings.each do |key,val| %>
+  <% if properties.uaa.ldap.attributeMappings %>
+  attributeMappings: <% properties.uaa.ldap.attributeMappings.marshal_dump.each do |key,val| %>
     <%= key %>: <%= val %><% end %><% end %>
-  <% if_p('uaa.ldap.externalGroupsWhitelist') do |whitelist| %>
-  externalGroupsWhitelist: <% whitelist.each do |group| %>
+  <% if properties.uaa.ldap.externalGroupsWhitelist %>
+  externalGroupsWhitelist: <% properties.uaa.ldap.externalGroupsWhitelist.each do |group| %>
   - <%= group %><% end %>
   <% end %>
-  <% if_p('uaa.ldap.sslCertificate') do |sslCert| %>
+  <% if properties.uaa.ldap.sslCertificate %>
   ssl: 
-    sslCertificate: ! '<%= sslCert.gsub("\n", "\n    ") %>'
-    <% if_p('uaa.ldap.sslCertificateAlias') do |sslCertAlias| %>
-    sslCertificateAlias: <%= sslCertAlias %>
+    sslCertificate: ! <%= "'" + p("uaa.ldap.sslCertificate").gsub("\n", "\n\n    ") + "'" %>
+    <% if properties.uaa.ldap.sslCertificateAlias %>
+    sslCertificateAlias: <%= properties.uaa.ldap.sslCertificateAlias %>
     <% end %>
   <% end %>
+  <% if properties.uaa.ldap.groups && properties.uaa.ldap.groups.profile_type %>
   groups:
-    <% if p('uaa.ldap.groups.profile_type') == 'no-groups' %>
-    file: ldap/ldap-groups-null.xml
-    <% else %>
-    file: ldap/ldap-<%= p('uaa.ldap.groups.profile_type') %>.xml
+    file: <%= (properties.uaa.ldap.groups.profile_type == 'no-groups') ? 'ldap/ldap-groups-null.xml' : (properties.uaa.ldap.groups.profile_type == 'groups-as-scopes') ? 'ldap/ldap-groups-as-scopes.xml' : 'ldap/ldap-groups-map-to-scopes.xml' %>
+    searchBase: '<%= properties.uaa.ldap.groups.searchBase %>'
+    groupRoleAttribute: '<%= (properties.uaa.ldap.groups.profile_type == 'groups-as-scopes') ? properties.uaa.ldap.groups.groupRoleAttribute : 'spring.security.ldap.dn' %>'
+    groupSearchFilter: '<%= properties.uaa.ldap.groups.groupSearchFilter %>'
+    searchSubtree: <%= properties.uaa.ldap.groups.searchSubtree %>
+    maxSearchDepth: <%= properties.uaa.ldap.groups.maxSearchDepth %>
+    autoAdd: <%= properties.uaa.ldap.groups.autoAdd %>
+  <% end %>
+<% elsif properties.login && properties.login.spring_profiles && properties.login.spring_profiles.include?('ldap') &&  properties.login.ldap && properties.login.ldap.profile_type %>
+ldap:
+  ldapdebug: 'Ldap configured through Login Server'
+  profile:
+    file: <%= (properties.login.ldap.profile_type == 'simple-bind') ? 'ldap/ldap-simple-bind.xml' : (properties.login.ldap.profile_type == 'search-and-bind') ? 'ldap/ldap-search-and-bind.xml' : 'ldap/ldap-search-and-compare.xml' %>
+  base:
+    url: '<%= properties.login.ldap.url %>'
+    <% if properties.login.ldap.profile_type == 'simple-bind' %> 
+    userDnPattern: '<%= properties.login.ldap.userDNPattern %>'
+    <% else  %>
+    userDn: '<%= properties.login.ldap.userDN %>'
+    password: '<%= properties.login.ldap.userPassword %>'
+    searchBase: '<%= properties.login.ldap.searchBase %>' 
+    searchFilter: '<%= properties.login.ldap.searchFilter %>'
     <% end %>
-    searchBase: '<%= p('uaa.ldap.groups.searchBase') %>'
-    groupRoleAttribute: '<%= p('uaa.ldap.groups.profile_type') == 'groups-as-scopes' ? p('uaa.ldap.groups.groupRoleAttribute') : 'spring.security.ldap.dn' %>'
-    groupSearchFilter: '<%= p('uaa.ldap.groups.groupSearchFilter') %>'
-    searchSubtree: <%= p('uaa.ldap.groups.searchSubtree') %>
-    maxSearchDepth: <%= p('uaa.ldap.groups.maxSearchDepth') %>
-    autoAdd: <%= p('uaa.ldap.groups.autoAdd') %>
+    <% if properties.login.ldap.profile_type == 'search-and-compare' %> 
+    passwordAttributeName: <%= properties.login.ldap.passwordAttributeName %>
+    passwordEncoder: <%= properties.login.ldap.passwordEncoder %>
+    localPasswordCompare: <%= properties.login.ldap.localPasswordCompare %>
+    <% end %>
+  <% if properties.login.ldap.sslCertificate %>
+  ssl: 
+    sslCertificate: ! <%= "'" + p("login.ldap.sslCertificate").gsub("\n", "\n\n    ") + "'" %>
+    <% if properties.login.ldap.sslCertificateAlias %>
+    sslCertificateAlias: <%= properties.login.ldap.sslCertificateAlias %>
+    <% end %>
+  <% end %>  
 <% end %>
 
-<% if_p('uaa.servlet.session-cookie') do |sessioncookie| %>
+<% if_p("uaa.servlet.session-cookie") do |sessioncookie| %>
 servlet:
   session-cookie:<% sessioncookie.each do |cookiename, cookievalue| %>
     <%= cookiename %>: <%= cookievalue %><% end %>

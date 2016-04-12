@@ -2,38 +2,62 @@
 name: login
 
 <%
-  def p_opt(property)
-    p(property, nil)
-  end
-
+  config_artifacts_path = "/var/vcap/jobs/login/config/security"
   protocol = p('login.protocol')
 
-  uaa_base = p(['uaa.url', 'login.uaa_base'], "#{protocol}://uaa.#{p_opt('domain')}")
+  uaa_base = nil
+  if_p('uaa.url') do |uaa_url|
+    uaa_base = uaa_url
+  end.else_if_p('login.uaa_base') do |login_uaa_base|
+    uaa_base = login_uaa_base
+  end.else do
+    uaa_base = "#{protocol}://uaa.#{p('domain')}"
+  end
 
   entity_base_url_fallback = uaa_base.sub("://uaa.", "://login.")
 
-  login_entityBaseUrl = nil
-  if_p('login.saml.entity_base_url') do |entity_base_url|
-    login_entityBaseUrl = "#{protocol}://#{entity_base_url}"
-  end .else do
-    login_entityBaseUrl = entity_base_url_fallback
+  login_entityBaseUrl =
+    (properties.login && properties.login.saml && properties.login.saml.entity_base_url) ?
+      "#{protocol}://#{properties.login.saml.entity_base_url}" :
+      entity_base_url_fallback
+
+  entity_id_fallback = login_entityBaseUrl.sub(/^http.*\:\/\//,"")
+
+  login_entityId = (properties.login && properties.login.saml && properties.login.saml.entityid) ?
+     properties.login.saml.entityid :
+     properties.login.entity_id ?
+       properties.login.entity_id :
+         entity_id_fallback
+
+  login_authorizeUrl = (properties.uaa.url) ? "#{properties.uaa.url}/oauth/authorize" : "#{entity_base_url_fallback}/oauth/authorize"
+
+  login_url = login_entityBaseUrl
+  if_p('login.url') do |login_url_value|
+    login_url = login_url_value
   end
-
-  login_entityId = p(['login.saml.entityid', 'login.entity_id'], login_entityBaseUrl.sub(/^http.*:\/\//,''))
-
-  login_authorizeUrl = "#{p('uaa.url', entity_base_url_fallback)}/oauth/authorize"
-
-  login_url = p('login.url', login_entityBaseUrl)
-
-  # The login secret is defined in one of two properties
-  # uaa.login.client_secret or uaa.clients.login.secret
-  # If both of these are defined, then use the latter
-  login_secret = p('uaa.clients.login.secret', p_opt('uaa.login.client_secret'))
-  raise ArgumentError, 'uaa.login.client_secret or uaa.clients.login.secret must be set.' unless login_secret
 %>
+
+#uaa_base: <%=uaa_base%>
+#entity_base_url_fallback: <%=entity_base_url_fallback%>
+#login_entityBaseUrl: <%=login_entityBaseUrl%>
+#entity_id_fallback: <%=entity_id_fallback%>
+#login_entityId: <%=login_entityId%>
 
 logging:
   config: /var/vcap/jobs/login/config/log4j.properties
+
+<%
+  # The login secret is defined in one of two properties
+  # uaa.login.client_secret or uaa.clients.login.secret
+  # If both of these are defined, then use the latter
+  if properties.uaa && properties.uaa.clients && properties.uaa.clients.login && properties.uaa.clients.login.secret
+    login_secret = properties.uaa.clients.login.secret
+  elsif properties.uaa && properties.uaa.login && properties.uaa.login.client_secret
+    login_secret = properties.uaa.login.client_secret
+  else
+    raise ArgumentError, 'uaa.login.client_secret or uaa.clients.login.secret must be set.'
+  end
+%>
 
 uaa:
   url: <%= uaa_base %>
@@ -67,9 +91,8 @@ logout:
   redirect:
     url: <%= p('login.logout.redirect.url') %>
     parameter:
-      disable: <%= p('login.logout.redirect.parameter.disable', 'true') %>
-      <% if_p('login.logout.redirect.parameter.whitelist') do |whitelist| %>
-      whitelist: <% whitelist.each do |whitelistedurl| %>
+      disable: <%= (properties.login.logout.redirect.parameter && (!properties.login.logout.redirect.parameter.disable.nil?)) ? properties.login.logout.redirect.parameter.disable : "true" %><% if (properties.login.logout.redirect.parameter && (!properties.login.logout.redirect.parameter.whitelist.nil?)) %>
+      whitelist: <% properties.login.logout.redirect.parameter.whitelist.each do |whitelistedurl| %>
       - <%= whitelistedurl %><% end %>
    <% end %>
 
@@ -97,16 +120,14 @@ login:
   url: <%= login_url %>
   entityBaseURL: <%= login_entityBaseUrl %>
   entityID: <%= login_entityId %>
-  <% if_p('login.invitations_enabled') do |invitations_enabled| %>
-  invitationsEnabled: <%= invitations_enabled %>
+  <% if !properties.login.invitations_enabled.nil? %>
+  invitationsEnabled: <%= properties.login.invitations_enabled %>
   <% end %>
   prompt:
-    <% if_p('login.prompt.username.text') do |username_prompt| %>
     username:
-      text: <%= username_prompt %><% end %>
-    <% if_p('login.prompt.username.text') do |password_prompt| %>
+      text: <%= properties.login.prompt.username.text %>
     password:
-      text: <%= password_prompt %><% end %>
+      text: <%= properties.login.prompt.password.text %>
   <% if_p('login.saml.serviceProviderCertificate') do |serviceProviderCert| %>
   serviceProviderCertificate: |
     <%= serviceProviderCert.gsub("\n", "\n    ") %>
@@ -118,64 +139,62 @@ login:
   <% if_p('login.saml.serviceProviderKeyPassword') do |serviceProviderKeyPassword| %>
   serviceProviderKeyPassword: <%= serviceProviderKeyPassword %>
   <% end %>
-  <% if_p('login.self_service_links_enabled') do |selfServiceEnabled| %>
-  selfServiceLinksEnabled: <%= selfServiceEnabled %>
-  <% end .else_if_p('login.signups_enabled') do |selfServiceEnabled| %>
-  selfServiceLinksEnabled: <%= selfServiceEnabled %>
+  <% if !properties.login.self_service_links_enabled.nil? || !properties.login.signups_enabled.nil? %>
+  selfServiceLinksEnabled: <%= properties.login.self_service_links_enabled.nil? ? properties.login.signups_enabled : properties.login.self_service_links_enabled %>
   <% end %>
   oauth:
     <% if_p('login.oauth.providers') do |providers| %>
     providers: <% providers.each do |idpAlias, provider| %>
       <%= idpAlias %> : <% provider.each do |key,value| %>
-        <% if key.to_s.include?('tokenKey') then %>
+        <% if key.to_s.include?("tokenKey") then %>
         tokenKey: |
           <%= value.gsub("\n", "\n            ")%>
-        <% elsif key.to_s.include?('attributeMappings') then %>
+        <% elsif key.to_s.include?("attributeMappings") then %>
         attributeMappings: <% value.each do |key,val| %>
           <%= key %>: <%= val %><% end %>
         <% else %>
         <%= key %>: <%= value %><% end %><% end %>
     <% end %><% end %>
   saml:
-    <% if_p('login.saml.signMetaData') do |signMetaData| %>
-    signMetaData: <%= signMetaData %>
+    <% if !properties.login.saml.signMetaData.nil? %>
+    signMetaData: <%= properties.login.saml.signMetaData %>
     <% end %>
-    <% if_p('login.saml.signRequest') do |signRequest| %>
-    signRequest: <%= signRequest %>
+    <% if !properties.login.saml.signRequest.nil? %>
+    signRequest: <%= properties.login.saml.signRequest %>
     <% end %>
-    <% if_p('login.saml.wantAssertionSigned') do |wantAssertionSigned| %>
-    wantAssertionSigned: <%= wantAssertionSigned %>
+    <% if !properties.login.saml.wantAssertionSigned.nil? %>
+    wantAssertionSigned: <%= properties.login.saml.wantAssertionSigned %>
     <% end %>
-    providers: <% if_p('login.saml.providers') do |samlProviders| samlProviders.reject {|k,_| k.to_s == ''}.each do |idpAlias,idpProvider| %>
-      <%= idpAlias %>: <% idpProvider.reject {|k,_| %w(idpMetadata idpMetadataXML idpMetadataURL).include?(k.to_s)}.each do |key,value|%>
-        <% if key.to_s.include?('attributeMappings') then %>
-        attributeMappings: <% value.each do |key,val| %>
+    providers: <% if properties.login.saml.providers then properties.login.saml.providers.marshal_dump.reject {|k,_| k.to_s == ''}.each do |idpAlias,idpProvider| %>
+      <%= idpAlias %>: <% idpProvider.marshal_dump.reject {|k,_| ["idpMetadata", "idpMetadataXML", "idpMetadataURL"].include?(k.to_s)}.each do |key,value|%>
+        <% if key.to_s.include?("attributeMappings") then %>
+        attributeMappings: <% value.marshal_dump.each do |key,val| %>
           <%= key %>: <%= val %><% end %>
         <% else %>
-        <%= key %>: <%= value.is_a?(String) && value.match("\n") ? "| \n          " + value.gsub("\n", "\n          ") + '' : value %><% end %><% end %>
-        idpMetadata: <%= (idpProvider['idpMetadataURL'] || idpProvider['idpMetadataXML'] || idpProvider['idpMetadata']).inspect %><% end %>
+        <%= key %>: <%= value.is_a?(String) && value.match("\n") ? "| \n          " + value.gsub("\n", "\n          ") + "" : value %><% end %><% end %>
+        idpMetadata: <%= (idpProvider.idpMetadataURL || idpProvider.idpMetadataXML || idpProvider.idpMetadata).inspect %><% end %>
     <% end %>
-    <% if_p('login.saml.idpEntityAlias') do |idpEntityAlias| %>
-      <%= idpEntityAlias %>:
-        idpMetadata: <%= p('login.saml.idpMetadataURL', "/var/vcap/jobs/login/#{p_opt('login.saml.idp_metadata_file')}") %>
-        assertionConsumerIndex: <%= p_opt('login.saml.assertionConsumerIndex') %>
-        nameID: <%= p_opt('login.saml.nameidFormat') %>
-        metadataTrustCheck: <%= p_opt('login.saml.metadataTrustCheck') %>
+    <% if properties.login.saml.idpEntityAlias && (properties.login.saml.idpMetadataURL || properties.login.saml.idp_metadata_file) %>
+      <%= properties.login.saml.idpEntityAlias %>:
+        idpMetadata: <%= properties.login.saml.idpMetadataURL ? properties.login.saml.idpMetadataURL : "/var/vcap/jobs/login/" + properties.login.saml.idp_metadata_file %>
+        assertionConsumerIndex: <%= properties.login.saml.assertionConsumerIndex %>
+        nameID: <%= properties.login.saml.nameidFormat %>
+        metadataTrustCheck: <%= properties.login.saml.metadataTrustCheck %>
         showSamlLoginLink: true
         linkText: 'Use your corporate credentials'
-        <% if_p('login.saml.attributeMappings') do |attributeMappings| %>
-        attributeMappings: <% attributeMappings.each do |key,val| %>
+        <% if properties.login.saml.attributeMappings then %>
+        attributeMappings: <% properties.login.saml.attributeMappings.marshal_dump.each do |key,val| %>
           <%= key %>: <%= val %><% end %>
         <% end %>
     <% end %>
     socket:
-      connectionManagerTimeout: <%= p_opt('login.saml.socket.connectionManagerTimeout') %>
-      soTimeout: <%= p_opt('login.saml.socket.soTimeout') %>
+      connectionManagerTimeout: <%= properties.login.saml.socket.connectionManagerTimeout %>
+      soTimeout: <%= properties.login.saml.socket.soTimeout %>
   authorize:
     url: <%= login_authorizeUrl %>
 
-<% if_p('login.analytics.code', 'login.analytics.domain') do |code, domain| %>
+<% if properties.login.analytics && properties.login.analytics.code && properties.login.analytics.domain %>
 analytics:
-  code: <%= code %>
-  domain: <%= domain %>
+  code: <%= properties.login.analytics.code %>
+  domain: <%= properties.login.analytics.domain %>
 <% end %>

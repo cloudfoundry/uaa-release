@@ -23,22 +23,23 @@ fi
 
 export KEYSTORE_OPTS="-Djavax.net.ssl.trustStore=$KEYSTORE -Djavax.net.ssl.trustStoreType=JKS"
 
+<% if properties.env %>
 # Proxy configuration
-<% if_p('env.http_proxy') do |httpProxy| %>
-export HTTP_PROXY='<%= httpProxy %>'
-export http_proxy='<%= httpProxy %>'
+<% if properties.env.http_proxy %>
+export HTTP_PROXY='<%= properties.env.http_proxy %>'
+export http_proxy='<%= properties.env.http_proxy %>'
 proxy_conf=(`echo $HTTP_PROXY | tr ":" " " | tr "\/" " "`)
 HTTP_PROXY_JAVA_OPTIONS="$HTTP_PROXY_JAVA_OPTIONS -Dhttp.proxyHost=${proxy_conf[1]} -Dhttp.proxyPort=${proxy_conf[2]} "
 <% end %>
-<% if_p('env.https_proxy') do |httpsProxy| %>
-export HTTPS_PROXY='<%= httpsProxy %>'
-export https_proxy='<%= httpsProxy %>'
+<% if properties.env.https_proxy %>
+export HTTPS_PROXY='<%= properties.env.https_proxy %>'
+export https_proxy='<%= properties.env.https_proxy %>'
 proxy_conf=(`echo $HTTPS_PROXY | tr ":" " " | tr "\/" " "`)
 HTTP_PROXY_JAVA_OPTIONS="$HTTP_PROXY_JAVA_OPTIONS -Dhttps.proxyHost=${proxy_conf[1]} -Dhttps.proxyPort=${proxy_conf[2]} "
 <% end %>
-<% if_p('env.no_proxy') do |noProxy| %>
-export NO_PROXY='<%= noProxy %>'
-export no_proxy='<%= noProxy %>'
+<% if properties.env.no_proxy %>
+export NO_PROXY='<%= properties.env.no_proxy %>'
+export no_proxy='<%= properties.env.no_proxy %>'
 if [ x != x"$NO_PROXY" ]; then
   proxy_conf=`echo $NO_PROXY | sed -e 's/ //g'`
 
@@ -57,17 +58,28 @@ if [ x != x"$NO_PROXY" ]; then
   HTTP_PROXY_JAVA_OPTIONS="$HTTP_PROXY_JAVA_OPTIONS -Dhttp.nonProxyHosts=\"$java_no_proxies\" "
 fi
 <% end %>
+<% end %>
 
 NEWRELIC_OPTS=
-<% if_p('uaa.newrelic') do |newrelic|
-    newrelicenv = newrelic['environment'] || 'production'
+<%
+if properties.uaa && properties.uaa.newrelic 
+    newrelicenv = String.new("production")
+    if properties.uaa && properties.uaa.newrelic && properties.uaa.newrelic.environment
+        newrelicenv = p('uaa.newrelic.environment')
+    end
 
-    hasnewreliclic = p('uaa.newrelic.common.license_key', nil) || p('uaa.newrelic.'+newrelicenv+'.license_key', '').to_s.strip.length > 0
+    hasnewreliclic = false
+    if properties.uaa.newrelic.common && properties.uaa.newrelic.common.license_key
+        hasnewreliclic = true
+    elsif p('uaa.newrelic.'+newrelicenv+'.license_key').to_s.strip.length > 0
+        hasnewreliclic = true
+    end 
 
     if hasnewreliclic %>
-          <%= "NEWRELIC_OPTS=\"-javaagent:/var/vcap/data/uaa/tomcat/bin/newrelic.jar -Dnewrelic.config.file=$JOB_DIR/config/newrelic.yml -Dnewrelic.environment="+newrelicenv+"\"" %><%
+<%= "NEWRELIC_OPTS=\"-javaagent:/var/vcap/data/uaa/tomcat/bin/newrelic.jar -Dnewrelic.config.file=$JOB_DIR/config/newrelic.yml -Dnewrelic.environment="+newrelicenv+"\"" %><%
     end
-end %>
+end
+%>
 
 export NEWRELIC_OPTS
 
@@ -140,7 +152,9 @@ case $1 in
     echo $$ > $PIDFILE
     chown vcap:vcap $PIDFILE
 
-    <% if p('uaa.ldap.sslCertificate', nil) || p('login.ldap.sslCertificate', nil) %>
+    <% if properties.uaa && properties.uaa.ldap &&  properties.uaa.ldap.sslCertificate %>
+    /var/vcap/jobs/uaa/bin/install_crt ldap.crt ldapcert $KEYSTORE
+    <% elsif properties.login && properties.login.ldap &&  properties.login.ldap.sslCertificate %>
     /var/vcap/jobs/uaa/bin/install_crt ldap.crt ldapcert $KEYSTORE
     <% end %>
 
@@ -160,7 +174,7 @@ case $1 in
     export CLOUD_FOUNDRY_CONFIG_PATH=/var/vcap/jobs/uaa/config
 
     export JAVA_OPTS="-DPID=$$ -Dsun.net.inetaddr.ttl=60 -Dnetworkaddress.cache.ttl=60 $HTTP_PROXY_JAVA_OPTIONS $UAA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS"
-    export CATALINA_OPTS="<%= p('uaa.catalina_opts', '') %>"
+    export CATALINA_OPTS="<%= properties.uaa.catalina_opts %>"
 
     chown -R vcap:vcap $DATA_DIR
 

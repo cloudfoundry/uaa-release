@@ -308,6 +308,9 @@ properties:
       - profile
       - roles
       - user_attributes
+  uaa.jwt.revocable:
+    default: false
+    description: "Set to true if you wish that even JWT tokens become individually revocable and stored in the UAA token storage. This setting applies to the default zone only."
   uaa.jwt.policy.accessTokenValiditySeconds:
     default: 43200
     description: "The access token validity for the default zone if nothing is configured on the client. Will override global validity policies for the default zone only."

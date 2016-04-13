@@ -42,6 +42,7 @@ logging:
 <% if_p('uaa.jwt') do |jwt| %>
 jwt:
   token:
+    revocable: <%= p('uaa.jwt.revocable') %>
     policy:
       accessTokenValiditySeconds:  <%= p('uaa.jwt.policy.accessTokenValiditySeconds') %>
       refreshTokenValiditySeconds: <%= p('uaa.jwt.policy.refreshTokenValiditySeconds') %>

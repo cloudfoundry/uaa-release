@@ -595,10 +595,6 @@ properties:
     description: "Deprecated. Use uaa.ldap.sslCertificate - login.ldap prefix is used for backwards compatibility to enable ldap from login config"
   login.ldap.sslCertificateAlias:
     description: "Deprecated. Use uaa.ldap.sslCertificateAlias - login.ldap prefix is used for backwards compatibility to enable ldap from login config"
-  login.spring_profiles:
-    description: "Deprecated. Use uaa.ldap.enabled - login.spring_profiles is used for backwards compatibility to enable ldap from login config"
-  uaa.spring_profiles:
-    description: "Deprecated. Use 'uaa.ldap.enabled' instead. Sets the Spring profiles on the UAA web application. This gets combined with the 'uaadb.db_scheme' property if and only if the value is exactly 'ldap' in order to setup the database, for example 'ldap,mysql'. If spring_profiles contains more than just 'ldap' it will be used to overwrite spring_profiles and db_scheme ignored. See uaa.yml.erb."
 
   # OpenID Connect/OAuth
 

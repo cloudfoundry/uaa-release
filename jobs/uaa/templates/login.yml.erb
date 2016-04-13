@@ -127,10 +127,10 @@ login:
     <% if_p('login.oauth.providers') do |providers| %>
     providers: <% providers.each do |idpAlias, provider| %>
       <%= idpAlias %> : <% provider.each do |key,value| %>
-        <% if key.to_s.include?('tokenKey') then %>
+        <% if key.to_s.eql?('tokenKey') then %>
         tokenKey: |
           <%= value.gsub("\n", "\n            ")%>
-        <% elsif key.to_s.include?('attributeMappings') then %>
+        <% elsif key.to_s.eql?('attributeMappings') then %>
         attributeMappings: <% value.each do |key,val| %>
           <%= key %>: <%= val %><% end %>
         <% else %>
@@ -148,7 +148,7 @@ login:
     <% end %>
     providers: <% if_p('login.saml.providers') do |samlProviders| samlProviders.reject {|k,_| k.to_s == ''}.each do |idpAlias,idpProvider| %>
       <%= idpAlias %>: <% idpProvider.reject {|k,_| %w(idpMetadata idpMetadataXML idpMetadataURL).include?(k.to_s)}.each do |key,value|%>
-        <% if key.to_s.include?('attributeMappings') then %>
+        <% if key.to_s.eql?('attributeMappings') then %>
         attributeMappings: <% value.each do |key,val| %>
           <%= key %>: <%= val %><% end %>
         <% else %>

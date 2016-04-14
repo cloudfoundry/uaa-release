@@ -105,6 +105,9 @@ properties:
   uaa.ssl.port:
     description: If this property Tomcat will listen to this port and expect https traffic. If null, tomcat will not listen to this port
     default: 8443
+  uaa.ssl.protocol_header:
+    description: The header to look for to determine if ssl termination was performed by a front end load balancer.
+    default: x-forwarded-proto
   uaa.sslCertificate:
     description: "The server's ssl certificate. The default is a self-signed certificate and should always be replaced for production deployments"
     example: |

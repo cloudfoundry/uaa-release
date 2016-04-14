@@ -97,9 +97,6 @@ login:
   url: <%= login_url %>
   entityBaseURL: <%= login_entityBaseUrl %>
   entityID: <%= login_entityId %>
-  <% if_p('login.invitations_enabled') do |invitations_enabled| %>
-  invitationsEnabled: <%= invitations_enabled %>
-  <% end %>
   prompt:
     <% if_p('login.prompt.username.text') do |username_prompt| %>
     username:

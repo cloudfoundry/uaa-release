@@ -83,7 +83,7 @@ pid_guard() {
   if [ -f "$pidfile" ]; then
     pid=$(head -1 "$pidfile")
     echo "[uaa-pid-guard] PID File has value $pid"
-    if [ -n "$pid" ] && [ ps -p $pid ]; then
+    if [ -n "$pid" ] && [ -e /proc/$pid ]; then
       echo "[uaa-pid-guard] $name is already running, please stop it first"
       return_code=1
     else

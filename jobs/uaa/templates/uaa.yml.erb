@@ -248,7 +248,7 @@ ldap:
     file: ldap/ldap-<%= p('uaa.ldap.groups.profile_type') %>.xml
     <% end %>
     searchBase: '<%= p('uaa.ldap.groups.searchBase') %>'
-    groupRoleAttribute: '<%= p('uaa.ldap.groups.profile_type') == 'groups-as-scopes' ? p('uaa.ldap.groups.groupRoleAttribute') : 'spring.security.ldap.dn' %>'
+    groupRoleAttribute: '<%= p('uaa.ldap.groups.groupRoleAttribute') %>'
     groupSearchFilter: '<%= p('uaa.ldap.groups.groupSearchFilter') %>'
     searchSubtree: <%= p('uaa.ldap.groups.searchSubtree') %>
     maxSearchDepth: <%= p('uaa.ldap.groups.maxSearchDepth') %>

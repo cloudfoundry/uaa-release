@@ -67,7 +67,7 @@ logout:
   redirect:
     url: <%= p('login.logout.redirect.url') %>
     parameter:
-      disable: <%= p('login.logout.redirect.parameter.disable', 'true') %>
+      disable: <%= p('login.logout.redirect.parameter.disable') %>
       <% if_p('login.logout.redirect.parameter.whitelist') do |whitelist| %>
       whitelist: <% whitelist.each do |whitelistedurl| %>
       - <%= whitelistedurl %><% end %>
@@ -98,12 +98,10 @@ login:
   entityBaseURL: <%= login_entityBaseUrl %>
   entityID: <%= login_entityId %>
   prompt:
-    <% if_p('login.prompt.username.text') do |username_prompt| %>
     username:
-      text: <%= username_prompt %><% end %>
-    <% if_p('login.prompt.username.text') do |password_prompt| %>
+      text: <%= p('login.prompt.username.text') %>
     password:
-      text: <%= password_prompt %><% end %>
+      text: <%= p('login.prompt.password.text') %>
   <% if_p('login.saml.serviceProviderCertificate') do |serviceProviderCert| %>
   serviceProviderCertificate: |
     <%= serviceProviderCert.gsub("\n", "\n    ") %>

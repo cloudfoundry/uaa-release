@@ -110,6 +110,7 @@ properties:
     default: x-forwarded-proto
   uaa.sslCertificate:
     description: "The server's ssl certificate. The default is a self-signed certificate and should always be replaced for production deployments"
+    default: ''
     example: |
       -----BEGIN CERTIFICATE-----
       MIIDAjCCAmugAwIBAgIJAJtrcBsKNfWDMA0GCSqGSIb3DQEBCwUAMIGZMQswCQYD
@@ -132,6 +133,7 @@ properties:
       -----END CERTIFICATE-----
   uaa.sslPrivateKey:
     description: "The server's ssl private key. Only passphrase-less keys are supported"
+    default: ''
     example: |
       -----BEGIN RSA PRIVATE KEY-----
       MIICXwIBAAKBgQD1TiBrxvDBW5KovsrXQR1WxBnXuI2gqYZrxpvPf+CrNK/tONVb
@@ -545,6 +547,7 @@ properties:
     default: ""
   uaa.ldap.groups.groupRoleAttribute:
     description: "Used with groups-as-scopes, defines the attribute that holds the scope name(s)."
+    default: spring.security.ldap.dn
   uaa.ldap.groups.groupSearchFilter:
     description: "Search query filter to find the groups a user belongs to, or for a nested search, groups that a group belongs to"
     default: "member={0}"

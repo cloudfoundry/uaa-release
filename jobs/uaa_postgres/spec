@@ -11,7 +11,7 @@ templates:
 
 packages:
   - uaa_utils
-  - uaa_postgres-9.4.2
+  - uaa_postgres-9.4.6
 
 properties:
   postgres.port:

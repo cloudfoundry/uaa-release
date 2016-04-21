@@ -1,8 +1,4 @@
 ---
-postgres/postgresql-9.4.2.tar.gz:
-  object_id: 04bb6f1d-14f6-421c-8bc1-452b18c29665
-  sha: 7a70474f9b44fea1b345e48bd5e4418bccf41f3f
-  size: 23092865
 uaa/apache-tomcat-7.0.61.tar.gz:
   object_id: b2a7ce9f-2673-4702-97e4-372d25eeb05d
   sha: 98ccbc95d029291e81bf818879ec8a0aa14465df
@@ -27,3 +23,7 @@ openjdk/openjdk-1.8.0_91-x86_64-mountainlion.tar.gz:
   object_id: 515f6add-b3b4-46ac-abc8-378d81514032
   sha: 9e916262cf92d6ca0b09f9261d30aeca05f214d7
   size: 75516939
+postgres/postgresql-9.4.6.tar.gz:
+  object_id: 83e927a9-2d85-4d80-bf20-50cf5020ed3f
+  sha: bd031beebd86bf149c497525dccf57eebe5a6add
+  size: 23249307

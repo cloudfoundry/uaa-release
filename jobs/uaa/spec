@@ -519,6 +519,9 @@ properties:
     description: "Used with ldaps:// URLs. The certificate, if self signed, to be trusted by this connection."
   uaa.ldap.sslCertificateAlias:
     description: "Used with ldaps:// URLs. The certificate alias, to be trusted by this connection and stored in the keystore."
+  uaa.ldap.ssl.skipverification:
+    description: "Set to true, and LDAPS connection will not validate the server certificate."
+    default: false
   uaa.ldap.mailAttributeName:
     description: "The name of the LDAP attribute that contains the users email address"
     default: mail

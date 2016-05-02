@@ -211,16 +211,19 @@ properties:
   login.signups_enabled:
     description: "Deprecated. Use login.self_service_links_enabled. Instructs UAA to use 'enable account creation flow'. Enabled by default."
     default: true
-
-  # Email
-  login.notifications.url:
-    description: "The url for the notifications service (configure to use Notifications Service instead of SMTP server)"
   login.prompt.username.text:
     description: "The text used to prompt for a username during login"
     default: Email
   login.prompt.password.text:
     description: "The text used to prompt for a password during login"
     default: Password
+  login.idpDiscoveryEnabled:
+    description: "IDP Discovery should be set to true if you have configured more than one identity provider for UAA. The discovery relies on email domain being set for each additional provider"
+    default: false
+
+  # Email
+  login.notifications.url:
+    description: "The url for the notifications service (configure to use Notifications Service instead of SMTP server)"
   login.smtp:
     description: "SMTP server configuration, for password reset emails etc."
   login.smtp.host:
@@ -453,6 +456,7 @@ properties:
               another-group: 'Another group description'
       Deprecated format(still supported, but may be removed in the future): 
       Comma separated list of groups that should be added to the UAA db, but not assigned to a user by default.
+
   # Database
   uaadb.address:
     description: "The UAA database IP address"

@@ -236,6 +236,8 @@ properties:
     description: "SMTP server username"
   login.smtp.password:
     description: "SMTP server password"
+  login.smtp.from_address:
+    description: "SMTP from address"
 
   # Clients
   uaa.clients:

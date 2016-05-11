@@ -205,7 +205,7 @@ ldap:
   profile:
     file: ldap/ldap-<%= p_opt('uaa.ldap.profile_type') %>.xml
   ssl:
-    skipverification: <%= p('uaa.ldap.ssl.skipverification')
+    skipverification: <%= p('uaa.ldap.ssl.skipverification') %>
   <% if_p('uaa.ldap.sslCertificate') do |sslCert| %>
       sslCertificate: ! '<%= sslCert.gsub("\n", "\n    ") %>'
     <% if_p('uaa.ldap.sslCertificateAlias') do |sslCertAlias| %>

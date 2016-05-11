@@ -204,6 +204,14 @@ ldap:
   ldapdebug: 'Ldap configured through UAA'
   profile:
     file: ldap/ldap-<%= p_opt('uaa.ldap.profile_type') %>.xml
+  ssl:
+    skipverification: <%= p('uaa.ldap.ssl.skipverification')
+  <% if_p('uaa.ldap.sslCertificate') do |sslCert| %>
+      sslCertificate: ! '<%= sslCert.gsub("\n", "\n    ") %>'
+    <% if_p('uaa.ldap.sslCertificateAlias') do |sslCertAlias| %>
+    sslCertificateAlias: <%= sslCertAlias %>
+    <% end %>
+  <% end %>
   base:
     url: '<%= p_opt('uaa.ldap.url') %>'
     <% if p_opt('uaa.ldap.profile_type') == 'simple-bind' %>
@@ -233,13 +241,6 @@ ldap:
   <% if_p('uaa.ldap.externalGroupsWhitelist') do |whitelist| %>
   externalGroupsWhitelist: <% whitelist.each do |group| %>
   - <%= group %><% end %>
-  <% end %>
-  <% if_p('uaa.ldap.sslCertificate') do |sslCert| %>
-  ssl: 
-    sslCertificate: ! '<%= sslCert.gsub("\n", "\n    ") %>'
-    <% if_p('uaa.ldap.sslCertificateAlias') do |sslCertAlias| %>
-    sslCertificateAlias: <%= sslCertAlias %>
-    <% end %>
   <% end %>
   groups:
     <% if p('uaa.ldap.groups.profile_type') == 'no-groups' %>

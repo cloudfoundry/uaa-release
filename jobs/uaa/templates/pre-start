@@ -1,0 +1,15 @@
+#!/bin/bash
+
+CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+TRUST_STORE_FILE=/var/vcap/jobs/uaa/config/cacerts
+
+CERTS=$(grep 'END CERTIFICATE' $CERT_FILE| wc -l)
+rm -f $TRUST_STORE_FILE
+
+for N in $(seq 0 $(($CERTS - 1))); do
+  ALIAS="${CERT_FILE%.*}-$N"
+  cat $CERT_FILE |
+  awk "n==$N { print }; /END CERTIFICATE/ { n++ }" |
+      /var/vcap/packages/uaa/jdk/bin/keytool -noprompt -import -trustcacerts \
+              -alias $ALIAS -keystore $TRUST_STORE_FILE -storepass changeit
+done

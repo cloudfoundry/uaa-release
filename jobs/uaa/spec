@@ -271,7 +271,7 @@ properties:
     default: 5
   uaa.authentication.policy.countFailuresWithinSeconds:
     description: "Number of seconds in which lockoutAfterFailures failures must occur in order for account to be locked"
-    default: 3600
+    default: 1200
   uaa.authentication.policy.lockoutPeriodSeconds:
     description: "Number of seconds to lock out an account when lockoutAfterFailures failures is exceeded"
     default: 300
@@ -301,7 +301,7 @@ properties:
     default: false
   uaa.disableInternalUserManagement:
     description: "Disables UI and API for internal user management"
-    default: false  
+    default: false
   uaa.user.authorities:
     description: "Contains a list of the default authorities/scopes assigned to a user"
     default:
@@ -457,7 +457,7 @@ properties:
             groups:
               my-test-group: 'My test group description'
               another-group: 'Another group description'
-      Deprecated format(still supported, but may be removed in the future): 
+      Deprecated format(still supported, but may be removed in the future):
       Comma separated list of groups that should be added to the UAA db, but not assigned to a user by default.
 
   # Database

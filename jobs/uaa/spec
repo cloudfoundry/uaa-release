@@ -360,6 +360,9 @@ properties:
     description: "List of claims to exclude from the JWT-based OAuth2 tokens"
     example:
      - authorities
+  uaa.jwt.refresh.restrict_grant:
+    description: "Disallows refresh-token grant for any client for which the user has not approved the `uaa.refresh_token` scope"
+    default: false
 
   # Global security policies (for all zones)
   uaa.authentication.policy.global.lockoutAfterFailures:

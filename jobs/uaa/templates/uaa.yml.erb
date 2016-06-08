@@ -73,6 +73,9 @@ jwt:
     verification-key: |
         <%= verificationKey.gsub("\n", "\n        ") %>
   <% end %>
+    refresh:
+      restrict_grant: <%= p('uaa.jwt.refresh.restrict_grant') %>
+
 <% end %>
 
 authentication:

@@ -256,6 +256,20 @@ properties:
         app-launch-url: http://myloginpage.com
         show-on-homepage: true
         app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
+      app:
+        id: app
+        override: true
+        secret: app-secret
+        authorized-grant-types: authorization_code,client_credentials,refresh_token
+        authorities: test_resource.test_action
+        scope: test_resource.test_action,test_resource.other_action
+        redirect-uri: http://login.example.com
+        autoapprove:
+        - test_resource.test_action
+        - test_resource.other_action
+        app-launch-url: http://myapppage.com
+        show-on-homepage: true
+        app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
   uaa.admin.client_secret:
     description: "Secret of the admin client - a client named admin with uaa.admin as an authority"
   uaa.login.client_secret:

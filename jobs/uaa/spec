@@ -334,6 +334,7 @@ properties:
       - profile
       - roles
       - user_attributes
+      - uaa.offline_token
   uaa.jwt.revocable:
     default: false
     description: "Set to true if you wish that even JWT tokens become individually revocable and stored in the UAA token storage. This setting applies to the default zone only."
@@ -375,9 +376,8 @@ properties:
     example:
      - authorities
   uaa.jwt.refresh.restrict_grant:
-    description: "Disallows refresh-token grant for any client for which the user has not approved the `uaa.refresh_token` scope"
+    description: "Disallows refresh-token grant for any client for which the user has not approved the `uaa.offline_token` scope"
     default: false
-
   # Global security policies (for all zones)
   uaa.authentication.policy.global.lockoutAfterFailures:
     description: "Number of allowed failures before account is locked"

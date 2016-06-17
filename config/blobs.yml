@@ -1,4 +1,8 @@
 ---
+uaa/apache-tomcat-7.0.61.tar.gz:
+  object_id: b2a7ce9f-2673-4702-97e4-372d25eeb05d
+  sha: 98ccbc95d029291e81bf818879ec8a0aa14465df
+  size: 8816567
 uaa/cloudfoundry-identity-varz-1.0.2.war:
   object_id: 1a0e5866-f1ae-46f2-a519-a74b9adb0003
   sha: 8c35ed35fb6dfc4a97a243447763c635812066e8
@@ -23,7 +27,3 @@ postgres/postgresql-9.4.6.tar.gz:
   object_id: 83e927a9-2d85-4d80-bf20-50cf5020ed3f
   sha: bd031beebd86bf149c497525dccf57eebe5a6add
   size: 23249307
-uaa/apache-tomcat-7.0.68.tar.gz:
-  object_id: 1b2c6101-34af-473e-bc17-d830f2b663aa
-  sha: 3e8481f74968d80cb9cb0b7ca1a0ed40e4a707e7
-  size: 8900822

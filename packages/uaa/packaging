@@ -12,13 +12,13 @@ chmod -R a+r jdk
 
 cd ${BOSH_INSTALL_TARGET}
 
-tar zxvf ${BOSH_COMPILE_TARGET}/uaa/apache-tomcat-7.0.68.tar.gz
+tar zxvf ${BOSH_COMPILE_TARGET}/uaa/apache-tomcat-7.0.61.tar.gz
 if [[ $? != 0 ]] ; then
   echo "Cannot unpack Tomcat"
   exit 1
 fi
 
-mv apache-tomcat-7.0.68 tomcat
+mv apache-tomcat-7.0.61 tomcat
 
 cd tomcat
 rm -rf webapps/*

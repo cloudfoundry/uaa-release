@@ -35,8 +35,6 @@ database:
   abandonedtimeout: <%= p('uaa.database.abandoned_timeout') %>
   <% if_p('uaa.database.case_insensitive') do |case_insensitive| %>caseinsensitive: <%= case_insensitive.to_s %><% end %>
 
-spring_profiles: <%= p('uaadb.db_scheme') %><% if p_opt('uaa.ldap.enabled') then %>,ldap<% end %>
-
 logging:
   config: /var/vcap/jobs/uaa/config/log4j.properties
       
@@ -117,10 +115,6 @@ oauth:
   authorize:
     ssl: true
   <% end %>
-  <% if_p('uaa.client.autoapprove') do |autoapproveClients| %>
-  client:
-    autoapprove: <% autoapproveClients.each do |client_id| %>
-      - <%= client_id %><% end %><% end %>
   clients:
 <% if_p('uaa.clients') do |clients| clients.each do |id,client| %>
     <% next unless client %>
@@ -152,9 +146,7 @@ scim:
   user.override: <%= p('uaa.scim.user.override') %>
 <% if_p('uaa.scim.users') do |users| %>
   users: <% users.each do |user| %>
-  <% if user.is_a? String then %>
-    - <%= user %><%
-     else
+    <%
        usr_name = user['name']
        usr_password = user['password'] || ''
        usr_fname = user['firstName'] || ''
@@ -166,17 +158,12 @@ scim:
       %>
     - <%= usr_name + '|' + usr_password + '|' + usr_email + '|' + usr_fname + '|' + usr_lname + '|' + usr_groups + '|' + usr_origin%>
   <% end %>
- <% end %>
 <% end %>
 
 <% if_p('uaa.scim.groups') do |groups| %>
-  <% if groups.is_a? String then %>
-  groups: <%= groups %>
-  <% else %>
   groups:
   <% groups.each do |group_name, group_desc| %>
     <%= group_name %>: <%= group_desc %><% end %>
-  <% end %>
 <% end %>
 
 <% if_p('uaa.scim.external_groups') do |externalGroups| %>
@@ -199,9 +186,6 @@ zones:
 
 <% if_p('uaa.require_https') do |requireHttps| %>
 require_https: <%= requireHttps %>
-<% end %>
-<% if_p('uaa.dump_requests') do |dumpRequests| %>
-dump_requests: <%= dumpRequests %>
 <% end %>
 <% if p_opt('uaa.ldap.enabled') %>
 ldap:
@@ -257,7 +241,6 @@ ldap:
     groupSearchFilter: '<%= p('uaa.ldap.groups.groupSearchFilter') %>'
     searchSubtree: <%= p('uaa.ldap.groups.searchSubtree') %>
     maxSearchDepth: <%= p('uaa.ldap.groups.maxSearchDepth') %>
-    autoAdd: <%= p('uaa.ldap.groups.autoAdd') %>
 <% end %>
 
 <% if_p('uaa.servlet.session-cookie') do |sessioncookie| %>

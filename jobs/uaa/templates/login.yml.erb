@@ -8,22 +8,15 @@ name: login
 
   protocol = p('login.protocol')
 
-  uaa_base = p(['uaa.url', 'login.uaa_base'], "#{protocol}://uaa.#{p_opt('domain')}")
+  uaa_base = p(['uaa.url'], "#{protocol}://uaa.#{p_opt('domain')}")
 
   entity_base_url_fallback = uaa_base.sub("://uaa.", "://login.")
 
-  login_entityBaseUrl = nil
-  if_p('login.saml.entity_base_url') do |entity_base_url|
-    login_entityBaseUrl = "#{protocol}://#{entity_base_url}"
-  end .else do
-    login_entityBaseUrl = entity_base_url_fallback
-  end
-
-  login_entityId = p(['login.saml.entityid', 'login.entity_id'], login_entityBaseUrl.sub(/^http.*:\/\//,''))
+  login_entityId = p(['login.saml.entityid'], entity_base_url_fallback.sub(/^http.*:\/\//,''))
 
   login_authorizeUrl = "#{p('uaa.url', entity_base_url_fallback)}/oauth/authorize"
 
-  login_url = p('login.url', login_entityBaseUrl)
+  login_url = p('login.url', entity_base_url_fallback)
 
   # The login secret is defined in one of two properties
   # uaa.login.client_secret or uaa.clients.login.secret
@@ -44,12 +37,6 @@ links: <% login_links.each do |id,url| %>
 <% if_p('login.smtp') do |login_smtp| %>
 smtp: <% login_smtp.each do |key,val| %>
   <%= key %>: <%= val %><% end %>
-<% end %>
-<% if_p('login.tiles') do |login_tiles| %>
-tiles: <% login_tiles.each do |tile| %>
-- <% tile.each do |key,val| %><%= key %>: <%= val %>
-  <% end %>
-<% end %>
 <% end %>
 
 # The secret that this login server will use to authenticate to the uaa
@@ -96,7 +83,7 @@ login:
 <% end %>
   url: <%= login_url %>
   idpDiscoveryEnabled: <%= p('login.idpDiscoveryEnabled') %>
-  entityBaseURL: <%= login_entityBaseUrl %>
+  entityBaseURL: <%= entity_base_url_fallback %>
   entityID: <%= login_entityId %>
   prompt:
     username:
@@ -115,8 +102,6 @@ login:
   serviceProviderKeyPassword: <%= serviceProviderKeyPassword %>
   <% end %>
   <% if_p('login.self_service_links_enabled') do |selfServiceEnabled| %>
-  selfServiceLinksEnabled: <%= selfServiceEnabled %>
-  <% end .else_if_p('login.signups_enabled') do |selfServiceEnabled| %>
   selfServiceLinksEnabled: <%= selfServiceEnabled %>
   <% end %>
   oauth:
@@ -143,17 +128,17 @@ login:
     wantAssertionSigned: <%= wantAssertionSigned %>
     <% end %>
     providers: <% if_p('login.saml.providers') do |samlProviders| samlProviders.reject {|k,_| k.to_s == ''}.each do |idpAlias,idpProvider| %>
-      <%= idpAlias %>: <% idpProvider.reject {|k,_| %w(idpMetadata idpMetadataXML idpMetadataURL).include?(k.to_s)}.each do |key,value|%>
+      <%= idpAlias %>: <% idpProvider.reject {|k,_| %w(idpMetadata).include?(k.to_s)}.each do |key,value|%>
         <% if key.to_s.eql?('attributeMappings') then %>
         attributeMappings: <% value.each do |key,val| %>
           <%= key %>: <%= val %><% end %>
         <% else %>
         <%= key %>: <%= value.is_a?(String) && value.match("\n") ? "| \n          " + value.gsub("\n", "\n          ") + '' : value %><% end %><% end %>
-        idpMetadata: <%= (idpProvider['idpMetadataURL'] || idpProvider['idpMetadataXML'] || idpProvider['idpMetadata']).inspect %><% end %>
+        idpMetadata: <%= (idpProvider['idpMetadata']).inspect %><% end %>
     <% end %>
     <% if_p('login.saml.idpEntityAlias') do |idpEntityAlias| %>
       <%= idpEntityAlias %>:
-        idpMetadata: <%= p('login.saml.idpMetadataURL', "/var/vcap/jobs/login/#{p_opt('login.saml.idp_metadata_file')}") %>
+        idpMetadata: <%= p("/var/vcap/jobs/login/#{p_opt('login.saml.idp_metadata_file')}") %>
         assertionConsumerIndex: <%= p_opt('login.saml.assertionConsumerIndex') %>
         nameID: <%= p_opt('login.saml.nameidFormat') %>
         metadataTrustCheck: <%= p_opt('login.saml.metadataTrustCheck') %>

@@ -29,6 +29,7 @@ database:
   password: "<%= uaa_role['password'] %>"
   maxactive: <%= p('uaa.database.max_connections') %>
   maxidle:  <%= p('uaa.database.max_idle_connections') %>
+  minidle:  <%= p('uaa.database.min_idle_connections') %>
   removeabandoned: <%= p('uaa.database.remove_abandoned') %>
   logabandoned: <%= p('uaa.database.log_abandoned') %>
   abandonedtimeout: <%= p('uaa.database.abandoned_timeout') %>

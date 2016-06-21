@@ -493,6 +493,9 @@ properties:
   uaa.database.max_idle_connections:
     description: "The max number of open idle connections to the DB from a running UAA instance"
     default: 10
+  uaa.database.min_idle_connections:
+    description: "The min number of open idle connections to the DB from a running UAA instance"
+    default: 0
   uaa.database.remove_abandoned:
     description: "True if connections that are left open longer then abandoned_timeout seconds during a session(time between borrow and return from pool) should be forcibly closed"
     default: false

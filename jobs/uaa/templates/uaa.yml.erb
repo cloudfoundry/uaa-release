@@ -35,6 +35,8 @@ database:
   abandonedtimeout: <%= p('uaa.database.abandoned_timeout') %>
   <% if_p('uaa.database.case_insensitive') do |case_insensitive| %>caseinsensitive: <%= case_insensitive.to_s %><% end %>
 
+spring_profiles: <%= p('uaadb.db_scheme') %><% if p_opt('uaa.ldap.enabled') then %>,ldap<% end %>
+
 logging:
   config: /var/vcap/jobs/uaa/config/log4j.properties
       
@@ -145,8 +147,7 @@ scim:
   userids_enabled: <%= p('uaa.scim.userids_enabled') %>
   user.override: <%= p('uaa.scim.user.override') %>
 <% if_p('uaa.scim.users') do |users| %>
-  users: <% users.each do |user| %>
-    <%
+  users: <% users.each do |user|
        usr_name = user['name']
        usr_password = user['password'] || ''
        usr_fname = user['firstName'] || ''

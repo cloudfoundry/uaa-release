@@ -42,7 +42,6 @@ smtp: <% login_smtp.each do |key,val| %>
 # The secret that this login server will use to authenticate to the uaa
 LOGIN_SECRET: <%= login_secret %>
 require_https: <%= p('uaa.require_https') %>
-dump_requests: <%= p('uaa.dump_requests') %>
 assetBaseUrl: <%= p('login.asset_base_url') %>
 
 <% if_p('login.notifications.url') do |login_notifications_url| %>

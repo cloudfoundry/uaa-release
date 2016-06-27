@@ -222,6 +222,12 @@ properties:
     description: "SMTP server password"
   login.smtp.from_address:
     description: "SMTP from address"
+  login.smtp.auth:
+    description: "If true, authenticate using AUTH command. https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html"
+    default: false
+  login.smtp.starttls:
+    description: "If true, send STARTTLS command before login to server. https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html"
+    default: false
 
   # Clients
   uaa.clients:

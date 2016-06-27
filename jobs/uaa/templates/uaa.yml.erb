@@ -183,7 +183,8 @@ zones:
   internal:
     hostnames:
       <% if_p('domain') do |domain| %>- <%= "login.#{domain}" %><% end %>
-      <% p_arr('uaa.zones.internal.hostnames').each do |hostname| %>- <%= hostname %><% end %>
+      <% p_arr('uaa.zones.internal.hostnames').each do |hostname| %>
+      - <%= hostname %><% end %>
 
 <% if_p('uaa.require_https') do |requireHttps| %>
 require_https: <%= requireHttps %>

@@ -11,8 +11,8 @@
   uaa_db = p_arr('uaadb.databases').find { |db| db['tag'] == 'uaa' }
   uaa_role = p_arr('uaadb.roles').find { |role| role['tag'] == 'admin' }
   protocol = p('login.protocol')
-  issuer_uri = p('uaa.issuer', p('uaa.url', "#{protocol}://uaa.#{p_opt('domain')}"))
-  oauth_clientsLoginRedirectUri = "#{protocol}://login.#{p_opt('domain')}"
+  issuer_uri = p('uaa.issuer', p('uaa.url'))
+  oauth_clientsLoginRedirectUri = p('uaa.url')
 
   # The login secret is defined in one of two properties
   # uaa.login.client_secret or uaa.clients.login.secret

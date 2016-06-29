@@ -8,7 +8,7 @@ name: login
 
   protocol = p('login.protocol')
 
-  uaa_base = p(['uaa.url'], "#{protocol}://uaa.#{p_opt('domain')}")
+  uaa_base = p('uaa.url')
 
   entity_base_url_fallback = uaa_base.sub("://uaa.", "://login.")
 

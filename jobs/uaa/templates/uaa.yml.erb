@@ -190,6 +190,7 @@ require_https: <%= requireHttps %>
 <% end %>
 <% if p_opt('uaa.ldap.enabled') %>
 ldap:
+  addShadowUserOnLogin: <%= p('uaa.ldap.add_shadow_user_on_login') %>
   ldapdebug: 'Ldap configured through UAA'
   profile:
     file: ldap/ldap-<%= p_opt('uaa.ldap.profile_type') %>.xml

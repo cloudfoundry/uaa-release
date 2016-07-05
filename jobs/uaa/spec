@@ -583,6 +583,9 @@ properties:
     example:
       - admin
       - user
+  uaa.ldap.add_shadow_user_on_login:
+    description: "If set to false, only users pre-populated in the UAA user database will be allowed to authenticate via LDAP. If set to true, any user from LDAP will be allowed to authenticate and an internal user will be created if one does not yet exist."
+    default: true
 
   # OpenID Connect/OAuth
 

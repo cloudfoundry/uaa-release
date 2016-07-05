@@ -433,7 +433,7 @@ properties:
       - marissa|koala|marissa@test.org|Marissa|Bloggs
   uaa.scim.external_groups:
     description: |
-      External group mappings. Either formatted as an OpenStruct or a list of pipe-separated specifications. The list format is deprecated.
+      External group mappings. Either formatted as an OpenStruct.
       As an OpenStruct, the mapping additionally specifies an origin to which the mapping is applied:
         origin1:
           external_group1:
@@ -448,8 +448,6 @@ properties:
             - internal_group3
             - internal_group4
             - internal_group5
-      As a list, each entry consists of the following (The origin defaults to ldap in this case.):
-        - internal_group_name|space_delimited_external_groups another_group another_group_etc
   uaa.scim.groups:
     description: |
       Contains a hash of group names and their descriptions. These groups will be added to the UAA database for the default zone but not associated with any user.
@@ -459,8 +457,6 @@ properties:
             groups:
               my-test-group: 'My test group description'
               another-group: 'Another group description'
-      Deprecated format(still supported, but may be removed in the future):
-      Comma separated list of groups that should be added to the UAA db, but not assigned to a user by default.
 
   # Database
   uaadb.address:

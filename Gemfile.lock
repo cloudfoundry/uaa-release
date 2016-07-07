@@ -1,0 +1,13 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    deep_merge (1.0.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  deep_merge (~> 1.0, >= 1.0.1)
+
+BUNDLED WITH
+   1.12.5

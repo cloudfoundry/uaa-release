@@ -1,0 +1,194 @@
+---
+name: uaa
+
+database:
+  url: jdbc:postgresql://10.244.0.30:5524/uaadb
+  username: uaaadmin
+  password: "admin"
+  maxactive: 100
+  maxidle:  10
+  minidle:  0
+  removeabandoned: false
+  logabandoned: true
+  abandonedtimeout: 300
+
+
+spring_profiles: postgresql
+
+logging:
+  config: /var/vcap/jobs/uaa/config/log4j.properties
+
+jwt:
+  token:
+    revocable: false
+    policy:
+      accessTokenValiditySeconds:  43200
+      refreshTokenValiditySeconds: 2592000
+      global:
+        accessTokenValiditySeconds: 43200
+        refreshTokenValiditySeconds: 2592000
+    signing-key: |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIICXAIBAAKBgQDHFr+KICms+tuT1OXJwhCUmR2dKVy7psa8xzElSyzqx7oJyfJ1
+        JZyOzToj9T5SfTIq396agbHJWVfYphNahvZ/7uMXqHxf+ZH9BL1gk9Y6kCnbM5R6
+        0gfwjyW1/dQPjOzn9N394zd2FJoFHwdq9Qs0wBugspULZVNRxq7veq/fzwIDAQAB
+        AoGBAJ8dRTQFhIllbHx4GLbpTQsWXJ6w4hZvskJKCLM/o8R4n+0W45pQ1xEiYKdA
+        Z/DRcnjltylRImBD8XuLL8iYOQSZXNMb1h3g5/UGbUXLmCgQLOUUlnYt34QOQm+0
+        KvUqfMSFBbKMsYBAoQmNdTHBaz3dZa8ON9hh/f5TT8u0OWNRAkEA5opzsIXv+52J
+        duc1VGyX3SwlxiE2dStW8wZqGiuLH142n6MKnkLU4ctNLiclw6BZePXFZYIK+AkE
+        xQ+k16je5QJBAN0TIKMPWIbbHVr5rkdUqOyezlFFWYOwnMmw/BKa1d3zp54VP/P8
+        +5aQ2d4sMoKEOfdWH7UqMe3FszfYFvSu5KMCQFMYeFaaEEP7Jn8rGzfQ5HQd44ek
+        lQJqmq6CE2BXbY/i34FuvPcKU70HEEygY6Y9d8J3o6zQ0K9SYNu+pcXt4lkCQA3h
+        jJQQe5uEGJTExqed7jllQ0khFJzLMx0K6tj0NeeIzAaGCQz13oo2sCdeGRHO4aDh
+        HH6Qlq/6UOV5wP8+GAcCQFgRCcB+hrje8hfEEefHcFpyKH+5g1Eu1k0mLrxK2zd+
+        4SlotYRHgPCEubokb2S1zfZDWIXW3HmggnGgM949TlY=
+        -----END RSA PRIVATE KEY-----
+    verification-key: |
+        -----BEGIN PUBLIC KEY-----
+        MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDHFr+KICms+tuT1OXJwhCUmR2d
+        KVy7psa8xzElSyzqx7oJyfJ1JZyOzToj9T5SfTIq396agbHJWVfYphNahvZ/7uMX
+        qHxf+ZH9BL1gk9Y6kCnbM5R60gfwjyW1/dQPjOzn9N394zd2FJoFHwdq9Qs0wBug
+        spULZVNRxq7veq/fzwIDAQAB
+        -----END PUBLIC KEY-----
+    refresh:
+      restrict_grant: false
+
+authentication:
+  policy:
+    lockoutAfterFailures: 5
+    countFailuresWithinSeconds: 1200
+    lockoutPeriodSeconds: 300
+    global:
+      lockoutAfterFailures: 5
+      countFailuresWithinSeconds: 3600
+      lockoutPeriodSeconds: 300
+
+password:
+  policy:
+    minLength: 0
+    maxLength: 255
+    requireUpperCaseCharacter: 0
+    requireLowerCaseCharacter: 0
+    requireDigit: 0
+    requireSpecialCharacter: 0
+    expirePasswordInMonths: 0
+    global:
+      minLength: 0
+      maxLength: 255
+      requireUpperCaseCharacter: 0
+      requireLowerCaseCharacter: 0
+      requireDigit: 0
+      requireSpecialCharacter: 0
+      expirePasswordInMonths: 0
+
+disableInternalAuth: false
+disableInternalUserManagement: false
+
+issuer:
+  uri: https://uaa.bosh-lite.com
+
+oauth:
+  authorize:
+    ssl: true
+  clients:
+    cc-service-dashboards:
+      id: cc-service-dashboards
+      authorities: clients.read,clients.write,clients.admin
+      authorized-grant-types: client_credentials
+      scope: openid,cloud_controller_service_permissions.read
+      secret: cc-broker-secret
+    cc_routing:
+      id: cc_routing
+      authorities: routing.router_groups.read
+      authorized-grant-types: client_credentials
+      secret: cc-routing-secret
+    cf:
+      id: cf
+      access-token-validity: 600
+      authorities: uaa.none
+      authorized-grant-types: password,refresh_token
+      override: true
+      refresh-token-validity: 2592000
+      scope: cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,scim.read,scim.write,doppler.firehose,uaa.user,routing.router_groups.read
+    cloud_controller_username_lookup:
+      id: cloud_controller_username_lookup
+      authorities: scim.userids
+      authorized-grant-types: client_credentials
+      secret: cloud-controller-username-lookup-secret
+    doppler:
+      id: doppler
+      authorities: uaa.resource
+      override: true
+      secret: doppler-secret
+    gorouter:
+      id: gorouter
+      authorities: routing.routes.read
+      authorized-grant-types: client_credentials,refresh_token
+      secret: gorouter-secret
+    login:
+      id: login
+      authorities: oauth.login,scim.write,clients.read,notifications.write,critical_notifications.write,emails.write,scim.userids,password.write
+      authorized-grant-types: authorization_code,client_credentials,refresh_token
+      autoapprove: true
+      override: true
+      redirect-uri: https://login.bosh-lite.com
+      scope: openid,oauth.approvals
+      secret: login-secret
+    notifications:
+      id: notifications
+      authorities: cloud_controller.admin,scim.read
+      authorized-grant-types: client_credentials
+      secret: notification-secret
+    ssh-proxy:
+      id: ssh-proxy
+      authorized-grant-types: authorization_code
+      autoapprove: true
+      override: true
+      redirect-uri: /login
+      scope: openid,cloud_controller.read,cloud_controller.write,cloud_controller.admin
+      secret: ssh-proxy-secret
+    tcp_emitter:
+      id: tcp_emitter
+      authorities: routing.routes.write,routing.routes.read,routing.router_groups.read
+      authorized-grant-types: client_credentials,refresh_token
+      secret: tcp-emitter-secret
+    tcp_router:
+      id: tcp_router
+      authorities: routing.routes.read,routing.router_groups.read
+      authorized-grant-types: client_credentials,refresh_token
+      secret: tcp-router-secret
+    admin:
+      authorized-grant-types: client_credentials
+      authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
+      id: admin
+      secret: "admin-secret"
+  user:
+    authorities:
+      - openid
+      - scim.me
+      - cloud_controller.read
+      - cloud_controller.write
+      - cloud_controller_service_permissions.read
+      - password.write
+      - uaa.user
+      - approvals.me
+      - oauth.approvals
+      - notification_preferences.read
+      - notification_preferences.write
+      - profile
+      - roles
+      - user_attributes
+      - uaa.offline_token
+scim:
+  userids_enabled: true
+  user:
+    override: true
+  users:
+    - admin|admin|admin|||scim.write,scim.read,openid,cloud_controller.admin,clients.read,clients.write,doppler.firehose,routing.router_groups.read|uaa
+
+zones:
+  internal:
+    hostnames:
+      - uaa.service.cf.internal
+
+require_https: false

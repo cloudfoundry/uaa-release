@@ -54,7 +54,7 @@ describe 'uaa.yml.erb' do
 
   end
 
-  let(:erb_yaml) { File.read(File.join(File.dirname(__FILE__), '../jobs/uaa/templates/uaa-config.yml.erb')) }
+  let(:erb_yaml) { File.read(File.join(File.dirname(__FILE__), '../jobs/uaa/templates/uaa.yml.erb')) }
 
   subject(:parsed_yaml) do
     binding = Bosh::Template::EvaluationContext.new(deployment_manifest_fragment).get_binding

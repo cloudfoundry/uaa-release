@@ -82,7 +82,6 @@ describe 'uaa-release yaml generation' do
     it "login.yml should match" do
       expected = File.read('spec/compare/bosh-lite-login.yml')
       actual = parsed_login_yaml.to_yaml
-      puts "actual:\n" + parsed_login_yaml.to_yaml(:indentation => 2)
       expect(actual).to yaml_eq(expected)
     end
 

@@ -1,0 +1,55 @@
+---
+name: login
+logging:
+  config: /var/vcap/jobs/login/config/log4j.properties
+
+uaa:
+  url: https://uaa.bosh-lite.com
+
+links:
+  passwd: https://login.bosh-lite.com/forgot_password
+  signup: https://login.bosh-lite.com/create_account
+
+smtp:
+  host: localhost
+  password:
+  port: 2525
+  user:
+  from_address:
+  auth: false
+  starttls: false
+
+# The secret that this login server will use to authenticate to the uaa
+LOGIN_SECRET: login-secret
+require_https: false
+assetBaseUrl: /resources/oss
+
+logout:
+  redirect:
+    url: /login
+    parameter:
+      disable: true
+
+login:
+  branding:
+  url: https://login.bosh-lite.com
+  idpDiscoveryEnabled: false
+  entityBaseURL: https://login.bosh-lite.com
+  entityID: login.bosh-lite.com
+  prompt:
+    username:
+      text: Email
+    password:
+      text: Password
+  oauth:
+
+  saml:
+    signMetaData: true
+    signRequest: true
+    wantAssertionSigned: false
+    providers:
+    socket:
+      connectionManagerTimeout: 10000
+      soTimeout: 10000
+  authorize:
+    url: https://uaa.bosh-lite.com/oauth/authorize

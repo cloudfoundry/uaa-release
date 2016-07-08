@@ -9,7 +9,7 @@ director_uuid: 93c01d2d-a2a5-49d8-8d02-389fd223a9cf
 jobs:
 - default_networks:
   - name: cf1
-    static_ips: 
+    static_ips:
   instances: 1
   name: consul_z1
   networks:
@@ -34,7 +34,7 @@ jobs:
     serial: true
 - default_networks:
   - name: cf2
-    static_ips: 
+    static_ips:
   instances: 0
   name: consul_z2
   networks:
@@ -58,7 +58,7 @@ jobs:
     serial: true
 - default_networks:
   - name: cf1
-    static_ips: 
+    static_ips:
   instances: 1
   name: ha_proxy_z1
   networks:
@@ -220,7 +220,7 @@ jobs:
   name: nfs_z1
   networks:
   - name: cf1
-    static_ips: 
+    static_ips:
   persistent_disk: 102400
   properties:
     consul:
@@ -255,7 +255,7 @@ jobs:
   name: blobstore_z1
   networks:
   - name: cf1
-    static_ips: 
+    static_ips:
   persistent_disk: 102400
   properties:
     consul:
@@ -400,11 +400,11 @@ jobs:
     metron_agent:
       zone: z1
     nfs_server:
-      address: 
+      address:
       allow_from_entries:
       - 10.244.0.0/30
       - 10.244.2.0/30
-      share: 
+      share:
     route_registrar:
       routes:
       - name: api
@@ -462,11 +462,11 @@ jobs:
     metron_agent:
       zone: z2
     nfs_server:
-      address: 
+      address:
       allow_from_entries:
       - 10.244.0.0/30
       - 10.244.2.0/30
-      share: 
+      share:
     route_registrar:
       routes:
       - name: api
@@ -531,11 +531,11 @@ jobs:
     metron_agent:
       zone: z1
     nfs_server:
-      address: 
+      address:
       allow_from_entries:
       - 10.244.0.0/30
       - 10.244.2.0/30
-      share: 
+      share:
   resource_pool: small_z1
   templates:
   - name: consul_agent
@@ -554,11 +554,11 @@ jobs:
     metron_agent:
       zone: z2
     nfs_server:
-      address: 
+      address:
       allow_from_entries:
       - 10.244.0.0/30
       - 10.244.2.0/30
-      share: 
+      share:
   resource_pool: small_z2
   templates:
   - name: consul_agent
@@ -666,7 +666,7 @@ jobs:
   name: runner_z2
   networks:
   - name: cf2
-    static_ips: 
+    static_ips:
   properties:
     consul:
       agent:
@@ -827,7 +827,7 @@ jobs:
   update: {}
 - default_networks:
   - name: cf1
-    static_ips: 
+    static_ips:
   instances: 1
   name: router_z1
   networks:
@@ -852,7 +852,7 @@ jobs:
   update: {}
 - default_networks:
   - name: cf2
-    static_ips: 
+    static_ips:
   instances: 0
   name: router_z2
   networks:
@@ -2671,15 +2671,15 @@ properties:
       cutoff_age_in_days: 31
     audit_events:
       cutoff_age_in_days: 31
-    broker_client_default_async_poll_interval_seconds: 
-    broker_client_max_async_poll_duration_minutes: 
+    broker_client_default_async_poll_interval_seconds:
+    broker_client_max_async_poll_duration_minutes:
     broker_client_timeout_seconds: 70
     buildpacks:
       blobstore_type: webdav
       buildpack_directory_key: bosh-lite.com-cc-buildpacks
-      cdn: 
-      fog_aws_storage_options: 
-      fog_connection: 
+      cdn:
+      fog_aws_storage_options:
+      fog_connection:
       webdav_config:
         blobstore_timeout: 5
         ca_cert: |
@@ -2746,15 +2746,15 @@ properties:
     - dns
     default_to_diego_backend: false
     development_mode: false
-    directories: 
+    directories:
     disable_custom_buildpacks: false
     droplets:
       blobstore_type: webdav
-      cdn: 
+      cdn:
       droplet_directory_key: bosh-lite.com-cc-droplets
-      fog_aws_storage_options: 
-      fog_connection: 
-      max_staged_droplets_stored: 
+      fog_aws_storage_options:
+      fog_connection:
+      max_staged_droplets_stored:
       webdav_config:
         blobstore_timeout: 5
         ca_cert: |
@@ -2786,7 +2786,7 @@ properties:
         username: blobstore-username
     external_host: api
     external_port: 9022
-    external_protocol: 
+    external_protocol:
     install_buildpacks:
     - name: staticfile_buildpack
       package: staticfile-buildpack
@@ -2808,34 +2808,34 @@ properties:
     internal_api_user: internal_user
     jobs:
       app_bits_packer:
-        timeout_in_seconds: 
+        timeout_in_seconds:
       app_events_cleanup:
-        timeout_in_seconds: 
+        timeout_in_seconds:
       app_usage_events_cleanup:
-        timeout_in_seconds: 
+        timeout_in_seconds:
       blobstore_delete:
-        timeout_in_seconds: 
+        timeout_in_seconds:
       blobstore_upload:
-        timeout_in_seconds: 
+        timeout_in_seconds:
       droplet_deletion:
-        timeout_in_seconds: 
+        timeout_in_seconds:
       droplet_upload:
-        timeout_in_seconds: 
+        timeout_in_seconds:
       generic:
-        number_of_workers: 
+        number_of_workers:
       global:
         timeout_in_seconds: 14400
     logging_level: debug2
     maximum_app_disk_in_mb: 2048
     maximum_health_check_timeout: 180
-    min_cli_version: 
-    min_recommended_cli_version: 
-    minimum_candidate_stagers: 
+    min_cli_version:
+    min_recommended_cli_version:
+    minimum_candidate_stagers:
     newrelic:
       capture_params: false
       developer_mode: false
       environment_name: cf-warden
-      license_key: 
+      license_key:
       monitor_mode: false
       transaction_tracer:
         enabled: true
@@ -2843,11 +2843,11 @@ properties:
     packages:
       app_package_directory_key: bosh-lite.com-cc-packages
       blobstore_type: webdav
-      cdn: 
-      fog_aws_storage_options: 
-      fog_connection: 
+      cdn:
+      fog_aws_storage_options:
+      fog_connection:
       max_package_size: 1073741824
-      max_valid_packages_stored: 
+      max_valid_packages_stored:
       webdav_config:
         blobstore_timeout: 5
         ca_cert: |
@@ -2885,12 +2885,12 @@ properties:
         total_routes: 1000
         total_service_keys: 1000
         total_services: 100
-    reserved_private_domains: 
+    reserved_private_domains:
     resource_pool:
       blobstore_type: webdav
-      cdn: 
-      fog_aws_storage_options: 
-      fog_connection: 
+      cdn:
+      fog_aws_storage_options:
+      fog_connection:
       resource_directory_key: bosh-lite.com-cc-resources
       webdav_config:
         blobstore_timeout: 5
@@ -2922,7 +2922,7 @@ properties:
         public_endpoint: http://blobstore.bosh-lite.com
         username: blobstore-username
     security_event_logging:
-      enabled: 
+      enabled:
     security_group_definitions:
     - name: public_networks
       rules:
@@ -2961,7 +2961,7 @@ properties:
     service_usage_events:
       cutoff_age_in_days: 31
     srv_api_uri: https://api.bosh-lite.com
-    stacks: 
+    stacks:
     staging_upload_password: upload-password
     staging_upload_user: upload-user
     system_buildpacks:
@@ -2981,16 +2981,16 @@ properties:
       package: php-buildpack
     - name: binary_buildpack
       package: binary-buildpack
-    system_hostnames: 
+    system_hostnames:
     thresholds:
       api:
-        alert_if_above_mb: 
-        restart_if_above_mb: 
-        restart_if_consistently_above_mb: 
+        alert_if_above_mb:
+        restart_if_above_mb:
+        restart_if_consistently_above_mb:
       worker:
-        alert_if_above_mb: 
-        restart_if_above_mb: 
-        restart_if_consistently_above_mb: 
+        alert_if_above_mb:
+        restart_if_above_mb:
+        restart_if_consistently_above_mb:
     user_buildpacks: []
     users_can_select_backend: true
     volume_services_enabled: true
@@ -3035,11 +3035,11 @@ properties:
     - name: ccadmin
       password: admin
       tag: admin
-  collector: 
+  collector:
   consul:
     agent:
       domain: cf.internal
-      log_level: 
+      log_level:
       servers:
         lan:
         - 10.244.0.54
@@ -3184,7 +3184,7 @@ properties:
       BKcJHlf9kYxFaLL17iOq9rY0+LURr63BkRa2uyn489luxcHnTjk=
       -----END RSA PRIVATE KEY-----
   databases:
-    additional_config: 
+    additional_config:
     address: 10.244.0.30
     collect_statement_statistics: true
     databases:
@@ -3211,7 +3211,7 @@ properties:
       tag: admin
   dea_next:
     advertise_interval_in_seconds: 5
-    allow_host_access: 
+    allow_host_access:
     allow_networks: []
     ca_cert: |
       -----BEGIN CERTIFICATE-----
@@ -3305,14 +3305,14 @@ properties:
     enable_ssl: true
     evacuation_bail_out_time_in_seconds: 0
     heartbeat_interval_in_seconds: 10
-    instance_bandwidth_limit: 
+    instance_bandwidth_limit:
     instance_disk_inode_limit: 200000
     kernel_network_tuning_enabled: false
     logging_level: debug
     memory_mb: 8192
-    memory_overcommit_factor: 
-    mtu: 
-    post_setup_hook: 
+    memory_overcommit_factor:
+    mtu:
+    post_setup_hook:
     rlimit_core: 0
     server_cert: |
       -----BEGIN CERTIFICATE-----
@@ -3369,25 +3369,25 @@ properties:
       O+o/32YdffnRVnB/MUcbSFgfzuxUQGV9m39BY5ZR2wMSTnAdMHS6GKcJhcrG+QCc
       G+alcNP+g9WQGBFs2filZSpzB8d7d7657vIHI2qUA8206SKeCvDo
       -----END RSA PRIVATE KEY-----
-    staging_bandwidth_limit: 
+    staging_bandwidth_limit:
     staging_disk_inode_limit: 200000
     staging_disk_limit_mb: 6144
     staging_memory_limit_mb: 1024
-  description: 
+  description:
   disk_quota_enabled: false
   doppler:
-    blacklisted_syslog_ranges: 
+    blacklisted_syslog_ranges:
     debug: false
     maxRetainedLogMessages: 100
-    message_drain_buffer_size: 
+    message_drain_buffer_size:
     port: 4443
     tls:
-      enable: 
-      port: 
-      server_cert: 
-      server_key: 
+      enable:
+      port:
+      server_cert:
+      server_key:
     unmarshaller_count: 5
-    zone: 
+    zone:
   doppler_endpoint:
     shared_secret: loggregator-secret
   dropsonde:
@@ -3404,7 +3404,7 @@ properties:
       - 10.244.0.6
       password: nats
       username: nats
-  ha_proxy: 
+  ha_proxy:
   hm9000:
     ca_cert: |
       -----BEGIN CERTIFICATE-----
@@ -3548,9 +3548,9 @@ properties:
       Xyxn1ZhhcHZtOShQ8v6/MpYakL2Zg0uGOUlMrTln3sD011Nr3hMFsQ==
       -----END RSA PRIVATE KEY-----
     url: https://hm9000.bosh-lite.com
-  logger_endpoint: 
+  logger_endpoint:
   loggregator:
-    blacklisted_syslog_ranges: 
+    blacklisted_syslog_ranges:
     debug: false
     etcd:
       machines:
@@ -3558,42 +3558,43 @@ properties:
     maxRetainedLogMessages: 100
     outgoing_dropsonde_port: 8081
     tls:
-      ca_cert: 
+      ca_cert:
   loggregator_endpoint:
     shared_secret: loggregator-secret
   login:
     analytics:
-      code: 
-      domain: 
-    asset_base_url: 
+      code:
+      domain:
+    asset_base_url:
     brand: oss
-    catalina_opts: 
+    catalina_opts:
     enabled: true
     links:
       passwd: https://login.bosh-lite.com/forgot_password
       signup: https://login.bosh-lite.com/create_account
-    logout: 
-    messages: 
+    logout:
+    messages:
     notifications:
-      url: 
-    protocol: 
-    restricted_ips_regex: 
-    saml: 
-    self_service_links_enabled: 
+      url:
+    protocol:
+    restricted_ips_regex:
+    saml:
+    self_service_links_enabled:
     smtp:
-      host: 
-      password: 
-      port: 
-      user: 
-    url: 
+      host:
+      password:
+      port:
+      user:
+      from_address:
+    url:
   metron_agent:
-    buffer_size: 
+    buffer_size:
     deployment: cf-warden
-    enable_buffer: 
-    preferred_protocol: 
+    enable_buffer:
+    preferred_protocol:
     tls:
-      client_cert: 
-      client_key: 
+      client_cert:
+      client_key:
   metron_endpoint:
     shared_secret: loggregator-secret
   nats:
@@ -3607,41 +3608,41 @@ properties:
     trace: false
     user: nats
   nfs_server:
-    address: 
+    address:
     allow_from_entries:
     - 10.244.0.0/30
     - 10.244.2.0/30
-    share: 
+    share:
   request_timeout_in_seconds: 900
   router:
-    cipher_suites: 
-    debug_addr: 
-    drain_wait: 
-    enable_access_log_streaming: 
-    enable_proxy: 
-    enable_ssl: 
-    extra_headers_to_log: 
-    logrotate: 
-    port: 
-    requested_route_registration_interval_in_seconds: 
+    cipher_suites:
+    debug_addr:
+    drain_wait:
+    enable_access_log_streaming:
+    enable_proxy:
+    enable_ssl:
+    extra_headers_to_log:
+    logrotate:
+    port:
+    requested_route_registration_interval_in_seconds:
     route_services_recommend_https: false
     route_services_secret: route-services-secret
-    route_services_secret_decrypt_only: 
-    route_services_timeout: 
-    secure_cookies: 
-    ssl_cert: 
-    ssl_key: 
+    route_services_secret_decrypt_only:
+    route_services_timeout:
+    secure_cookies:
+    ssl_cert:
+    ssl_key:
     ssl_skip_validation: true
     status:
       password: router
-      port: 
+      port:
       user: router
   routing_api:
-    enabled: 
+    enabled:
   smoke_tests:
     api: api.bosh-lite.com
     apps_domain: bosh-lite.com
-    ginkgo_opts: 
+    ginkgo_opts:
     org: SMOKE_TEST_ORG
     password: admin
     skip_ssl_validation: true
@@ -3650,23 +3651,23 @@ properties:
   ssl:
     skip_cert_verify: true
   support_address: http://support.cloudfoundry.com
-  syslog_daemon_config: 
+  syslog_daemon_config:
   system_domain: bosh-lite.com
-  system_domain_organization: 
+  system_domain_organization:
   traffic_controller:
-    disable_access_control: 
+    disable_access_control:
     outgoing_port: 8080
     security_event_logging:
       enabled: false
-    zone: 
+    zone:
   uaa:
     admin:
       client_secret: admin-secret
     authentication:
       policy:
-        countFailuresWithinSeconds: 
-        lockoutAfterFailures: 
-        lockoutPeriodSeconds: 
+        countFailuresWithinSeconds:
+        lockoutAfterFailures:
+        lockoutPeriodSeconds:
     catalina_opts: "-Xmx192m -XX:MaxPermSize=128m"
     cc:
       client_secret: cc-secret
@@ -3726,7 +3727,7 @@ properties:
         authorities: routing.routes.read,routing.router_groups.read
         authorized-grant-types: client_credentials,refresh_token
         secret: tcp-router-secret
-    database: 
+    database:
     issuer: https://uaa.bosh-lite.com
     jwt:
       signing_key: |
@@ -3752,15 +3753,15 @@ properties:
         qHxf+ZH9BL1gk9Y6kCnbM5R60gfwjyW1/dQPjOzn9N394zd2FJoFHwdq9Qs0wBug
         spULZVNRxq7veq/fzwIDAQAB
         -----END PUBLIC KEY-----
-    ldap: 
-    login: 
-    newrelic: 
-    no_ssl: 
+    ldap:
+    login:
+    newrelic:
+    no_ssl:
     port: 8080
     require_https: false
     scim:
-      external_groups: 
-      groups: 
+      external_groups:
+      groups:
       userids_enabled: true
       users:
       - groups:
@@ -3831,7 +3832,7 @@ properties:
       /6wtWeX8QMBcZ6ufxs0VgxPv4P8jczrzqxgszLUK8hdnZEL7+xk=
       -----END RSA PRIVATE KEY-----
     url: https://uaa.bosh-lite.com
-    user: 
+    user:
     zones:
       internal:
         hostnames:

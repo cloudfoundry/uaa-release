@@ -5,7 +5,7 @@ require 'json'
 require 'deep_merge'
 require 'support/yaml_eq'
 
-describe 'uaa.yml.erb' do
+describe 'uaa-release yaml generation' do
 
   def add_param_to_hash param_name, param_value, target_hash = {}
     begin
@@ -54,24 +54,37 @@ describe 'uaa.yml.erb' do
 
   end
 
-  let(:erb_yaml) { File.read(File.join(File.dirname(__FILE__), '../jobs/uaa/templates/uaa.yml.erb')) }
+  let(:uaa_erb_yaml) { File.read(File.join(File.dirname(__FILE__), '../jobs/uaa/templates/uaa.yml.erb')) }
+  let(:login_erb_yaml) { File.read(File.join(File.dirname(__FILE__), '../jobs/uaa/templates/login.yml.erb')) }
 
-  subject(:parsed_yaml) do
+  subject(:parsed_uaa_yaml) do
     binding = Bosh::Template::EvaluationContext.new(deployment_manifest_fragment).get_binding
-    YAML.load(ERB.new(erb_yaml).result(binding))
+    YAML.load(ERB.new(uaa_erb_yaml).result(binding))
+  end
+
+  subject(:parsed_login_yaml) do
+    binding = Bosh::Template::EvaluationContext.new(deployment_manifest_fragment).get_binding
+    YAML.load(ERB.new(login_erb_yaml).result(binding))
   end
 
   context 'given bosh-lite inputs' do
     it "uaa.yml should match" do
-      #parsed_yaml is a hash with the result
-      #puts "Generated Yaml File:\n" + parsed_yaml.to_yaml( :Indent => 2)
+      #parsed_uaa_yaml is a hash with the result
+      #puts "Generated Yaml File:\n" + parsed_uaa_yaml.to_yaml( :Indent => 2)
 
       expected = File.read('spec/compare/bosh-lite-uaa.yml')
-      actual = parsed_yaml.to_yaml
+      actual = parsed_uaa_yaml.to_yaml
 
       expect(actual).to yaml_eq(expected)
-      # expect(parsed_yaml['oauth']['clients']['admin']['secret']).to eq('admin-secret')
+      # expect(parsed_uaa_yaml['oauth']['clients']['admin']['secret']).to eq('admin-secret')
     end
+
+    it "login.yml should match" do
+      expected = File.read('spec/compare/bosh-lite-login.yml')
+      actual = parsed_login_yaml.to_yaml
+      expect(actual).to yaml_eq(expected)
+    end
+
 
     # context "When NATS's HTTP interface is specified" do
     #   before do
@@ -83,9 +96,9 @@ describe 'uaa.yml.erb' do
     #   end
     #
     #   it 'should template the appropriate parameters' do
-    #     expect(parsed_yaml['http']['port']).to eq(8081)
-    #     expect(parsed_yaml['http']['user']).to eq('http-user')
-    #     expect(parsed_yaml['http']['password']).to eq('http-password')
+    #     expect(parsed_uaa_yaml['http']['port']).to eq(8081)
+    #     expect(parsed_uaa_yaml['http']['user']).to eq('http-user')
+    #     expect(parsed_uaa_yaml['http']['password']).to eq('http-password')
     #   end
     # end
   end

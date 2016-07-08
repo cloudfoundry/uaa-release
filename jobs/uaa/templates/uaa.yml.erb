@@ -1,11 +1,36 @@
----
 <%
+
+  # returns null if the property does not have a value
   def p_opt(property)
     p(property, nil)
   end
 
+  # returns an empty array of the value is null
   def p_arr(property)
     p_opt(property) || []
+  end
+
+  # adds a nested value to a hash
+  # for example hash['top-level']['mid-level']['bottom-level'] = value
+  # add_value(hash, value, 'top-level', 'mid-level', 'bottom-level'))
+  def add_value(hash, value, *keys)
+    last_key = nil
+    index = 1
+    for key in keys
+      last_key = key
+      if index < keys.length
+        sub_hash = hash[key]
+        if sub_hash.nil?
+          sub_hash = {}
+          hash[key] = sub_hash
+        elsif !(sub_hash.is_a?(Hash))
+          raise ArgumentError, 'Expected a hash for key:'+key+' in nested elements:'+keys.to_s
+        end
+        hash = sub_hash
+      end
+      index = index + 1
+    end
+    hash[last_key] = value
   end
 
   uaa_db = p_arr('uaadb.databases').find { |db| db['tag'] == 'uaa' }
@@ -19,234 +44,323 @@
   # If both of these are defined, then use the latter
   login_secret = p('uaa.clients.login.secret', p_opt('uaa.login.client_secret'))
   raise ArgumentError, 'uaa.login.client_secret or uaa.clients.login.secret must be set.' unless login_secret
+  spring_profiles = p('uaadb.db_scheme')
+  if p_opt('uaa.ldap.enabled') then
+    spring_profiles = spring_profiles + ',ldap'
+  end
+
+  #simple properties
+  params = {
+    'name' => 'uaa',
+    'disableInternalAuth' => p('uaa.disableInternalAuth'),
+    'disableInternalUserManagement' => p('uaa.disableInternalUserManagement'),
+    'issuer' => {
+      'uri' => issuer_uri
+    },
+    'spring_profiles' => spring_profiles,
+    'logging' => {
+      'config' => '/var/vcap/jobs/uaa/config/log4j.properties'
+    },
+    'database' => {
+      'url' =>  "jdbc:#{p('uaadb.db_scheme')}://#{p('uaadb.address')}:#{p('uaadb.port')}/#{uaa_db['name']}",
+      'username' => uaa_role['name'],
+      'password' => uaa_role['password'],
+      'maxactive' => p('uaa.database.max_connections'),
+      'maxidle' => p('uaa.database.max_idle_connections'),
+      'minidle' => p('uaa.database.min_idle_connections'),
+      'removeabandoned' => p('uaa.database.remove_abandoned'),
+      'logabandoned' =>  p('uaa.database.log_abandoned'),
+      'abandonedtimeout' => p('uaa.database.abandoned_timeout')
+    },
+    'authentication' => {
+      'policy' => {
+        'lockoutAfterFailures' => p('uaa.authentication.policy.lockoutAfterFailures'),
+        'countFailuresWithinSeconds' => p('uaa.authentication.policy.countFailuresWithinSeconds'),
+        'lockoutPeriodSeconds' => p('uaa.authentication.policy.lockoutPeriodSeconds'),
+        'global' => {
+          'lockoutAfterFailures' => p('uaa.authentication.policy.global.lockoutAfterFailures'),
+          'countFailuresWithinSeconds' => p('uaa.authentication.policy.global.countFailuresWithinSeconds'),
+          'lockoutPeriodSeconds' => p('uaa.authentication.policy.global.lockoutPeriodSeconds'),
+         }
+      }
+    },
+    'password' => {
+      'policy' => {
+        'minLength' => p('uaa.password.policy.minLength'),
+        'maxLength' => p('uaa.password.policy.maxLength'),
+        'requireUpperCaseCharacter' => p('uaa.password.policy.requireUpperCaseCharacter'),
+        'requireLowerCaseCharacter' => p('uaa.password.policy.requireLowerCaseCharacter'),
+        'requireDigit' => p('uaa.password.policy.requireDigit'),
+        'requireSpecialCharacter' => p('uaa.password.policy.requireSpecialCharacter'),
+        'expirePasswordInMonths' => p('uaa.password.policy.expirePasswordInMonths'),
+        'global' => {
+          'minLength' => p('uaa.password.policy.global.minLength'),
+          'maxLength' => p('uaa.password.policy.global.maxLength'),
+          'requireUpperCaseCharacter' => p('uaa.password.policy.global.requireUpperCaseCharacter'),
+          'requireLowerCaseCharacter' => p('uaa.password.policy.global.requireLowerCaseCharacter'),
+          'requireDigit' => p('uaa.password.policy.global.requireDigit'),
+          'requireSpecialCharacter' => p('uaa.password.policy.global.requireSpecialCharacter'),
+          'expirePasswordInMonths' => p('uaa.password.policy.global.expirePasswordInMonths')
+        }
+      }
+    },
+    'zones' => {
+      'internal' => {
+        'hostnames' => {
+        }
+      }
+    }
+  }
+
+  # should the DB not use lower() function in SCIM queries (if true)
+  if_p('uaa.database.case_insensitive') do |case_insensitive|
+    params['database']['caseinsensitive'] = case_insensitive.to_s
+  end
+
+
+  #token configuration and keys
+  if_p('uaa.jwt') do |not_used|
+    jwt = {
+      'token' => {
+        'revocable' => p('uaa.jwt.revocable'),
+        'policy' => {
+          'accessTokenValiditySeconds' => p('uaa.jwt.policy.accessTokenValiditySeconds'),
+          'refreshTokenValiditySeconds' => p('uaa.jwt.policy.refreshTokenValiditySeconds'),
+          'global' => {
+            'accessTokenValiditySeconds' => p('uaa.jwt.policy.global.accessTokenValiditySeconds'),
+            'refreshTokenValiditySeconds' => p('uaa.jwt.policy.global.refreshTokenValiditySeconds')
+          }
+        }
+      }
+    }
+    if_p('uaa.jwt.policy.active_key_id') do |activeKeyId|
+      add_value(jwt,activeKeyId, 'token', 'policy', 'activeKeyId')
+    end
+
+    if_p('uaa.jwt.policy.keys') do |jwtKeys|
+      keys = {}
+      jwtKeys.each do |kid,keyPair|
+        next unless keyPair
+        keys[kid] = {}
+        keyPair.each do |keyProperty,value|
+          keys[kid][keyProperty] = value
+        end
+      end
+      jwt['token']['keys'] = keys
+    end
+
+    if_p('uaa.jwt.claims.exclude') do |exclusions|
+
+      add_value(jwt, exclusions, 'token', 'claims', 'keys')
+
+    end
+
+    if_p('uaa.jwt.signing_key') do |signingKey|
+      add_value(jwt, signingKey, 'token','signing-key')
+    end
+
+    if_p('uaa.jwt.verification_key') do |verificationKey|
+      add_value(jwt, verificationKey, 'token','verification-key')
+    end
+
+    add_value(jwt, p('uaa.jwt.refresh.restrict_grant'), 'token', 'refresh', 'restrict_grant')
+    params['jwt'] = jwt
+  end
+
+
+  # oauth settings
+  oauth = {
+    'clients' => {},
+    'user' => {}
+  }
+  params['oauth'] = oauth
+
+  if protocol == 'https'
+    add_value(oauth, true, 'authorize', 'ssl')
+  end
+
+  if_p('uaa.clients') do |clients|
+    clients.each do |id,client|
+      next unless client
+      client_data = {}
+      client.each do |key,value|
+        client_data[key] = value
+      end
+      add_value(oauth, client_data, 'clients', id)
+      add_value(oauth, id, 'clients', id, 'id')
+    end
+  end
+
+  #default admin client
+  unless p_opt('uaa.clients.admin')
+    oauth['clients']['admin'] = {}
+    oauth['clients']['admin']['authorized-grant-types'] = 'client_credentials'
+    oauth['clients']['admin']['authorities'] = 'clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write'
+    oauth['clients']['admin']['id'] = 'admin'
+    oauth['clients']['admin']['secret'] = p_opt('uaa.admin.client_secret')
+  end
+
+  #default login client
+  unless p_opt('uaa.clients.login')
+    oauth['clients']['login'] = {}
+    oauth['clients']['login']['id'] = 'login'
+    oauth['clients']['login']['override'] = true
+    oauth['clients']['login']['secret'] = login_secret
+    oauth['clients']['login']['authorized-grant-types'] = 'authorization_code,client_credentials,refresh_token'
+    oauth['clients']['login']['authorities'] = 'oauth.login,notifications.write,critical_notifications.write,emails.write'
+    oauth['clients']['login']['scope'] = 'openid,oauth.approvals'
+    oauth['clients']['login']['redirect-uri'] = oauth_clientsLoginRedirectUri
+  end
+
+  oauth['user']['authorities'] = p('uaa.user.authorities')
+
+  scim = {
+    'userids_enabled' => p('uaa.scim.userids_enabled'),
+    'user' => {
+      'override' => p('uaa.scim.user.override')
+    }
+  }
+
+  params['scim'] = scim
+
+  #bootstrapped users
+  if_p('uaa.scim.users') do |users|
+    userlist = []
+    users.each do |user|
+      usr_name = user['name']
+      usr_password = user['password'] || ''
+      usr_fname = user['firstName'] || ''
+      usr_lname = user['lastName'] || ''
+      usr_email = user['email'] || usr_name
+      usr_origin = user['origin'] || 'uaa'
+      usr_groups = ''
+      if user['groups'] then usr_groups = user['groups'].join(',') end
+      userlist.push(usr_name + '|' + usr_password + '|' + usr_email + '|' + usr_fname + '|' + usr_lname + '|' + usr_groups + '|' + usr_origin)
+    end
+    scim['users'] = userlist
+  end
+
+  #bootstrapped groups
+  if_p('uaa.scim.groups') do |groups|
+    groupdata = {}
+    groups.each do |group_name, group_desc|
+      groupdata[group_name] = group_desc
+    end
+    scim['groups'] = groupdata
+  end
+
+
+  #bootstrapped external groups
+  if_p('uaa.scim.external_groups') do |externalGroups|
+    if externalGroups.is_a? Array
+      scim['external_groups'] = externalGroups
+    else
+      scim['external_groups'] = {}
+      externalGroups.each do |origin, mappings|
+        scim['external_groups'][origin] = {}
+        mappings.each do |external, groups|
+          scim['external_groups'][origin][external] = []
+          groups.each do |group|
+            scim['external_groups'][origin][external].push(group)
+          end
+        end
+      end
+    end
+  end
+
+
+  #internal hostnames for subdomain mapping
+  internal_hostnames = []
+  if_p('domain') do |domain|
+    internal_hostnames.push('login.#{domain}')
+  end
+  p_arr('uaa.zones.internal.hostnames').each do |hostname|
+    internal_hostnames.push(hostname)
+  end
+  params['zones']['internal']['hostnames'] = internal_hostnames
+
+  if_p('uaa.require_https') do |requireHttps|
+    params['require_https'] = requireHttps
+  end
+
+  if p_opt('uaa.ldap.enabled')
+    ldap = {
+      'ldapdebug' => 'Ldap configured through UAA',
+      'profile' => {
+        'file' => "ldap/ldap-#{p_opt('uaa.ldap.profile_type')}.xml"
+       },
+      'ssl' => {
+        'skipverification' => p('uaa.ldap.ssl.skipverification'),
+        'sslCertificate' =>  p_opt('uaa.ldap.sslCertificate'),
+        'sslCertificateAlias' => p_opt('uaa.ldap.sslCertificateAlias')
+
+      },
+      'base' => {
+        'url' => p_opt('uaa.ldap.url'),
+        'mailAttributeName' => p_opt('uaa.ldap.mailAttributeName'),
+        'mailSubstitute' => p_opt('uaa.ldap.mailSubstitute'),
+        'mailSubstituteOverridesLdap' => p_opt('uaa.ldap.mailSubstituteOverridesLdap'),
+        'referral' => p_opt('uaa.ldap.referral')
+      },
+      'addShadowUserOnLogin' => p('uaa.ldap.add_shadow_user_on_login')
+    }
+    if p_opt('uaa.ldap.profile_type') == 'simple-bind'
+      ldap['base']['userDnPattern'] = p_opt('uaa.ldap.userDNPattern')
+      ldap['base']['userDnPatternDelimiter'] = p_opt('uaa.ldap.userDNPatternDelimiter')
+    else
+      ldap['base']['userDn'] = p_opt('uaa.ldap.userDN')
+      ldap['base']['password'] = p_opt('uaa.ldap.userPassword')
+      ldap['base']['searchBase'] = p_opt('uaa.ldap.searchBase')
+      ldap['base']['searchFilter'] = p_opt('uaa.ldap.searchFilter')
+    end
+    if p_opt('uaa.ldap.profile_type') == 'search-and-compare'
+      ldap['base']['passwordAttributeName'] = p_opt('uaa.ldap.passwordAttributeName')
+      ldap['base']['passwordEncoder'] = p_opt('uaa.ldap.passwordEncoder')
+      ldap['base']['localPasswordCompare'] = p_opt('uaa.ldap.localPasswordCompare')
+    end
+
+
+    if_p('uaa.ldap.emailDomain') do |emailDomains|
+      ldap['emailDomain'] = []
+      emailDomains.each do |domain|
+        ldap['emailDomain'].push(domain)
+      end
+    end
+
+    if_p('uaa.ldap.attributeMappings') do |attributeMappings|
+      ldap['attributeMappings'] = {}
+      attributeMappings.each do |key,val|
+        ldap['attributeMappings'][key] = val
+      end
+    end
+
+    if_p('uaa.ldap.externalGroupsWhitelist') do |whitelist|
+      ldap['externalGroupsWhitelist'] = []
+      whitelist.each do |group|
+        ldap['externalGroupsWhitelist'].push(group)
+      end
+    end
+    ldap['groups'] = {}
+    if p('uaa.ldap.groups.profile_type') == 'no-groups'
+      ldap['groups']['file'] = 'ldap/ldap-groups-null.xml'
+    else
+      ldap['groups']['file'] = "ldap/ldap-#{p('uaa.ldap.groups.profile_type')}.xml"
+    end
+    ldap['groups']['searchBase'] = p('uaa.ldap.groups.searchBase')
+    ldap['groups']['groupRoleAttribute'] = p('uaa.ldap.groups.groupRoleAttribute')
+    ldap['groups']['groupSearchFilter'] = p('uaa.ldap.groups.groupSearchFilter')
+    ldap['groups']['searchSubtree'] = p('uaa.ldap.groups.searchSubtree')
+    ldap['groups']['maxSearchDepth'] = p('uaa.ldap.groups.maxSearchDepth')
+  end
+
+  if_p('uaa.servlet.session-cookie') do |sessioncookie|
+    params['servlet'] = {
+      'session-cookie' => {}
+    }
+    sessioncookie.each do |cookiename, cookievalue|
+      params['servlet'][cookiename] = cookievalue
+    end
+  end
+
 %>
-
-name: uaa
-
-database:
-  url: jdbc:<%= p('uaadb.db_scheme') %>://<%= p('uaadb.address') %>:<%= p('uaadb.port') %>/<%= uaa_db['name'] %>
-  username: <%= uaa_role['name'] %>
-  password: "<%= uaa_role['password'] %>"
-  maxactive: <%= p('uaa.database.max_connections') %>
-  maxidle:  <%= p('uaa.database.max_idle_connections') %>
-  minidle:  <%= p('uaa.database.min_idle_connections') %>
-  removeabandoned: <%= p('uaa.database.remove_abandoned') %>
-  logabandoned: <%= p('uaa.database.log_abandoned') %>
-  abandonedtimeout: <%= p('uaa.database.abandoned_timeout') %>
-  <% if_p('uaa.database.case_insensitive') do |case_insensitive| %>caseinsensitive: <%= case_insensitive.to_s %><% end %>
-
-spring_profiles: <%= p('uaadb.db_scheme') %><% if p_opt('uaa.ldap.enabled') then %>,ldap<% end %>
-
-logging:
-  config: /var/vcap/jobs/uaa/config/log4j.properties
-      
-<% if_p('uaa.jwt') do |jwt| %>
-jwt:
-  token:
-    revocable: <%= p('uaa.jwt.revocable') %>
-    policy:
-      accessTokenValiditySeconds:  <%= p('uaa.jwt.policy.accessTokenValiditySeconds') %>
-      refreshTokenValiditySeconds: <%= p('uaa.jwt.policy.refreshTokenValiditySeconds') %>
-      global:
-        accessTokenValiditySeconds: <%= p('uaa.jwt.policy.global.accessTokenValiditySeconds') %>
-        refreshTokenValiditySeconds: <%= p('uaa.jwt.policy.global.refreshTokenValiditySeconds') %>
-  <% if_p('uaa.jwt.policy.active_key_id') do |activeKeyId| %>
-      activeKeyId: <%= activeKeyId %>
-  <% end %>
-  <% if_p('uaa.jwt.policy.keys') do |jwtKeys| %>
-      keys:
-    <% jwtKeys.each do |kid,keyPair| %>
-      <% next unless keyPair %>
-        <%= kid %>:<% keyPair.each do |keyProperty,value| %>
-          <%= keyProperty %>: |
-            <%= value.gsub("\n", "\n            ") %><% end %><% end %>
-  <% end %>
-  <% if_p('uaa.jwt.claims.exclude') do |exclusions| %>
-    claims:
-      exclude: <% exclusions.each do |exclusion| %>
-      - <%= exclusion %><% end %>
-  <% end %>
-  <% if_p('uaa.jwt.signing_key') do |signingKey| %>
-    signing-key: |
-        <%= signingKey.gsub("\n", "\n        ") %>
-  <% end %>
-  <% if_p('uaa.jwt.verification_key') do |verificationKey| %>
-    verification-key: |
-        <%= verificationKey.gsub("\n", "\n        ") %>
-  <% end %>
-    refresh:
-      restrict_grant: <%= p('uaa.jwt.refresh.restrict_grant') %>
-
-<% end %>
-
-authentication:
-  policy:
-    lockoutAfterFailures: <%= p('uaa.authentication.policy.lockoutAfterFailures') %>
-    countFailuresWithinSeconds: <%= p('uaa.authentication.policy.countFailuresWithinSeconds') %>
-    lockoutPeriodSeconds: <%= p('uaa.authentication.policy.lockoutPeriodSeconds') %>
-    global:
-      lockoutAfterFailures: <%= p('uaa.authentication.policy.global.lockoutAfterFailures') %>
-      countFailuresWithinSeconds: <%= p('uaa.authentication.policy.global.countFailuresWithinSeconds') %>
-      lockoutPeriodSeconds: <%= p('uaa.authentication.policy.global.lockoutPeriodSeconds') %>
-
-password:
-  policy:
-    minLength: <%= p('uaa.password.policy.minLength') %>
-    maxLength: <%= p('uaa.password.policy.maxLength') %>
-    requireUpperCaseCharacter: <%= p('uaa.password.policy.requireUpperCaseCharacter') %>
-    requireLowerCaseCharacter: <%= p('uaa.password.policy.requireLowerCaseCharacter') %>
-    requireDigit: <%= p('uaa.password.policy.requireDigit') %>
-    requireSpecialCharacter: <%= p('uaa.password.policy.requireSpecialCharacter') %>
-    expirePasswordInMonths: <%= p('uaa.password.policy.expirePasswordInMonths') %>
-    global:
-      minLength: <%= p('uaa.password.policy.global.minLength') %>
-      maxLength: <%= p('uaa.password.policy.global.maxLength') %>
-      requireUpperCaseCharacter: <%= p('uaa.password.policy.global.requireUpperCaseCharacter') %>
-      requireLowerCaseCharacter: <%= p('uaa.password.policy.global.requireLowerCaseCharacter') %>
-      requireDigit: <%= p('uaa.password.policy.global.requireDigit') %>
-      requireSpecialCharacter: <%= p('uaa.password.policy.global.requireSpecialCharacter') %>
-      expirePasswordInMonths: <%= p('uaa.password.policy.global.expirePasswordInMonths') %>
-
-disableInternalAuth: <%= p('uaa.disableInternalAuth') %>
-disableInternalUserManagement: <%= p('uaa.disableInternalUserManagement') %>
-
-issuer.uri: <%= issuer_uri %>
-
-oauth:
-  <% if protocol == 'https' %>
-  authorize:
-    ssl: true
-  <% end %>
-  clients:
-<% if_p('uaa.clients') do |clients| clients.each do |id,client| %>
-    <% next unless client %>
-    <%= id %>:<% client.each do |key,value|%>
-      <%= key %>: <%= value %><% end %><% end %>
-<% end %>
-<% unless p_opt('uaa.clients.admin') %>
-    admin:
-      authorized-grant-types: client_credentials
-      authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
-      id: admin
-      secret: "<%= p_opt('uaa.admin.client_secret') %>"
-<% end %>
-<% unless p_opt('uaa.clients.login') %>
-    login:
-      id: login
-      override: true
-      secret: "<%= login_secret %>"
-      authorized-grant-types: authorization_code,client_credentials,refresh_token
-      authorities: oauth.login,notifications.write,critical_notifications.write,emails.write
-      scope: openid,oauth.approvals
-      redirect-uri: <%= oauth_clientsLoginRedirectUri %>
-<% end %>
-  user:
-    authorities: <% p('uaa.user.authorities').each do |authority| %>
-      - <%= authority %><% end %>
-scim:
-  userids_enabled: <%= p('uaa.scim.userids_enabled') %>
-  user.override: <%= p('uaa.scim.user.override') %>
-<% if_p('uaa.scim.users') do |users| %>
-  users: <% users.each do |user|
-       usr_name = user['name']
-       usr_password = user['password'] || ''
-       usr_fname = user['firstName'] || ''
-       usr_lname = user['lastName'] || ''
-       usr_email = user['email'] || usr_name
-       usr_origin = user['origin'] || 'uaa'
-       usr_groups = ''
-       if user['groups'] then usr_groups = user['groups'].join(',') end
-      %>
-    - <%= usr_name + '|' + usr_password + '|' + usr_email + '|' + usr_fname + '|' + usr_lname + '|' + usr_groups + '|' + usr_origin%>
-  <% end %>
-<% end %>
-
-<% if_p('uaa.scim.groups') do |groups| %>
-  groups:
-  <% groups.each do |group_name, group_desc| %>
-    <%= group_name %>: <%= group_desc %><% end %>
-<% end %>
-
-<% if_p('uaa.scim.external_groups') do |externalGroups| %>
- <% if externalGroups.is_a? Array %>
-  external_groups: <% externalGroups.each do |group| %>
-    - <%= group %><% end %>
- <% else %>
-  external_groups: <% externalGroups.each do |origin, mappings| %>
-    <%= origin %>: <% mappings.each do |external, groups| %>
-      <%= external %>: <% groups.each do |group| %>
-        - <%= group %><%end%><%end%><%end%>
- <% end %>
-<% end %>
-
-zones:
-  internal:
-    hostnames:
-      <% if_p('domain') do |domain| %>- <%= "login.#{domain}" %><% end %>
-      <% p_arr('uaa.zones.internal.hostnames').each do |hostname| %>- <%= hostname %><% end %>
-
-<% if_p('uaa.require_https') do |requireHttps| %>
-require_https: <%= requireHttps %>
-<% end %>
-<% if p_opt('uaa.ldap.enabled') %>
-ldap:
-  addShadowUserOnLogin: <%= p('uaa.ldap.add_shadow_user_on_login') %>
-  ldapdebug: 'Ldap configured through UAA'
-  profile:
-    file: ldap/ldap-<%= p_opt('uaa.ldap.profile_type') %>.xml
-  ssl:
-    skipverification: <%= p('uaa.ldap.ssl.skipverification') %>
-    <% if_p('uaa.ldap.sslCertificate') do |sslCert| %>
-    sslCertificate: ! '<%= sslCert.gsub("\n", "\n    ") %>'
-    <% if_p('uaa.ldap.sslCertificateAlias') do |sslCertAlias| %>
-    sslCertificateAlias: <%= sslCertAlias %>
-    <% end %>
-  <% end %>
-  base:
-    url: '<%= p_opt('uaa.ldap.url') %>'
-    <% if p_opt('uaa.ldap.profile_type') == 'simple-bind' %>
-    userDnPattern: '<%= p_opt('uaa.ldap.userDNPattern') %>'
-    userDnPatternDelimiter: '<%= p_opt('uaa.ldap.userDNPatternDelimiter') %>'
-    <% else  %>
-    userDn: '<%= p_opt('uaa.ldap.userDN') %>'
-    password: '<%= p_opt('uaa.ldap.userPassword') %>'
-    searchBase: '<%= p_opt('uaa.ldap.searchBase') %>'
-    searchFilter: '<%= p_opt('uaa.ldap.searchFilter') %>'
-    <% end %>
-    <% if p_opt('uaa.ldap.profile_type') == 'search-and-compare' %>
-    passwordAttributeName: <%= p_opt('uaa.ldap.passwordAttributeName') %>
-    passwordEncoder: <%= p_opt('uaa.ldap.passwordEncoder') %>
-    localPasswordCompare: <%= p_opt('uaa.ldap.localPasswordCompare') %>
-    <% end %>
-    mailAttributeName: '<%= p_opt('uaa.ldap.mailAttributeName')%>'
-    mailSubstitute: '<%= p_opt('uaa.ldap.mailSubstitute') %>'
-    mailSubstituteOverridesLdap: <%= p_opt('uaa.ldap.mailSubstituteOverridesLdap') %>
-    referral: <%= p_opt('uaa.ldap.referral') %>
-  <% if_p('uaa.ldap.emailDomain') do |emailDomains| %>
-  emailDomain: <% emailDomains.each do |domain| %>
-  - <%= domain %><% end %><% end %>
-  <% if_p('uaa.ldap.attributeMappings') do |attributeMappings| %>
-  attributeMappings: <% attributeMappings.each do |key,val| %>
-    <%= key %>: <%= val %><% end %><% end %>
-  <% if_p('uaa.ldap.externalGroupsWhitelist') do |whitelist| %>
-  externalGroupsWhitelist: <% whitelist.each do |group| %>
-  - <%= group %><% end %>
-  <% end %>
-  groups:
-    <% if p('uaa.ldap.groups.profile_type') == 'no-groups' %>
-    file: ldap/ldap-groups-null.xml
-    <% else %>
-    file: ldap/ldap-<%= p('uaa.ldap.groups.profile_type') %>.xml
-    <% end %>
-    searchBase: '<%= p('uaa.ldap.groups.searchBase') %>'
-    groupRoleAttribute: '<%= p('uaa.ldap.groups.groupRoleAttribute') %>'
-    groupSearchFilter: '<%= p('uaa.ldap.groups.groupSearchFilter') %>'
-    searchSubtree: <%= p('uaa.ldap.groups.searchSubtree') %>
-    maxSearchDepth: <%= p('uaa.ldap.groups.maxSearchDepth') %>
-<% end %>
-
-<% if_p('uaa.servlet.session-cookie') do |sessioncookie| %>
-servlet:
-  session-cookie:<% sessioncookie.each do |cookiename, cookievalue| %>
-    <%= cookiename %>: <%= cookievalue %><% end %>
-<% end %>
+<%=YAML.dump(params, :indentation => 2)%>

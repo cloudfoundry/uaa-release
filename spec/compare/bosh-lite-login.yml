@@ -31,7 +31,6 @@ logout:
       disable: true
 
 login:
-  branding:
   url: https://login.bosh-lite.com
   idpDiscoveryEnabled: false
   entityBaseURL: https://login.bosh-lite.com
@@ -41,13 +40,10 @@ login:
       text: Email
     password:
       text: Password
-  oauth:
-
   saml:
     signMetaData: true
     signRequest: true
     wantAssertionSigned: false
-    providers:
     socket:
       connectionManagerTimeout: 10000
       soTimeout: 10000

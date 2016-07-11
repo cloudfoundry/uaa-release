@@ -351,6 +351,7 @@
     ldap['groups']['groupSearchFilter'] = p('uaa.ldap.groups.groupSearchFilter')
     ldap['groups']['searchSubtree'] = p('uaa.ldap.groups.searchSubtree')
     ldap['groups']['maxSearchDepth'] = p('uaa.ldap.groups.maxSearchDepth')
+    params['ldap'] = ldap
   end
 
   if_p('uaa.servlet.session-cookie') do |sessioncookie|

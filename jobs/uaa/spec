@@ -500,7 +500,8 @@ properties:
     description: "The file to be used for configuring the LDAP authentication. Options are: 'simple-bind', 'search-and-bind', 'search-and-compare'"
     default: search-and-bind
   uaa.ldap.url:
-    description: "The URL to the ldap server, must start with ldap:// or ldaps://"
+    description: "The URL to the ldap server, must start with ldap:// or ldaps://. Allows multiple servers to be specified, comma separated"
+    example: ldap://localhost:389,ldaps://secure.host:636
   uaa.ldap.userDNPattern:
     description: "Used with simple-bind only. A semi-colon separated lists of DN patterns to construct a DN direct from the user ID without performing a search."
   uaa.ldap.userDNPatternDelimiter:

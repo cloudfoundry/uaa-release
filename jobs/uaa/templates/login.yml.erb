@@ -148,7 +148,7 @@
           add_value(params, value, 'login', 'saml', 'providers', idpAlias, key)
         end
       end
-      add_value(params, (idpProvider['idpMetadata']).inspect, 'login', 'saml', 'providers', idpAlias, 'idpMetadata')
+      add_value(params, idpProvider['idpMetadata'], 'login', 'saml', 'providers', idpAlias, 'idpMetadata')
     end
   end
 

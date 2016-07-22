@@ -65,10 +65,12 @@ login:
     companyName: <%= company_name %>
   <% end %>
   <% if_p('login.branding.product_logo') do |product_logo| %>
-    productLogo: <%= product_logo %>
+    productLogo: |
+      <%= product_logo.gsub("\n","\n      ")%>
   <% end %>
   <% if_p('login.branding.square_logo') do |square_logo| %>
-    squareLogo: <%= square_logo %>
+    squareLogo: |
+      <%= square_logo.gsub("\n","\n      ") %>
   <% end %>
   <% if_p('login.branding.footer_legal_text') do |footer_legal_text| %>
     footerLegalText: <%= footer_legal_text %>
@@ -109,7 +111,7 @@ login:
       <%= idpAlias %> : <% provider.each do |key,value| %>
         <% if key.to_s.eql?('tokenKey') then %>
         tokenKey: |
-          <%= value.gsub("\n", "\n            ")%>
+          <%= value.to_s.gsub("\n","\n          ")%>
         <% elsif key.to_s.eql?('attributeMappings') then %>
         attributeMappings: <% value.each do |key,val| %>
           <%= key %>: <%= val %><% end %>
@@ -130,7 +132,8 @@ login:
       <%= idpAlias %>: <% idpProvider.reject {|k,_| %w(idpMetadata).include?(k.to_s)}.each do |key,value|%>
         <% if key.to_s.eql?('attributeMappings') then %>
         attributeMappings: <% value.each do |key,val| %>
-          <%= key %>: <%= val %><% end %>
+          <%= key %>: <%= val %>
+        <% end %>
         <% else %>
         <%= key %>: <%= value.is_a?(String) && value.match("\n") ? "| \n          " + value.gsub("\n", "\n          ") + '' : value %><% end %><% end %>
         idpMetadata: <%= (idpProvider['idpMetadata']).inspect %><% end %>

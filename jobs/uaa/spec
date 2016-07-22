@@ -71,9 +71,11 @@ properties:
       The enablement of the NewRelic agent in the UAA is triggered by the property uaa.newrelic.common.license_key
       The property uaa.newrelic.common.license_key must be set!
   env.http_proxy:
-    description: "The http_proxy across the VMs"
+    description: "The http_proxy across the VMs used for all requests over http"
+    example: http://test.proxy:8080
   env.https_proxy:
-    description: "The https_proxy across the VMs"
+    description: "The http_proxy across the VMs used for all requests over https"
+    example: http://test.proxy:8080
   env.no_proxy:
     description: "Set No_Proxy across the VMs"
     example: "localhost,127.0.0.0/8,127.0.1.1"
@@ -156,7 +158,7 @@ properties:
     example:
       linkDisplayName: linkDisplayUrl
   login.asset_base_url:
-    description: "Base url for static assets, allows custom styling of the login server.  Use '/resources/pivotal' for Pivotal style."
+    description: "Deprecated in favor of branding properties. Base url for static assets, allows custom styling of the login server.  Use '/resources/pivotal' for Pivotal style."
     default: /resources/oss
   login.links:
     description: "A hash of home/passwd/signup URLS (see commented examples below)"
@@ -354,9 +356,9 @@ properties:
           waZKhM1W0oB8MX78M+0fG3xGUtywTx0D4N7pr1Tk2GTgNw==
           -----END RSA PRIVATE KEY-----
   uaa.jwt.signing_key:
-    description: "The key used to sign the JWT-based OAuth2 tokens"
+    description: "Deprecated. Use uaa.jwt.policy.keys. The key used to sign the JWT-based OAuth2 tokens"
   uaa.jwt.verification_key:
-    description: "The key used to verify JWT-based OAuth2 tokens"
+    description: "Deprecated. Use uaa.jwt.policy.keys. The key used to verify JWT-based OAuth2 tokens"
   uaa.jwt.claims.exclude:
     description: "List of claims to exclude from the JWT-based OAuth2 tokens"
     example:
@@ -364,6 +366,7 @@ properties:
   uaa.jwt.refresh.restrict_grant:
     description: "Disallows refresh-token grant for any client for which the user has not approved the `uaa.offline_token` scope"
     default: false
+
   # Global security policies (for all zones)
   uaa.authentication.policy.global.lockoutAfterFailures:
     description: "Number of allowed failures before account is locked"

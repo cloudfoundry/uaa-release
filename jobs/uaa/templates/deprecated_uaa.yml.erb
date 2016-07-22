@@ -33,13 +33,13 @@ database:
   removeabandoned: <%= p('uaa.database.remove_abandoned') %>
   logabandoned: <%= p('uaa.database.log_abandoned') %>
   abandonedtimeout: <%= p('uaa.database.abandoned_timeout') %>
-  <% if_p('uaa.database.case_insensitive') do |case_insensitive| %>caseinsensitive: <%= case_insensitive.to_s %><% end %>
+  <% if_p('uaa.database.case_insensitive') do |case_insensitive| %>caseinsensitive: <%= case_insensitive %><% end %>
 
 spring_profiles: <%= p('uaadb.db_scheme') %><% if p_opt('uaa.ldap.enabled') then %>,ldap<% end %>
 
 logging:
   config: /var/vcap/jobs/uaa/config/log4j.properties
-      
+
 <% if_p('uaa.jwt') do |jwt| %>
 jwt:
   token:
@@ -110,7 +110,8 @@ password:
 disableInternalAuth: <%= p('uaa.disableInternalAuth') %>
 disableInternalUserManagement: <%= p('uaa.disableInternalUserManagement') %>
 
-issuer.uri: <%= issuer_uri %>
+issuer:
+  uri: <%= issuer_uri %>
 
 oauth:
   <% if protocol == 'https' %>
@@ -145,7 +146,8 @@ oauth:
       - <%= authority %><% end %>
 scim:
   userids_enabled: <%= p('uaa.scim.userids_enabled') %>
-  user.override: <%= p('uaa.scim.user.override') %>
+  user:
+    override: <%= p('uaa.scim.user.override') %>
 <% if_p('uaa.scim.users') do |users| %>
   users: <% users.each do |user|
        usr_name = user['name']
@@ -183,7 +185,8 @@ zones:
   internal:
     hostnames:
       <% if_p('domain') do |domain| %>- <%= "login.#{domain}" %><% end %>
-      <% p_arr('uaa.zones.internal.hostnames').each do |hostname| %>- <%= hostname %><% end %>
+      <% p_arr('uaa.zones.internal.hostnames').each do |hostname| %>
+      - <%= hostname%><% end %>
 
 <% if_p('uaa.require_https') do |requireHttps| %>
 require_https: <%= requireHttps %>
@@ -200,7 +203,10 @@ ldap:
     <% if_p('uaa.ldap.sslCertificateAlias') do |sslCertAlias| %>
     sslCertificateAlias: <%= sslCertAlias %>
     <% end %>
-  <% end %>
+    <% end %>
+  <% unless p_opt('uaa.ldap.add_shadow_user_on_login').nil? %>
+  addShadowUserOnLogin: <%= p_opt('uaa.ldap.add_shadow_user_on_login') %>
+  <%end %>
   base:
     url: '<%= p_opt('uaa.ldap.url') %>'
     <% if p_opt('uaa.ldap.profile_type') == 'simple-bind' %>

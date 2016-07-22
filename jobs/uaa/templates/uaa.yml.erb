@@ -114,7 +114,7 @@
 
   # should the DB not use lower() function in SCIM queries (if true)
   if_p('uaa.database.case_insensitive') do |case_insensitive|
-    params['database']['caseinsensitive'] = case_insensitive.to_s
+    params['database']['caseinsensitive'] = case_insensitive
   end
 
 
@@ -146,13 +146,11 @@
           keys[kid][keyProperty] = value
         end
       end
-      jwt['token']['keys'] = keys
+      jwt['token']['policy']['keys'] = keys
     end
 
     if_p('uaa.jwt.claims.exclude') do |exclusions|
-
-      add_value(jwt, exclusions, 'token', 'claims', 'keys')
-
+      add_value(jwt, exclusions, 'token', 'claims', 'exclude')
     end
 
     if_p('uaa.jwt.signing_key') do |signingKey|
@@ -290,10 +288,7 @@
         'file' => "ldap/ldap-#{p_opt('uaa.ldap.profile_type')}.xml"
        },
       'ssl' => {
-        'skipverification' => p('uaa.ldap.ssl.skipverification'),
-        'sslCertificate' =>  p_opt('uaa.ldap.sslCertificate'),
-        'sslCertificateAlias' => p_opt('uaa.ldap.sslCertificateAlias')
-
+        'skipverification' => p('uaa.ldap.ssl.skipverification')
       },
       'base' => {
         'url' => p_opt('uaa.ldap.url'),
@@ -304,6 +299,12 @@
       },
       'addShadowUserOnLogin' => p('uaa.ldap.add_shadow_user_on_login')
     }
+    unless p_opt('uaa.ldap.sslCertificate').nil?
+      ldap['ssl']['sslCertificate'] = p_opt('uaa.ldap.sslCertificate')
+      unless p_opt('uaa.ldap.sslCertificateAlias').nil?
+        ldap['ssl']['sslCertificateAlias'] = p_opt('uaa.ldap.sslCertificateAlias')
+      end
+    end
     if p_opt('uaa.ldap.profile_type') == 'simple-bind'
       ldap['base']['userDnPattern'] = p_opt('uaa.ldap.userDNPattern')
       ldap['base']['userDnPatternDelimiter'] = p_opt('uaa.ldap.userDNPatternDelimiter')

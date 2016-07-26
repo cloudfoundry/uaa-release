@@ -632,6 +632,14 @@ properties:
       This is used as the SAML Service Provider Entity ID. Each zone has a unique entity ID. Zones other than
       the default zone will derive their entity ID from this setting by prefexing it with the subdomain.
     example:
+  login.saml.entity_base_url:
+    description: |
+      The URL for which SAML identity providers will post assertions to.
+      If set it overrides the default.
+      This URL should NOT have the schema (http:// or https:// prefix in it) instead just the hostname.
+      The schema is derived by #{login.protocol} property.
+      The default value is #{uaa.url}.replaceFirst('uaa','login'), typically login.example.com
+      The UAA will display this link in the cf --sso call if there is a SAML provider enabled.
   login.saml.serviceProviderKey:
     description: "Private key for the service provider certificate."
     example: |

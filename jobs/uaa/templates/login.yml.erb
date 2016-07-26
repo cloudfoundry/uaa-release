@@ -38,11 +38,18 @@
 
   entity_base_url_fallback = uaa_base.sub("://uaa.", "://login.")
 
-  login_entityId = p(['login.saml.entityid'], entity_base_url_fallback.sub(/^http.*:\/\//,''))
+  login_entityBaseUrl = nil
+  if_p('login.saml.entity_base_url') do |entity_base_url|
+    login_entityBaseUrl = "#{protocol}://#{entity_base_url}"
+  end .else do
+    login_entityBaseUrl = entity_base_url_fallback
+  end
+
+  login_entityId = p(['login.saml.entityid'], login_entityBaseUrl.sub(/^http.*:\/\//,''))
 
   login_authorizeUrl = "#{p('uaa.url', entity_base_url_fallback)}/oauth/authorize"
 
-  login_url = p('login.url', entity_base_url_fallback)
+  login_url = p('login.url', login_entityBaseUrl)
 
   # The login secret is defined in one of two properties
   # uaa.login.client_secret or uaa.clients.login.secret
@@ -73,7 +80,7 @@
     'login' => {
       'url' => login_url,
       'idpDiscoveryEnabled' => p('login.idpDiscoveryEnabled'),
-      'entityBaseURL' => entity_base_url_fallback,
+      'entityBaseURL' => login_entityBaseUrl,
       'entityID' => login_entityId,
       'prompt' => {
         'username' => {

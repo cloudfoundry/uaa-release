@@ -417,8 +417,6 @@ properties:
     description: |
       A list of users to be bootstrapped with authorities.
       Each entry supports the following format:
-        Short Pipe: username|password|comma,separated,groups
-        Long Pipe: username|password|email|firstName|lastName|comma,separated,groups|origin
         Short OpenStruct:
           - name: username
             password: password
@@ -436,7 +434,14 @@ properties:
             email: email
             origin: origin-value - most commonly uaa
     example:
-      - marissa|koala|marissa@test.org|Marissa|Bloggs
+      - name: marissa
+        password: koala
+        email: marissa@test.org
+        firstName: Marissa
+        lastName: Bloggs
+        groups:
+          - group_name
+        origin: uaa
   uaa.scim.external_groups:
     description: |
       External group mappings. Either formatted as an OpenStruct.

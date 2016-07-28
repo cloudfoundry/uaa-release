@@ -1,8 +1,4 @@
 ---
-uaa/apache-tomcat-7.0.61.tar.gz:
-  object_id: b2a7ce9f-2673-4702-97e4-372d25eeb05d
-  sha: 98ccbc95d029291e81bf818879ec8a0aa14465df
-  size: 8816567
 uaa/cloudfoundry-identity-varz-1.0.2.war:
   object_id: 1a0e5866-f1ae-46f2-a519-a74b9adb0003
   sha: 8c35ed35fb6dfc4a97a243447763c635812066e8
@@ -15,15 +11,19 @@ uaa/cloudfoundry-identity-statsd-1.0.0.war:
   object_id: 928a8aca-a8f0-4036-aa0c-804c463fc895
   sha: c26a49ef1c8c5d6b215bf57ca6267e4d7f9f1a53
   size: 11163253
-openjdk/openjdk-1.8.0_91-x86_64-trusty.tar.gz:
-  object_id: a0aeff72-54ff-424c-acc2-a8844ea930f9
-  sha: 69c612c7f783aad33f4d73ec9b44e1a2ee50f386
-  size: 78278698
-openjdk/openjdk-1.8.0_91-x86_64-mountainlion.tar.gz:
-  object_id: 515f6add-b3b4-46ac-abc8-378d81514032
-  sha: 9e916262cf92d6ca0b09f9261d30aeca05f214d7
-  size: 75516939
 postgres/postgresql-9.4.6.tar.gz:
   object_id: 83e927a9-2d85-4d80-bf20-50cf5020ed3f
   sha: bd031beebd86bf149c497525dccf57eebe5a6add
   size: 23249307
+uaa/apache-tomcat-8.0.36.tar.gz:
+  object_id: 4f6ee133-e457-4bef-ad24-592c71a5e718
+  sha: c711970918f4c0ebd120cf35605795c416e342c8
+  size: 9277365
+openjdk/openjdk-1.8.0_101-x86_64-trusty.tar.gz:
+  object_id: a59fd9c0-1b4f-408d-b73f-19262dfa85a3
+  sha: d77ee059e289ae52fb87812f1a2932268427dc26
+  size: 77696717
+openjdk/openjdk-1.8.0_101-x86_64-mountainlion.tar.gz:
+  object_id: a1a61854-e783-4265-928c-d66d8baf5eb6
+  sha: d9374652844bfd7bcdce8f8b605fb57fd76c9e36
+  size: 75550921

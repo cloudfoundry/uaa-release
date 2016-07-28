@@ -9,12 +9,12 @@ export PATH=$PATH:/bin:/usr/bin
 if [ `uname` = "Darwin" ]; then
   mkdir java
   cd java
-  tar zxvf ../openjdk/openjdk-1.8.0_91-x86_64-mountainlion.tar.gz --exclude="._*"
+  tar zxvf ../openjdk/openjdk-1.8.0_101-x86_64-mountainlion.tar.gz --exclude="._*"
   export JAVA_HOME=${BUILD_DIR}/java
 elif [ `uname` = "Linux" ]; then
   mkdir java
   cd java
-  tar zxvf ../openjdk/openjdk-1.8.0_91-x86_64-trusty.tar.gz
+  tar zxvf ../openjdk/openjdk-1.8.0_101-x86_64-trusty.tar.gz
   export JAVA_HOME=${BUILD_DIR}/java
 else
   if [ ! -d $JAVA_HOME ]; then
@@ -36,5 +36,5 @@ cp uaa/build/libs/cloudfoundry-identity-uaa-*.war ${BUILD_DIR}/uaa/cloudfoundry-
 ./gradlew clean
 cd ${BUILD_DIR}
 rm -rf java
-rm -rf openjdk/openjdk-1.8.0_91-x86_64-mountainlion.tar.gz
+rm -rf openjdk/openjdk-1.8.0_101-x86_64-mountainlion.tar.gz
 ${BUILD_DIR}/uaa/.clean-cf-release-build

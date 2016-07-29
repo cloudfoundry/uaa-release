@@ -1,14 +1,40 @@
----
-name: login
-
 <%
+  # returns null if the property does not have a value
   def p_opt(property)
     p(property, nil)
   end
 
+  # returns an empty array of the value is null
+  def p_arr(property)
+    p_opt(property) || []
+  end
+
+  # adds a nested value to a hash
+  # for example hash['top-level']['mid-level']['bottom-level'] = value
+  # add_value(hash, value, 'top-level', 'mid-level', 'bottom-level'))
+  def add_value(hash, value, *keys)
+    last_key = nil
+    index = 1
+    for key in keys
+      last_key = key
+      if index < keys.length
+        sub_hash = hash[key]
+        if sub_hash.nil?
+          sub_hash = {}
+          hash[key] = sub_hash
+        elsif !(sub_hash.is_a?(Hash))
+          raise ArgumentError, 'Expected a hash for key:'+key+' in nested elements:'+keys.to_s
+        end
+        hash = sub_hash
+      end
+      index = index + 1
+    end
+    hash[last_key] = value
+  end
+
   protocol = p('login.protocol')
 
-  uaa_base = p(['uaa.url', 'login.uaa_base'], "#{protocol}://uaa.#{p_opt('domain')}")
+  uaa_base = p('uaa.url')
 
   entity_base_url_fallback = uaa_base.sub("://uaa.", "://login.")
 
@@ -19,7 +45,7 @@ name: login
     login_entityBaseUrl = entity_base_url_fallback
   end
 
-  login_entityId = p(['login.saml.entityid', 'login.entity_id'], login_entityBaseUrl.sub(/^http.*:\/\//,''))
+  login_entityId = p(['login.saml.entityid'], login_entityBaseUrl.sub(/^http.*:\/\//,''))
 
   login_authorizeUrl = "#{p('uaa.url', entity_base_url_fallback)}/oauth/authorize"
 
@@ -30,148 +56,129 @@ name: login
   # If both of these are defined, then use the latter
   login_secret = p('uaa.clients.login.secret', p_opt('uaa.login.client_secret'))
   raise ArgumentError, 'uaa.login.client_secret or uaa.clients.login.secret must be set.' unless login_secret
+
+  params = {
+    'name' => 'login',
+    'logging' => {
+      'config' => '/var/vcap/jobs/login/config/log4j.properties'
+    },
+    'LOGIN_SECRET' => login_secret,
+    'require_https' => p('uaa.require_https'),
+    'assetBaseUrl' => p('login.asset_base_url'),
+    'logout' => {
+      'redirect' => {
+        'url' => p('login.logout.redirect.url'),
+        'parameter' => {
+          'disable' => p('login.logout.redirect.parameter.disable')
+        }
+      }
+    },
+    'uaa' => {
+      'url' => uaa_base
+    },
+    'links' => p_arr('login.links'),
+    'login' => {
+      'url' => login_url,
+      'idpDiscoveryEnabled' => p('login.idpDiscoveryEnabled'),
+      'entityBaseURL' => login_entityBaseUrl,
+      'entityID' => login_entityId,
+      'prompt' => {
+        'username' => {
+          'text' => p('login.prompt.username.text')
+        },
+        'password' => {
+          'text' => p('login.prompt.password.text')
+        }
+      },
+      'authorize' => {
+        'url' => login_authorizeUrl
+      },
+      'saml' => {
+        'socket' => {
+          'connectionManagerTimeout' => p_opt('login.saml.socket.connectionManagerTimeout'),
+          'soTimeout' => p_opt('login.saml.socket.soTimeout')
+        }
+      }
+    }
+  }
+
+  add_value(params, p('login.logout.redirect.parameter.whitelist'), 'logout', 'redirect', 'parameter', 'whitelist') if p_opt('login.logout.redirect.parameter.whitelist')
+
+  if_p('login.smtp') do |login_smtp|
+    login_smtp.each do |key,val|
+      add_value(params, val, 'smtp', key)
+    end
+  end
+
+  add_value(params, p('login.notifications.url'), 'notifications', 'url') if p_opt('login.notifications.url')
+
+  add_value(params, p('login.branding.company_name'), 'login', 'branding', 'companyName') if p_opt('login.branding.company_name')
+  add_value(params, p('login.branding.product_logo'), 'login', 'branding', 'productLogo') if p_opt('login.branding.product_logo')
+  add_value(params, p('login.branding.square_logo'), 'login', 'branding', 'squareLogo') if p_opt('login.branding.square_logo')
+  add_value(params, p('login.branding.footer_legal_text'), 'login', 'branding', 'footerLegalText') if p_opt('login.branding.footer_legal_text')
+  add_value(params, p('login.branding.footer_links'), 'login', 'branding', 'footerLinks') if p_opt('login.branding.footer_links')
+
+  add_value(params, p('login.home_redirect'), 'login', 'homeRedirect') if p_opt('login.home_redirect')
+
+  add_value(params, p('login.saml.serviceProviderCertificate'), 'login', 'serviceProviderCertificate') if p_opt('login.saml.serviceProviderCertificate')
+  add_value(params, p('login.saml.serviceProviderKey'), 'login', 'serviceProviderKey') if p_opt('login.saml.serviceProviderKey')
+  add_value(params, p('login.saml.serviceProviderKeyPassword'), 'login', 'serviceProviderKeyPassword') if p_opt('login.saml.serviceProviderKeyPassword')
+
+  add_value(params, p('login.self_service_links_enabled'), 'login', 'selfServiceLinksEnabled') if p_opt('login.self_service_links_enabled')
+
+  if_p('login.oauth.providers') do |providers|
+    providers.each do |idpAlias, provider|
+      provider.each do |key,value|
+        if key.to_s.eql?('attributeMappings') then
+          value.each do |k,v|
+            add_value(params, v, 'login', 'oauth', 'providers', idpAlias, 'attributeMappings', k)
+          end
+        else
+          add_value(params, value, 'login', 'oauth', 'providers', idpAlias, key)
+        end
+      end
+    end
+  end
+
+  add_value(params, p('login.saml.signMetaData'), 'login', 'saml', 'signMetaData') if p_opt('login.saml.signMetaData')
+  add_value(params, p('login.saml.signRequest'), 'login', 'saml', 'signRequest') if p_opt('login.saml.signRequest')
+  add_value(params, p('login.saml.wantAssertionSigned'), 'login', 'saml', 'wantAssertionSigned')
+
+  if_p('login.saml.providers') do |samlProviders|
+    samlProviders.reject {|k,_| k.to_s == ''}.each do |idpAlias,idpProvider|
+      idpProvider.reject {|k,_| %w(idpMetadata).include?(k.to_s)}.each do |key,value|
+        if key.to_s.eql?('attributeMappings') then
+          value.each do |akey,aval|
+            add_value(params, aval, 'login', 'saml', 'providers', idpAlias, 'attributeMappings', akey)
+          end
+        else
+          add_value(params, value, 'login', 'saml', 'providers', idpAlias, key)
+        end
+      end
+      add_value(params, idpProvider['idpMetadata'], 'login', 'saml', 'providers', idpAlias, 'idpMetadata')
+    end
+  end
+
+  #deprecated single provider legacy configuration
+  if_p('login.saml.idpEntityAlias') do |idpEntityAlias|
+    add_value(params, p("/var/vcap/jobs/login/#{p_opt('login.saml.idp_metadata_file')}"), 'login', 'saml', 'providers', idpEntityAlias, 'idpMetadata')
+    add_value(params, p_opt('login.saml.assertionConsumerIndex'), 'login', 'saml', 'providers', idpEntityAlias, 'assertionConsumerIndex')
+    add_value(params, p_opt('login.saml.nameidFormat'), 'login', 'saml', 'providers', idpEntityAlias, 'nameID')
+    add_value(params, p_opt('login.saml.metadataTrustCheck'), 'login', 'saml', 'providers', idpEntityAlias, 'metadataTrustCheck')
+    add_value(params, true, 'login', 'saml', 'providers', idpEntityAlias, 'showSamlLoginLink')
+    add_value(params, 'Use your corporate credentials', 'login', 'saml', 'providers', idpEntityAlias, 'linkText')
+    if_p('login.saml.attributeMappings') do |attributeMappings|
+      attributeMappings.each do |akey,aval|
+        add_value(params, aval, 'login', 'saml', 'providers', idpEntityAlias, 'attributeMappings', akey)
+      end
+    end
+  end
+
+  if_p('login.analytics.code', 'login.analytics.domain') do |code, domain|
+    add_value(params, code, 'analytics', 'code')
+    add_value(params, domain, 'analytics', 'domain')
+  end
 %>
+<%=YAML.dump(params, :indentation => 2)%>
 
-logging:
-  config: /var/vcap/jobs/login/config/log4j.properties
 
-uaa:
-  url: <%= uaa_base %>
-<% if_p('login.links') do |login_links| %>
-links: <% login_links.each do |id,url| %>
-  <%= id %>: <%= url %><% end %>
-<% end %>
-<% if_p('login.smtp') do |login_smtp| %>
-smtp: <% login_smtp.each do |key,val| %>
-  <%= key %>: <%= val %><% end %>
-<% end %>
-<% if_p('login.tiles') do |login_tiles| %>
-tiles: <% login_tiles.each do |tile| %>
-- <% tile.each do |key,val| %><%= key %>: <%= val %>
-  <% end %>
-<% end %>
-<% end %>
-
-# The secret that this login server will use to authenticate to the uaa
-LOGIN_SECRET: <%= login_secret %>
-require_https: <%= p('uaa.require_https') %>
-dump_requests: <%= p('uaa.dump_requests') %>
-assetBaseUrl: <%= p('login.asset_base_url') %>
-
-<% if_p('login.notifications.url') do |login_notifications_url| %>
-notifications:
-  url: <%= login_notifications_url %>
-<% end %>
-
-logout:
-  redirect:
-    url: <%= p('login.logout.redirect.url') %>
-    parameter:
-      disable: <%= p('login.logout.redirect.parameter.disable') %>
-      <% if_p('login.logout.redirect.parameter.whitelist') do |whitelist| %>
-      whitelist: <% whitelist.each do |whitelistedurl| %>
-      - <%= whitelistedurl %><% end %>
-   <% end %>
-
-login:
-  branding:
-  <% if_p('login.branding.company_name') do |company_name| %>
-    companyName: <%= company_name %>
-  <% end %>
-  <% if_p('login.branding.product_logo') do |product_logo| %>
-    productLogo: <%= product_logo %>
-  <% end %>
-  <% if_p('login.branding.square_logo') do |square_logo| %>
-    squareLogo: <%= square_logo %>
-  <% end %>
-  <% if_p('login.branding.footer_legal_text') do |footer_legal_text| %>
-    footerLegalText: <%= footer_legal_text %>
-  <% end %>
-  <% if_p('login.branding.footer_links') do |footer_links| %>
-    footerLinks: <% footer_links.each do |key,val| %>
-      <%= key %>: <%= val %><% end %>
-  <% end %>
-<% if_p('login.home_redirect') do |home_redirect| %>
-  homeRedirect: <%= home_redirect %>
-<% end %>
-  url: <%= login_url %>
-  idpDiscoveryEnabled: <%= p('login.idpDiscoveryEnabled') %>
-  entityBaseURL: <%= login_entityBaseUrl %>
-  entityID: <%= login_entityId %>
-  prompt:
-    username:
-      text: <%= p('login.prompt.username.text') %>
-    password:
-      text: <%= p('login.prompt.password.text') %>
-  <% if_p('login.saml.serviceProviderCertificate') do |serviceProviderCert| %>
-  serviceProviderCertificate: |
-    <%= serviceProviderCert.gsub("\n", "\n    ") %>
-  <% end %>
-  <% if_p('login.saml.serviceProviderKey') do |serviceProviderKey| %>
-  serviceProviderKey: |
-    <%= serviceProviderKey.gsub("\n", "\n    ")%>
-  <% end %>
-  <% if_p('login.saml.serviceProviderKeyPassword') do |serviceProviderKeyPassword| %>
-  serviceProviderKeyPassword: <%= serviceProviderKeyPassword %>
-  <% end %>
-  <% if_p('login.self_service_links_enabled') do |selfServiceEnabled| %>
-  selfServiceLinksEnabled: <%= selfServiceEnabled %>
-  <% end .else_if_p('login.signups_enabled') do |selfServiceEnabled| %>
-  selfServiceLinksEnabled: <%= selfServiceEnabled %>
-  <% end %>
-  oauth:
-    <% if_p('login.oauth.providers') do |providers| %>
-    providers: <% providers.each do |idpAlias, provider| %>
-      <%= idpAlias %> : <% provider.each do |key,value| %>
-        <% if key.to_s.eql?('tokenKey') then %>
-        tokenKey: |
-          <%= value.gsub("\n", "\n            ")%>
-        <% elsif key.to_s.eql?('attributeMappings') then %>
-        attributeMappings: <% value.each do |key,val| %>
-          <%= key %>: <%= val %><% end %>
-        <% else %>
-        <%= key %>: <%= value %><% end %><% end %>
-    <% end %><% end %>
-  saml:
-    <% if_p('login.saml.signMetaData') do |signMetaData| %>
-    signMetaData: <%= signMetaData %>
-    <% end %>
-    <% if_p('login.saml.signRequest') do |signRequest| %>
-    signRequest: <%= signRequest %>
-    <% end %>
-    <% if_p('login.saml.wantAssertionSigned') do |wantAssertionSigned| %>
-    wantAssertionSigned: <%= wantAssertionSigned %>
-    <% end %>
-    providers: <% if_p('login.saml.providers') do |samlProviders| samlProviders.reject {|k,_| k.to_s == ''}.each do |idpAlias,idpProvider| %>
-      <%= idpAlias %>: <% idpProvider.reject {|k,_| %w(idpMetadata idpMetadataXML idpMetadataURL).include?(k.to_s)}.each do |key,value|%>
-        <% if key.to_s.eql?('attributeMappings') then %>
-        attributeMappings: <% value.each do |key,val| %>
-          <%= key %>: <%= val %><% end %>
-        <% else %>
-        <%= key %>: <%= value.is_a?(String) && value.match("\n") ? "| \n          " + value.gsub("\n", "\n          ") + '' : value %><% end %><% end %>
-        idpMetadata: <%= (idpProvider['idpMetadataURL'] || idpProvider['idpMetadataXML'] || idpProvider['idpMetadata']).inspect %><% end %>
-    <% end %>
-    <% if_p('login.saml.idpEntityAlias') do |idpEntityAlias| %>
-      <%= idpEntityAlias %>:
-        idpMetadata: <%= p('login.saml.idpMetadataURL', "/var/vcap/jobs/login/#{p_opt('login.saml.idp_metadata_file')}") %>
-        assertionConsumerIndex: <%= p_opt('login.saml.assertionConsumerIndex') %>
-        nameID: <%= p_opt('login.saml.nameidFormat') %>
-        metadataTrustCheck: <%= p_opt('login.saml.metadataTrustCheck') %>
-        showSamlLoginLink: true
-        linkText: 'Use your corporate credentials'
-        <% if_p('login.saml.attributeMappings') do |attributeMappings| %>
-        attributeMappings: <% attributeMappings.each do |key,val| %>
-          <%= key %>: <%= val %><% end %>
-        <% end %>
-    <% end %>
-    socket:
-      connectionManagerTimeout: <%= p_opt('login.saml.socket.connectionManagerTimeout') %>
-      soTimeout: <%= p_opt('login.saml.socket.soTimeout') %>
-  authorize:
-    url: <%= login_authorizeUrl %>
-
-<% if_p('login.analytics.code', 'login.analytics.domain') do |code, domain| %>
-analytics:
-  code: <%= code %>
-  domain: <%= domain %>
-<% end %>

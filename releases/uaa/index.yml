@@ -26,4 +26,6 @@ builds:
     version: '11.2'
   1af909c9-a385-457d-aa04-4d7fe37bd776:
     version: '11.3'
+  6f089f0d-153e-4b84-bfa6-53d05025e2db:
+    version: '11.4'
 format-version: '2'

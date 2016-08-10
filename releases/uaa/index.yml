@@ -26,6 +26,14 @@ builds:
     version: '11.2'
   1af909c9-a385-457d-aa04-4d7fe37bd776:
     version: '11.3'
-  6f089f0d-153e-4b84-bfa6-53d05025e2db:
+  de5f955f-aeed-46f6-99e8-e098d8ff7ab7:
+    version: '12'
+  62652a48-e5a0-4606-a560-81f1d1901eee:
+    version: '12.2'
+  0a6531b6-94a2-4c10-a7e7-11e1c5245f6c:
+    version: '12.3'
+  a84d0443-4f3a-44e4-98ce-29c094a30783:
+    version: '13'
+  d7b5c0d7-2eaa-4d8e-bf30-b59e6ee9118e:
     version: '11.4'
 format-version: '2'

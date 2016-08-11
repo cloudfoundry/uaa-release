@@ -59,4 +59,5 @@ Add the following properties to your manifest:
 ## Acknowledgements
 
 * The UAA team uses RubyMine, The Most Intelligent Ruby and Rails IDE
-  [![](https://raw.githubusercontent.com/fhanik/acknowledgment/master/icons/icon_RubyMine.png)](https://www.jetbrains.com/ruby/)
+  
+  [![RubyMine](https://raw.githubusercontent.com/fhanik/acknowledgment/master/icons/icon_RubyMine.png)](https://www.jetbrains.com/ruby/)

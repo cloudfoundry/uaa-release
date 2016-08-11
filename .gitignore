@@ -22,3 +22,7 @@ releases/**/*.tgz
 bosh-lite/manifests/*
 bosh-lite/tmp/*
 pkg
+.idea
+**/.idea
+config/private.yml
+

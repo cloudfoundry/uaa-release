@@ -54,3 +54,9 @@ Add the following properties to your manifest:
 5. Push to your fork (`git push origin my_branch`) and
    [submit a pull request](https://help.github.com/articles/creating-a-pull-request)
    selecting `develop` as the target branch
+
+
+## Acknowledgements
+
+* The UAA team uses RubyMine, The Most Intelligent Ruby and Rails IDE
+  [![](https://raw.githubusercontent.com/fhanik/acknowledgment/master/icons/icon_RubyMine.png)](https://www.jetbrains.com/ruby/)

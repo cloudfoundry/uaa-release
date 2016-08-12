@@ -1,7 +1,13 @@
 set -e -x
 
 cd ${BOSH_INSTALL_TARGET}
-mkdir jdk && tar zxvf ${BOSH_COMPILE_TARGET}/openjdk/openjdk-1.8.0_101-x86_64-trusty.tar.gz -C jdk
+if [ "`uname -m`" == "ppc64le" ]; then
+  openjdk_path=${BOSH_COMPILE_TARGET}/openjdk/java-8-openjdk-ppc64le.tgz
+else
+  openjdk_path=${BOSH_COMPILE_TARGET}/openjdk/openjdk-1.8.0_91-x86_64-trusty.tar.gz
+fi
+mkdir jdk && tar zxvf $openjdk_path -C jdk
+
 if [[ $? != 0 ]] ; then
   echo "Cannot unpack JDK"
   exit 1

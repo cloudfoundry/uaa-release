@@ -11,6 +11,11 @@ if [ `uname` = "Darwin" ]; then
   cd java
   tar zxvf ../openjdk/openjdk-1.8.0_101-x86_64-mountainlion.tar.gz --exclude="._*"
   export JAVA_HOME=${BUILD_DIR}/java
+elif [ `uname -m` = "ppc64le" ]; then
+  mkdir java
+  cd java
+  tar zxvf ../openjdk/java-8-openjdk-ppc64le.tgz
+  export JAVA_HOME=${BUILD_DIR}/java
 elif [ `uname` = "Linux" ]; then
   mkdir java
   cd java

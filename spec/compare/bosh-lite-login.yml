@@ -44,6 +44,7 @@ login:
     signMetaData: true
     signRequest: true
     wantAssertionSigned: false
+    signatureAlgorithm: SHA256
     socket:
       connectionManagerTimeout: 10000
       soTimeout: 10000

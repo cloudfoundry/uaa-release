@@ -96,7 +96,7 @@ finalize_and_commit $1
 git push origin master
 git checkout develop
 git reset --hard origin/develop
-git merge master
+git merge master -m "Merge of branch master for release $1"
 git push origin develop
 
 # tag the release

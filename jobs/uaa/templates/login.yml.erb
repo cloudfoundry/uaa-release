@@ -143,6 +143,7 @@
   add_value(params, p('login.saml.signMetaData'), 'login', 'saml', 'signMetaData') if p_opt('login.saml.signMetaData')
   add_value(params, p('login.saml.signRequest'), 'login', 'saml', 'signRequest') if p_opt('login.saml.signRequest')
   add_value(params, p('login.saml.wantAssertionSigned'), 'login', 'saml', 'wantAssertionSigned')
+  if_p('login.saml.signatureAlgorithm') { |alg| add_value(params, alg, 'login', 'saml', 'signatureAlgorithm') }
 
   if_p('login.saml.providers') do |samlProviders|
     samlProviders.reject {|k,_| k.to_s == ''}.each do |idpAlias,idpProvider|

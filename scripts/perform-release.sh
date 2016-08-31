@@ -82,7 +82,8 @@ mv /tmp/private.yml config/
 bosh create release --name uaa --version $1 --with-tarball
 
 # we will finalize the release on master branch
-git co master
+git checkout master
+git reset --hard origin/master
 sub_update
 
 if [ "$branch_to_release_from" = "develop" ]; then
@@ -93,17 +94,18 @@ fi
 
 finalize_and_commit $1
 git push origin master
-git co develop
+git checkout develop
+git reset --hard origin/develop
 git merge master
 git push origin develop
 
 # tag the release
 if [ "$branch_to_release_from" = "develop" ]; then
-    git co master
+    git checkout master
     git tag -a v${1} -m "$1 release"
     git push origin master --tags
 else
-    git co $branch_to_release_from
+    git checkout $branch_to_release_from
     git tag -a v${1} -m "$1 release"
     git push origin $branch_to_release_from --tags
 fi

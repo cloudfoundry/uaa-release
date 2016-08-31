@@ -14,7 +14,7 @@ function sub_update {
 
 function usage {
     echo -e "Usage: ${GREEN}$(basename $0) bosh_release_version [branch_to_release_from/develop] [/path/to/private.yml]${NC}"
-    echo -e "Usage: ${GREEN}$(basename $0) bosh_release_version 11.4 v11.4-branch${NC}"
+    echo -e "Usage: ${GREEN}$(basename $0) 11.4 v11.4-branch${NC}"
 }
 
 function finalize_and_commit {

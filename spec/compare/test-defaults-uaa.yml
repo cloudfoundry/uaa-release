@@ -1,0 +1,98 @@
+---
+name: uaa
+disableInternalAuth: false
+disableInternalUserManagement: false
+issuer:
+  uri: http://test.uaa.url
+spring_profiles: postgresql
+logging:
+  config: "/var/vcap/jobs/uaa/config/log4j.properties"
+database:
+  url: jdbc:postgresql://10.244.0.30:5524/uaadb
+  username: uaaadmin
+  password: admin
+  maxactive: 100
+  maxidle: 10
+  minidle: 0
+  removeabandoned: false
+  logabandoned: true
+  abandonedtimeout: 300
+authentication:
+  policy:
+    lockoutAfterFailures: 5
+    countFailuresWithinSeconds: 1200
+    lockoutPeriodSeconds: 300
+    global:
+      lockoutAfterFailures: 5
+      countFailuresWithinSeconds: 3600
+      lockoutPeriodSeconds: 300
+password:
+  policy:
+    minLength: 0
+    maxLength: 255
+    requireUpperCaseCharacter: 0
+    requireLowerCaseCharacter: 0
+    requireDigit: 0
+    requireSpecialCharacter: 0
+    expirePasswordInMonths: 0
+    global:
+      minLength: 0
+      maxLength: 255
+      requireUpperCaseCharacter: 0
+      requireLowerCaseCharacter: 0
+      requireDigit: 0
+      requireSpecialCharacter: 0
+      expirePasswordInMonths: 0
+zones:
+  internal:
+    hostnames: []
+jwt:
+  token:
+    revocable: false
+    policy:
+      accessTokenValiditySeconds: 43200
+      refreshTokenValiditySeconds: 2592000
+      global:
+        accessTokenValiditySeconds: 43200
+        refreshTokenValiditySeconds: 2592000
+    refresh:
+      restrict_grant: false
+oauth:
+  clients:
+    admin:
+      authorized-grant-types: client_credentials
+      authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
+      id: admin
+      secret: 
+    login:
+      id: login
+      override: true
+      secret: secret
+      authorized-grant-types: authorization_code,client_credentials,refresh_token
+      authorities: oauth.login,notifications.write,critical_notifications.write,emails.write
+      scope: openid,oauth.approvals
+      redirect-uri: http://test.uaa.url
+  user:
+    authorities:
+    - openid
+    - scim.me
+    - cloud_controller.read
+    - cloud_controller.write
+    - cloud_controller_service_permissions.read
+    - password.write
+    - uaa.user
+    - approvals.me
+    - oauth.approvals
+    - notification_preferences.read
+    - notification_preferences.write
+    - profile
+    - roles
+    - user_attributes
+    - uaa.offline_token
+  authorize:
+    ssl: true
+scim:
+  userids_enabled: true
+  user:
+    override: true
+require_https: true

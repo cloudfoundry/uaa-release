@@ -12,7 +12,6 @@ templates:
   pre-start: bin/pre-start
   post-start: bin/post-start
 
-  deprecated_uaa.yml.erb: config/deprecated_uaa.yml
   uaa.yml.erb: config/uaa.yml
   newrelic.yml.erb: config/newrelic.yml
   varz.yml: config/varz.yml
@@ -22,7 +21,6 @@ templates:
   tomcat.server.xml.erb: config/tomcat/server.xml
   tomcat.context.xml.erb: config/tomcat/context.xml
   ldap.crt.erb: config/ldap.crt
-  deprecated_login.yml.erb: config/deprecated_login.yml
   login.yml.erb: config/login.yml
   messages.properties.erb: config/messages.properties
   uaa.crt.erb: config/uaa.crt

@@ -1,0 +1,208 @@
+---
+name: login
+logging:
+  config: "/var/vcap/jobs/login/config/log4j.properties"
+LOGIN_SECRET: some-secret
+require_https: false
+assetBaseUrl: "/resources/testing"
+logout:
+  redirect:
+    url: "/"
+    parameter:
+      disable: true
+uaa:
+  url: http://all-properties-set:8888/uaa
+links:
+  passwd: "/reset_password"
+  signup: http://signup.somewhere.else
+  custom: http://custom.link
+login:
+  url: http://all-properties-set:8888/uaa
+  idpDiscoveryEnabled: true
+  entityBaseURL: http://all-properties-set:8888/uaa
+  entityID: all-properties-set:8888/uaa
+  prompt:
+    username:
+      text: Username
+    password:
+      text: Secret
+  authorize:
+    url: http://all-properties-set:8888/uaa/oauth/authorize
+  saml:
+    socket:
+      connectionManagerTimeout: 10000
+      soTimeout: 10000
+    signMetaData: true
+    signRequest: true
+    wantAssertionSigned: true
+    providers:
+      my-identity-provider:
+        metadataTrustCheck: false
+        nameID: urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
+        assertionConsumerIndex: 0
+        signMetaData: false
+        signRequest: false
+        iconUrl: https://my.identityprovider.com/icon.png
+        showSamlLoginLink: true
+        linkText: Log in with My Saml Identity Provider
+        groupMappingMode: AS_SCOPES
+        idpMetadata: http://my.identityprovider.com/saml2/idp/metadata.php
+      CA_SM1:
+        assertionConsumerIndex: 0
+        attributeMappings:
+          email: mail
+        emailDomain:
+        - casecurecenter.com
+        linkText: SiteMinder
+        metadataTrustCheck: false
+        nameID: urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
+        showSamlLoginLink: true
+        signMetaData: false
+        signRequest: false
+        idpMetadata: |
+          <EntityDescriptor ID="SM1598b525eada26863eb23b38177f5bc861b48bf93309" entityID="smidp" xmlns="urn:oasis:names:tc:SAML:2.0:metadata">
+                <IDPSSODescriptor ID="SM213f05e6446b0930163464f8875298c3b5ed62a2f9b" WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+                      <KeyDescriptor use="signing">
+                            <ns1:KeyInfo Id="SM1371f007ef6afdd435cd105782eff7a275ee57c45d6" xmlns:ns1="http://www.w3.org/2000/09/xmldsig#">
+                                  <ns1:X509Data>
+                                        <ns1:X509IssuerSerial>
+                                              <ns1:X509IssuerName>CN=siteminder,OU=security,O=ca,L=islandia,ST=new york,C=US</ns1:X509IssuerName>
+                                              <ns1:X509SerialNumber>1389887106</ns1:X509SerialNumber>
+                                        </ns1:X509IssuerSerial>
+                                        <ns1:X509Certificate>MIICRzCCAbCgAwIBAgIEUtf+gjANBgkqhkiG9w0BAQQFADBoMQswCQYDVQQGEwJVUzERMA8GA1UECBMIbmV3IHlvcmsxETAPBgNVBAcTCGlzbGFuZGlhMQswCQYDVQQKEwJjYTERMA8GA1UECxMIc2VjdXJpdHkxEzARBgNVBAMTCnNpdGVtaW5kZXIwHhcNMTQwMTE2MTU0NTA2WhcNMjQwMTE0MTU0NTA2WjBoMQswCQYDVQQGEwJVUzERMA8GA1UECBMIbmV3IHlvcmsxETAPBgNVBAcTCGlzbGFuZGlhMQswCQYDVQQKEwJjYTERMA8GA1UECxMIc2VjdXJpdHkxEzARBgNVBAMTCnNpdGVtaW5kZXIwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAOap0m7c+LSOAoGLUD3TAdS7BcJFns6HPSGAYK9NBY6MxITKElqVWHaVoaqxHCQxdQsF9oZvhPAmiNsbIRniKA+cypUov8U0pNIRPPBfl7p9ojGPZf5OtotnUnEN2ZcYuZwxRnKPfpfEs5fshSvcZIa34FCSCw8L0sRDoWFIucBjAgMBAAEwDQYJKoZIhvcNAQEEBQADgYEAFbsuhxBm3lUkycfZZuNYft1j41k+FyLLTyXyPJKmc2s2RPOYtLQyolNB214ZCIZzVSExyfo959ZBvdWz+UinpFNPd8cEc0nuXOmfW/XBEgT0YS1vIDUzfeVRyZLj2u4BdBGwmK5oYRbgHxViFVnn3C6UN5rcg5mZl0FBXJ31Zuk=</ns1:X509Certificate>
+                                        <ns1:X509SubjectName>CN=siteminder,OU=security,O=ca,L=islandia,ST=new york,C=US</ns1:X509SubjectName>
+                                  </ns1:X509Data>
+                            </ns1:KeyInfo>
+                      </KeyDescriptor>
+                      <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
+                      <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://vp6.casecurecenter.com/affwebservices/public/saml2sso"/>
+                      <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://vp6.casecurecenter.com/affwebservices/public/saml2sso"/>
+                </IDPSSODescriptor>
+          </EntityDescriptor>
+      okta-preview:
+        metadataTrustCheck: false
+        nameID: urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
+        signMetaData: false
+        signRequest: false
+        idpMetadata: |
+          <?xml version="1.0" encoding="UTF-8"?><md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://www.okta.com/k2lw4l5bPODCMIIDBRYZ"><md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><md:KeyDescriptor use="signing"><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:X509Data><ds:X509Certificate>MIICmTCCAgKgAwIBAgIGAUPATqmEMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYDVQQGEwJVUzETMBEG
+          A1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzENMAsGA1UECgwET2t0YTEU
+          MBIGA1UECwwLU1NPUHJvdmlkZXIxEDAOBgNVBAMMB1Bpdm90YWwxHDAaBgkqhkiG9w0BCQEWDWlu
+          Zm9Ab2t0YS5jb20wHhcNMTQwMTIzMTgxMjM3WhcNNDQwMTIzMTgxMzM3WjCBjzELMAkGA1UEBhMC
+          VVMxEzARBgNVBAgMCkNhbGlmb3JuaWExFjAUBgNVBAcMDVNhbiBGcmFuY2lzY28xDTALBgNVBAoM
+          BE9rdGExFDASBgNVBAsMC1NTT1Byb3ZpZGVyMRAwDgYDVQQDDAdQaXZvdGFsMRwwGgYJKoZIhvcN
+          AQkBFg1pbmZvQG9rdGEuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCeil67/TLOiTZU
+          WWgW2XEGgFZ94bVO90v5J1XmcHMwL8v5Z/8qjdZLpGdwI7Ph0CyXMMNklpaR/Ljb8fsls3amdT5O
+          Bw92Zo8ulcpjw2wuezTwL0eC0wY/GQDAZiXL59npE6U+fH1lbJIq92hx0HJSru/0O1q3+A/+jjZL
+          3tL/SwIDAQABMA0GCSqGSIb3DQEBBQUAA4GBAI5BoWZoH6Mz9vhypZPOJCEKa/K+biZQsA4Zqsuk
+          vvphhSERhqk/Nv76Vkl8uvJwwHbQrR9KJx4L3PRkGCG24rix71jEuXVGZUsDNM3CUKnARx4MEab6
+          GFHNkZ6DmoT/PFagngecHu+EwmuDtaG0rEkFrARwe+d8Ru0BN558abFb</ds:X509Certificate></ds:X509Data></ds:KeyInfo></md:KeyDescriptor><md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat><md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://pivotal.oktapreview.com/app/pivotal_pivotalcfstaging_1/k2lw4l5bPODCMIIDBRYZ/sso/saml"/><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://pivotal.oktapreview.com/app/pivotal_pivotalcfstaging_1/k2lw4l5bPODCMIIDBRYZ/sso/saml"/></md:IDPSSODescriptor></md:EntityDescriptor>
+      simplesamlphp-url:
+        assertionConsumerIndex: 0
+        attributeMappings:
+          user.attribute.employeeCostCenter: costCenter
+          user.attribute.terribleBosses: manager
+        linkText: Log in with Simple SAML PHP URL
+        metadataTrustCheck: false
+        nameID: urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
+        showSamlLoginLink: true
+        signMetaData: false
+        signRequest: false
+        idpMetadata: http://simplesamlphp.identity.cf-app.com/saml2/idp/metadata.php
+  branding:
+    companyName: company name
+    productLogo: |
+      base 64 with line feeds
+      for product logo
+    squareLogo: |
+      base 64 with line feeds
+      for square logo
+    footerLegalText: Legal text
+    footerLinks:
+      terms of service: http://terms.of.service/
+  homeRedirect: http://custom.home.redirect
+  serviceProviderCertificate: |
+    -----BEGIN CERTIFICATE-----
+    MIIEJTCCA46gAwIBAgIJANIqfxWTfhpkMA0GCSqGSIb3DQEBBQUAMIG+MQswCQYD
+    VQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZyYW5j
+    aXNjbzEdMBsGA1UEChMUUGl2b3RhbCBTb2Z0d2FyZSBJbmMxJDAiBgNVBAsTG0Ns
+    b3VkIEZvdW5kcnkgSWRlbnRpdHkgVGVhbTEcMBoGA1UEAxMTaWRlbnRpdHkuY2Yt
+    YXBwLmNvbTEfMB0GCSqGSIb3DQEJARYQbWFyaXNzYUB0ZXN0Lm9yZzAeFw0xNTA1
+    MTQxNzE5MTBaFw0yNTA1MTExNzE5MTBaMIG+MQswCQYDVQQGEwJVUzETMBEGA1UE
+    CBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZyYW5jaXNjbzEdMBsGA1UEChMU
+    UGl2b3RhbCBTb2Z0d2FyZSBJbmMxJDAiBgNVBAsTG0Nsb3VkIEZvdW5kcnkgSWRl
+    bnRpdHkgVGVhbTEcMBoGA1UEAxMTaWRlbnRpdHkuY2YtYXBwLmNvbTEfMB0GCSqG
+    SIb3DQEJARYQbWFyaXNzYUB0ZXN0Lm9yZzCBnzANBgkqhkiG9w0BAQEFAAOBjQAw
+    gYkCgYEA30y2nX+kICXktl1yJhBzLGvtTuzJiLeOMWi++zdivifyRqX1dwJ5MgdO
+    sBWdNrASwe4ZKONiyLFRDsk7lAYq3f975chxSsrRu1BLetBZfPEmwBH7FCTdYtWk
+    lJbpz0vzQs/gSsMChT/UrN6zSJhPVHNizLxstedyxxVVts644U8CAwEAAaOCAScw
+    ggEjMB0GA1UdDgQWBBSvWY/TyHysYGxKvII95wD/CzE1AzCB8wYDVR0jBIHrMIHo
+    gBSvWY/TyHysYGxKvII95wD/CzE1A6GBxKSBwTCBvjELMAkGA1UEBhMCVVMxEzAR
+    BgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBGcmFuY2lzY28xHTAbBgNV
+    BAoTFFBpdm90YWwgU29mdHdhcmUgSW5jMSQwIgYDVQQLExtDbG91ZCBGb3VuZHJ5
+    IElkZW50aXR5IFRlYW0xHDAaBgNVBAMTE2lkZW50aXR5LmNmLWFwcC5jb20xHzAd
+    BgkqhkiG9w0BCQEWEG1hcmlzc2FAdGVzdC5vcmeCCQDSKn8Vk34aZDAMBgNVHRME
+    BTADAQH/MA0GCSqGSIb3DQEBBQUAA4GBAL5j1JCN5EoXMOOBSBUL8KeVZFQD3Nfy
+    YkYKBatFEKdBFlAKLBdG+5KzE7sTYesn7EzBISHXFz3DhdK2tg+IF1DeSFVmFl2n
+    iVxQ1sYjo4kCugHBsWo+MpFH9VBLFzsMlP3eIDuVKe8aPXFKYCGhctZEJdQTKlja
+    lshe50nayKrT
+    -----END CERTIFICATE-----
+  serviceProviderKey: |
+    -----BEGIN RSA PRIVATE KEY-----
+    MIICXgIBAAKBgQDfTLadf6QgJeS2XXImEHMsa+1O7MmIt44xaL77N2K+J/JGpfV3
+    AnkyB06wFZ02sBLB7hko42LIsVEOyTuUBird/3vlyHFKytG7UEt60Fl88SbAEfsU
+    JN1i1aSUlunPS/NCz+BKwwKFP9Ss3rNImE9Uc2LMvGy153LHFVW2zrjhTwIDAQAB
+    AoGBAJDh21LRcJITRBQ3CUs9PR1DYZPl+tUkE7RnPBMPWpf6ny3LnDp9dllJeHqz
+    a3ACSgleDSEEeCGzOt6XHnrqjYCKa42Z+Opnjx/OOpjyX1NAaswRtnb039jwv4gb
+    RlwT49Y17UAQpISOo7JFadCBoMG0ix8xr4ScY+zCSoG5v0BhAkEA8llNsiWBJF5r
+    LWQ6uimfdU2y1IPlkcGAvjekYDkdkHiRie725Dn4qRiXyABeaqNm2bpnD620Okwr
+    sf7LY+BMdwJBAOvgt/ZGwJrMOe/cHhbujtjBK/1CumJ4n2r5V1zPBFfLNXiKnpJ6
+    J/sRwmjgg4u3Anu1ENF3YsxYabflBnvOP+kCQCQ8VBCp6OhOMcpErT8+j/gTGQUL
+    f5zOiPhoC2zTvWbnkCNGlqXDQTnPUop1+6gILI2rgFNozoTU9MeVaEXTuLsCQQDC
+    AGuNpReYucwVGYet+LuITyjs/krp3qfPhhByhtndk4cBA5H0i4ACodKyC6Zl7Tmf
+    oYaZoYWi6DzbQQUaIsKxAkEA2rXQjQFsfnSm+w/9067ChWg46p4lq5Na2NpcpFgH
+    waZKhM1W0oB8MX78M+0fG3xGUtywTx0D4N7pr1Tk2GTgNw==
+    -----END RSA PRIVATE KEY-----
+  selfServiceLinksEnabled: true
+  oauth:
+    providers:
+      my-oauth-provider:
+        type: oidc1.0
+        authUrl: http://authUrl
+        tokenUrl: http://tokenUrl
+        tokenKey: |
+          token key
+          encoded value
+          here
+        tokenKeyUrl: http://tokenKeyUrl
+        issuer: http://tokenUrl
+        scopes:
+        - openid
+        linkText: My Oauth Provider
+        showLinkText: true
+        addShadowUserOnLogin: true
+        relyingPartyId: "<OIDC Client ID>"
+        relyingPartySecret: "<OIDC Client secret>"
+        skipSslValidation: false
+        attributeMappings:
+          given_name: first_name
+          family_name: last_name
+          user_name: username
+          external_groups:
+          - group1
+          - group2
+          user.attribute.name-of-attribute-in-uaa-id-token: name-of-attribute-in-provider-token
+          user.attribute.name-of-other-attribute-in-uaa-id-token: name-of-other-attribute-in-provider-token
+smtp:
+  host: smtp_host
+  port: 25
+  auth: true
+  starttls: true
+  user: smtp_user
+  password: smtp_password
+  from_address: from@from.com
+notifications:
+  url: http://notifications
+analytics:
+  code: code
+  domain: domain

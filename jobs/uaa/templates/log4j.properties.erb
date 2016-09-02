@@ -34,3 +34,12 @@ log4j.category.org.springframework.aop.aspectj.AspectJExpressionPointcut=INFO
 log4j.category.org.springframework.beans.factory.support.DefaultListableBeanFactory=INFO
 log4j.category.org.springframework.beans.factory.support.DisposableBeanAdapter=INFO
 
+AUDIT_EVENT_FILE=${LOG_PATH}/uaa_events.log
+
+log4j.appender.auditEventLog=org.apache.log4j.RollingFileAppender
+log4j.appender.auditEventLog.File=${AUDIT_EVENT_FILE}
+log4j.appender.auditEventLog.layout=org.apache.log4j.PatternLayout
+log4j.appender.auditEventLog.layout.ConversionPattern=${LOG_PATTERN}%n
+
+log4j.category.UAA.Audit=INFO, auditEventLog
+

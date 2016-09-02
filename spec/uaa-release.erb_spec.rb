@@ -78,6 +78,6 @@ describe 'uaa-release erb generation' do
 
   perform_compare 'spec/input/bosh-lite.yml', 'spec/compare/bosh-lite-uaa.yml', 'spec/compare/bosh-lite-login.yml'
   perform_compare 'spec/input/all-properties-set.yml', 'spec/compare/all-properties-set-uaa.yml', 'spec/compare/all-properties-set-login.yml'
-  perform_compare 'spec/input/required-properties.yml', 'spec/compare/required-properties-uaa.yml', 'spec/compare/required-properties-login.yml'
+  perform_compare 'spec/input/test-defaults.yml', 'spec/compare/test-defaults-uaa.yml', 'spec/compare/test-defaults-login.yml'
 
 end

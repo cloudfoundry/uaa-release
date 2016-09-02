@@ -1,0 +1,41 @@
+---
+name: login
+logging:
+  config: "/var/vcap/jobs/login/config/log4j.properties"
+LOGIN_SECRET: secret
+require_https: true
+assetBaseUrl: "/resources/oss"
+logout:
+  redirect:
+    url: "/login"
+    parameter:
+      disable: true
+uaa:
+  url: http://test.uaa.url
+links:
+  passwd: "/forgot_password"
+  signup: "/create_account"
+login:
+  url: http://test.uaa.url
+  idpDiscoveryEnabled: false
+  entityBaseURL: http://test.uaa.url
+  entityID: test.uaa.url
+  prompt:
+    username:
+      text: Email
+    password:
+      text: Password
+  authorize:
+    url: http://test.uaa.url/oauth/authorize
+  saml:
+    socket:
+      connectionManagerTimeout: 10000
+      soTimeout: 10000
+    signMetaData: true
+    signRequest: true
+    wantAssertionSigned: false
+smtp:
+  host: localhost
+  port: 2525
+  auth: false
+  starttls: false

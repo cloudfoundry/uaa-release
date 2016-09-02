@@ -5,9 +5,9 @@ require 'json'
 require 'deep_merge'
 require 'support/yaml_eq'
 
-describe 'uaa-release yaml generation' do
+describe 'uaa-release erb generation' do
 
-  def add_param_to_hash param_name, param_value, target_hash = {}
+  def self.add_param_to_hash param_name, param_value, target_hash = {}
     begin
       a = target_hash
       p = param_name.split(/[\/\.]/)
@@ -20,9 +20,7 @@ describe 'uaa-release yaml generation' do
     end
   end
 
-
-  let(:deployment_manifest_fragment) do
-
+  def self.generate_cf_manifest file_name
     spec_defaults = YAML
                       .load_file('jobs/uaa/spec')['properties']
                       .keep_if { |k,v| v.has_key?('default') }
@@ -43,63 +41,43 @@ describe 'uaa-release yaml generation' do
     # new_hash['uaa']['url'] = 'https://uaa.test.com'
 
     manifest_hash = {
-        'properties' => new_hash
+      'properties' => new_hash
     }
-
-    external_properties = YAML.load_file('spec/input/bosh-lite.yml')
-
+    external_properties = YAML.load_file(file_name)
     manifest_hash = manifest_hash.deep_merge!(external_properties)
-
     manifest_hash
-
   end
 
-  let(:uaa_erb_yaml) { File.read(File.join(File.dirname(__FILE__), '../jobs/uaa/templates/uaa.yml.erb')) }
-  let(:login_erb_yaml) { File.read(File.join(File.dirname(__FILE__), '../jobs/uaa/templates/login.yml.erb')) }
-
-  subject(:parsed_uaa_yaml) do
-    binding = Bosh::Template::EvaluationContext.new(deployment_manifest_fragment).get_binding
-    YAML.load(ERB.new(uaa_erb_yaml).result(binding))
+  def self.perform_erb_transformation erb_file, manifest_file
+    binding = Bosh::Template::EvaluationContext.new(manifest_file).get_binding
+    YAML.load(ERB.new(erb_file).result(binding))
   end
 
-  subject(:parsed_login_yaml) do
-    binding = Bosh::Template::EvaluationContext.new(deployment_manifest_fragment).get_binding
-    YAML.load(ERB.new(login_erb_yaml).result(binding))
-  end
 
-  context 'given bosh-lite inputs' do
+
+  def self.perform_compare input, output_uaa, output_login
+    uaa_erb_yaml = File.read(File.join(File.dirname(__FILE__), '../jobs/uaa/templates/uaa.yml.erb'))
+    login_erb_yaml =  File.read(File.join(File.dirname(__FILE__), '../jobs/uaa/templates/login.yml.erb'))
+
+    generated_cf_manifest = generate_cf_manifest(input)
+    parsed_uaa_yaml = perform_erb_transformation(uaa_erb_yaml, generated_cf_manifest)
+    parsed_login_yaml = perform_erb_transformation(login_erb_yaml, generated_cf_manifest)
+
     it "uaa.yml should match" do
-      #parsed_uaa_yaml is a hash with the result
-      #puts "Generated Yaml File:\n" + parsed_uaa_yaml.to_yaml( :Indent => 2)
-
-      expected = File.read('spec/compare/bosh-lite-uaa.yml')
+      expected = File.read(output_uaa)
       actual = parsed_uaa_yaml.to_yaml
-
       expect(actual).to yaml_eq(expected)
-      # expect(parsed_uaa_yaml['oauth']['clients']['admin']['secret']).to eq('admin-secret')
     end
-
     it "login.yml should match" do
-      expected = File.read('spec/compare/bosh-lite-login.yml')
+      expected = File.read(output_login)
       actual = parsed_login_yaml.to_yaml
       expect(actual).to yaml_eq(expected)
     end
 
-
-    # context "When NATS's HTTP interface is specified" do
-    #   before do
-    #     deployment_manifest_fragment['properties']['nats']['http'] = {
-    #       'port' => 8081,
-    #       'user' => 'http-user',
-    #       'password' => 'http-password',
-    #     }
-    #   end
-    #
-    #   it 'should template the appropriate parameters' do
-    #     expect(parsed_uaa_yaml['http']['port']).to eq(8081)
-    #     expect(parsed_uaa_yaml['http']['user']).to eq('http-user')
-    #     expect(parsed_uaa_yaml['http']['password']).to eq('http-password')
-    #   end
-    # end
   end
+
+  perform_compare 'spec/input/bosh-lite.yml', 'spec/compare/bosh-lite-uaa.yml', 'spec/compare/bosh-lite-login.yml'
+  perform_compare 'spec/input/all-properties-set.yml', 'spec/compare/all-properties-set-uaa.yml', 'spec/compare/all-properties-set-login.yml'
+  perform_compare 'spec/input/required-properties.yml', 'spec/compare/required-properties-uaa.yml', 'spec/compare/required-properties-login.yml'
+
 end

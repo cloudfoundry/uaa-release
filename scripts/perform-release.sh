@@ -90,6 +90,7 @@ if [ "$branch_to_release_from" = "develop" ]; then
     # if we are releasing from develop
     # create a merge commit with the changes
     git merge --no-ff develop -m "Merge of branch develop for release $1"
+    sub_update
 fi
 
 finalize_and_commit $1
@@ -97,15 +98,18 @@ git push origin master
 git checkout develop
 git reset --hard origin/develop
 git merge master -m "Merge of branch master for release $1"
+sub_update
 git push origin develop
 
 # tag the release
 if [ "$branch_to_release_from" = "develop" ]; then
     git checkout master
+    sub_update
     git tag -a v${1} -m "$1 release"
     git push origin master --tags
 else
     git checkout $branch_to_release_from
+    sub_update
     git tag -a v${1} -m "$1 release"
     git push origin $branch_to_release_from --tags
 fi

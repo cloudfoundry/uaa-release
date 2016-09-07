@@ -45,7 +45,7 @@ builds:
   7bf497d9-62ee-45e5-9227-18a46b8e56d6:
     version: '14'
   3b87eab6-a44e-479f-b1f0-6f418eabd6bf:
-    version: v15
+    version: '15'
   f20f6845-f886-496a-8dab-53773e93ba99:
     version: '16'
 format-version: '2'

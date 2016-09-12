@@ -17,6 +17,11 @@ function usage {
     echo -e "Usage: ${GREEN}$(basename $0) 11.4 v11.4-branch${NC}"
 }
 
+function invalid_version {
+  echo -e "${NC}Invalid version:${RED} ${1} ${NC}"
+  echo -e "${GREEN}Correct version must start with a digit and only contain digits and dots.${NC}"
+}
+
 function finalize_and_commit {
     tarball=dev_releases/uaa/uaa-$1.tgz
     #dryrun
@@ -32,6 +37,14 @@ function finalize_and_commit {
 if [ "$#" -lt 1 ]; then
     usage
     exit 1
+fi
+
+#validate the version number
+if [[ "$1" =~ ^[0-9]+.?[0-9]*$ ]]; then
+  echo -e "Creating release with version ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
+else
+  invalid_version $1
+  exit 1
 fi
 
 # what branch do we release from

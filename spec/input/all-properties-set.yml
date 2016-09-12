@@ -246,6 +246,7 @@ properties:
       searchFilter: 'cn={0}'
       searchBase: 'dc=test,dc=com'
       ssl:
+        tls: simple
         skipverification: true
       sslCertificate: ldap-ssl-cert
       sslCertificateAlias: ldap-ssl-cert-alias

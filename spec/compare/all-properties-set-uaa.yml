@@ -171,6 +171,7 @@ ldap:
   profile:
     file: ldap/ldap-search-and-bind.xml
   ssl:
+    tls: simple
     skipverification: true
     sslCertificate: ldap-ssl-cert
     sslCertificateAlias: ldap-ssl-cert-alias

@@ -540,6 +540,9 @@ properties:
   uaa.ldap.ssl.skipverification:
     description: "Set to true, and LDAPS connection will not validate the server certificate."
     default: false
+  uaa.ldap.ssl.tls:
+    description: "If using StartTLS, what mode to enable. Default is none, not enabled. Possible values are none, simple, external"
+    default: none
   uaa.ldap.mailAttributeName:
     description: "The name of the LDAP attribute that contains the users email address"
     default: mail

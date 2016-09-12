@@ -288,7 +288,8 @@
         'file' => "ldap/ldap-#{p_opt('uaa.ldap.profile_type')}.xml"
        },
       'ssl' => {
-        'skipverification' => p('uaa.ldap.ssl.skipverification')
+        'skipverification' => p('uaa.ldap.ssl.skipverification'),
+        'tls' => p('uaa.ldap.ssl.tls')
       },
       'base' => {
         'url' => p_opt('uaa.ldap.url'),

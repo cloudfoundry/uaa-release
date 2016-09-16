@@ -48,6 +48,4 @@ builds:
     version: '15'
   f20f6845-f886-496a-8dab-53773e93ba99:
     version: '16'
-  dee210e4-28b4-478b-89f9-5a4416aee41b:
-    version: '12.6'
 format-version: '2'

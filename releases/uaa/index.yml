@@ -52,4 +52,6 @@ builds:
     version: '12.6'
   5132dc17-3b5f-4623-b77d-3fb723e848cb:
     version: '11.7'
+  39fab434-4fcc-4e49-973b-75603ebf6dbd:
+    version: '17'
 format-version: '2'

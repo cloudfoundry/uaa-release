@@ -50,4 +50,6 @@ builds:
     version: '16'
   dee210e4-28b4-478b-89f9-5a4416aee41b:
     version: '12.6'
+  5132dc17-3b5f-4623-b77d-3fb723e848cb:
+    version: '11.7'
 format-version: '2'

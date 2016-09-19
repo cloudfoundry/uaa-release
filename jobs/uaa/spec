@@ -34,7 +34,7 @@ properties:
   # General server properties
   uaa.catalina_opts:
     description: "The options used to configure Tomcat"
-    default: -Xmx768m -XX:MaxPermSize=256m
+    default: -Xmx768m -XX:MaxMetaspaceSize=256m
   uaa.port:
     description: "Port that uaa will accept connections on"
     default: 8080

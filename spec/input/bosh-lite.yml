@@ -1139,7 +1139,7 @@ properties:
         countFailuresWithinSeconds:
         lockoutAfterFailures:
         lockoutPeriodSeconds:
-    catalina_opts: "-Xmx192m -XX:MaxPermSize=128m"
+    catalina_opts: "-Xmx192m -XX:MaxMetaspaceSize=128m"
     cc:
       client_secret: cc-secret
     clients:

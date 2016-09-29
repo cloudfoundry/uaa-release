@@ -564,7 +564,7 @@ properties:
     description: "What type of group integration should be used. Values are: 'no-groups', 'groups-as-scopes', 'groups-map-to-scopes'"
     default: "no-groups"
   uaa.ldap.groups.searchBase:
-    description: "Search start point for a user group membership search"
+    description: "Search start point for a user group membership search, and sequential nested searches.. You can set this value to 'memberOf' when using Active Directory and skip group search but use the calculated memberOf field on the user records. No nested search will be performed."
     default: ""
   uaa.ldap.groups.groupRoleAttribute:
     description: "Used with groups-as-scopes, defines the attribute that holds the scope name(s)."

@@ -205,7 +205,7 @@ properties:
     description: "The text used to prompt for a password during login"
     default: Password
   login.idpDiscoveryEnabled:
-    description: "IDP Discovery should be set to true if you have configured more than one identity provider for UAA. The discovery relies on email domain being set for each additional provider"
+    description: "IDP Discovery should be set to true if you have configured more than one identity provider for UAA. The discovery relies on email domain being set for each additional provider. This property will also enable a list of selectable accounts that have signed in via the browser."
     default: false
 
   # Email

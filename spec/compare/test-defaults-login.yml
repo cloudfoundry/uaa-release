@@ -18,6 +18,7 @@ links:
 login:
   url: http://test.uaa.url
   idpDiscoveryEnabled: false
+  accountChooserEnabled: false
   entityBaseURL: http://test.uaa.url
   entityID: test.uaa.url
   prompt:

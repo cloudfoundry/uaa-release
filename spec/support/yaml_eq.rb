@@ -1,3 +1,4 @@
+require 'tempfile'
 RSpec::Matchers.define :yaml_eq do |expected|
   match do |actual|
     ok = YAML.load(actual) == YAML.load(expected)

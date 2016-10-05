@@ -19,6 +19,7 @@ links:
 login:
   url: http://all-properties-set:8888/uaa
   idpDiscoveryEnabled: true
+  accountChooserEnabled: true
   entityBaseURL: http://all-properties-set:8888/uaa
   entityID: all-properties-set:8888/uaa
   prompt:

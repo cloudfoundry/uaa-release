@@ -34,4 +34,34 @@ builds:
     version: '12.3'
   a84d0443-4f3a-44e4-98ce-29c094a30783:
     version: '13'
+  d7b5c0d7-2eaa-4d8e-bf30-b59e6ee9118e:
+    version: '11.4'
+  c56ddd74-124c-4c7c-bb72-ac46f542eeb1:
+    version: '12.4'
+  221f62f9-c8b4-4520-9a2e-67c943719e84:
+    version: '11.5'
+  e9320484-07bf-404e-9b2d-ac383e2d91dc:
+    version: '12.5'
+  7bf497d9-62ee-45e5-9227-18a46b8e56d6:
+    version: '14'
+  3b87eab6-a44e-479f-b1f0-6f418eabd6bf:
+    version: '15'
+  f20f6845-f886-496a-8dab-53773e93ba99:
+    version: '16'
+  dee210e4-28b4-478b-89f9-5a4416aee41b:
+    version: '12.6'
+  5132dc17-3b5f-4623-b77d-3fb723e848cb:
+    version: '11.7'
+  39fab434-4fcc-4e49-973b-75603ebf6dbd:
+    version: '17'
+  9a905e94-a6e9-4374-9c9b-bf86c9377495:
+    version: '18'
+  6518833f-7303-44db-988e-2c3aa9a06912:
+    version: '13.1'
+  875d7324-0aca-4bd3-9e96-d289ee2b6144:
+    version: '13.2'
+  48ca1288-d126-45eb-ace9-ba9c1f253deb:
+    version: '19'
+  97ff4cfa-9622-4414-9b94-68a5af594385:
+    version: '13.3'
 format-version: '2'

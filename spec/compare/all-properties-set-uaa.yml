@@ -1,0 +1,207 @@
+---
+name: uaa
+disableInternalAuth: true
+disableInternalUserManagement: true
+issuer:
+  uri: http://all-properties-set:8888/uaa
+spring_profiles: postgresql,ldap
+logging:
+  config: "/var/vcap/jobs/uaa/config/log4j.properties"
+database:
+  url: jdbc:postgresql://10.244.0.30:5524/uaadb
+  username: uaaadmin
+  password: admin
+  maxactive: 101
+  maxidle: 11
+  minidle: 1
+  removeabandoned: true
+  logabandoned: false
+  abandonedtimeout: 301
+  caseinsensitive: true
+authentication:
+  policy:
+    lockoutAfterFailures: 5
+    countFailuresWithinSeconds: 1200
+    lockoutPeriodSeconds: 300
+    global:
+      lockoutAfterFailures: 5
+      countFailuresWithinSeconds: 1200
+      lockoutPeriodSeconds: 300
+password:
+  policy:
+    minLength: 0
+    maxLength: 255
+    requireUpperCaseCharacter: 0
+    requireLowerCaseCharacter: 0
+    requireDigit: 0
+    requireSpecialCharacter: 0
+    expirePasswordInMonths: 0
+    global:
+      minLength: 0
+      maxLength: 255
+      requireUpperCaseCharacter: 0
+      requireLowerCaseCharacter: 0
+      requireDigit: 0
+      requireSpecialCharacter: 0
+      expirePasswordInMonths: 0
+zones:
+  internal:
+    hostnames:
+    - host1.test
+    - host2.test
+    - host3.test
+jwt:
+  token:
+    revocable: true
+    policy:
+      accessTokenValiditySeconds: 43200
+      refreshTokenValiditySeconds: 2592000
+      global:
+        accessTokenValiditySeconds: 43200
+        refreshTokenValiditySeconds: 2592000
+      activeKeyId: key-1
+      keys:
+        key-1:
+          signingKey: |
+            -----BEGIN RSA PRIVATE KEY-----
+            MIICXgIBAAKBgQDfTLadf6QgJeS2XXImEHMsa+1O7MmIt44xaL77N2K+J/JGpfV3
+            AnkyB06wFZ02sBLB7hko42LIsVEOyTuUBird/3vlyHFKytG7UEt60Fl88SbAEfsU
+            JN1i1aSUlunPS/NCz+BKwwKFP9Ss3rNImE9Uc2LMvGy153LHFVW2zrjhTwIDAQAB
+            AoGBAJDh21LRcJITRBQ3CUs9PR1DYZPl+tUkE7RnPBMPWpf6ny3LnDp9dllJeHqz
+            a3ACSgleDSEEeCGzOt6XHnrqjYCKa42Z+Opnjx/OOpjyX1NAaswRtnb039jwv4gb
+            RlwT49Y17UAQpISOo7JFadCBoMG0ix8xr4ScY+zCSoG5v0BhAkEA8llNsiWBJF5r
+            LWQ6uimfdU2y1IPlkcGAvjekYDkdkHiRie725Dn4qRiXyABeaqNm2bpnD620Okwr
+            sf7LY+BMdwJBAOvgt/ZGwJrMOe/cHhbujtjBK/1CumJ4n2r5V1zPBFfLNXiKnpJ6
+            J/sRwmjgg4u3Anu1ENF3YsxYabflBnvOP+kCQCQ8VBCp6OhOMcpErT8+j/gTGQUL
+            f5zOiPhoC2zTvWbnkCNGlqXDQTnPUop1+6gILI2rgFNozoTU9MeVaEXTuLsCQQDC
+            AGuNpReYucwVGYet+LuITyjs/krp3qfPhhByhtndk4cBA5H0i4ACodKyC6Zl7Tmf
+            oYaZoYWi6DzbQQUaIsKxAkEA2rXQjQFsfnSm+w/9067ChWg46p4lq5Na2NpcpFgH
+            waZKhM1W0oB8MX78M+0fG3xGUtywTx0D4N7pr1Tk2GTgNw==
+            -----END RSA PRIVATE KEY-----
+    claims:
+      exclude:
+      - authorities
+      - username
+    signing-key: |
+      signing-key with some
+      line feeds in it
+    verification-key: |
+      verification-key with some
+      line feeds in it
+    refresh:
+      restrict_grant: true
+oauth:
+  clients:
+    login:
+      id: login
+      override: true
+      secret: some-secret
+      authorized-grant-types: authorization_code,client_credentials,refresh_token
+      authorities: test_resource.test_action
+      scope: test_resource.test_action
+      redirect-uri: http://login.example.com
+      autoapprove: true
+      app-launch-url: http://myloginpage.com
+      show-on-homepage: true
+      app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
+    app:
+      id: app
+      override: true
+      secret: app-secret
+      authorized-grant-types: authorization_code,client_credentials,refresh_token
+      authorities: test_resource.test_action
+      scope: test_resource.test_action,test_resource.other_action
+      redirect-uri: http://login.example.com
+      autoapprove:
+      - test_resource.test_action
+      - test_resource.other_action
+      app-launch-url: http://myapppage.com
+      show-on-homepage: true
+      app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
+    admin:
+      authorized-grant-types: client_credentials
+      authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
+      id: admin
+      secret: adminsecret
+  user:
+    authorities:
+    - openid
+    - scim.me
+    - cloud_controller.read
+    - cloud_controller.write
+    - cloud_controller_service_permissions.read
+    - password.write
+    - uaa.user
+    - approvals.me
+    - oauth.approvals
+    - notification_preferences.read
+    - notification_preferences.write
+    - profile
+    - roles
+    - user_attributes
+    - uaa.offline_token
+scim:
+  userids_enabled: true
+  user:
+    override: true
+  users:
+  - shortuser|password|shortuser|||group1,group2|uaa
+  - longuser|password|email|first name|lastName|group1,group2|origin-value - most
+    commonly uaa
+  groups:
+    my-test-group: My test group description
+    another-group: Another group description
+  external_groups:
+    origin1:
+      external_group1:
+      - internal_group1
+      - internal_group2
+      - internal_group3
+      external_group2:
+      - internal_group2
+      - internal_group4
+    origin2:
+      external_group3:
+      - internal_group3
+      - internal_group4
+      - internal_group5
+require_https: false
+ldap:
+  ldapdebug: Ldap configured through UAA
+  profile:
+    file: ldap/ldap-search-and-bind.xml
+  ssl:
+    tls: simple
+    skipverification: true
+    sslCertificate: ldap-ssl-cert
+    sslCertificateAlias: ldap-ssl-cert-alias
+  base:
+    url: ldap://192.168.50.4:389/
+    mailAttributeName: mail
+    mailSubstitute: "{0}@test.com"
+    mailSubstituteOverridesLdap: true
+    referral: follow
+    userDn: cn=admin,dc=test,dc=com
+    password: password
+    searchBase: dc=test,dc=com
+    searchFilter: cn={0}
+  addShadowUserOnLogin: false
+  emailDomain:
+  - whitelist-domain1.org
+  - whitelist-domain2.org
+  attributeMappings:
+    given_name: givenName
+    family_name: sn
+    phone_number: telephoneNumber
+    user.attribute.name-of-attribute-in-uaa-id-token: name-of-attribute-in-ldap-record
+    user.attribute.name-of-other-attribute-in-uaa-id-token: name-of-other-attribute-in-ldap-record
+  externalGroupsWhitelist:
+  - admin
+  - user
+  groups:
+    file: ldap/ldap-groups-map-to-scopes.xml
+    searchBase: dc=test,dc=com
+    groupRoleAttribute: spring.security.ldap.dn
+    groupSearchFilter: member={0}
+    searchSubtree: true
+    maxSearchDepth: 10

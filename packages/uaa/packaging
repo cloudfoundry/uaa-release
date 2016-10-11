@@ -2,9 +2,9 @@ set -e -x
 
 cd ${BOSH_INSTALL_TARGET}
 if [ "`uname -m`" == "ppc64le" ]; then
-  openjdk_path=${BOSH_COMPILE_TARGET}/openjdk/java-8-openjdk-ppc64le.tgz
+  openjdk_path=${BOSH_COMPILE_TARGET}/openjdk/openjdk-1.8.0_101-ppc64le-trusty.tar.gz
 else
-  openjdk_path=${BOSH_COMPILE_TARGET}/openjdk/openjdk-1.8.0_91-x86_64-trusty.tar.gz
+  openjdk_path=${BOSH_COMPILE_TARGET}/openjdk/openjdk-1.8.0_101-x86_64-trusty.tar.gz
 fi
 mkdir jdk && tar zxvf $openjdk_path -C jdk
 

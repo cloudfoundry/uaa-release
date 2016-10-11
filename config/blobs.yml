@@ -27,7 +27,7 @@ openjdk/openjdk-1.8.0_101-x86_64-mountainlion.tar.gz:
   object_id: a1a61854-e783-4265-928c-d66d8baf5eb6
   sha: d9374652844bfd7bcdce8f8b605fb57fd76c9e36
   size: 75550921
-#openjdk/java-8-openjdk-ppc64le.tgz:
+#openjdk/openjdk-1.8.0_101-ppc64le-trusty.tar.gz:
 #  object_id: ?
-#  sha: be968108e8f4c17074096a6e9e11766d72146c0e
-#  size: 47079809
+#  sha: d6f78697eb29069b3a8e6755bd10a3bc2948454e
+#  size: 75492730

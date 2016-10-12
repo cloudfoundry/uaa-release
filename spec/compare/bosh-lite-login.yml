@@ -44,7 +44,7 @@ login:
   saml:
     signMetaData: true
     signRequest: true
-    wantAssertionSigned: false
+    wantAssertionSigned: true
     signatureAlgorithm: SHA256
     socket:
       connectionManagerTimeout: 10000

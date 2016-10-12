@@ -724,7 +724,7 @@ properties:
     default: true
   login.saml.wantAssertionSigned:
     description: "Global property to request that external IDPs sign their SAML assertion before sending them to the UAA"
-    default: false
+    default: true
   login.saml.signatureAlgorithm:
     description: "Signature hashing algorithm for SAML. Can be SHA1, SHA256, or SHA512."
     example: SHA256

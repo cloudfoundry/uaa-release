@@ -710,6 +710,7 @@ properties:
         showSamlLoginLink: true
         linkText: Log in with My Saml Identity Provider
         groupMappingMode: AS_SCOPES
+        skipSslValidation: false
   login.saml.socket.connectionManagerTimeout:
     description: "Timeout in milliseconds for connection pooling for SAML metadata HTTP requests"
     default: 10000

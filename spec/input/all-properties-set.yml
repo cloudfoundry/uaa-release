@@ -372,6 +372,7 @@ properties:
           showSamlLoginLink: true
           linkText: Log in with My Saml Identity Provider
           groupMappingMode: AS_SCOPES
+          skipSslValidation: false
         CA_SM1:
           assertionConsumerIndex: 0
           attributeMappings:
@@ -434,6 +435,7 @@ properties:
           showSamlLoginLink: true
           signMetaData: false
           signRequest: false
+          skipSslValidation: true
       serviceProviderCertificate: |
         -----BEGIN CERTIFICATE-----
         MIIEJTCCA46gAwIBAgIJANIqfxWTfhpkMA0GCSqGSIb3DQEBBQUAMIG+MQswCQYD

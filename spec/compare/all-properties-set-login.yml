@@ -48,6 +48,7 @@ login:
         linkText: Log in with My Saml Identity Provider
         groupMappingMode: AS_SCOPES
         idpMetadata: http://my.identityprovider.com/saml2/idp/metadata.php
+        skipSslValidation: false
       CA_SM1:
         assertionConsumerIndex: 0
         attributeMappings:
@@ -109,6 +110,7 @@ login:
         showSamlLoginLink: true
         signMetaData: false
         signRequest: false
+        skipSslValidation: true
         idpMetadata: http://simplesamlphp.identity.cf-app.com/saml2/idp/metadata.php
   branding:
     companyName: company name

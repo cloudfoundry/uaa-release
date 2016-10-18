@@ -1,7 +1,11 @@
 #!/bin/bash
 
-WHEN_FINISH=when-finish.timestamp
-WHEN_NOW=when-now.timestamp
+echo "uaa-post-start - starting at `date`"
+
+TS_DIR=/var/vcap/data/uaa/post-start
+mkdir -p $TS_DIR
+WHEN_FINISH=$TS_DIR/when-finish.timestamp
+WHEN_NOW=$TS_DIR/when-now.timestamp
 
 delete_ts_files() {
   rm -f $WHEN_FINISH
@@ -16,15 +20,21 @@ echo "uaa-post-start - performing post start healthcheck until $EXPIRATION"
 
 while [ $WHEN_NOW -ot $WHEN_FINISH ]; do
     /var/vcap/jobs/uaa/bin/health_check
-    if [ $? == 0 ]
+    check=$?
+    if [ "$check" -eq "0" ]
     then
+        echo "uaa-post-start - post start health check successful at `date`"
         delete_ts_files
-        echo "uaa-post-start - post start health check successful"
         exit 0
+    elif  [ "$check" == "2" ]
+    then
+        echo "uaa-post-start - post start failed - server failed to start successfully at `date`"
+        delete_ts_files
+        exit 1
     fi
     sleep 1
     touch $WHEN_NOW
 done
-echo "uaa-post-start - post start health check failed"
+echo "uaa-post-start - post start health check failed - timeout at `date`"
 delete_ts_files
 exit 1

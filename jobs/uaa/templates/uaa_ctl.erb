@@ -152,7 +152,8 @@ case $1 in
     sed -i "s/_random_password_replaced_by_a_script_/${password}/g" $JOB_DIR/config/varz.yml
 
     # We want to keep packages pristine, since tomcat is modified in place we stage it elsewhere.
-    rm -rf $DATA_DIR
+    rm -rf $DATA_DIR/tomcat
+    rm -rf $KEY_STORE_FILE
     mkdir -p $DATA_DIR
     cp -a /var/vcap/packages/uaa/tomcat $DATA_DIR
     cp -a /var/vcap/jobs/uaa/config/tomcat/* $DATA_DIR/tomcat/conf/

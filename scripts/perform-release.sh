@@ -1,7 +1,12 @@
+
+
 #!/bin/bash -e
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+CYAN='\033[0;36m'
+BOLD='\033[0;1m'
 NC='\033[0m' # No Color
 
 # update submodules
@@ -15,6 +20,13 @@ function sub_update {
 function usage {
     echo -e "Usage: ${GREEN}$(basename $0) bosh_release_version [branch_to_release_from/develop] [/path/to/private.yml]${NC}"
     echo -e "Usage: ${GREEN}$(basename $0) 11.4 v11.4-branch${NC}"
+    echo -e "\n${GREEN}$(basename $0)${NC} requires a completely pristine clone of ${CYAN}uaa-release${NC}, containing no uncommitted changes or untracked or ignored files."
+    echo -e "Before performing the release, it is strongly recommended that you update blobs with ${GREEN}bosh sync blobs${NC}"
+    echo -e "The ${CYAN}uaa${NC} submodule should be bumped by checking out the appropriate version ${BOLD}tag (not the branch)${NC} and committing the submodule update before running ${GREEN}$(basename $0)${NC}"
+    echo -e "Specify the new ${YELLOW}bosh_release_version${NC}. The script will update the relevant branches and tags."
+    echo -e "For a usual release, the ${YELLOW}branch_to_release_from${NC} should be develop. For patch releases, it should be a previous release."
+    echo -e "The ${YELLOW}private.yml${NC} file serves as the private key for updating the blobstore."
+    echo -e "If successful, the release should appear at ${CYAN}http://bosh.io/releases/github.com/cloudfoundry/uaa-release${NC} in a short time."
 }
 
 function invalid_version {

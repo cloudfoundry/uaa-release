@@ -18,6 +18,7 @@ links:
 login:
   url: http://test.uaa.url
   idpDiscoveryEnabled: false
+  accountChooserEnabled: false
   entityBaseURL: http://test.uaa.url
   entityID: test.uaa.url
   prompt:
@@ -33,7 +34,7 @@ login:
       soTimeout: 10000
     signMetaData: true
     signRequest: true
-    wantAssertionSigned: false
+    wantAssertionSigned: true
 smtp:
   host: localhost
   port: 2525

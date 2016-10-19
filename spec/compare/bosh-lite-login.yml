@@ -33,6 +33,7 @@ logout:
 login:
   url: https://login.bosh-lite.com
   idpDiscoveryEnabled: false
+  accountChooserEnabled: false
   entityBaseURL: https://login.bosh-lite.com
   entityID: login.bosh-lite.com
   prompt:
@@ -43,7 +44,7 @@ login:
   saml:
     signMetaData: true
     signRequest: true
-    wantAssertionSigned: false
+    wantAssertionSigned: true
     signatureAlgorithm: SHA256
     socket:
       connectionManagerTimeout: 10000

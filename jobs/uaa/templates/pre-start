@@ -1,15 +1,57 @@
 #!/bin/bash
+set -e
+
+echo "uaa-pre-start - starting at `date`"
 
 CERT_FILE=/etc/ssl/certs/ca-certificates.crt
-TRUST_STORE_FILE=/var/vcap/jobs/uaa/config/cacerts
+
+CONF_DIR=/var/vcap/jobs/uaa/config
+CACHE_DIR=/var/vcap/data/uaa/cert-cache
+
+mkdir -p $CACHE_DIR
+
+CERT_CACHE_FILE=$CACHE_DIR/cacerts-cache.txt
+TRUST_STORE_FILE=$CACHE_DIR/cacerts
 
 CERTS=$(grep 'END CERTIFICATE' $CERT_FILE| wc -l)
-rm -f $TRUST_STORE_FILE
 
-for N in $(seq 0 $(($CERTS - 1))); do
-  ALIAS="${CERT_FILE%.*}-$N"
-  cat $CERT_FILE |
-  awk "n==$N { print }; /END CERTIFICATE/ { n++ }" |
-      /var/vcap/packages/uaa/jdk/bin/keytool -noprompt -import -trustcacerts \
-              -alias $ALIAS -keystore $TRUST_STORE_FILE -storepass changeit
-done
+function process_certs {
+    echo "Processing certificates for Java cacerts file"
+    rm -f $CERT_CACHE_FILE
+    rm -f $TRUST_STORE_FILE
+    COUNTER=0
+    for N in $(seq 0 $(($CERTS - 1))); do
+      # Get the alias
+      ALIAS="${CERT_FILE%.*}-$N"
+      # Load the cert into the Java keystore
+      cat $CERT_FILE |
+        awk "n==$N { print }; /END CERTIFICATE/ { n++ }" |
+          /var/vcap/packages/uaa/jdk/bin/keytool -noprompt \
+                  -import \
+                  -trustcacerts \
+                  -alias $ALIAS \
+                  -keystore $TRUST_STORE_FILE \
+                  -storepass changeit
+      let COUNTER=COUNTER+1
+      echo "Processed certificate $COUNTER of $CERTS"
+    done
+    if [ "$COUNTER" -eq "$CERTS" ]; then
+        echo "Java keystore creation completed."
+        cp $CERT_FILE $CERT_CACHE_FILE
+    fi
+}
+
+if [ -a $CERT_CACHE_FILE ] && [ -a $TRUST_STORE_FILE ]; then
+    diff $CERT_CACHE_FILE $CERT_FILE >/dev/null
+    if [ $? -eq 0 ]; then
+      echo "No changes to CA certificates. Will not build Java keystore file."
+    else
+      echo "Changes to CA certificates detected."
+      process_certs
+    fi
+else
+    process_certs
+fi
+cp $TRUST_STORE_FILE $CONF_DIR
+
+echo "uaa-pre-start - completed at `date`"

@@ -56,6 +56,7 @@ properties:
     description: |
       A pipe delimited set of regular expressions of IP addresses that are considered reverse proxies.
       When a request from these IP addresses come in, the x-forwarded-for and x-forwarded-proto headers will be respected.
+    default: 10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}
   uaa.proxy.servers:
     description: "Array of the router IPs acting as the first group of HTTP/TCP backends. These will be added to the proxy_ips_regex as exact matches."
     default: []

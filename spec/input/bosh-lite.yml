@@ -1009,7 +1009,6 @@ properties:
     notifications:
       url:
     protocol:
-    restricted_ips_regex:
     saml:
       signatureAlgorithm: SHA256
       providers:

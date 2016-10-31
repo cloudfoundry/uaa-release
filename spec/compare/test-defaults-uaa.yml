@@ -63,15 +63,7 @@ oauth:
       authorized-grant-types: client_credentials
       authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
       id: admin
-      secret: 
-    login:
-      id: login
-      override: true
-      secret: secret
-      authorized-grant-types: authorization_code,client_credentials,refresh_token
-      authorities: oauth.login,notifications.write,critical_notifications.write,emails.write
-      scope: openid,oauth.approvals
-      redirect-uri: http://test.uaa.url
+      secret:
   user:
     authorities:
     - openid

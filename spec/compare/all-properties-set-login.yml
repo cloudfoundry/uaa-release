@@ -2,7 +2,6 @@
 name: login
 logging:
   config: "/var/vcap/jobs/login/config/log4j.properties"
-LOGIN_SECRET: some-secret
 require_https: false
 assetBaseUrl: "/resources/testing"
 logout:

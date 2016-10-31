@@ -263,8 +263,6 @@ properties:
         app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
   uaa.admin.client_secret:
     description: "Secret of the admin client - a client named admin with uaa.admin as an authority"
-  uaa.login.client_secret:
-    description: 'Default login client secret, if no login client is defined'
 
   # Security policies (for the UAA zone)
   uaa.authentication.policy.lockoutAfterFailures:

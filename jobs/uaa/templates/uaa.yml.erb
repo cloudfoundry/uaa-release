@@ -39,11 +39,6 @@
   issuer_uri = p('uaa.issuer', p('uaa.url'))
   oauth_clientsLoginRedirectUri = p('uaa.url')
 
-  # The login secret is defined in one of two properties
-  # uaa.login.client_secret or uaa.clients.login.secret
-  # If both of these are defined, then use the latter
-  login_secret = p('uaa.clients.login.secret', p_opt('uaa.login.client_secret'))
-  raise ArgumentError, 'uaa.login.client_secret or uaa.clients.login.secret must be set.' unless login_secret
   spring_profiles = p('uaadb.db_scheme')
   if p_opt('uaa.ldap.enabled') then
     spring_profiles = spring_profiles + ',ldap'
@@ -196,18 +191,6 @@
     oauth['clients']['admin']['authorities'] = 'clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write'
     oauth['clients']['admin']['id'] = 'admin'
     oauth['clients']['admin']['secret'] = p_opt('uaa.admin.client_secret')
-  end
-
-  #default login client
-  unless p_opt('uaa.clients.login')
-    oauth['clients']['login'] = {}
-    oauth['clients']['login']['id'] = 'login'
-    oauth['clients']['login']['override'] = true
-    oauth['clients']['login']['secret'] = login_secret
-    oauth['clients']['login']['authorized-grant-types'] = 'authorization_code,client_credentials,refresh_token'
-    oauth['clients']['login']['authorities'] = 'oauth.login,notifications.write,critical_notifications.write,emails.write'
-    oauth['clients']['login']['scope'] = 'openid,oauth.approvals'
-    oauth['clients']['login']['redirect-uri'] = oauth_clientsLoginRedirectUri
   end
 
   oauth['user']['authorities'] = p('uaa.user.authorities')

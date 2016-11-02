@@ -128,8 +128,8 @@ case $1 in
     then
       echo "[uaa-start] UAA not running according to pid_guard - proceeding with startup"
     else
-      echo "[uaa-start] UAA already running according to pid_guard- check successful...."
-      exit 0
+      echo "[uaa-start] UAA already running according to pid_guard - aborting start process"
+      exit 1
     fi
 
     echo "[uaa-start] About to starting UAA"

@@ -38,6 +38,8 @@ properties:
   uaa.port:
     description: "Port that uaa will accept connections on"
     default: 8080
+  uaa.host:
+    description: "Host that uaa will accept connections on"
   uaa.url:
     description: "The base url of the UAA"
   uaa.zones.internal.hostnames:
@@ -96,6 +98,8 @@ properties:
   uaa.ssl.port:
     description: If this property Tomcat will listen to this port and expect https traffic. If set to -1, Tomcat will not listen for https traffic.
     default: 8443
+  uaa.ssl.host:
+    description: Host that uaa will accept https connections on. Will only be used if uaa.ssl.port is set.
   uaa.ssl.protocol_header:
     description: The header to look for to determine if ssl termination was performed by a front end load balancer.
     default: x-forwarded-proto

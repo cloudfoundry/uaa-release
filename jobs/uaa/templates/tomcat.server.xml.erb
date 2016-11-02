@@ -31,6 +31,9 @@
                connectionTimeout="20000"
                port="<%= p('uaa.port') %>"
                bindOnInit="false"
+               <% if_p("uaa.host") do |host| %>
+               address="<%= host %>"
+               <% end %>
     />
     <% end %>
 
@@ -47,6 +50,9 @@
                keyAlias="uaa_ssl_cert"
                keystorePass="k0*l*s3cur1tyr0ck$"
                bindOnInit="false"
+               <% if_p("uaa.ssl.host") do |ssl_host| %>
+               address="<%= ssl_host %>"
+               <% end %>
     />
     <% end %>
 

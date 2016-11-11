@@ -1,5 +1,11 @@
 #!/bin/bash -e
 
+echo "[uaa-ctl] UAA Control Setting Up Logging"
+
+exec > >(tee -a >(logger -p user.info -t vcap.$(basename $0).stdout) | awk -W interactive '{ system("echo -n [$(date +\"%Y-%m-%d %H:%M:%S%z\")]"); print " " $0 }' >>/var/vcap/sys/log/$(basename $0).log)
+exec 2> >(tee -a >(logger -p user.error -t vcap.$(basename $0).stderr) | awk -W interactive '{ system("echo -n [$(date +\"%Y-%m-%d %H:%M:%S%z\")]"); print " " $0 }' >>/var/vcap/sys/log/$(basename $0).err.log)
+
+echo "[uaa-ctl] UAA Control script invoked"
 export PATH=/var/vcap/packages/uaa/jdk/bin:$PATH
 RUN_DIR=/var/vcap/sys/run/uaa
 LOG_DIR=/var/vcap/sys/log/uaa
@@ -11,17 +17,16 @@ STATUS=/var/vcap/jobs/uaa/bin/status
 # Proxy configuration variable for the uaa
 HTTP_PROXY_JAVA_OPTIONS=""
 
-# Minimum strength for password
-# TODO: move into correct properties file that is local to UAA war file only
-UAA_OPTIONS="-Dpassword-policy.required-score=0"
+echo "[uaa-ctl] Default environment set up"
 
 if [[ -f /var/vcap/jobs/uaa/config/cacerts ]]; then
-    export KEYSTORE="/var/vcap/jobs/uaa/config/cacerts"
+  export KEYSTORE="/var/vcap/jobs/uaa/config/cacerts"
 else
-    export KEYSTORE="/var/vcap/packages/uaa/jdk/jre/lib/security/cacerts"
+  export KEYSTORE="/var/vcap/packages/uaa/jdk/jre/lib/security/cacerts"
 fi
 
 export KEYSTORE_OPTS="-Djavax.net.ssl.trustStore=$KEYSTORE -Djavax.net.ssl.trustStoreType=JKS"
+echo "[uaa-ctl] Keystore configured to: $KEYSTORE"
 
 # Proxy configuration
 <% if_p('env.http_proxy') do |httpProxy| %>
@@ -30,12 +35,14 @@ export http_proxy='<%= httpProxy %>'
 proxy_conf=(`echo $HTTP_PROXY | tr ":" " " | tr "\/" " "`)
 HTTP_PROXY_JAVA_OPTIONS="$HTTP_PROXY_JAVA_OPTIONS -Dhttp.proxyHost=${proxy_conf[1]} -Dhttp.proxyPort=${proxy_conf[2]} "
 <% end %>
+
 <% if_p('env.https_proxy') do |httpsProxy| %>
 export HTTPS_PROXY='<%= httpsProxy %>'
 export https_proxy='<%= httpsProxy %>'
 proxy_conf=(`echo $HTTPS_PROXY | tr ":" " " | tr "\/" " "`)
 HTTP_PROXY_JAVA_OPTIONS="$HTTP_PROXY_JAVA_OPTIONS -Dhttps.proxyHost=${proxy_conf[1]} -Dhttps.proxyPort=${proxy_conf[2]} "
 <% end %>
+
 <% if_p('env.no_proxy') do |noProxy| %>
 export NO_PROXY='<%= noProxy %>'
 export no_proxy='<%= noProxy %>'
@@ -57,6 +64,7 @@ if [ x != x"$NO_PROXY" ]; then
   HTTP_PROXY_JAVA_OPTIONS="$HTTP_PROXY_JAVA_OPTIONS -Dhttp.nonProxyHosts=\"$java_no_proxies\" "
 fi
 <% end %>
+echo "[uaa-ctl] UAA System Proxies set to:$HTTP_PROXY_JAVA_OPTIONS"
 
 NEWRELIC_OPTS=
 <% if_p('uaa.newrelic') do |newrelic|
@@ -70,11 +78,9 @@ NEWRELIC_OPTS=
 end %>
 
 export NEWRELIC_OPTS
+echo "[uaa-ctl] UAA New Relic set to:$NEWRELIC_OPTS"
 
 mkdir -p /var/vcap/sys/log
-
-exec > >(tee -a >(logger -p user.info -t vcap.$(basename $0).stdout) | awk -W interactive '{ system("echo -n [$(date +\"%Y-%m-%d %H:%M:%S%z\")]"); print " " $0 }' >>/var/vcap/sys/log/$(basename $0).log)
-exec 2> >(tee -a >(logger -p user.error -t vcap.$(basename $0).stderr) | awk -W interactive '{ system("echo -n [$(date +\"%Y-%m-%d %H:%M:%S%z\")]"); print " " $0 }' >>/var/vcap/sys/log/$(basename $0).err.log)
 
 pid_guard() {
   local return_code=0
@@ -96,18 +102,19 @@ pid_guard() {
 
 ensure_no_more_tomcat() {
     for java_pid in $(ps -ef |grep java| grep tomcat |grep -Po '\-DPID=\K[^ ]+'); do
-      echo "[uaa-kill-tomcat] Found leftover Java process - killing `ps -fp $java_pid`"
+      echo "[uaa-kill-tomcat] Found leftover Java process - killing($java_pid) if running: `ps -fp $java_pid`"
       kill -9 $java_pid
     done
 }
 
+set +e
+echo "[uaa-ctl] UAA New Relic set to:$NEWRELIC_OPTS"
 case $1 in
-
   check)
     echo "[uaa-check] UAA check invoked - checking for running process"
     if pid_guard $PIDFILE "UAA"
     then
-      echo "[uaa-check] UAA not running - proceeding with startup"
+      echo "[uaa-check] UAA not running"
     else
       echo "[uaa-check] UAA already running - check successful...."
       exit 0
@@ -119,15 +126,16 @@ case $1 in
 
     if pid_guard $PIDFILE "UAA"
     then
-      echo "[uaa-start] UAA not running - proceeding with startup"
+      echo "[uaa-start] UAA not running according to pid_guard - proceeding with startup"
     else
-      echo "[uaa-check] UAA already running - check successful...."
-      exit 0
+      echo "[uaa-start] UAA already running according to pid_guard - aborting start process"
+      exit 1
     fi
 
     echo "[uaa-start] About to starting UAA"
     ensure_no_more_tomcat
 
+    echo "[uaa-start] Creating health check STATUS file"
     touch $STATUS
     echo "[uaa-start] Health check STATUS file created"
 
@@ -141,18 +149,14 @@ case $1 in
     chown vcap:vcap $PIDFILE
 
     <% if p('uaa.ldap.sslCertificate', nil) || p('login.ldap.sslCertificate', nil) %>
+    echo "[uaa-start] Installing LDAP certificate"
     /var/vcap/jobs/uaa/bin/install_crt ldap.crt ldapcert $KEYSTORE
+    echo "[uaa-start] Installed LDAP certificate"
     <% end %>
 
-    # Generate a random username and password for varz
-    username=$RANDOM-$RANDOM-$RANDOM-$RANDOM
-    password=$RANDOM-$RANDOM-$RANDOM-$RANDOM
-
-    sed -i "s/_random_username_replaced_by_a_script_/${username}/g" $JOB_DIR/config/varz.yml
-    sed -i "s/_random_password_replaced_by_a_script_/${password}/g" $JOB_DIR/config/varz.yml
-
     # We want to keep packages pristine, since tomcat is modified in place we stage it elsewhere.
-    rm -rf $DATA_DIR
+    rm -rf $DATA_DIR/tomcat
+    rm -rf $KEY_STORE_FILE
     mkdir -p $DATA_DIR
     cp -a /var/vcap/packages/uaa/tomcat $DATA_DIR
     cp -a /var/vcap/jobs/uaa/config/tomcat/* $DATA_DIR/tomcat/conf/
@@ -166,7 +170,9 @@ case $1 in
 
     # Install the server's ssl certificate
     <% if p("uaa.ssl.port") != -1 %>
-        /var/vcap/jobs/uaa/bin/install_uaa_crt uaa.crt
+    echo "[uaa-start] Installing Server SSL certificate"
+    /var/vcap/jobs/uaa/bin/install_uaa_crt uaa.crt
+    echo "[uaa-start] Installed Server SSL certificate"
     <% end %>
 
     cd /var/vcap/data/uaa
@@ -177,21 +183,25 @@ case $1 in
 
   stop)
     echo "[uaa-stop] About to stop UAA"
+    # This tells the health_check to return false
+    # and the route will be deregistered
     rm -f $STATUS
     sleep 5
     echo "[uaa-stop] Health check STATUS file removed"
-    if [ -f $PIDFILE ]; then
-      echo "[uaa-stop] Found UAA Tomcat PID file $PIDFILE - Killing `cat $PIDFILE`"
-      kill `cat $PIDFILE`
-      rm -rf $PIDFILE
-      sleep 5
+    if pid_guard $PIDFILE "UAA"
+    then
+        echo "[uaa-check] UAA not running"
+    else
+        echo "[uaa-stop] Found UAA Tomcat PID file $PIDFILE - Killing `cat $PIDFILE`"
+        kill `cat $PIDFILE`
+        rm -rf $PIDFILE
+        sleep 5
     fi
+    echo "[uaa-stop] Clearing left over java processes"
     ensure_no_more_tomcat
     ;;
-
   *)
     echo "Usage: uaa_ctl {start|stop}"
-
     ;;
 
 esac

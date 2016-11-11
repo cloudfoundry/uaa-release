@@ -85,18 +85,6 @@ properties:
       6A15MzQdj5Hm82vlmpC4LzXofLjiN4E5ZLluzEw+1TjRE7c=
       -----END RSA PRIVATE KEY-----
     clients:
-      login:
-        id: login
-        override: true
-        secret: some-secret
-        authorized-grant-types: authorization_code,client_credentials,refresh_token
-        authorities: test_resource.test_action
-        scope: test_resource.test_action
-        redirect-uri: http://login.example.com
-        autoapprove: true
-        app-launch-url: http://myloginpage.com
-        show-on-homepage: true
-        app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
       app:
         id: app
         override: true

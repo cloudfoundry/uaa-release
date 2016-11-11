@@ -6,6 +6,9 @@ STATUS_FILE=/var/vcap/jobs/uaa/bin/status
 if [[ $HEALTH_RESPONSE == "ok" && -f $STATUS_FILE ]]
 then
   exit 0
+elif [[ $HEALTH_RESPONSE == "FAILURE" && -f $STATUS_FILE ]]
+then
+  exit 2
 else
   exit 1
 fi

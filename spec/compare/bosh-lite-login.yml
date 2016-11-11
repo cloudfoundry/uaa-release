@@ -19,8 +19,6 @@ smtp:
   auth: false
   starttls: false
 
-# The secret that this login server will use to authenticate to the uaa
-LOGIN_SECRET: login-secret
 require_https: false
 assetBaseUrl: /resources/oss
 

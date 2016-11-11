@@ -125,15 +125,6 @@ oauth:
       authorities: routing.routes.read
       authorized-grant-types: client_credentials,refresh_token
       secret: gorouter-secret
-    login:
-      id: login
-      authorities: oauth.login,scim.write,clients.read,notifications.write,critical_notifications.write,emails.write,scim.userids,password.write
-      authorized-grant-types: authorization_code,client_credentials,refresh_token
-      autoapprove: true
-      override: true
-      redirect-uri: https://login.bosh-lite.com
-      scope: openid,oauth.approvals
-      secret: login-secret
     notifications:
       id: notifications
       authorities: cloud_controller.admin,scim.read

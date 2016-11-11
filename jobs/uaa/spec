@@ -94,7 +94,7 @@ properties:
     description: "Request came in on a secure connection. Expect the load balancer/proxy to set the proper headers (x-forwarded-for, x-forwarded-proto)"
     default: true
   uaa.ssl.port:
-    description: If this property Tomcat will listen to this port and expect https traffic. If null, tomcat will not listen to this port
+    description: If this property Tomcat will listen to this port and expect https traffic. If set to -1, Tomcat will not listen for https traffic.
     default: 8443
   uaa.ssl.protocol_header:
     description: The header to look for to determine if ssl termination was performed by a front end load balancer.
@@ -263,8 +263,6 @@ properties:
         app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
   uaa.admin.client_secret:
     description: "Secret of the admin client - a client named admin with uaa.admin as an authority"
-  uaa.login.client_secret:
-    description: 'Default login client secret, if no login client is defined'
 
   # Security policies (for the UAA zone)
   uaa.authentication.policy.lockoutAfterFailures:

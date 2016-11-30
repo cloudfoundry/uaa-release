@@ -80,4 +80,6 @@ builds:
     version: '23'
   ca3d1def-1cac-4186-8fa5-86fbf234e322:
     version: '24'
+  f921ad9b-073f-461b-9953-f6558723477a:
+    version: '13.7'
 format-version: '2'

@@ -11,16 +11,14 @@ log4j.appender.FILE.Threshold=ALL
 log4j.appender.FILE.layout = org.apache.log4j.PatternLayout
 log4j.appender.FILE.layout.ConversionPattern=${LOG_PATTERN}
 
-log4j.appender.SYSLOG=org.apache.log4j.net.SyslogAppender
+log4j.appender.SYSLOG=org.cloudfoundry.identity.uaa.util.log.SyslogAppender
 log4j.appender.SYSLOG.Facility=USER
 log4j.appender.SYSLOG.Threshold=INFO
 log4j.appender.SYSLOG.FacilityPrinting=false
 log4j.appender.SYSLOG.SyslogHost=localhost
-log4j.appender.SYSLOG.layout = org.cloudfoundry.identity.uaa.util.LineAwareLayout
-log4j.appender.SYSLOG.layout.lineLayout=org.apache.log4j.PatternLayout
-# Workaround to log4j's SyslogAppender not supporting tags/identities.
-# Prefix the message with the tag (vcap.uaa) and set FacilityPrinting off.
-log4j.appender.SYSLOG.layout.lineLayout.ConversionPattern=vcap.uaa: ${LOG_PATTERN}
+log4j.appender.SYSLOG.PacketHeader=vcap.uaa: 
+log4j.appender.SYSLOG.layout = org.apache.log4j.PatternLayout
+log4j.appender.SYSLOG.layout.ConversionPattern=${LOG_PATTERN}
 
 log4j.category.org.springframework.security=<%= p("uaa.logging_level") %>
 log4j.category.org.cloudfoundry.identity=<%= p("uaa.logging_level") %>

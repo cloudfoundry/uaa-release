@@ -66,9 +66,6 @@ describe 'uaa-release erb generation' do
     it "uaa.yml should match" do
       expected = File.read(output_uaa)
       actual = parsed_uaa_yaml.to_yaml
-      STDOUT.write "\n\n\nUAA START"
-      STDOUT.write actual.to_s
-      STDOUT.write "UAA END \n\n\n"
       expect(actual).to yaml_eq(expected)
     end
     it "login.yml should match" do

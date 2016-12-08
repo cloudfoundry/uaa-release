@@ -459,6 +459,7 @@ properties:
         iVxQ1sYjo4kCugHBsWo+MpFH9VBLFzsMlP3eIDuVKe8aPXFKYCGhctZEJdQTKlja
         lshe50nayKrT
         -----END CERTIFICATE-----
+      serviceProviderKeyPassword: ""
       serviceProviderKey: |
         -----BEGIN RSA PRIVATE KEY-----
         MIICXgIBAAKBgQDfTLadf6QgJeS2XXImEHMsa+1O7MmIt44xaL77N2K+J/JGpfV3

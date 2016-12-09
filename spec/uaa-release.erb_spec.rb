@@ -175,6 +175,93 @@ describe 'uaa-release erb generation' do
     end
   end
 
+
+  context 'when required properties are missing in the stub' do
+    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
+    let(:as_yml) { true }
+    let(:parsed_yaml) { read_and_parse_string_template erb_template, generated_cf_manifest, as_yml }
+    let(:input) { 'spec/input/all-properties-set.yml' }
+
+    context 'the login.yml.erb' do
+      let(:erb_template) { '../jobs/uaa/templates/login.yml.erb' }
+      context 'login.saml.serviceProviderKey is missing' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.serviceProviderKey/)
+        end
+      end
+      context 'login.saml.serviceProviderKeyPassword is missing' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.serviceProviderKeyPassword/)
+        end
+      end
+      context 'login.saml.serviceProviderCertificate is missing' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.serviceProviderCertificate/)
+        end
+      end
+    end
+
+    context 'the uaa.yml.erb' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+      context 'critical JWT key properties are missing' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['uaa']['jwt'].delete('signing_key')
+          generated_cf_manifest['properties']['uaa']['jwt']['policy'].delete('active_key_id')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /active_key_id/)
+        end
+      end
+      context 'active JWT key ID does not match do' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['uaa']['jwt'].delete('signing_key')
+          generated_cf_manifest['properties']['uaa']['jwt']['policy']['active_key_id'] = 'key-2'
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /active_key_id mismatch/)
+        end
+      end
+      context 'active JWT key ID is missing' do
+        it 'it works because we accept legacy keys' do
+          generated_cf_manifest['properties']['uaa']['jwt']['policy'].delete('active_key_id')
+          expect {
+            parsed_yaml
+          }
+        end
+      end
+      context 'legacy key is missing' do
+        it 'it works because we have active key' do
+          generated_cf_manifest['properties']['uaa']['jwt'].delete('signing_key')
+          expect {
+            parsed_yaml
+          }
+        end
+      end
+      context 'active signing key is missing' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['uaa']['jwt'].delete('signing_key')
+          generated_cf_manifest['properties']['uaa']['jwt']['policy']['keys']['key-1'].delete('signingKey')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /active_key_id missing signingKey/)
+        end
+      end
+
+    end
+
+
+  end
+
+
   def self.perform_compare(input, output_uaa, output_login, output_log4j)
     generated_cf_manifest = generate_cf_manifest(input)
 

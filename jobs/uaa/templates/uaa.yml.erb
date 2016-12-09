@@ -33,6 +33,25 @@
     hash[last_key] = value
   end
 
+  def is_missing(hash, *keys)
+    last_key = nil
+    index = 1
+    for key in keys
+      last_key = key
+      if index < keys.length
+        sub_hash = hash[key]
+        if sub_hash.nil?
+          return true
+        elsif !(sub_hash.is_a?(Hash))
+          return true
+        end
+        hash = sub_hash
+      end
+      index = index + 1
+    end
+    return hash[last_key].nil?
+  end
+
   uaa_db = p_arr('uaadb.databases').find { |db| db['tag'] == 'uaa' }
   uaa_role = p_arr('uaadb.roles').find { |role| role['tag'] == 'admin' }
   protocol = p('login.protocol')
@@ -346,6 +365,27 @@
     sessioncookie.each do |cookiename, cookievalue|
       params['servlet'][cookiename] = cookievalue
     end
+  end
+
+  #validate that we have all required parameters
+  message = ''
+  if is_missing params, 'jwt', 'token', 'signing-key'
+     if is_missing params, 'jwt', 'token', 'policy', 'activeKeyId'
+       message = message + '\nuaa.jwt.policy.active_key_id'
+     else
+       activeKeyId = params['jwt']['token']['policy']['activeKeyId']
+       if is_missing params, 'jwt', 'token', 'policy', 'keys', activeKeyId
+         message = message + '\nuaa.jwt.policy.active_key_id mismatch'
+       elsif is_missing params, 'jwt', 'token', 'policy', 'keys', activeKeyId, 'signingKey'
+           message = message + '\nuaa.jwt.policy.active_key_id missing signingKey'
+       end
+     end
+  end
+
+  # message = message + (is_missing(params, 'login', 'serviceProviderKeyPassword')?'\nlogin.saml.serviceProviderKeyPassword' : '')
+  # message = message + (is_missing(params, 'login', 'serviceProviderCertificate')?'\nlogin.saml.serviceProviderCertificate' : '')
+  if !(message == '')
+    raise ArgumentError, 'Missing properties:' + message
   end
 
 %>

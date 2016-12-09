@@ -7,7 +7,7 @@ require 'support/yaml_eq'
 
 describe 'uaa-release erb generation' do
 
-  def self.add_param_to_hash param_name, param_value, target_hash = {}
+  def add_param_to_hash param_name, param_value, target_hash = {}
     begin
       a = target_hash
       p = param_name.split(/[\/\.]/)
@@ -20,13 +20,8 @@ describe 'uaa-release erb generation' do
     end
   end
 
-  def self.generate_cf_manifest file_name
-    spec_defaults = YAML
-                      .load_file('jobs/uaa/spec')['properties']
-                      .keep_if { |k,v| v.has_key?('default') }
-                      .map { |k, v| [k, v['default']] }
-                      .to_h
-
+  def generate_cf_manifest file_name
+    spec_defaults = YAML.load_file('jobs/uaa/spec')['properties'].keep_if { |k,v| v.has_key?('default') }.map { |k, v| [k, v['default']] }.to_h
     new_hash = {}
     spec_defaults.each do |key, value|
       if key.include? '.'
@@ -48,17 +43,17 @@ describe 'uaa-release erb generation' do
     manifest_hash
   end
 
-  def self.perform_erb_transformation_as_yaml erb_file, manifest_file
+  def perform_erb_transformation_as_yaml erb_file, manifest_file
     YAML.load(perform_erb_transformation_as_string erb_file, manifest_file)
   end
 
-  def self.perform_erb_transformation_as_string erb_file, manifest_file
+  def perform_erb_transformation_as_string erb_file, manifest_file
     binding = Bosh::Template::EvaluationContext.new(manifest_file).get_binding
     ERB.new(erb_file).result(binding)
   end
 
 
-  def self.read_and_parse_string_template(template, manifest, asYaml)
+  def read_and_parse_string_template(template, manifest, asYaml)
     erbTemplate = File.read(File.join(File.dirname(__FILE__), template))
     if asYaml
       completedTemplate = perform_erb_transformation_as_yaml(erbTemplate, manifest)
@@ -68,7 +63,119 @@ describe 'uaa-release erb generation' do
     completedTemplate
   end
 
-  def self.perform_compare input, output_uaa, output_login, output_log4j
+  def yml_compare(output, actual)
+    expected = File.read(output)
+    expect(actual).to yaml_eq(expected)
+  end
+
+  def str_compare(output, actual)
+    expected = File.read(output)
+    expect(actual).to eq(expected)
+  end
+
+  context 'when yml files and stubs are provided' do
+    let(:generated_cf_manifest) { generate_cf_manifest(input) }
+    let(:as_yml) { true }
+    let(:parsed_yaml) { read_and_parse_string_template erb_template, generated_cf_manifest, as_yml }
+
+    context 'for a bosh-lite.yml' do
+      let(:input) { 'spec/input/bosh-lite.yml' }
+      let(:output_uaa) { 'spec/compare/bosh-lite-uaa.yml' }
+      let(:output_login) { 'spec/compare/bosh-lite-login.yml' }
+      let(:output_log4j) { 'spec/compare/default-log4j.properties' }
+
+      context 'when uaa.yml.erb is provided' do
+        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+        it 'it matches' do
+          yml_compare output_uaa, parsed_yaml.to_yaml
+        end
+      end
+
+      context 'when login.yml.erb is provided' do
+        let(:erb_template) { '../jobs/uaa/templates/login.yml.erb' }
+
+        it 'it matches' do
+          yml_compare output_login, parsed_yaml.to_yaml
+        end
+      end
+
+      context 'when log4j.properties.erb is provided' do
+        let(:erb_template) { '../jobs/uaa/templates/log4j.properties.erb' }
+        let(:as_yml) { false }
+
+        it 'it matches' do
+          str_compare output_log4j, parsed_yaml.to_s
+        end
+      end
+    end
+
+    context 'for a all-properties-set.yml' do
+      let(:input) { 'spec/input/all-properties-set.yml' }
+      let(:output_uaa) { 'spec/compare/all-properties-set-uaa.yml' }
+      let(:output_login) { 'spec/compare/all-properties-set-login.yml' }
+      let(:output_log4j) { 'spec/compare/all-properties-set-log4j.properties' }
+
+      context 'when uaa.yml.erb is provided' do
+        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+        it 'it matches' do
+          yml_compare output_uaa, parsed_yaml.to_yaml
+        end
+      end
+
+      context 'when login.yml.erb is provided' do
+        let(:erb_template) { '../jobs/uaa/templates/login.yml.erb' }
+
+        it 'it matches' do
+          yml_compare output_login, parsed_yaml.to_yaml
+        end
+      end
+
+      context 'when log4j.properties.erb is provided' do
+        let(:erb_template) { '../jobs/uaa/templates/log4j.properties.erb' }
+        let(:as_yml) { false }
+
+        it 'it matches' do
+          str_compare output_log4j, parsed_yaml.to_s
+        end
+      end
+    end
+
+    context 'for test-defaults.yml' do
+      let(:input) { 'spec/input/test-defaults.yml' }
+      let(:output_uaa) { 'spec/compare/test-defaults-uaa.yml' }
+      let(:output_login) { 'spec/compare/test-defaults-login.yml' }
+      let(:output_log4j) { 'spec/compare/default-log4j.properties' }
+
+      context 'when uaa.yml.erb is provided' do
+        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+        it 'it matches' do
+          yml_compare output_uaa, parsed_yaml.to_yaml
+        end
+      end
+
+      context 'when login.yml.erb is provided' do
+        let(:erb_template) { '../jobs/uaa/templates/login.yml.erb' }
+
+        it 'it matches' do
+          yml_compare output_login, parsed_yaml.to_yaml
+        end
+      end
+
+      context 'when log4j.properties.erb is provided' do
+        let(:erb_template) { '../jobs/uaa/templates/log4j.properties.erb' }
+        let(:as_yml) { false }
+
+        it 'it matches' do
+          str_compare output_log4j, parsed_yaml.to_s
+        end
+      end
+    end
+  end
+
+  def self.perform_compare(input, output_uaa, output_login, output_log4j)
     generated_cf_manifest = generate_cf_manifest(input)
 
     parsed_uaa_yaml = read_and_parse_string_template '../jobs/uaa/templates/uaa.yml.erb', generated_cf_manifest, true
@@ -91,21 +198,21 @@ describe 'uaa-release erb generation' do
       }
     end
 
-    it "uaa.yml for "+input+" must match" do
-      expected = File.read(output_uaa)
-      actual = parsed_uaa_yaml.to_yaml
-      expect(actual).to yaml_eq(expected)
-    end
-    it "login.yml for "+input+" must match" do
-      expected = File.read(output_login)
-      actual = parsed_login_yaml.to_yaml
-      expect(actual).to yaml_eq(expected)
-    end
-    it "log4j.properties for "+input+" must match" do
-      expected = File.read(output_log4j)
-      actual = parsed_log4j_properties.to_s
-      expect(actual).to eq(expected)
-    end
+    # it "uaa.yml for "+input+" must match" do
+    #   expected = File.read(output_uaa)
+    #   actual = parsed_uaa_yaml.to_yaml
+    #   expect(actual).to yaml_eq(expected)
+    # end
+    # it "login.yml for "+input+" must match" do
+    #   expected = File.read(output_login)
+    #   actual = parsed_login_yaml.to_yaml
+    #   expect(actual).to yaml_eq(expected)
+    # end
+    # it "log4j.properties for "+input+" must match" do
+    #   expected = File.read(output_log4j)
+    #   actual = parsed_log4j_properties.to_s
+    #   expect(actual).to eq(expected)
+    # end
 
   end
 
@@ -156,8 +263,8 @@ describe 'uaa-release erb generation' do
 
   end
 
-  validate_required_properties 'spec/input/missing-required-properties.yml'
-  perform_compare 'spec/input/bosh-lite.yml', 'spec/compare/bosh-lite-uaa.yml', 'spec/compare/bosh-lite-login.yml', 'spec/compare/default-log4j.properties'
-  perform_compare 'spec/input/all-properties-set.yml', 'spec/compare/all-properties-set-uaa.yml', 'spec/compare/all-properties-set-login.yml', 'spec/compare/all-properties-set-log4j.properties'
-  perform_compare 'spec/input/test-defaults.yml', 'spec/compare/test-defaults-uaa.yml', 'spec/compare/test-defaults-login.yml', 'spec/compare/default-log4j.properties'
+  # validate_required_properties 'spec/input/missing-required-properties.yml'
+  # perform_compare 'spec/input/bosh-lite.yml', 'spec/compare/bosh-lite-uaa.yml', 'spec/compare/bosh-lite-login.yml', 'spec/compare/default-log4j.properties'
+  # perform_compare 'spec/input/all-properties-set.yml', 'spec/compare/all-properties-set-uaa.yml', 'spec/compare/all-properties-set-login.yml', 'spec/compare/all-properties-set-log4j.properties'
+  # perform_compare 'spec/input/test-defaults.yml', 'spec/compare/test-defaults-uaa.yml', 'spec/compare/test-defaults-login.yml', 'spec/compare/default-log4j.properties'
 end

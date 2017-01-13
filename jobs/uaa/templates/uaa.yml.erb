@@ -55,6 +55,7 @@
   uaa_db = p_arr('uaadb.databases').find { |db| db['tag'] == 'uaa' }
   uaa_role = p_arr('uaadb.roles').find { |role| role['tag'] == 'admin' }
   protocol = p('login.protocol')
+  uaa_db_scheme = p('uaadb.db_scheme')
   issuer_uri = p('uaa.issuer', p('uaa.url'))
   oauth_clientsLoginRedirectUri = p('uaa.url')
 
@@ -125,6 +126,9 @@
       }
     }
   }
+  if uaa_db_scheme == 'sqlserver' then
+    params['database']['url'] = "jdbc:#{p('uaadb.db_scheme')}://#{p('uaadb.address')}:#{p('uaadb.port')};databaseName=#{uaa_db['name']}"
+  end
 
   # should the DB not use lower() function in SCIM queries (if true)
   if_p('uaa.database.case_insensitive') do |case_insensitive|

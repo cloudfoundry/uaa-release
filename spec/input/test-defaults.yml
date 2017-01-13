@@ -6,8 +6,8 @@ properties:
     - citext: true
       name: uaadb
       tag: uaa
-    db_scheme: postgresql
-    port: 5524
+    db_scheme: sqlserver
+    port: 1433
     roles:
     - name: uaaadmin
       password: admin

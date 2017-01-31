@@ -1,5 +1,6 @@
 ---
 properties:
+  domain: test-domain.com
   uaadb:
     address: 10.244.0.30
     databases:

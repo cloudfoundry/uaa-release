@@ -42,8 +42,7 @@ function process_certs {
 }
 
 if [ -a $CERT_CACHE_FILE ] && [ -a $TRUST_STORE_FILE ]; then
-    diff $CERT_CACHE_FILE $CERT_FILE >/dev/null
-    if [ $? -eq 0 ]; then
+    if  diff $CERT_CACHE_FILE $CERT_FILE >/dev/null; then
       echo "No changes to CA certificates. Will not build Java keystore file."
     else
       echo "Changes to CA certificates detected."

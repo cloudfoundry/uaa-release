@@ -1,7 +1,9 @@
 #!/bin/bash
 
 HEALTH_RESPONSE=$(curl --max-time 5 --connect-timeout 2 127.0.0.1:8989/healthz)
-STATUS_FILE=/var/vcap/jobs/uaa/bin/status
+
+DATA_DIR=/var/vcap/data/uaa
+STATUS_FILE=$DATA_DIR/uaa_status
 
 if [[ $HEALTH_RESPONSE == "ok" && -f $STATUS_FILE ]]
 then

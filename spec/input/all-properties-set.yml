@@ -1,5 +1,6 @@
 ---
 properties:
+  domain: test-domain.com
   uaadb:
     address: 10.244.0.30
     databases:
@@ -85,6 +86,15 @@ properties:
       6A15MzQdj5Hm82vlmpC4LzXofLjiN4E5ZLluzEw+1TjRE7c=
       -----END RSA PRIVATE KEY-----
     clients:
+      cf:
+        id: cf
+        override: true
+        authorized-grant-types: password,refresh_token
+        scope: cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,scim.read,scim.write,doppler.firehose,uaa.user,routing.router_groups.read,routing.router_groups.write
+        authorities: uaa.none
+        access-token-validity: 600
+        refresh-token-validity: 2592000
+        secret: ""
       app:
         id: app
         override: true
@@ -450,6 +460,7 @@ properties:
         iVxQ1sYjo4kCugHBsWo+MpFH9VBLFzsMlP3eIDuVKe8aPXFKYCGhctZEJdQTKlja
         lshe50nayKrT
         -----END CERTIFICATE-----
+      serviceProviderKeyPassword: ""
       serviceProviderKey: |
         -----BEGIN RSA PRIVATE KEY-----
         MIICXgIBAAKBgQDfTLadf6QgJeS2XXImEHMsa+1O7MmIt44xaL77N2K+J/JGpfV3

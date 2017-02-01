@@ -123,6 +123,7 @@ login:
     footerLinks:
       terms of service: http://terms.of.service/
   homeRedirect: http://custom.home.redirect
+  serviceProviderKeyPassword: ""
   serviceProviderCertificate: |
     -----BEGIN CERTIFICATE-----
     MIIEJTCCA46gAwIBAgIJANIqfxWTfhpkMA0GCSqGSIb3DQEBBQUAMIG+MQswCQYD

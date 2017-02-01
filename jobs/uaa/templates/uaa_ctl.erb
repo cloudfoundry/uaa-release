@@ -11,8 +11,8 @@ RUN_DIR=/var/vcap/sys/run/uaa
 LOG_DIR=/var/vcap/sys/log/uaa
 JOB_DIR=/var/vcap/jobs/uaa
 DATA_DIR=/var/vcap/data/uaa
+STATUS=$DATA_DIR/uaa_status
 PIDFILE=$RUN_DIR/uaa.pid
-STATUS=/var/vcap/jobs/uaa/bin/status
 
 # Proxy configuration variable for the uaa
 HTTP_PROXY_JAVA_OPTIONS=""

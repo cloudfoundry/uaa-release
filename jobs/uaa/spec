@@ -663,8 +663,9 @@ properties:
       waZKhM1W0oB8MX78M+0fG3xGUtywTx0D4N7pr1Tk2GTgNw==
       -----END RSA PRIVATE KEY-----
   login.saml.serviceProviderKeyPassword:
-    description: "Password to protect the service provider private key."
+    description: "Passphrase for the service provider private key."
     example: ""
+    default: ""
   login.saml.serviceProviderCertificate:
     description: "Service provider certificate."
     example: |

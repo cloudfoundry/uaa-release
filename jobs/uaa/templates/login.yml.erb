@@ -9,6 +9,25 @@
     p_opt(property) || []
   end
 
+  def is_missing(hash, *keys)
+    last_key = nil
+    index = 1
+    for key in keys
+      last_key = key
+      if index < keys.length
+        sub_hash = hash[key]
+        if sub_hash.nil?
+          return true
+        elsif !(sub_hash.is_a?(Hash))
+          return true
+        end
+        hash = sub_hash
+      end
+      index = index + 1
+    end
+    return hash[last_key].nil?
+  end
+
   # adds a nested value to a hash
   # for example hash['top-level']['mid-level']['bottom-level'] = value
   # add_value(hash, value, 'top-level', 'mid-level', 'bottom-level'))
@@ -173,6 +192,16 @@
     add_value(params, code, 'analytics', 'code')
     add_value(params, domain, 'analytics', 'domain')
   end
+
+  #validate that we have all required parameters
+  message = ''
+  message = message + (is_missing(params, 'login', 'serviceProviderKey')?'\nlogin.saml.serviceProviderKey' : '')
+  message = message + (is_missing(params, 'login', 'serviceProviderKeyPassword')?'\nlogin.saml.serviceProviderKeyPassword' : '')
+  message = message + (is_missing(params, 'login', 'serviceProviderCertificate')?'\nlogin.saml.serviceProviderCertificate' : '')
+  if !(message == '')
+    raise ArgumentError, 'Missing properties:' + message
+  end
+
 %>
 <%=YAML.dump(params, :indentation => 2)%>
 

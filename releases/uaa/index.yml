@@ -90,4 +90,6 @@ builds:
     version: '25'
   b5e2c001-d7f9-439d-b7b7-0f7d2888688d:
     version: '13.10'
+  60a6ef3f-bcdc-425a-80d8-c872d5d62432:
+    version: '24.1'
 format-version: '2'

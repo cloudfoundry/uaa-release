@@ -52,6 +52,8 @@ jwt:
         -----END PUBLIC KEY-----
     refresh:
       restrict_grant: false
+      unique: true
+      format: opaque
 
 authentication:
   policy:

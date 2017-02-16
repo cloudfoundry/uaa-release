@@ -362,6 +362,12 @@ properties:
   uaa.jwt.refresh.restrict_grant:
     description: "Disallows refresh-token grant for any client for which the user has not approved the `uaa.offline_token` scope"
     default: false
+  uaa.jwt.refresh.unique:
+      description: "If true, uaa will only issue one refresh token per client_id/user_id combination"
+      default: true
+  uaa.jwt.refresh.format:
+      description: "The format for the refresh token. Allowed values are `jwt`, `opaque`"
+      default: opaque
 
   # Global security policies (for all zones)
   uaa.authentication.policy.global.lockoutAfterFailures:

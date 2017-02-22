@@ -57,6 +57,8 @@ jwt:
         refreshTokenValiditySeconds: 2592000
     refresh:
       restrict_grant: false
+      format: jwt
+      unique: false
 oauth:
   clients:
     admin:

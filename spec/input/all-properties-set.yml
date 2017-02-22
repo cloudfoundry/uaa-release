@@ -221,6 +221,8 @@ properties:
           - username
       refresh:
         restrict_grant: true
+        format: opaque
+        unique: true
     ldap:
       enabled: true
       profile_type: search-and-bind

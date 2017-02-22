@@ -76,8 +76,8 @@ jwt:
             -----END RSA PRIVATE KEY-----
     refresh:
       restrict_grant: false
-      unique: true
-      format: opaque
+      unique: false
+      format: jwt
 oauth:
   clients:
     admin:

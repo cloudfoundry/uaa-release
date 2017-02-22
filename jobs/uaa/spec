@@ -364,10 +364,10 @@ properties:
     default: false
   uaa.jwt.refresh.unique:
       description: "If true, uaa will only issue one refresh token per client_id/user_id combination"
-      default: true
+      default: false
   uaa.jwt.refresh.format:
       description: "The format for the refresh token. Allowed values are `jwt`, `opaque`"
-      default: opaque
+      default: jwt
 
   # Global security policies (for all zones)
   uaa.authentication.policy.global.lockoutAfterFailures:

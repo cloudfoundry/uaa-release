@@ -92,4 +92,6 @@ builds:
     version: '13.10'
   60a6ef3f-bcdc-425a-80d8-c872d5d62432:
     version: '24.1'
+  1e1622c0-9b89-4ee6-8e67-607fc059492a:
+    version: '24.2'
 format-version: '2'

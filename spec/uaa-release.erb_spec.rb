@@ -76,27 +76,18 @@ describe 'uaa-release erb generation' do
   context 'when yml files and stubs are provided' do
     let(:generated_cf_manifest) { generate_cf_manifest(input) }
     let(:as_yml) { true }
-    let(:parsed_yaml) { read_and_parse_string_template erb_template, generated_cf_manifest, as_yml }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
 
     context 'for a bosh-lite.yml' do
       let(:input) { 'spec/input/bosh-lite.yml' }
       let(:output_uaa) { 'spec/compare/bosh-lite-uaa.yml' }
-      let(:output_login) { 'spec/compare/bosh-lite-login.yml' }
       let(:output_log4j) { 'spec/compare/default-log4j.properties' }
 
       context 'when uaa.yml.erb is provided' do
         let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
 
         it 'it matches' do
-          yml_compare output_uaa, parsed_yaml.to_yaml
-        end
-      end
-
-      context 'when login.yml.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/login.yml.erb' }
-
-        it 'it matches' do
-          yml_compare output_login, parsed_yaml.to_yaml
+          yml_compare(output_uaa, parsed_yaml.to_yaml)
         end
       end
 
@@ -113,22 +104,13 @@ describe 'uaa-release erb generation' do
     context 'for a all-properties-set.yml' do
       let(:input) { 'spec/input/all-properties-set.yml' }
       let(:output_uaa) { 'spec/compare/all-properties-set-uaa.yml' }
-      let(:output_login) { 'spec/compare/all-properties-set-login.yml' }
       let(:output_log4j) { 'spec/compare/all-properties-set-log4j.properties' }
 
       context 'when uaa.yml.erb is provided' do
         let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
 
         it 'it matches' do
-          yml_compare output_uaa, parsed_yaml.to_yaml
-        end
-      end
-
-      context 'when login.yml.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/login.yml.erb' }
-
-        it 'it matches' do
-          yml_compare output_login, parsed_yaml.to_yaml
+          yml_compare(output_uaa, parsed_yaml.to_yaml)
         end
       end
 
@@ -145,7 +127,6 @@ describe 'uaa-release erb generation' do
     context 'for test-defaults.yml' do
       let(:input) { 'spec/input/test-defaults.yml' }
       let(:output_uaa) { 'spec/compare/test-defaults-uaa.yml' }
-      let(:output_login) { 'spec/compare/test-defaults-login.yml' }
       let(:output_log4j) { 'spec/compare/default-log4j.properties' }
 
       context 'when uaa.yml.erb is provided' do
@@ -153,14 +134,6 @@ describe 'uaa-release erb generation' do
 
         it 'it matches' do
           yml_compare output_uaa, parsed_yaml.to_yaml
-        end
-      end
-
-      context 'when login.yml.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/login.yml.erb' }
-
-        it 'it matches' do
-          yml_compare output_login, parsed_yaml.to_yaml
         end
       end
 
@@ -192,15 +165,15 @@ describe 'uaa-release erb generation' do
       end
     end
   end
-  
+
   context 'when required properties are missing in the stub' do
     let!(:generated_cf_manifest) { generate_cf_manifest(input) }
     let(:as_yml) { true }
     let(:parsed_yaml) { read_and_parse_string_template erb_template, generated_cf_manifest, as_yml }
     let(:input) { 'spec/input/all-properties-set.yml' }
 
-    context 'the login.yml.erb' do
-      let(:erb_template) { '../jobs/uaa/templates/login.yml.erb' }
+    context 'the uaa.yml.erb' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
       context 'login.saml.serviceProviderKey is missing' do
         it 'throws an error' do
           generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')

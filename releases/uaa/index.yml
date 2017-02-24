@@ -96,4 +96,6 @@ builds:
     version: '24.2'
   31c3cc81-fe6e-4312-8900-b663c7677ae0:
     version: '24.4'
+  52f432b1-9456-43e0-92fe-30e22bd8dbc0:
+    version: '26'
 format-version: '2'

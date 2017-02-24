@@ -42,7 +42,7 @@ function finalize_and_commit {
     bosh finalize release $tarball --name uaa --version $1
     #bosh generated files
     git add .
-    git commit -m "uaa-release version v${1}"
+    git commit --no-verify -m "uaa-release version v${1}"
 }
 
 # check our command line arguments

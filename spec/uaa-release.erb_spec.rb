@@ -175,7 +175,24 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  context 'when invalid properites are specified' do
+    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
+    let(:as_yml) { true }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
+    let(:input) { 'spec/input/all-properties-set.yml' }
 
+    context 'for uaa.yml.erb' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+      it 'raises an error' do
+        generated_cf_manifest['properties']['uaa']['jwt']['refresh']['format'] = 'invalidformat';
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /uaa.jwt.refresh.format invalidformat must be one of/)
+      end
+    end
+  end
+  
   context 'when required properties are missing in the stub' do
     let!(:generated_cf_manifest) { generate_cf_manifest(input) }
     let(:as_yml) { true }

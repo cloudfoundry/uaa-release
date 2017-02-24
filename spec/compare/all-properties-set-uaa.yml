@@ -91,6 +91,9 @@ jwt:
       line feeds in it
     refresh:
       restrict_grant: true
+      unique: true
+      format: opaque
+
 oauth:
   clients:
     cf:

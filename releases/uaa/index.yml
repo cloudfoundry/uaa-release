@@ -100,4 +100,6 @@ builds:
     version: '26'
   9a12017a-5750-498e-b455-c66e4a68cef7:
     version: '24.5'
+  19afaa3b-f75a-45cb-abd3-1c869b1f3051:
+    version: '27'
 format-version: '2'

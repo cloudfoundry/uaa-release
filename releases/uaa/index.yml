@@ -98,4 +98,6 @@ builds:
     version: '24.4'
   52f432b1-9456-43e0-92fe-30e22bd8dbc0:
     version: '26'
+  9a12017a-5750-498e-b455-c66e4a68cef7:
+    version: '24.5'
 format-version: '2'

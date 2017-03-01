@@ -21,7 +21,6 @@ templates:
   tomcat.server.xml.erb: config/tomcat/server.xml
   tomcat.context.xml.erb: config/tomcat/context.xml
   ldap.crt.erb: config/ldap.crt
-  login.yml.erb: config/login.yml
   messages.properties.erb: config/messages.properties
   uaa.crt.erb: config/uaa.crt
 

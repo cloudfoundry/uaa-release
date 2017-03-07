@@ -106,4 +106,6 @@ builds:
     version: '13.11'
   c6582d37-43a8-40cc-a912-98ac95ffaad6:
     version: '28'
+  47b40671-a118-481a-a957-3de8269d6db5:
+    version: '24.6'
 format-version: '2'

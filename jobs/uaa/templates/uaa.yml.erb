@@ -376,7 +376,7 @@
       'session-cookie' => {}
     }
     sessioncookie.each do |cookiename, cookievalue|
-      params['servlet'][cookiename] = cookievalue
+      params['servlet']['session-cookie'][cookiename] = cookievalue
     end
   end
 

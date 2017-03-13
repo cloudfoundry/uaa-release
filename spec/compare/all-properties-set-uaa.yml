@@ -400,6 +400,17 @@ login:
           - group2
           user.attribute.name-of-attribute-in-uaa-id-token: name-of-attribute-in-provider-token
           user.attribute.name-of-other-attribute-in-uaa-id-token: name-of-other-attribute-in-provider-token
+
+servlet:
+  session-cookie:
+    secure: true
+    http-only: true
+    max-age: 1800
+    name: JSESSIONID
+    comment: null
+    path: "/"
+    domain: super.test.domain
+
 smtp:
   host: smtp_host
   port: 25

@@ -46,6 +46,15 @@ properties:
     logging_level: TRACE
     logging_use_rfc3339: true
     require_https: false
+    servlet:
+      session-cookie:
+        secure: true
+        http-only: true
+        max-age: 1800
+        name: JSESSIONID
+        comment: null
+        path: "/"
+        domain: super.test.domain
     ssl:
       port: 8843
       procotol_header: x-custom-forwarded-proto

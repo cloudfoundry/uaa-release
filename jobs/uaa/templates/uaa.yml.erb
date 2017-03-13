@@ -402,58 +402,6 @@
     raise ArgumentError, 'Missing properties:' + message
   end
 
-  # returns null if the property does not have a value
-  def p_opt(property)
-    p(property, nil)
-  end
-
-  # returns an empty array of the value is null
-  def p_arr(property)
-    p_opt(property) || []
-  end
-
-  def is_missing(hash, *keys)
-    last_key = nil
-    index = 1
-    for key in keys
-      last_key = key
-      if index < keys.length
-        sub_hash = hash[key]
-        if sub_hash.nil?
-          return true
-        elsif !(sub_hash.is_a?(Hash))
-          return true
-        end
-        hash = sub_hash
-      end
-      index = index + 1
-    end
-    return hash[last_key].nil?
-  end
-
-  # adds a nested value to a hash
-  # for example hash['top-level']['mid-level']['bottom-level'] = value
-  # add_value(hash, value, 'top-level', 'mid-level', 'bottom-level'))
-  def add_value(hash, value, *keys)
-    last_key = nil
-    index = 1
-    for key in keys
-      last_key = key
-      if index < keys.length
-        sub_hash = hash[key]
-        if sub_hash.nil?
-          sub_hash = {}
-          hash[key] = sub_hash
-        elsif !(sub_hash.is_a?(Hash))
-          raise ArgumentError, 'Expected a hash for key:'+key+' in nested elements:'+keys.to_s
-        end
-        hash = sub_hash
-      end
-      index = index + 1
-    end
-    hash[last_key] = value
-  end
-
   protocol = p('login.protocol')
 
   uaa_base = p('uaa.url')

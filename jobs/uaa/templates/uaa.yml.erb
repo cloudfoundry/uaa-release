@@ -292,10 +292,6 @@
   end
   params['zones']['internal']['hostnames'] = internal_hostnames
 
-  if_p('uaa.require_https') do |requireHttps|
-    params['require_https'] = requireHttps
-  end
-
   if p_opt('uaa.ldap.enabled')
     ldap = {
       'ldapdebug' => 'Ldap configured through UAA',
@@ -519,7 +515,8 @@
     end
   end
 
-  #deprecated single provider legacy configuration
+  #deprecated single provider legacy configuration - adds a single provider under the list
+  #this should go away
   if_p('login.saml.idpEntityAlias') do |idpEntityAlias|
     add_value(params, p("/var/vcap/jobs/login/#{p_opt('login.saml.idp_metadata_file')}"), 'login', 'saml', 'providers', idpEntityAlias, 'idpMetadata')
     add_value(params, p_opt('login.saml.assertionConsumerIndex'), 'login', 'saml', 'providers', idpEntityAlias, 'assertionConsumerIndex')

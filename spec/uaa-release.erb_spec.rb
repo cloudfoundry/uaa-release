@@ -148,13 +148,24 @@ describe 'uaa-release erb generation' do
     end
   end
 
-  context 'when invalid properites are specified' do
+  context 'when invalid properties are specified' do
     let!(:generated_cf_manifest) { generate_cf_manifest(input) }
     let(:as_yml) { true }
     let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
     let(:input) { 'spec/input/all-properties-set.yml' }
 
-    context 'for uaa.yml.erb' do
+    context 'and token format is invalid' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+      it 'raises an error' do
+        generated_cf_manifest['properties']['uaa']['jwt']['refresh']['format'] = 'invalidformat';
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /uaa.jwt.refresh.format invalidformat must be one of/)
+      end
+    end
+
+    context 'and client is missing invalid grant type' do
       let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
 
       it 'raises an error' do
@@ -274,23 +285,6 @@ describe 'uaa-release erb generation' do
         f.puts parsed_log4j_properties.to_s
       }
     end
-
-    # it "uaa.yml for "+input+" must match" do
-    #   expected = File.read(output_uaa)
-    #   actual = parsed_uaa_yaml.to_yaml
-    #   expect(actual).to yaml_eq(expected)
-    # end
-    # it "login.yml for "+input+" must match" do
-    #   expected = File.read(output_login)
-    #   actual = parsed_login_yaml.to_yaml
-    #   expect(actual).to yaml_eq(expected)
-    # end
-    # it "log4j.properties for "+input+" must match" do
-    #   expected = File.read(output_log4j)
-    #   actual = parsed_log4j_properties.to_s
-    #   expect(actual).to eq(expected)
-    # end
-
   end
 
   def self.validate_required_properties input

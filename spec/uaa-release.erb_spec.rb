@@ -165,6 +165,20 @@ describe 'uaa-release erb generation' do
       end
     end
 
+    context 'and redirect_uri or redirect_url are set' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+      rejected_parameters = ['redirect_uri', 'redirect_url']
+      rejected_parameters .each do |property|
+        it "raises an error for property #{property}" do
+          generated_cf_manifest['properties']['uaa']['clients']['app'][property] = 'http://some.redirect.url';
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Invalid property: uaa.clients.app.#{property}/)
+        end
+      end
+    end
+
   end
 
   context 'when required properties are missing in the stub' do

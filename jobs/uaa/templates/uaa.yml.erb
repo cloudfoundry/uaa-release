@@ -219,6 +219,12 @@
       elsif params['oauth']['clients'][id]['secret'].nil? && client_data['authorized-grant-types'] != 'implicit'
         message = message + "\nMissing property: uaa.clients.#{id}.secret"
       end
+      rejected_properties = ['redirect_url', 'redirect_uri']
+      rejected_properties.each do |rejectedProperty|
+        if !client_data[rejectedProperty].nil?
+          message = message + "\nInvalid property: uaa.clients.#{id}.#{rejectedProperty}"
+        end
+      end
     end
   end
 

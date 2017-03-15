@@ -131,6 +131,7 @@ oauth:
       redirect-uri: "http://some.redirect.com/callback"
       override: true
       show-on-homepage: true
+      scope: openid
   user:
     authorities:
     - openid

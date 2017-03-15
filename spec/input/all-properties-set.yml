@@ -260,6 +260,7 @@ properties:
         redirect-uri: "http://some.redirect.com/callback"
         override: true
         show-on-homepage: true
+        scope: openid
     database:
       abandoned_timeout: 301
       case_insensitive: true

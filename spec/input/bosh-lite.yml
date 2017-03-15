@@ -1208,7 +1208,7 @@ properties:
         authorized-grant-types: client_credentials
       gorouter:
         authorities: routing.routes.read
-        authorized-grant-types: client_credentials,refresh_token
+        authorized-grant-types: client_credentials
         secret: gorouter-secret
       notifications:
         authorities: cloud_controller.admin,scim.read
@@ -1223,11 +1223,11 @@ properties:
         secret: ssh-proxy-secret
       tcp_emitter:
         authorities: routing.routes.write,routing.routes.read,routing.router_groups.read
-        authorized-grant-types: client_credentials,refresh_token
+        authorized-grant-types: client_credentials
         secret: tcp-emitter-secret
       tcp_router:
         authorities: routing.routes.read,routing.router_groups.read
-        authorized-grant-types: client_credentials,refresh_token
+        authorized-grant-types: client_credentials
         secret: tcp-router-secret
       implicit_ok:
         scope: openid

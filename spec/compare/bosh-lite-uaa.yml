@@ -127,7 +127,7 @@ oauth:
     gorouter:
       id: gorouter
       authorities: routing.routes.read
-      authorized-grant-types: client_credentials,refresh_token
+      authorized-grant-types: client_credentials
       secret: gorouter-secret
     notifications:
       id: notifications
@@ -145,12 +145,12 @@ oauth:
     tcp_emitter:
       id: tcp_emitter
       authorities: routing.routes.write,routing.routes.read,routing.router_groups.read
-      authorized-grant-types: client_credentials,refresh_token
+      authorized-grant-types: client_credentials
       secret: tcp-emitter-secret
     tcp_router:
       id: tcp_router
       authorities: routing.routes.read,routing.router_groups.read
-      authorized-grant-types: client_credentials,refresh_token
+      authorized-grant-types: client_credentials
       secret: tcp-router-secret
     admin:
       authorized-grant-types: client_credentials

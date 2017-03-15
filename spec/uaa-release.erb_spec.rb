@@ -215,6 +215,37 @@ describe 'uaa-release erb generation' do
       end
     end
 
+    context 'and client_credentials is missing authorities' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+      it "raises an error for client_credentials" do
+        generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = 'client_credentials';
+        generated_cf_manifest['properties']['uaa']['clients']['app'].delete('authorities');
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.authorities/)
+      end
+    end
+
+    context 'and scopes are required on a client' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+      grant_types_requiring_secret = ['implicit',
+                                      'authorization_code',
+                                      'password',
+                                      'urn:ietf:params:oauth:grant-type:saml2-bearer',
+                                      'user_token']
+      grant_types_requiring_secret.each do |grant_type|
+        it "raises an error for type:#{grant_type}" do
+          generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type;
+          generated_cf_manifest['properties']['uaa']['clients']['app'].delete('scope');
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.scope/)
+        end
+      end
+    end
+
+
   end
 
   context 'when required properties are missing in the stub' do

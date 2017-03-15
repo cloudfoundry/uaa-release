@@ -1233,6 +1233,7 @@ properties:
         scope: openid
         authorized-grant-types: implicit
         secret: null
+        redirect-uri: "http://some.redirect.com/callback"
     database:
     issuer: https://uaa.bosh-lite.com
     jwt:

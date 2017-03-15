@@ -128,6 +128,7 @@ oauth:
       id: implicit_ok
       authorities: uaa.none
       authorized-grant-types: implicit
+      redirect-uri: "http://some.redirect.com/callback"
   user:
     authorities:
     - openid

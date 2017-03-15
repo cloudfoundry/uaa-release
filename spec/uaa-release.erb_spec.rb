@@ -244,6 +244,20 @@ describe 'uaa-release erb generation' do
         end
       end
 
+      context 'redirect-uri is missing from required grant types' do
+        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        grant_types_requiring_secret = ['authorization_code', 'implicit']
+        grant_types_requiring_secret.each do |grant_type|
+          it "raises an error for type:#{grant_type}" do
+            generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type;
+            generated_cf_manifest['properties']['uaa']['clients']['app'].delete('redirect-uri');
+            expect {
+              parsed_yaml
+            }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.redirect-uri/)
+          end
+        end
+      end
+
 
     end
 

@@ -218,6 +218,7 @@
         message = message + "\nMissing property: uaa.clients.#{id}.authorized-grant-types"
       else
         message = message + "\nMissing property: uaa.clients.#{id}.secret" if client_data['secret'].nil? && client_data['authorized-grant-types'] != 'implicit'
+        message = message + "\nMissing property: uaa.clients.#{id}.redirect-uri" if ((client_data['redirect-uri'].nil?) && (client_data['authorized-grant-types'] =~ /implicit|authorization_code/))
       end
       rejected_properties = ['redirect_url', 'redirect_uri']
       rejected_properties.each do |rejectedProperty|

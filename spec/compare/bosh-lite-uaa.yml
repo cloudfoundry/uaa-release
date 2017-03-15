@@ -162,6 +162,7 @@ oauth:
       scope: openid
       authorized-grant-types: implicit
       secret: null
+      redirect-uri: "http://some.redirect.com/callback"
   user:
     authorities:
       - openid

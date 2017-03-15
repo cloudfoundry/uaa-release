@@ -165,16 +165,7 @@ describe 'uaa-release erb generation' do
       end
     end
 
-    context 'and client is missing invalid grant type' do
-      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
 
-      it 'raises an error' do
-        generated_cf_manifest['properties']['uaa']['clients']['app'].delete('authorized-grant-types');
-        expect {
-          parsed_yaml
-        }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.authorized-grant-types/)
-      end
-    end
   end
 
   context 'when required properties are missing in the stub' do
@@ -207,6 +198,17 @@ describe 'uaa-release erb generation' do
           expect {
             parsed_yaml
           }.to raise_error(ArgumentError, /login.saml.serviceProviderCertificate/)
+        end
+      end
+
+      context 'authorized grant types is missing' do
+        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+        it 'raises an error' do
+          generated_cf_manifest['properties']['uaa']['clients']['app'].delete('authorized-grant-types');
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.authorized-grant-types/)
         end
       end
     end

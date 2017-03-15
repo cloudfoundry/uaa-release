@@ -106,6 +106,7 @@ oauth:
       secret: cc-routing-secret
     cf:
       id: cf
+      secret: ''
       access-token-validity: 600
       authorities: uaa.none
       authorized-grant-types: password,refresh_token
@@ -156,6 +157,11 @@ oauth:
       authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
       id: admin
       secret: "admin-secret"
+    implicit_ok:
+      id: implicit_ok
+      scope: openid
+      authorized-grant-types: implicit
+      secret: null
   user:
     authorities:
       - openid

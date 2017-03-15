@@ -124,6 +124,10 @@ oauth:
       authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
       id: admin
       secret: adminsecret
+    implicit_ok:
+      id: implicit_ok
+      authorities: uaa.none
+      authorized-grant-types: implicit
   user:
     authorities:
     - openid

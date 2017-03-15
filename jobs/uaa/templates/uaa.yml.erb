@@ -214,7 +214,11 @@
       end
       add_value(oauth, client_data, 'clients', id)
       add_value(oauth, id, 'clients', id, 'id')
-      message = message + (is_missing(params, 'oauth', 'clients', id, 'authorized-grant-types') ? "\nMissing property: uaa.clients.#{id}.authorized-grant-types" : '')
+      if is_missing(params, 'oauth', 'clients', id, 'authorized-grant-types')
+        message = message + "\nMissing property: uaa.clients.#{id}.authorized-grant-types"
+      elsif params['oauth']['clients'][id]['secret'].nil? && client_data['authorized-grant-types'] != 'implicit'
+        message = message + "\nMissing property: uaa.clients.#{id}.secret"
+      end
     end
   end
 

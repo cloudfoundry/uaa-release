@@ -165,7 +165,6 @@ describe 'uaa-release erb generation' do
       end
     end
 
-
   end
 
   context 'when required properties are missing in the stub' do
@@ -211,6 +210,27 @@ describe 'uaa-release erb generation' do
           }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.authorized-grant-types/)
         end
       end
+
+      context 'client secret is missing from non implicit clients' do
+        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        grant_types_requiring_secret = ['client_credentials',
+                                        'authorization_code',
+                                        'password',
+                                        'urn:ietf:params:oauth:grant-type:saml2-bearer',
+                                        'user_token',
+                                        'refresh_token']
+        grant_types_requiring_secret.each do |grant_type|
+          it "raises an error for type:#{grant_type}" do
+            generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type;
+            generated_cf_manifest['properties']['uaa']['clients']['app'].delete('secret');
+            expect {
+              parsed_yaml
+            }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.secret/)
+          end
+        end
+      end
+
+
     end
 
     context 'the uaa.yml.erb' do

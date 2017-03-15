@@ -169,10 +169,10 @@ describe 'uaa-release erb generation' do
       let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
 
       it 'raises an error' do
-        generated_cf_manifest['properties']['uaa']['jwt']['refresh']['format'] = 'invalidformat';
+        generated_cf_manifest['properties']['uaa']['clients']['app'].delete('authorized-grant-types');
         expect {
           parsed_yaml
-        }.to raise_error(ArgumentError, /uaa.jwt.refresh.format invalidformat must be one of/)
+        }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.authorized-grant-types/)
       end
     end
   end

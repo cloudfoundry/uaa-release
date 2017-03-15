@@ -122,6 +122,7 @@ oauth:
       authorities: uaa.resource
       override: true
       secret: doppler-secret
+      authorized-grant-types: client_credentials
     gorouter:
       id: gorouter
       authorities: routing.routes.read

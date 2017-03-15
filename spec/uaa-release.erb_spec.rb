@@ -148,13 +148,13 @@ describe 'uaa-release erb generation' do
     end
   end
 
-  context 'when invalid properites are specified' do
+  context 'when invalid properties are specified' do
     let!(:generated_cf_manifest) { generate_cf_manifest(input) }
     let(:as_yml) { true }
     let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
     let(:input) { 'spec/input/all-properties-set.yml' }
 
-    context 'for uaa.yml.erb' do
+    context 'and token format is invalid' do
       let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
 
       it 'raises an error' do
@@ -164,6 +164,88 @@ describe 'uaa-release erb generation' do
         }.to raise_error(ArgumentError, /uaa.jwt.refresh.format invalidformat must be one of/)
       end
     end
+  end
+
+
+  context 'when clients have invalid properties' do
+    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
+    let(:as_yml) { true }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
+    let(:input) { 'spec/input/all-properties-set.yml' }
+
+    context 'and redirect_uri or redirect_url are set' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+      rejected_parameters = ['redirect_uri', 'redirect_url']
+      rejected_parameters .each do |property|
+        it "raises an error for property #{property}" do
+          generated_cf_manifest['properties']['uaa']['clients']['app'][property] = 'http://some.redirect.url';
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Invalid property: uaa.clients.app.#{property}/)
+        end
+      end
+    end
+
+    context 'and invalid integer values are set' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+      invalid_integers = ['access-token-validity', 'refresh-token-validity']
+      invalid_integers .each do |property|
+        it "raises an error for property #{property}" do
+          generated_cf_manifest['properties']['uaa']['clients']['app'][property] = 'not a number';
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Invalid number value: uaa.clients.app.#{property}/)
+        end
+      end
+    end
+
+    context 'and boolean integer values are set' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+      invalid_integers = ['override', 'show-on-homepage']
+      invalid_integers .each do |property|
+        it "raises an error for property #{property}" do
+          generated_cf_manifest['properties']['uaa']['clients']['app'][property] = 'not a boolean';
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Invalid boolean value: uaa.clients.app.#{property}/)
+        end
+      end
+    end
+
+    context 'and client_credentials is missing authorities' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+      it "raises an error for client_credentials" do
+        generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = 'client_credentials';
+        generated_cf_manifest['properties']['uaa']['clients']['app'].delete('authorities');
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.authorities/)
+      end
+    end
+
+    context 'and scopes are required on a client' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+      grant_types_requiring_secret = ['implicit',
+                                      'authorization_code',
+                                      'password',
+                                      'urn:ietf:params:oauth:grant-type:saml2-bearer',
+                                      'user_token']
+      grant_types_requiring_secret.each do |grant_type|
+        it "raises an error for type:#{grant_type}" do
+          generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type;
+          generated_cf_manifest['properties']['uaa']['clients']['app'].delete('scope');
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.scope/)
+        end
+      end
+    end
+
+
   end
 
   context 'when required properties are missing in the stub' do
@@ -198,6 +280,52 @@ describe 'uaa-release erb generation' do
           }.to raise_error(ArgumentError, /login.saml.serviceProviderCertificate/)
         end
       end
+
+      context 'authorized grant types is missing' do
+        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+        it 'raises an error' do
+          generated_cf_manifest['properties']['uaa']['clients']['app'].delete('authorized-grant-types');
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.authorized-grant-types/)
+        end
+      end
+
+      context 'client secret is missing from non implicit clients' do
+        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        grant_types_requiring_secret = ['client_credentials',
+                                        'authorization_code',
+                                        'password',
+                                        'urn:ietf:params:oauth:grant-type:saml2-bearer',
+                                        'user_token',
+                                        'refresh_token']
+        grant_types_requiring_secret.each do |grant_type|
+          it "raises an error for type:#{grant_type}" do
+            generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type;
+            generated_cf_manifest['properties']['uaa']['clients']['app'].delete('secret');
+            expect {
+              parsed_yaml
+            }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.secret/)
+          end
+        end
+      end
+
+      context 'redirect-uri is missing from required grant types' do
+        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        grant_types_requiring_secret = ['authorization_code', 'implicit']
+        grant_types_requiring_secret.each do |grant_type|
+          it "raises an error for type:#{grant_type}" do
+            generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type;
+            generated_cf_manifest['properties']['uaa']['clients']['app'].delete('redirect-uri');
+            expect {
+              parsed_yaml
+            }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.redirect-uri/)
+          end
+        end
+      end
+
+
     end
 
     context 'the uaa.yml.erb' do
@@ -274,23 +402,6 @@ describe 'uaa-release erb generation' do
         f.puts parsed_log4j_properties.to_s
       }
     end
-
-    # it "uaa.yml for "+input+" must match" do
-    #   expected = File.read(output_uaa)
-    #   actual = parsed_uaa_yaml.to_yaml
-    #   expect(actual).to yaml_eq(expected)
-    # end
-    # it "login.yml for "+input+" must match" do
-    #   expected = File.read(output_login)
-    #   actual = parsed_login_yaml.to_yaml
-    #   expect(actual).to yaml_eq(expected)
-    # end
-    # it "log4j.properties for "+input+" must match" do
-    #   expected = File.read(output_log4j)
-    #   actual = parsed_log4j_properties.to_s
-    #   expect(actual).to eq(expected)
-    # end
-
   end
 
   def self.validate_required_properties input

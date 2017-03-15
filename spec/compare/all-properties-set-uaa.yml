@@ -129,6 +129,8 @@ oauth:
       authorities: uaa.none
       authorized-grant-types: implicit
       redirect-uri: "http://some.redirect.com/callback"
+      override: true
+      show-on-homepage: true
   user:
     authorities:
     - openid

@@ -218,10 +218,16 @@
         message = message + "\nMissing property: uaa.clients.#{id}.authorized-grant-types"
       else
         message = message + "\nMissing property: uaa.clients.#{id}.secret" if client_data['secret'].nil? && client_data['authorized-grant-types'] != 'implicit'
-        message = message + "\nMissing property: uaa.clients.#{id}.redirect-uri" if ((client_data['redirect-uri'].nil?) && (client_data['authorized-grant-types'] =~ /implicit|authorization_code/))
+        message = message + "\nMissing property: uaa.clients.#{id}.redirect-uri" if (client_data['redirect-uri'].nil?) && (client_data['authorized-grant-types'] =~ /implicit|authorization_code/)
       end
-      rejected_properties = ['redirect_url', 'redirect_uri']
-      rejected_properties.each do |rejectedProperty|
+
+      ['refresh-token-validity', 'access-token-validity'].each do |numberProperty|
+        message = message + "\nInvalid number value: uaa.clients.#{id}.#{numberProperty}" unless (client_data[numberProperty].nil?) || (client_data[numberProperty].is_a?(Numeric) && client_data[numberProperty] > 1)
+      end
+      ['override', 'show-on-homepage'].each do |booleanProperty|
+        message = message + "\nInvalid boolean value: uaa.clients.#{id}.#{booleanProperty}" unless (client_data[booleanProperty].nil?) || (client_data[booleanProperty].is_a?(TrueClass) || client_data[booleanProperty].is_a?(FalseClass))
+      end
+      ['redirect_url', 'redirect_uri'].each do |rejectedProperty|
         message = message + "\nInvalid property: uaa.clients.#{id}.#{rejectedProperty}" unless client_data[rejectedProperty].nil?
       end
     end

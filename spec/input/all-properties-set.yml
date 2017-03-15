@@ -258,6 +258,8 @@ properties:
         authorities: uaa.none
         authorized-grant-types: implicit
         redirect-uri: "http://some.redirect.com/callback"
+        override: true
+        show-on-homepage: true
     database:
       abandoned_timeout: 301
       case_insensitive: true

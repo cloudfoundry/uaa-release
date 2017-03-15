@@ -164,6 +164,14 @@ describe 'uaa-release erb generation' do
         }.to raise_error(ArgumentError, /uaa.jwt.refresh.format invalidformat must be one of/)
       end
     end
+  end
+
+
+  context 'when clients have invalid properties' do
+    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
+    let(:as_yml) { true }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
+    let(:input) { 'spec/input/all-properties-set.yml' }
 
     context 'and redirect_uri or redirect_url are set' do
       let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
@@ -175,6 +183,34 @@ describe 'uaa-release erb generation' do
           expect {
             parsed_yaml
           }.to raise_error(ArgumentError, /Invalid property: uaa.clients.app.#{property}/)
+        end
+      end
+    end
+
+    context 'and invalid integer values are set' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+      invalid_integers = ['access-token-validity', 'refresh-token-validity']
+      invalid_integers .each do |property|
+        it "raises an error for property #{property}" do
+          generated_cf_manifest['properties']['uaa']['clients']['app'][property] = 'not a number';
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Invalid number value: uaa.clients.app.#{property}/)
+        end
+      end
+    end
+
+    context 'and boolean integer values are set' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+      invalid_integers = ['override', 'show-on-homepage']
+      invalid_integers .each do |property|
+        it "raises an error for property #{property}" do
+          generated_cf_manifest['properties']['uaa']['clients']['app'][property] = 'not a boolean';
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Invalid boolean value: uaa.clients.app.#{property}/)
         end
       end
     end

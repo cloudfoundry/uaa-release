@@ -214,16 +214,14 @@
       end
       add_value(oauth, client_data, 'clients', id)
       add_value(oauth, id, 'clients', id, 'id')
-      if is_missing(params, 'oauth', 'clients', id, 'authorized-grant-types')
+      if is_missing(client_data, 'authorized-grant-types')
         message = message + "\nMissing property: uaa.clients.#{id}.authorized-grant-types"
-      elsif params['oauth']['clients'][id]['secret'].nil? && client_data['authorized-grant-types'] != 'implicit'
-        message = message + "\nMissing property: uaa.clients.#{id}.secret"
+      else
+        message = message + "\nMissing property: uaa.clients.#{id}.secret" if client_data['secret'].nil? && client_data['authorized-grant-types'] != 'implicit'
       end
       rejected_properties = ['redirect_url', 'redirect_uri']
       rejected_properties.each do |rejectedProperty|
-        if !client_data[rejectedProperty].nil?
-          message = message + "\nInvalid property: uaa.clients.#{id}.#{rejectedProperty}"
-        end
+        message = message + "\nInvalid property: uaa.clients.#{id}.#{rejectedProperty}" unless client_data[rejectedProperty].nil?
       end
     end
   end

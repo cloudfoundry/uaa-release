@@ -1,8 +1,4 @@
 ---
-uaa/cloudfoundry-identity-varz-1.0.2.war:
-  object_id: 1a0e5866-f1ae-46f2-a519-a74b9adb0003
-  sha: 8c35ed35fb6dfc4a97a243447763c635812066e8
-  size: 5727747
 uaa/newrelic.jar:
   object_id: 97012cfa-58e4-4a2d-8a22-9be557e980ee
   sha: a5070963fc84bea27acc1d492cb9e3143f0c4715

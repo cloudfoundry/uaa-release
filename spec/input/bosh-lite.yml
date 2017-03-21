@@ -1087,7 +1087,6 @@ properties:
             given_name: firstName
             family_name: surname
           providerDescription: 'Human readable description of this provider'
-    self_service_links_enabled:
     smtp:
       host:
       password:

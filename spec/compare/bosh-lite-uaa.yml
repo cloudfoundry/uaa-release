@@ -220,6 +220,7 @@ logout:
 
 login:
   url: https://login.bosh-lite.com
+  selfServiceLinksEnabled: true
   idpDiscoveryEnabled: false
   accountChooserEnabled: false
   entityBaseURL: https://login.bosh-lite.com

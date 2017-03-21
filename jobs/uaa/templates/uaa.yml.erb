@@ -491,7 +491,7 @@
   add_value(params, p('login.saml.serviceProviderKey'), 'login', 'serviceProviderKey') if p_opt('login.saml.serviceProviderKey')
   add_value(params, p('login.saml.serviceProviderKeyPassword'), 'login', 'serviceProviderKeyPassword') if p_opt('login.saml.serviceProviderKeyPassword')
 
-  add_value(params, p('login.self_service_links_enabled'), 'login', 'selfServiceLinksEnabled') if p_opt('login.self_service_links_enabled')
+  add_value(params, p('login.self_service_links_enabled'), 'login', 'selfServiceLinksEnabled')
 
   if_p('login.oauth.providers') do |providers|
     providers.each do |idpAlias, provider|

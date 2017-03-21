@@ -121,6 +121,7 @@ links:
   passwd: "/forgot_password"
   signup: "/create_account"
 login:
+  selfServiceLinksEnabled: true
   serviceProviderKey: |
     -----BEGIN RSA PRIVATE KEY-----
     MIIEogIBAAKCAQEAugUFbC5/uBVijrEdFu5xTP77D8iK8kM7QN1E2kteISwTMqOq

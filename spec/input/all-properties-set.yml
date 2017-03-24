@@ -269,6 +269,13 @@ properties:
       max_idle_connections: 11
       min_idle_connections: 1
       remove_abandoned: true
+    delete:
+      clients:
+        - client-to-be-deleted-1
+        - client-to-be-deleted-2
+      users:
+        - user-to-be-deleted-1
+        - user-to-be-deleted-2
     disableInternalAuth: true
     disableInternalUserManagement: true
     issuer: http://all-properties-set:8888/uaa

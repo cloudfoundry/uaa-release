@@ -231,6 +231,20 @@ properties:
     description: "If true, send STARTTLS command before login to server. https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html"
     default: false
 
+  # Delete actions
+  uaa.delete:
+    description: |
+      Contains a map of actions, each with a list of IDs. Possible delete actions are 'users' and 'clients'.
+      These will be deleted in the database (default zone).
+      Unrecognized map keys will be ignored
+    example: |
+      clients:
+        - client-to-be-deleted-1
+        - client-to-be-deleted-2
+      users:
+        - user-to-be-deleted-1
+        - user-to-be-deleted-2
+
   # Clients
   uaa.clients:
     description: "List of OAuth2 clients that the UAA will be bootstrapped with"

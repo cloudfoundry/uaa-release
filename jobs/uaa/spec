@@ -332,7 +332,7 @@ properties:
     description: "The ID of the JWT signing key to be used when signing tokens."
     example: "key-1"
   uaa.jwt.policy.keys:
-    description: "Map of key IDs and signing keys, each defined with a property `signingKey`"
+    description: "Map of key IDs and signing keys, each defined with a property `signingKey`."
     example:
       key-1:
         signingKey: |
@@ -352,11 +352,11 @@ properties:
           waZKhM1W0oB8MX78M+0fG3xGUtywTx0D4N7pr1Tk2GTgNw==
           -----END RSA PRIVATE KEY-----
   uaa.jwt.signing_key:
-    description: "Deprecated. Use uaa.jwt.policy.keys. The key used to sign the JWT-based OAuth2 tokens"
+    description: "Deprecated. Use uaa.jwt.policy.keys. The key used to sign the JWT-based OAuth2 tokens."
   uaa.jwt.verification_key:
-    description: "Deprecated. Use uaa.jwt.policy.keys. The key used to verify JWT-based OAuth2 tokens"
+    description: "Deprecated. The key used to verify JWT-based OAuth2 tokens. If you are specifying your signing key(s) under uaa.jwt.policy.keys, the verification key does not need to be specified."
   uaa.jwt.claims.exclude:
-    description: "List of claims to exclude from the JWT-based OAuth2 tokens"
+    description: "List of claims to exclude from the JWT-based OAuth2 tokens."
     example:
      - authorities
   uaa.jwt.refresh.restrict_grant:

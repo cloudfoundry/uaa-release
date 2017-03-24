@@ -121,12 +121,6 @@ jobs:
                 oYaZoYWi6DzbQQUaIsKxAkEA2rXQjQFsfnSm+w/9067ChWg46p4lq5Na2NpcpFgH
                 waZKhM1W0oB8MX78M+0fG3xGUtywTx0D4N7pr1Tk2GTgNw==
                 -----END RSA PRIVATE KEY-----
-              verificationKey: |
-                -----BEGIN PUBLIC KEY-----
-                MIICXgIBAAKBgQDfTLadf6QgJeS2XXImEHMsa+1O7MmIt44xaL77N2K+J/JGpfV3
-                AnkyB06wFZ02sBLB7hko42LIsVEOyTuUBird/3vlyHFKytG7UEt60Fl88SbAEfsU
-                JN1i1aSU
-                -----END PUBLIC KEY-----
       sslCertificate: |
         -----BEGIN CERTIFICATE-----
         MIIEJzCCAw+gAwIBAgIJAKcbTg/7imgFMA0GCSqGSIb3DQEBBQUAMGoxCzAJBgNV

@@ -126,6 +126,8 @@
       }
     }
   }
+  params['delete'] = p('uaa.delete') if p_opt('uaa.delete')
+
   if uaa_db_scheme == 'sqlserver' then
     params['database']['url'] = "jdbc:#{p('uaadb.db_scheme')}://#{p('uaadb.address')}:#{p('uaadb.port')};databaseName=#{uaa_db['name']}"
   end

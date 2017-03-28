@@ -158,7 +158,7 @@ sub_update
 
 if [ "$branch_to_release_from" = "develop" ]; then
     # merge metadata files -
-    echo -e "Cherry picking metadata commit to master"
+    echo -e "Merging develop to master"
     git merge --no-ff origin/develop -m "Merge of branch develop for release ${1}"
 else
     # cherry pick the metadata files - we can't merge. different code paths

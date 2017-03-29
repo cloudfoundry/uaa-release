@@ -172,17 +172,4 @@ git checkout develop
 git merge --no-ff master -m "Bumping develop with master contents in preparation of next release"
 git push origin develop
 
-# tag the release
-if [ "$branch_to_release_from" = "develop" ]; then
-    git checkout master
-    sub_update
-    git tag -a v${1} -m "$1 release"
-    git push origin master --tags
-else
-    git checkout $branch_to_release_from
-    sub_update
-    git tag -a v${1} -m "$1 release"
-    git push origin $branch_to_release_from --tags
-fi
-
 

@@ -162,8 +162,8 @@ if [ "$branch_to_release_from" = "develop" ]; then
     git merge --no-ff origin/develop -m "Merge of branch develop for release ${1}"
 else
     # cherry pick the metadata files - we can't merge. different code paths
-    echo -e "Cherry picking metadata commit to master for release ${1}"
-    git cherry-pick $metadata_commit
+    echo -e "Cherry picking metadata commit to master for release ${1} and sha ${metadata_commit}"
+    git cherry-pick ${metadata_commit}
 fi
 
 # update develop (merge master to develop so that the next release won't have a conflict

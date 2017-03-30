@@ -150,10 +150,12 @@ finalize_and_commit $1 metadata_commit
 echo -e "${CYAN}Finalized metadata with commit SHA ${metadata_commit}${NC}"
 
 # tag the release
+echo -e "${CYAN}Tagging and pushing the release branch${NC}"
 git tag -a v${1} -m "$1 release"
 git push origin $branch_to_release_from --tags
 
 # jump to master branch
+echo -e "${CYAN}Swithcing to master branch to prep for metadata migration${NC}"
 git checkout master
 git reset --hard origin/master
 sub_update
@@ -170,9 +172,12 @@ else
 fi
 
 # update develop (merge master to develop so that the next release won't have a conflict
+echo -e "${CYAN}Pushing master branch and release tags${NC}"
 git push origin master --tags
+echo -e "${CYAN}Merging to develop to avoid conflicts in the future${NC}"
 git checkout develop
 git merge --no-ff master -m "Bumping develop with master contents in preparation of next release"
 git push origin develop
+echo -e "${CYAN}Release ${1} completed with tag v${1} and SHA: ${metadata_commit}{NC}"
 
 

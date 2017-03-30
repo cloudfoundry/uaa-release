@@ -46,6 +46,8 @@ function finalize_and_commit {
     #bosh generated files
     git add .
     git commit --no-verify -m "uaa-release version v${1}"
+    local result=$2
+    eval $result="`git rev-parse HEAD`"
 }
 
 function copy_master_release_metadata {
@@ -59,15 +61,15 @@ function copy_master_release_metadata {
 
 function paste_master_release_metadata {
     # update metadata in preparation of release
-    echo -e "Merging release metadata"
+    echo -e "${CYAN}Merging release metadata${NC}"
     cp -r $RELEASES/* releases/
     cp -r $FINAL_BUILDS/* .final_builds/
     git add releases .final_builds
-    if git commit -m "Update bosh release metadata information for version ${1}"; then
+    if git commit -m "${CYAN}Update bosh release metadata information for version ${1}${NC}"; then
         git push origin $1
-        echo -e "Release metadata merged"
+        echo -e "${CYAN}Release metadata merged${NC}"
     else
-       echo -e "No merge required. No changes detected"
+       echo -e "${CYAN}No merge required. No changes detected${NC}"
     fi
 }
 
@@ -83,7 +85,7 @@ fi
 
 #validate the version number
 if [[ "$1" =~ ^[0-9]+.?[0-9]*$ ]]; then
-  echo -e "Creating release with version ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
+  echo -e "${CYAN}Creating release with version ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
 else
   invalid_version $1
   exit 1
@@ -97,7 +99,7 @@ fi
 
 # navigate to the correct release directory
 cd `dirname $0`/..
-echo -e "${NC}Performing release from directory:${GREEN} `pwd` ${NC}"
+echo -e "${CYAN}Performing release from directory:${GREEN} `pwd` ${NC}"
 
 # initialize sub modules if needed
 sub_update
@@ -110,13 +112,13 @@ if [[ -n $(git status -s) ]]; then
     exit 1
 fi
 
-echo "Updating all branches"
+echo "${CYAN}Updating all branches${NC}"
 git fetch --all --prune > /dev/null
 
 # save the metadata files from master
 copy_master_release_metadata
 
-echo "Creating bosh UAA-release ${GREEN} ${1} ${NC} using `bosh -v`"
+echo "${CYAN}Creating bosh UAA-release ${GREEN} ${1} ${NC} using `bosh -v`"
 
 # just in case it gets deleted during branch switch
 if [ "$#" -ge 3 ]; then
@@ -139,12 +141,13 @@ paste_master_release_metadata $branch_to_release_from
 # restore private.yml in case it got deleted
 mv /tmp/private.yml config/
 
-echo -e "Building tarball ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
+echo -e "${CYAN}Building tarball ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
 # create a release tar ball
 bosh create release --name uaa --version $1 --with-tarball
 metadata_commit=''
 # finalize release, get commit SHA so that we can cherry pick it later
 finalize_and_commit $1 metadata_commit
+echo -e "${CYAN}Finalized metadata with commit SHA ${metadata_commit}${NC}"
 
 # tag the release
 git tag -a v${1} -m "$1 release"
@@ -158,18 +161,18 @@ sub_update
 
 if [ "$branch_to_release_from" = "develop" ]; then
     # merge metadata files -
-    echo -e "Merging develop to master"
-    git merge --no-ff origin/develop -m "Merge of branch develop for release ${1}"
+    echo -e "${CYAN}Merging develop to master${NC}"
+    git merge --no-ff origin/develop -m "Merge of branch develop for release ${1}${NC}"
 else
     # cherry pick the metadata files - we can't merge. different code paths
-    echo -e "Cherry picking metadata commit to master for release ${1} and sha ${metadata_commit}"
+    echo -e "${CYAN}Cherry picking metadata commit to master for release ${1} and sha ${metadata_commit}${NC}"
     git cherry-pick ${metadata_commit}
 fi
 
 # update develop (merge master to develop so that the next release won't have a conflict
 git push origin master --tags
 git checkout develop
-git merge --no-ff master -m "Bumping develop with master contents in preparation of next release"
+git merge --no-ff master -m "${CYAN}Bumping develop with master contents in preparation of next release${NC}"
 git push origin develop
 
 

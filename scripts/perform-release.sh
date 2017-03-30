@@ -65,7 +65,7 @@ function paste_master_release_metadata {
     cp -r $RELEASES/* releases/
     cp -r $FINAL_BUILDS/* .final_builds/
     git add releases .final_builds
-    if git commit -m "${CYAN}Update bosh release metadata information for version ${1}${NC}"; then
+    if git commit -m "Update bosh release metadata information for version ${1}"; then
         git push origin $1
         echo -e "${CYAN}Release metadata merged${NC}"
     else
@@ -112,13 +112,13 @@ if [[ -n $(git status -s) ]]; then
     exit 1
 fi
 
-echo "${CYAN}Updating all branches${NC}"
+echo -e "${CYAN}Updating all branches${NC}"
 git fetch --all --prune > /dev/null
 
 # save the metadata files from master
 copy_master_release_metadata
 
-echo "${CYAN}Creating bosh UAA-release ${GREEN} ${1} ${NC} using `bosh -v`"
+echo -e "${CYAN}Creating bosh UAA-release ${GREEN} ${1} ${NC} using `bosh -v`"
 
 # just in case it gets deleted during branch switch
 if [ "$#" -ge 3 ]; then
@@ -172,7 +172,7 @@ fi
 # update develop (merge master to develop so that the next release won't have a conflict
 git push origin master --tags
 git checkout develop
-git merge --no-ff master -m "${CYAN}Bumping develop with master contents in preparation of next release${NC}"
+git merge --no-ff master -m "Bumping develop with master contents in preparation of next release"
 git push origin develop
 
 

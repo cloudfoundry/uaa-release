@@ -24,6 +24,10 @@ templates:
   messages.properties.erb: config/messages.properties
   uaa.crt.erb: config/uaa.crt
 
+consumes:
+- name: router
+  type: http-router
+  optional: true
 
 packages:
   - uaa_utils

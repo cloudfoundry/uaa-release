@@ -29,6 +29,14 @@ packages:
   - uaa_utils
   - uaa
 
+provides:
+- name: uaa
+  type: uaa
+  properties:
+  - uaa.admin.client_secret
+  - uaa.clients
+  - uaa.scim.users
+
 properties:
   # General server properties
   uaa.catalina_opts:

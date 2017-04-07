@@ -670,22 +670,6 @@
     end
   end
 
-  #deprecated single provider legacy configuration - adds a single provider under the list
-  #this should go away
-  if_p('login.saml.idpEntityAlias') do |idpEntityAlias|
-    add_value(params, p("/var/vcap/jobs/login/#{p_opt('login.saml.idp_metadata_file')}"), 'login', 'saml', 'providers', idpEntityAlias, 'idpMetadata')
-    add_value(params, p_opt('login.saml.assertionConsumerIndex'), 'login', 'saml', 'providers', idpEntityAlias, 'assertionConsumerIndex')
-    add_value(params, p_opt('login.saml.nameidFormat'), 'login', 'saml', 'providers', idpEntityAlias, 'nameID')
-    add_value(params, p_opt('login.saml.metadataTrustCheck'), 'login', 'saml', 'providers', idpEntityAlias, 'metadataTrustCheck')
-    add_value(params, true, 'login', 'saml', 'providers', idpEntityAlias, 'showSamlLoginLink')
-    add_value(params, 'Use your corporate credentials', 'login', 'saml', 'providers', idpEntityAlias, 'linkText')
-    if_p('login.saml.attributeMappings') do |attributeMappings|
-      attributeMappings.each do |akey,aval|
-        add_value(params, aval, 'login', 'saml', 'providers', idpEntityAlias, 'attributeMappings', akey)
-      end
-    end
-  end
-
   if_p('login.analytics.code', 'login.analytics.domain') do |code, domain|
     add_value(params, code, 'analytics', 'code')
     add_value(params, domain, 'analytics', 'domain')

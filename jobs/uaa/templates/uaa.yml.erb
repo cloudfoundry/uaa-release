@@ -11,6 +11,10 @@
     p_opt(property) || []
   end
 
+  def render(params)
+    YAML.dump(params, :indentation => 2)
+  end
+
   # adds a nested value to a hash
   # for example hash['top-level']['mid-level']['bottom-level'] = value
   # add_value(hash, value, 'top-level', 'mid-level', 'bottom-level'))
@@ -51,6 +55,143 @@
       index = index + 1
     end
     return hash[last_key].nil?
+  end
+
+  def error_if_exists(message)
+    if !(message == '')
+      raise ArgumentError, message
+    end
+  end
+
+  if !!defined?(doc) && doc == 'true'
+    class MockProperty
+      attr_reader :name
+
+      def initialize(name)
+        @name = name.kind_of?(Array) ? name[0] : name
+      end
+
+      def [](key)
+        MockProperty.new("#{name}.#{key}")
+      end
+
+      class FindElem
+        def [](key)
+          @key = key
+          @capt = FindCapt.new
+          @capt
+        end
+
+        attr_reader :key, :capt
+      end
+
+      class FindCapt
+        def ==(value)
+          @val = value
+          true
+        end
+
+        attr_reader :val
+      end
+
+      def find()
+        elem = FindElem.new
+        yield(elem)
+        MockProperty.new("#{name}[#{elem.key}=#{elem.capt.val}]")
+      end
+
+      def each(&block)
+        if(block.arity == 1)
+          yield(MockProperty.new("#{name}[]"))
+        elsif (block.arity == 2)
+          yield('*', MockProperty.new("#{name}.*"))
+        end
+      end
+
+      def sub(before, after)
+        self
+      end
+
+      def reject()
+        self
+      end
+
+      def +(arg)
+        "#{self}#{arg}"
+      end
+
+      def to_str
+        to_s
+      end
+
+      def to_s
+        "{#{@name}}"
+      end
+
+      def join(delim)
+        self
+      end
+    end
+
+    def p(*args)
+      MockProperty.new(args[0])
+    end
+
+    def p_arr(*args)
+      p(args)
+    end
+
+    def p_opt(*args)
+      p(args)
+    end
+
+    class ElseBlock
+      def else()
+      end
+    end
+
+    def if_p(*str)
+      props = str.map { |p| MockProperty.new(p) }
+
+      yield(*props)
+
+      return ElseBlock.new
+    end
+
+    def error_if_exists(error)
+    end
+
+    def render(params)
+      params.keys.sort.each do |k|
+        v = params[k]
+        if v.kind_of?(Hash)
+          flat = {}
+          v.each do |kk, vv|
+            flat["#{k}.#{kk}"] = vv
+          end
+          render(flat)
+        elsif v.kind_of?(MockProperty)
+          name = v.name
+          simplify = ['.*', '[]']
+          while(suf = simplify.find { |seq| k.end_with?(seq) && name.end_with?(seq) })
+            k = k[0..-(suf.length+1)]
+            name = name[0..-(suf.length+1)]
+          end
+          puts("#{k} <= #{name}")
+        elsif v.kind_of?(Array)
+          v.each do |vv|
+            render("#{k}[]" => vv)
+          end
+        else
+          puts "#{k} <~ #{v}"
+        end
+      end
+      nil
+    end
+
+    def is_missing(hash, *keys)
+      false
+    end
   end
 
   uaa_db = p_arr('uaadb.databases').find { |db| db['tag'] == 'uaa' }
@@ -554,9 +695,7 @@
   message = message + (is_missing(params, 'login', 'serviceProviderKey')?'\nMissing property: login.saml.serviceProviderKey' : '')
   message = message + (is_missing(params, 'login', 'serviceProviderKeyPassword')?'\nMissing property: login.saml.serviceProviderKeyPassword' : '')
   message = message + (is_missing(params, 'login', 'serviceProviderCertificate')?'\nMissing property: login.saml.serviceProviderCertificate' : '')
-  if !(message == '')
-    raise ArgumentError, message
-  end
+  error_if_exists message
 
 %>
-<%=YAML.dump(params, :indentation => 2)%>
+<%= render(params) %>

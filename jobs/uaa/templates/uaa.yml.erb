@@ -64,6 +64,8 @@
   end
 
   if !!defined?(doc) && doc == 'true'
+    require 'json'
+
     class MockProperty
       attr_reader :name
 
@@ -161,32 +163,60 @@
     def error_if_exists(error)
     end
 
-    def render(params)
-      params.keys.sort.each do |k|
-        v = params[k]
+    @result = {}
+
+    def render_str(params)
+      params.each do |k, v|
         if v.kind_of?(Hash)
           flat = {}
           v.each do |kk, vv|
             flat["#{k}.#{kk}"] = vv
           end
-          render(flat)
-        elsif v.kind_of?(MockProperty)
-          name = v.name
-          simplify = ['.*', '[]']
-          while(suf = simplify.find { |seq| k.end_with?(seq) && name.end_with?(seq) })
-            k = k[0..-(suf.length+1)]
-            name = name[0..-(suf.length+1)]
-          end
-          puts("#{k} <= #{name}")
-        elsif v.kind_of?(Array)
-          v.each do |vv|
-            render("#{k}[]" => vv)
-          end
+          render_str(flat)
         else
-          puts "#{k} <~ #{v}"
+          @result[k] = v
         end
       end
-      nil
+    end
+
+    def starNeedsSimplification(struct, k, v)
+      return false unless v.kind_of? MockProperty
+      k.end_with?('.*') && v.name.end_with?('.*') && struct.keys.count { |aKey| aKey.start_with?(k[0..-3]+'.') } < 2
+    end
+
+    def arrayNeedsSimplification(k, v)
+      (v.kind_of? Array) && (v.length == 1) && (v[0].kind_of? MockProperty) && (v[0].name.end_with? '[]')
+    end
+
+    def simplify(struct)
+      simplified = {}
+      struct.each do |k, v|
+        simplifiedKey = k
+        simplifiedValue = v
+        while (simplifyStar = starNeedsSimplification struct, simplifiedKey, simplifiedValue) || (simplifyArray = arrayNeedsSimplification simplifiedKey, simplifiedValue)
+          if simplifyStar
+            simplifiedKey = simplifiedKey[0..-3]
+            simplifiedValue = MockProperty.new simplifiedValue.name[0..-3]
+          elsif simplifyArray
+            simplifiedValue = MockProperty.new simplifiedValue[0].name[0..-3]
+          end
+        end
+        simplified[simplifiedKey] = simplifiedValue
+      end
+      simplified
+    end
+
+    def render(params)
+      render_str (params.keys.sort.map { |k| [k, params[k]] }).to_h
+
+      @result = simplify @result
+
+      structured = {}
+      @result.each do |k, v|
+        add_value(structured, v, *k.split('.'))
+      end
+
+      JSON.dump structured
     end
 
     def is_missing(hash, *keys)

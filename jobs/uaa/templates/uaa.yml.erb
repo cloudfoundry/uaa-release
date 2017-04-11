@@ -6,7 +6,6 @@
     p(property, nil)
   end
 
-  # returns an empty array of the value is null
   def p_arr(property)
     p_opt(property) || []
   end
@@ -20,10 +19,9 @@
   # add_value(hash, value, 'top-level', 'mid-level', 'bottom-level'))
   def add_value(hash, value, *keys)
     last_key = nil
-    index = 1
-    for key in keys
+    keys.each_with_index do |key, index|
       last_key = key
-      if index < keys.length
+      if index < keys.length - 1
         sub_hash = hash[key]
         if sub_hash.nil?
           sub_hash = {}
@@ -33,17 +31,15 @@
         end
         hash = sub_hash
       end
-      index = index + 1
     end
     hash[last_key] = value
   end
 
   def is_missing(hash, *keys)
     last_key = nil
-    index = 1
-    for key in keys
+    keys.each_with_index do |key, index|
       last_key = key
-      if index < keys.length
+      if index < keys.length - 1
         sub_hash = hash[key]
         if sub_hash.nil?
           return true
@@ -52,13 +48,12 @@
         end
         hash = sub_hash
       end
-      index = index + 1
     end
     return hash[last_key].nil?
   end
 
   def error_if_exists(message)
-    if !(message == '')
+    unless message == ''
       raise ArgumentError, message
     end
   end
@@ -75,7 +70,7 @@
   issuer_uri = p('uaa.issuer', p('uaa.url'))
 
   spring_profiles = p('uaadb.db_scheme')
-  if p_opt('uaa.ldap.enabled') then
+  if p_opt('uaa.ldap.enabled')
     spring_profiles = spring_profiles + ',ldap'
   end
 

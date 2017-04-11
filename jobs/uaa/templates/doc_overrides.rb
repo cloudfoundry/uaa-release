@@ -38,12 +38,12 @@ module DocOverrides
     result
   end
 
-  def simplifyStar(struct, k, v)
+  def simplify_star(struct, k, v)
     return nil unless (v.kind_of? MockProperty) && k.end_with?('.*') && v.name.end_with?('.*') && struct.keys.count { |aKey| aKey.start_with?(k[0..-3]+'.') } < 2
     {:key => k[0..-3], :value => MockProperty.new(v.name[0..-3])}
   end
 
-  def simplifyArray(k, v)
+  def simplify_array(k, v)
     return nil unless (v.kind_of? Array) && (v.length == 1) && (v[0].kind_of? MockProperty) && (v[0].name.end_with? '[]')
     {:key => k, :value => MockProperty.new(v[0].name[0..-3])}
   end
@@ -53,7 +53,7 @@ module DocOverrides
     struct.each do |k, v|
       simplifiedKey = k
       simplifiedValue = v
-      while simplification = (simplifyStar(struct, simplifiedKey, simplifiedValue) || simplifyArray(simplifiedKey, simplifiedValue))
+      while simplification = (simplify_star(struct, simplifiedKey, simplifiedValue) || simplify_array(simplifiedKey, simplifiedValue))
         simplifiedKey, simplifiedValue = simplification.values_at(:key, :value)
       end
       simplified[simplifiedKey] = simplifiedValue
@@ -62,9 +62,8 @@ module DocOverrides
   end
 
   def render(params)
-    result = render_str(params)
+    result = simplify(render_str(params))
 
-    result = simplify(result)
     spec = YAML.load_file(File.join(File.dirname(__FILE__), '../spec'))
 
     structured = {}

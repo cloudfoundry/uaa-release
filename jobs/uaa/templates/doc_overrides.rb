@@ -39,8 +39,17 @@ module DocOverrides
   end
 
   def simplify_star(struct, k, v)
-    return nil unless (v.kind_of? MockProperty) && k.end_with?('.*') && v.name.end_with?('.*') && struct.keys.count { |aKey| aKey.start_with?(k[0..-3]+'.') } < 2
-    {:key => k[0..-3], :value => MockProperty.new(v.name[0..-3])}
+    return nil unless v.kind_of?(MockProperty)
+
+    pattern = /([\w\-_\.]+).(\([\w\-_]+\))/
+    if (left = k.match(pattern)) && (right = v.name.match(pattern)) then
+      if left.length == 3 && right.length == 3 && left[2] == right[2]
+        return nil unless struct.keys.count { |x| x.start_with?(left[1]+'.') } == 1
+
+        return {:key => left[1], :value => MockProperty.new(right[1])}
+      end
+    end
+    nil
   end
 
   def simplify_array(k, v)
@@ -64,22 +73,9 @@ module DocOverrides
   def render(params)
     result = simplify(render_str(params))
 
-    spec = YAML.load_file(File.join(File.dirname(__FILE__), '../spec'))
-
     structured = {}
     result.keys.sort.each do |k|
-      spec_file_property_name = result[k].to_s.gsub(/[\<\>]/,'')
-      properties = {
-          'config_mapping' => result[k],
-          'description' => nil,
-          'default' => nil
-      }
-
-      if spec['properties'].has_key?(spec_file_property_name)
-        properties['description'] = spec['properties'][spec_file_property_name]['description']
-        properties['default'] = spec['properties'][spec_file_property_name]['default']
-      end
-      add_value(structured, properties, *k.split('.'))
+      add_value(structured, result[k], *k.split('.'))
     end
 
     JSON.dump structured

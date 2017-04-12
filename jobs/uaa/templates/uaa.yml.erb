@@ -59,7 +59,7 @@
   end
 
   if !!defined?(doc) && doc == 'true'
-    require_relative 'doc_overrides'
+    require_relative 'doc_overrides' unless defined?(MockProperty)
     extend DocOverrides
   end
 

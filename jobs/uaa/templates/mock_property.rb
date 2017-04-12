@@ -1,5 +1,3 @@
-require 'yaml'
-
 class MockProperty
   attr_reader :name
 
@@ -36,11 +34,12 @@ class MockProperty
     MockProperty.new("#{name}[#{elem.key}=#{elem.capt.val}]")
   end
 
-  def each(&block)
-    if(block.arity == 1)
+  def each(&blk)
+    if(blk.arity == 1)
       yield(MockProperty.new("#{name}[]"))
-    elsif (block.arity == 2)
-      yield('*', MockProperty.new("#{name}.*"))
+    elsif (blk.arity == 2)
+      star_name = Proc.new(&blk).parameters[0][1]
+      yield("(#{star_name})", MockProperty.new("#{name}.(#{star_name})"))
     end
   end
 

@@ -28,6 +28,9 @@ consumes:
 - name: router
   type: http-router
   optional: true
+- name: database
+  type: database
+  optional: true
 
 packages:
   - uaa_utils

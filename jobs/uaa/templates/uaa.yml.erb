@@ -59,6 +59,13 @@
   uaa_db_scheme = p('uaadb.db_scheme')
   issuer_uri = p('uaa.issuer', p('uaa.url'))
 
+  uaa_db_address = nil
+  if_p('uaadb.address') do |address|
+    uaa_db_address = address
+  end.else do
+    uaa_db_address = link('database').instances[0].address
+  end
+
   spring_profiles = p('uaadb.db_scheme')
   if p_opt('uaa.ldap.enabled') then
     spring_profiles = spring_profiles + ',ldap'
@@ -77,7 +84,7 @@
       'config' => '/var/vcap/jobs/uaa/config/log4j.properties'
     },
     'database' => {
-      'url' =>  "jdbc:#{p('uaadb.db_scheme')}://#{p('uaadb.address')}:#{p('uaadb.port')}/#{uaa_db['name']}",
+      'url' =>  "jdbc:#{p('uaadb.db_scheme')}://#{uaa_db_address}:#{p('uaadb.port')}/#{uaa_db['name']}",
       'username' => uaa_role['name'],
       'password' => uaa_role['password'],
       'maxactive' => p('uaa.database.max_connections'),
@@ -129,7 +136,7 @@
   params['delete'] = p('uaa.delete') if p_opt('uaa.delete')
 
   if uaa_db_scheme == 'sqlserver' then
-    params['database']['url'] = "jdbc:#{p('uaadb.db_scheme')}://#{p('uaadb.address')}:#{p('uaadb.port')};databaseName=#{uaa_db['name']}"
+    params['database']['url'] = "jdbc:#{p('uaadb.db_scheme')}://#{uaa_db_address}:#{p('uaadb.port')};databaseName=#{uaa_db['name']}"
   end
 
   # should the DB not use lower() function in SCIM queries (if true)

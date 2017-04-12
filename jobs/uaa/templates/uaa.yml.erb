@@ -6,9 +6,12 @@
     p(property, nil)
   end
 
-  # returns an empty array of the value is null
   def p_arr(property)
     p_opt(property) || []
+  end
+
+  def render(params)
+    YAML.dump(params, :indentation => 2)
   end
 
   # adds a nested value to a hash
@@ -16,10 +19,9 @@
   # add_value(hash, value, 'top-level', 'mid-level', 'bottom-level'))
   def add_value(hash, value, *keys)
     last_key = nil
-    index = 1
-    for key in keys
+    keys.each_with_index do |key, index|
       last_key = key
-      if index < keys.length
+      if index < keys.length - 1
         sub_hash = hash[key]
         if sub_hash.nil?
           sub_hash = {}
@@ -29,17 +31,15 @@
         end
         hash = sub_hash
       end
-      index = index + 1
     end
     hash[last_key] = value
   end
 
   def is_missing(hash, *keys)
     last_key = nil
-    index = 1
-    for key in keys
+    keys.each_with_index do |key, index|
       last_key = key
-      if index < keys.length
+      if index < keys.length - 1
         sub_hash = hash[key]
         if sub_hash.nil?
           return true
@@ -48,9 +48,19 @@
         end
         hash = sub_hash
       end
-      index = index + 1
     end
     return hash[last_key].nil?
+  end
+
+  def error_if_exists(message)
+    unless message == ''
+      raise ArgumentError, message
+    end
+  end
+
+  if !!defined?(doc) && doc == 'true'
+    require_relative 'doc_overrides' unless defined?(MockProperty)
+    extend DocOverrides
   end
 
   uaa_db = p_arr('uaadb.databases').find { |db| db['tag'] == 'uaa' }
@@ -60,7 +70,7 @@
   issuer_uri = p('uaa.issuer', p('uaa.url'))
 
   spring_profiles = p('uaadb.db_scheme')
-  if p_opt('uaa.ldap.enabled') then
+  if p_opt('uaa.ldap.enabled')
     spring_profiles = spring_profiles + ',ldap'
   end
 
@@ -529,22 +539,6 @@
     end
   end
 
-  #deprecated single provider legacy configuration - adds a single provider under the list
-  #this should go away
-  if_p('login.saml.idpEntityAlias') do |idpEntityAlias|
-    add_value(params, p("/var/vcap/jobs/login/#{p_opt('login.saml.idp_metadata_file')}"), 'login', 'saml', 'providers', idpEntityAlias, 'idpMetadata')
-    add_value(params, p_opt('login.saml.assertionConsumerIndex'), 'login', 'saml', 'providers', idpEntityAlias, 'assertionConsumerIndex')
-    add_value(params, p_opt('login.saml.nameidFormat'), 'login', 'saml', 'providers', idpEntityAlias, 'nameID')
-    add_value(params, p_opt('login.saml.metadataTrustCheck'), 'login', 'saml', 'providers', idpEntityAlias, 'metadataTrustCheck')
-    add_value(params, true, 'login', 'saml', 'providers', idpEntityAlias, 'showSamlLoginLink')
-    add_value(params, 'Use your corporate credentials', 'login', 'saml', 'providers', idpEntityAlias, 'linkText')
-    if_p('login.saml.attributeMappings') do |attributeMappings|
-      attributeMappings.each do |akey,aval|
-        add_value(params, aval, 'login', 'saml', 'providers', idpEntityAlias, 'attributeMappings', akey)
-      end
-    end
-  end
-
   if_p('login.analytics.code', 'login.analytics.domain') do |code, domain|
     add_value(params, code, 'analytics', 'code')
     add_value(params, domain, 'analytics', 'domain')
@@ -554,9 +548,7 @@
   message = message + (is_missing(params, 'login', 'serviceProviderKey')?'\nMissing property: login.saml.serviceProviderKey' : '')
   message = message + (is_missing(params, 'login', 'serviceProviderKeyPassword')?'\nMissing property: login.saml.serviceProviderKeyPassword' : '')
   message = message + (is_missing(params, 'login', 'serviceProviderCertificate')?'\nMissing property: login.saml.serviceProviderCertificate' : '')
-  if !(message == '')
-    raise ArgumentError, message
-  end
+  error_if_exists message
 
 %>
-<%=YAML.dump(params, :indentation => 2)%>
+<%= render(params) %>

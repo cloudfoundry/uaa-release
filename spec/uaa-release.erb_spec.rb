@@ -52,9 +52,22 @@ describe 'uaa-release erb generation' do
     ERB.new(erb_file).result(binding)
   end
 
+  def perform_erb_transformation_as_string_doc_mode(erb_file)
+    require_relative '../jobs/uaa/templates/doc_overrides'
+    the_binding = Proc.new do
+      doc = 'true'
+      binding()
+    end.call
+    ERB.new(erb_file).result(the_binding)
+  end
 
-  def read_and_parse_string_template(template, manifest, asYaml)
+  def read_and_parse_string_template(template, manifest, asYaml, mode = :normal)
     erbTemplate = File.read(File.join(File.dirname(__FILE__), template))
+
+    if mode == :doc
+      return perform_erb_transformation_as_string_doc_mode(erbTemplate)
+    end
+
     if asYaml
       completedTemplate = perform_erb_transformation_as_yaml(erbTemplate, manifest)
     else
@@ -451,8 +464,28 @@ describe 'uaa-release erb generation' do
 
   end
 
-  # validate_required_properties 'spec/input/missing-required-properties.yml'
-  # perform_compare 'spec/input/bosh-lite.yml', 'spec/compare/bosh-lite-uaa.yml', 'spec/compare/bosh-lite-login.yml', 'spec/compare/default-log4j.properties'
-  # perform_compare 'spec/input/all-properties-set.yml', 'spec/compare/all-properties-set-uaa.yml', 'spec/compare/all-properties-set-login.yml', 'spec/compare/all-properties-set-log4j.properties'
-  # perform_compare 'spec/input/test-defaults.yml', 'spec/compare/test-defaults-uaa.yml', 'spec/compare/test-defaults-login.yml', 'spec/compare/default-log4j.properties'
+  describe 'Doc Mode' do
+    let(:generated_cf_manifest) { generate_cf_manifest(input) }
+    let(:as_yml) { true }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
+    let(:input) { 'spec/input/bosh-lite.yml' }
+    let(:output_uaa) { 'spec/compare/bosh-lite-uaa.yml' }
+    let(:output_log4j) { 'spec/compare/default-log4j.properties' }
+
+    before(:each) do
+      @json = JSON.parse(read_and_parse_string_template('../jobs/uaa/templates/uaa.yml.erb', generated_cf_manifest, true, :doc))
+    end
+
+    it 'outputs json for one-to-one mappings' do
+      expect(@json['uaa']['url']).to eq '<uaa.url>'
+    end
+
+    it 'shows named variables for .each expressions' do
+      expect(@json['login']['saml']['providers']['(idpAlias)']['idpMetadata']).to eq '<login.saml.providers.(idpAlias).idpMetadata>'
+    end
+
+    it 'simplifies redundant entries' do
+      expect(@json['jwt']['token']['policy']['keys']).to eq '<uaa.jwt.policy.keys>'
+    end
+  end
 end

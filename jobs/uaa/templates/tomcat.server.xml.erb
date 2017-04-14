@@ -18,6 +18,11 @@
         regExIp = ip.gsub(".","\\.").gsub(":","\\:")
         internalProxies = regExIp  + "|" + internalProxies
       end
+    end.else_if_link('router') do |router|
+      router.instances.each do |instance|
+        regExAddress = instance.address.gsub(".","\\.").gsub(":","\\:")
+        internalProxies = regExAddress  + "|" + internalProxies
+      end
     end
     # If we don't have any proxies by now. Use the default list so we don't go blank
     if internalProxies.to_s.strip.length == 0

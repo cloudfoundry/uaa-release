@@ -20,7 +20,7 @@ describe 'uaa-release erb generation' do
     end
   end
 
-  def generate_cf_manifest file_name
+  def generate_cf_manifest(file_name, links={})
     spec_defaults = YAML.load_file('jobs/uaa/spec')['properties'].keep_if { |k,v| v.has_key?('default') }.map { |k, v| [k, v['default']] }.to_h
     new_hash = {}
     spec_defaults.each do |key, value|
@@ -31,13 +31,11 @@ describe 'uaa-release erb generation' do
       end
     end
 
-    #add our properties here
-    # new_hash['login']['protocol'] = 'https'
-    # new_hash['uaa']['url'] = 'https://uaa.test.com'
-
     manifest_hash = {
-      'properties' => new_hash
+        'links' => links,
+        'properties' => new_hash
     }
+
     external_properties = YAML.load_file(file_name)
     manifest_hash = manifest_hash.deep_merge!(external_properties)
     manifest_hash
@@ -84,6 +82,43 @@ describe 'uaa-release erb generation' do
   def str_compare(output, actual)
     expected = File.read(output)
     expect(actual).to eq(expected)
+  end
+
+  context 'using bosh links' do
+    let(:generated_cf_manifest) { generate_cf_manifest(input, links) }
+    let(:input) { 'spec/input/bosh-lite.yml' }
+    let(:output_uaa) { 'spec/compare/bosh-lite-uaa.yml' }
+    let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
+
+    context 'when uaadb.address is specified' do
+      let(:links) {{ 'database' => {'instances' => [ {'address' => 'linkedaddress'}]}}}
+
+      it 'takes precedence over bosh-linked address' do
+        expect(parsed_yaml['database']['url']).not_to include('linkedaddress')
+      end
+    end
+
+    context 'when uaadb.address missing but bosh-link address available' do
+      let(:links) {{ 'database' => {'instances' => [ {'address' => 'linkedaddress'}]}}}
+      before(:each) { generated_cf_manifest['properties']['uaadb']['address'] = nil }
+
+      it 'it uses the bosh-linked address' do
+        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://linkedaddress:5524/uaadb')
+      end
+    end
+
+    context 'when neither uaadb.address nor a bosh link are available' do
+      let(:links) {{}}
+      before(:each) { generated_cf_manifest['properties']['uaadb']['address'] = nil }
+
+      it 'throws an error about the missing database configuration' do
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /Required uaadb address configuration not specified/)
+      end
+    end
   end
 
   context 'when yml files and stubs are provided' do

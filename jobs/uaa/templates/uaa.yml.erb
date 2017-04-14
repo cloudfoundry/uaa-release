@@ -73,7 +73,11 @@
   if_p('uaadb.address') do |address|
     uaa_db_address = address
   end.else do
-    uaa_db_address = link('database').instances[0].address
+    if_link('database') do |db_link|
+      uaa_db_address = db_link.instances[0].address
+    end.else do
+      raise ArgumentError, 'Required uaadb address configuration not specified. Please specify uaadb.address or check your bosh linked database configuration.'
+    end
   end
 
   spring_profiles = p('uaadb.db_scheme')

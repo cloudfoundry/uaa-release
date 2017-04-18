@@ -8,27 +8,28 @@
 
   <Service name="Catalina">
     <%
-    # Default private address proxy list
-    defaultInternalProxies = "10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}"
-    # If we have proxy list set. Use it
-    internalProxies = p('uaa.proxy_ips_regex')
-    # Look up Router IPs
+    default_internal_proxies = "10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}"
+
+    def escape(str)
+      str.gsub(".","\\.").gsub(":","\\:")
+    end
+
+    internal_proxies = p('uaa.proxy_ips_regex')
+
     if_p('uaa.proxy.servers') do |proxyServers|
-      proxyServers.each do |ip|
-        regExIp = ip.gsub(".","\\.").gsub(":","\\:")
-        internalProxies = regExIp  + "|" + internalProxies
-      end
+      internal_proxies = proxyServers.map { |ip| escape(ip) }
+                                     .push(internal_proxies)
+                                     .join('|')
     end.else do
         if_link('router') do |router|
-          router.instances.each do |instance|
-            regExAddress = instance.address.gsub(".","\\.").gsub(":","\\:")
-            internalProxies = regExAddress  + "|" + internalProxies
-          end
+          internal_proxies = router.instances.map { |instance| escape(instance.address) }
+                                             .push(internal_proxies)
+                                             .join('|')
         end
     end
-    # If we don't have any proxies by now. Use the default list so we don't go blank
-    if internalProxies.to_s.strip.length == 0
-        internalProxies = defaultInternalProxies
+
+    if internal_proxies.to_s.strip.length == 0
+        internal_proxies = default_internal_proxies
     end
     %>
 
@@ -75,7 +76,7 @@
         <Valve className="org.apache.catalina.valves.RemoteIpValve"
                remoteIpHeader="x-forwarded-for"
                protocolHeader="<%= p('uaa.ssl.protocol_header') %>"
-               internalProxies="<%= internalProxies %>"
+               internalProxies="<%= internal_proxies %>"
         />
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="/var/vcap/sys/log/uaa"
                prefix="localhost_access" suffix=".log" rotatable="false" pattern="%h %l %u %t &quot;%r&quot; %s %b"/>

@@ -63,6 +63,7 @@ describe 'uaa-release erb generation' do
 
       it 'takes precedence over bosh-linked address' do
         expect(parsed_yaml['database']['url']).not_to include('linkedaddress')
+        expect(parsed_yaml['database']['url']).to eq 'jdbc:postgresql://10.244.0.30:5524/uaadb'
       end
     end
 

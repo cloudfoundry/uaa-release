@@ -112,4 +112,6 @@ builds:
     version: '29'
   fd1a2961-ce3e-4cae-a658-8b364e81eb23:
     version: '30'
+  979375d9-8575-4a94-89e6-5e7415302659:
+    version: '24.7'
 format-version: '2'

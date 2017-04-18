@@ -13,12 +13,14 @@ packages:
   - uaa_utils
   - uaa_postgres-9.4.6
 
+provides:
+  - name: postgres
+    type: database
+
 properties:
   postgres.port:
     description: "The database port"
     default: 5524
-  postgres.address:
-    description: "The database address"
   postgres.databases:
     description: "A list of databases and associated properties to create"
   postgres.roles:

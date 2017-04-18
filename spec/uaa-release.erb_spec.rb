@@ -4,45 +4,9 @@ require 'bosh/template/evaluation_context'
 require 'json'
 require 'deep_merge'
 require 'support/yaml_eq'
+require 'spec_helper'
 
 describe 'uaa-release erb generation' do
-
-  def add_param_to_hash param_name, param_value, target_hash = {}
-    begin
-      a = target_hash
-      p = param_name.split(/[\/\.]/)
-      val = param_value
-      # the following, somewhat complex line, runs through the existing (?) tree, making sure to preserve existing values and add values where needed.
-      p.each_index { |i| p[i].strip! ; n = p[i].match(/^[0-9]+$/) ? p[i].to_i : p[i].to_s ; p[i+1] ? [ ( a[n] ||= ( p[i+1].empty? ? [] : {} ) ), ( a = a[n]) ] : ( a.is_a?(Hash) ? (a[n] ? (a[n].is_a?(Array) ? (a << val) : a[n] = [a[n], val] ) : (a[n] = val) ) : (a << val) ) }
-    rescue Exception => e
-      warn '(Silent): parameters parse error for #{param_name} ... maybe conflicts with a different set?'
-      target_hash[param_name] = param_value
-    end
-  end
-
-  def generate_cf_manifest file_name
-    spec_defaults = YAML.load_file('jobs/uaa/spec')['properties'].keep_if { |k,v| v.has_key?('default') }.map { |k, v| [k, v['default']] }.to_h
-    new_hash = {}
-    spec_defaults.each do |key, value|
-      if key.include? '.'
-        add_param_to_hash(key, value, new_hash)
-      else
-        new_hash[key] = value
-      end
-    end
-
-    #add our properties here
-    # new_hash['login']['protocol'] = 'https'
-    # new_hash['uaa']['url'] = 'https://uaa.test.com'
-
-    manifest_hash = {
-      'properties' => new_hash
-    }
-    external_properties = YAML.load_file(file_name)
-    manifest_hash = manifest_hash.deep_merge!(external_properties)
-    manifest_hash
-  end
-
   def perform_erb_transformation_as_yaml erb_file, manifest_file
     YAML.load(perform_erb_transformation_as_string erb_file, manifest_file)
   end
@@ -84,6 +48,44 @@ describe 'uaa-release erb generation' do
   def str_compare(output, actual)
     expected = File.read(output)
     expect(actual).to eq(expected)
+  end
+
+  context 'using bosh links' do
+    let(:generated_cf_manifest) { generate_cf_manifest(input, links) }
+    let(:input) { 'spec/input/bosh-lite.yml' }
+    let(:output_uaa) { 'spec/compare/bosh-lite-uaa.yml' }
+    let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
+
+    context 'when uaadb.address is specified' do
+      let(:links) {{ 'database' => {'instances' => [ {'address' => 'linkedaddress'}]}}}
+
+      it 'takes precedence over bosh-linked address' do
+        expect(parsed_yaml['database']['url']).not_to include('linkedaddress')
+        expect(parsed_yaml['database']['url']).to eq 'jdbc:postgresql://10.244.0.30:5524/uaadb'
+      end
+    end
+
+    context 'when uaadb.address missing but bosh-link address available' do
+      let(:links) {{ 'database' => {'instances' => [ {'address' => 'linkedaddress'}]}}}
+      before(:each) { generated_cf_manifest['properties']['uaadb']['address'] = nil }
+
+      it 'it uses the bosh-linked address' do
+        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://linkedaddress:5524/uaadb')
+      end
+    end
+
+    context 'when neither uaadb.address nor a bosh link are available' do
+      let(:links) {{}}
+      before(:each) { generated_cf_manifest['properties']['uaadb']['address'] = nil }
+
+      it 'throws an error about the missing database configuration' do
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /Required uaadb address configuration not specified/)
+      end
+    end
   end
 
   context 'when yml files and stubs are provided' do

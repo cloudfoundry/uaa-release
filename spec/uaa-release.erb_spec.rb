@@ -17,7 +17,7 @@ describe 'uaa-release erb generation' do
   end
 
   def perform_erb_transformation_as_string_doc_mode(erb_file)
-    require_relative '../jobs/uaa/templates/doc_overrides'
+    require_relative '../docs/doc_overrides'
     the_binding = Proc.new do
       doc = 'true'
       binding()

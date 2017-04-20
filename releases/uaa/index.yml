@@ -118,4 +118,6 @@ builds:
     version: '13.12'
   4113c785-79dc-4ff2-8f2c-7b5a196a20e2:
     version: '31'
+  8eacd4ec-58a8-420e-af1e-8460eb822650:
+    version: '32'
 format-version: '2'

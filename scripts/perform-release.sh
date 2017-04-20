@@ -154,7 +154,6 @@ echo -e "${CYAN}Tagging and pushing the release branch${NC}"
 git tag -a v${1} -m "$1 release"
 git push origin $branch_to_release_from --tags
 
-
 git checkout $branch_to_release_from
 sub_update
 
@@ -162,21 +161,18 @@ sub_update
 #rm -rf dev_releases/*
 rm releases/uaa/uaa-${1}.tgz
 
-# if this is a patch release, we must merge metadata
-if [[ $1 == *.* ]]; then
-    # paste in our metadata from master and commit it
-    paste_master_release_metadata $branch_to_release_from
-    # restore private.yml in case it got deleted
-    mv /tmp/private.yml config/
+# paste in our metadata from master and commit it
+paste_master_release_metadata $branch_to_release_from
+# restore private.yml in case it got deleted
+mv /tmp/private.yml config/
 
-    echo -e "${CYAN}Building another tarball ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
-    # create a release tar ball
-    #bosh create release --name uaa --version $1 --with-tarball
-    metadata_commit=''
-    # finalize release, get commit SHA so that we can cherry pick it later
-    finalize_and_commit $1 metadata_commit
-    echo -e "${CYAN}Finalized merge metadata with commit SHA ${metadata_commit}${NC}"
-fi
+echo -e "${CYAN}Generating metadata for master ${GREEN}${1}${NC} with tag ${GREEN}v${1}${NC}"
+# create a release tar ball
+#bosh create release --name uaa --version $1 --with-tarball
+metadata_commit=''
+# finalize release, get commit SHA so that we can cherry pick it later
+finalize_and_commit $1 metadata_commit
+echo -e "${CYAN}Finalized merge metadata with commit SHA ${metadata_commit}${NC}"
 
 # jump to master branch
 echo -e "${CYAN}Switching to master branch to prep for metadata migration${NC}"
@@ -184,23 +180,25 @@ git checkout master
 git reset --hard origin/master
 sub_update
 
-if [ "$branch_to_release_from" = "develop" ]; then
-    # merge metadata files -
-    echo -e "${CYAN}Merging develop to master${NC}"
-    git merge --no-ff origin/develop -m "Merge of branch develop for release ${1}${NC}"
-else
-    # cherry pick the metadata files - we can't merge. different code paths
+# merge release branch, with all metadata, to master
+if [[ ${1} == *.* ]]; then
+    #patch releases, that contain dots, we cherry pick the commit metadata only
     echo -e "${CYAN}Cherry picking metadata commit to master for release ${1} and sha ${metadata_commit}${NC}"
     git cherry-pick ${metadata_commit}
+else
+    echo -e "${CYAN}Merging $branch_to_release_from to master${NC}"
+    git merge --no-ff ${branch_to_release_from} -m "Merge of branch ${branch_to_release_from} for release ${1}${NC}" -X theirs
 fi
 
 # update develop (merge master to develop so that the next release won't have a conflict
 echo -e "${CYAN}Pushing master branch and release tags${NC}"
 git push origin master --tags
-echo -e "${CYAN}Merging to develop to avoid conflicts in the future${NC}"
+echo -e "${CYAN}Merging master to develop to avoid conflicts in the future${NC}"
 git checkout develop
 git merge --no-ff master -m "Bumping develop with master contents in preparation of next release"
 git push origin develop
+
+# finally done!
 echo -e "${CYAN}Release ${1} completed with tag v${1} and SHA: ${metadata_commit}{NC}"
 
 

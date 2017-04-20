@@ -22,12 +22,12 @@ function sub_update {
 
 function usage {
     echo -e "Usage: ${GREEN}$(basename $0) bosh_release_version [branch_to_release_from/develop] [/path/to/private.yml]${NC}"
-    echo -e "Usage: ${GREEN}$(basename $0) 11.4 v11.4-branch${NC}"
-    echo -e "\n${GREEN}$(basename $0)${NC} requires a completely pristine clone of ${CYAN}uaa-release${NC}, containing no uncommitted changes or untracked or ignored files."
-    echo -e "Before performing the release, it is strongly recommended that you update blobs with ${GREEN}bosh sync blobs${NC}"
-    echo -e "The ${CYAN}uaa${NC} submodule should be bumped by checking out the appropriate version ${BOLD}tag (not the branch)${NC} and committing the submodule update before running ${GREEN}$(basename $0)${NC}"
+    echo -e "Usage: ${GREEN}$(basename $0) ${RED}11.4 v11.4-branch /path/to/private.yml${NC}"
+    echo -e "\n\n${GREEN}$(basename $0)${NC} requires a completely pristine clone of ${CYAN}uaa-release${NC}, containing no uncommitted changes or untracked or ignored files."
+    echo -e "\nBefore performing the release, it is strongly recommended that you update blobs with ${GREEN}bosh sync blobs${NC}"
+    echo -e "\nThe ${CYAN}uaa${NC} submodule should be bumped by checking out the appropriate version ${BOLD}tag (not the branch)${NC} and committing the submodule update before running ${GREEN}$(basename $0)${NC}"
     echo -e "Specify the new ${YELLOW}bosh_release_version${NC}. The script will update the relevant branches and tags."
-    echo -e "For a usual release, the ${YELLOW}branch_to_release_from${NC} should be develop. For patch releases, it should be a previous release."
+    echo -e "\nFor a usual release, the ${YELLOW}branch_to_release_from${NC} should be develop. For patch releases, it should be a previous release."
     echo -e "The ${YELLOW}private.yml${NC} file serves as the private key for updating the blobstore."
     echo -e "If successful, the release should appear at ${CYAN}http://bosh.io/releases/github.com/cloudfoundry/uaa-release${NC} in a short time."
 }
@@ -98,7 +98,8 @@ if [ "$#" -ge 2 ]; then
 fi
 
 # navigate to the correct release directory
-cd `dirname $0`/..
+
+#cd `dirname $0`/..
 echo -e "${CYAN}Performing release from directory:${GREEN} `pwd` ${NC}"
 
 # initialize sub modules if needed
@@ -135,11 +136,10 @@ fi
 git checkout $branch_to_release_from
 sub_update
 
-# paste in our metadata from master and commit it
-paste_master_release_metadata $branch_to_release_from
-
+# perform chronological release on branch `releases/version`
+git checkout -b releases/$1
 # restore private.yml in case it got deleted
-mv /tmp/private.yml config/
+cp /tmp/private.yml config/
 
 echo -e "${CYAN}Building tarball ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
 # create a release tar ball
@@ -154,12 +154,35 @@ echo -e "${CYAN}Tagging and pushing the release branch${NC}"
 git tag -a v${1} -m "$1 release"
 git push origin $branch_to_release_from --tags
 
+
+git checkout $branch_to_release_from
+sub_update
+
+# clean out the old release
+#rm -rf dev_releases/*
+rm releases/uaa/uaa-${1}.tgz
+
+# if this is a patch release, we must merge metadata
+if [[ $1 == *.* ]]; then
+    # paste in our metadata from master and commit it
+    paste_master_release_metadata $branch_to_release_from
+    # restore private.yml in case it got deleted
+    mv /tmp/private.yml config/
+
+    echo -e "${CYAN}Building another tarball ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
+    # create a release tar ball
+    #bosh create release --name uaa --version $1 --with-tarball
+    metadata_commit=''
+    # finalize release, get commit SHA so that we can cherry pick it later
+    finalize_and_commit $1 metadata_commit
+    echo -e "${CYAN}Finalized merge metadata with commit SHA ${metadata_commit}${NC}"
+fi
+
 # jump to master branch
-echo -e "${CYAN}Swithcing to master branch to prep for metadata migration${NC}"
+echo -e "${CYAN}Switching to master branch to prep for metadata migration${NC}"
 git checkout master
 git reset --hard origin/master
 sub_update
-
 
 if [ "$branch_to_release_from" = "develop" ]; then
     # merge metadata files -

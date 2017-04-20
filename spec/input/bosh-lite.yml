@@ -1087,7 +1087,6 @@ properties:
             given_name: firstName
             family_name: surname
           providerDescription: 'Human readable description of this provider'
-    self_service_links_enabled:
     smtp:
       host:
       password:
@@ -1196,6 +1195,7 @@ properties:
         override: true
         refresh-token-validity: 2592000
         scope: cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,scim.read,scim.write,doppler.firehose,uaa.user,routing.router_groups.read
+        secret: ''
       cloud_controller_username_lookup:
         authorities: scim.userids
         authorized-grant-types: client_credentials
@@ -1204,9 +1204,10 @@ properties:
         authorities: uaa.resource
         override: true
         secret: doppler-secret
+        authorized-grant-types: client_credentials
       gorouter:
         authorities: routing.routes.read
-        authorized-grant-types: client_credentials,refresh_token
+        authorized-grant-types: client_credentials
         secret: gorouter-secret
       notifications:
         authorities: cloud_controller.admin,scim.read
@@ -1221,12 +1222,17 @@ properties:
         secret: ssh-proxy-secret
       tcp_emitter:
         authorities: routing.routes.write,routing.routes.read,routing.router_groups.read
-        authorized-grant-types: client_credentials,refresh_token
+        authorized-grant-types: client_credentials
         secret: tcp-emitter-secret
       tcp_router:
         authorities: routing.routes.read,routing.router_groups.read
-        authorized-grant-types: client_credentials,refresh_token
+        authorized-grant-types: client_credentials
         secret: tcp-router-secret
+      implicit_ok:
+        scope: openid
+        authorized-grant-types: implicit
+        secret: null
+        redirect-uri: "http://some.redirect.com/callback"
     database:
     issuer: https://uaa.bosh-lite.com
     jwt:

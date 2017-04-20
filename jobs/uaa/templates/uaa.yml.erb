@@ -1,13 +1,17 @@
 <%
+  message = ''
 
   # returns null if the property does not have a value
   def p_opt(property)
     p(property, nil)
   end
 
-  # returns an empty array of the value is null
   def p_arr(property)
     p_opt(property) || []
+  end
+
+  def render(params)
+    YAML.dump(params, :indentation => 2)
   end
 
   # adds a nested value to a hash
@@ -15,10 +19,9 @@
   # add_value(hash, value, 'top-level', 'mid-level', 'bottom-level'))
   def add_value(hash, value, *keys)
     last_key = nil
-    index = 1
-    for key in keys
+    keys.each_with_index do |key, index|
       last_key = key
-      if index < keys.length
+      if index < keys.length - 1
         sub_hash = hash[key]
         if sub_hash.nil?
           sub_hash = {}
@@ -28,17 +31,15 @@
         end
         hash = sub_hash
       end
-      index = index + 1
     end
     hash[last_key] = value
   end
 
   def is_missing(hash, *keys)
     last_key = nil
-    index = 1
-    for key in keys
+    keys.each_with_index do |key, index|
       last_key = key
-      if index < keys.length
+      if index < keys.length - 1
         sub_hash = hash[key]
         if sub_hash.nil?
           return true
@@ -47,9 +48,19 @@
         end
         hash = sub_hash
       end
-      index = index + 1
     end
     return hash[last_key].nil?
+  end
+
+  def error_if_exists(message)
+    unless message == ''
+      raise ArgumentError, message
+    end
+  end
+
+  if !!defined?(doc) && doc == 'true'
+    require_relative 'doc_overrides' unless defined?(MockProperty)
+    extend DocOverrides
   end
 
   uaa_db = p_arr('uaadb.databases').find { |db| db['tag'] == 'uaa' }
@@ -57,10 +68,20 @@
   protocol = p('login.protocol')
   uaa_db_scheme = p('uaadb.db_scheme')
   issuer_uri = p('uaa.issuer', p('uaa.url'))
-  oauth_clientsLoginRedirectUri = p('uaa.url')
+
+  uaa_db_address = nil
+  if_p('uaadb.address') do |address|
+    uaa_db_address = address
+  end.else do
+    if_link('database') do |db_link|
+      uaa_db_address = db_link.instances[0].address
+    end.else do
+      raise ArgumentError, 'Required uaadb address configuration not specified. Please specify uaadb.address or check your bosh linked database configuration.'
+    end
+  end
 
   spring_profiles = p('uaadb.db_scheme')
-  if p_opt('uaa.ldap.enabled') then
+  if p_opt('uaa.ldap.enabled')
     spring_profiles = spring_profiles + ',ldap'
   end
 
@@ -77,7 +98,7 @@
       'config' => '/var/vcap/jobs/uaa/config/log4j.properties'
     },
     'database' => {
-      'url' =>  "jdbc:#{p('uaadb.db_scheme')}://#{p('uaadb.address')}:#{p('uaadb.port')}/#{uaa_db['name']}",
+      'url' =>  "jdbc:#{p('uaadb.db_scheme')}://#{uaa_db_address}:#{p('uaadb.port')}/#{uaa_db['name']}",
       'username' => uaa_role['name'],
       'password' => uaa_role['password'],
       'maxactive' => p('uaa.database.max_connections'),
@@ -126,8 +147,10 @@
       }
     }
   }
+  params['delete'] = p('uaa.delete') if p_opt('uaa.delete')
+
   if uaa_db_scheme == 'sqlserver' then
-    params['database']['url'] = "jdbc:#{p('uaadb.db_scheme')}://#{p('uaadb.address')}:#{p('uaadb.port')};databaseName=#{uaa_db['name']}"
+    params['database']['url'] = "jdbc:#{p('uaadb.db_scheme')}://#{uaa_db_address}:#{p('uaadb.port')};databaseName=#{uaa_db['name']}"
   end
 
   # should the DB not use lower() function in SCIM queries (if true)
@@ -187,7 +210,7 @@
     if valid_formats.include?(refresh_token_format)
       add_value(jwt, refresh_token_format, 'token', 'refresh', 'format')
     else
-      raise ArgumentError.new "uaa.jwt.refresh.format #{refresh_token_format} must be one of #{valid_formats}"
+      message = message +  "\nuaa.jwt.refresh.format #{refresh_token_format} must be one of #{valid_formats}"
     end
 
     params['jwt'] = jwt
@@ -214,6 +237,24 @@
       end
       add_value(oauth, client_data, 'clients', id)
       add_value(oauth, id, 'clients', id, 'id')
+      if is_missing(client_data, 'authorized-grant-types')
+        message = message + "\nMissing property: uaa.clients.#{id}.authorized-grant-types"
+      else
+        message = message + "\nMissing property: uaa.clients.#{id}.secret" if client_data['secret'].nil? && client_data['authorized-grant-types'] != 'implicit'
+        message = message + "\nMissing property: uaa.clients.#{id}.redirect-uri" if (client_data['redirect-uri'].nil?) && (client_data['authorized-grant-types'] =~ /implicit|authorization_code/)
+        message = message + "\nMissing property: uaa.clients.#{id}.authorities" if (client_data['authorities'].nil?) && (client_data['authorized-grant-types'] =~ /client_credentials/)
+        message = message + "\nMissing property: uaa.clients.#{id}.scope" if (client_data['scope'].nil?) && (client_data['authorized-grant-types'] != 'client_credentials')
+      end
+
+      ['refresh-token-validity', 'access-token-validity'].each do |numberProperty|
+        message = message + "\nInvalid number value: uaa.clients.#{id}.#{numberProperty}" unless (client_data[numberProperty].nil?) || (client_data[numberProperty].is_a?(Numeric) && client_data[numberProperty] > 1)
+      end
+      ['override', 'show-on-homepage'].each do |booleanProperty|
+        message = message + "\nInvalid boolean value: uaa.clients.#{id}.#{booleanProperty}" unless (client_data[booleanProperty].nil?) || (client_data[booleanProperty].is_a?(TrueClass) || client_data[booleanProperty].is_a?(FalseClass))
+      end
+      ['redirect_url', 'redirect_uri'].each do |rejectedProperty|
+        message = message + "\nInvalid property: uaa.clients.#{id}.#{rejectedProperty}" unless client_data[rejectedProperty].nil?
+      end
     end
   end
 
@@ -292,10 +333,6 @@
     internal_hostnames.push(hostname)
   end
   params['zones']['internal']['hostnames'] = internal_hostnames
-
-  if_p('uaa.require_https') do |requireHttps|
-    params['require_https'] = requireHttps
-  end
 
   if p_opt('uaa.ldap.enabled')
     ldap = {
@@ -377,30 +414,152 @@
       'session-cookie' => {}
     }
     sessioncookie.each do |cookiename, cookievalue|
-      params['servlet'][cookiename] = cookievalue
+      params['servlet']['session-cookie'][cookiename] = cookievalue
     end
   end
 
   #validate that we have all required parameters
-  message = ''
   if is_missing params, 'jwt', 'token', 'signing-key'
      if is_missing params, 'jwt', 'token', 'policy', 'activeKeyId'
-       message = message + '\nuaa.jwt.policy.active_key_id'
+       message = message + '\nMissing property: uaa.jwt.policy.active_key_id'
      else
        activeKeyId = params['jwt']['token']['policy']['activeKeyId']
        if is_missing params, 'jwt', 'token', 'policy', 'keys', activeKeyId
-         message = message + '\nuaa.jwt.policy.active_key_id mismatch'
+         message = message + '\nMissing property: uaa.jwt.policy.active_key_id mismatch'
        elsif is_missing params, 'jwt', 'token', 'policy', 'keys', activeKeyId, 'signingKey'
-           message = message + '\nuaa.jwt.policy.active_key_id missing signingKey'
+           message = message + '\nMissing property: uaa.jwt.policy.active_key_id missing signingKey'
        end
      end
   end
 
-  # message = message + (is_missing(params, 'login', 'serviceProviderKeyPassword')?'\nlogin.saml.serviceProviderKeyPassword' : '')
-  # message = message + (is_missing(params, 'login', 'serviceProviderCertificate')?'\nlogin.saml.serviceProviderCertificate' : '')
-  if !(message == '')
-    raise ArgumentError, 'Missing properties:' + message
+  protocol = p('login.protocol')
+
+  uaa_base = p('uaa.url')
+
+  entity_base_url_fallback = uaa_base.sub("://uaa.", "://login.")
+
+  login_entityBaseUrl = nil
+  if_p('login.saml.entity_base_url') do |entity_base_url|
+    login_entityBaseUrl = "#{protocol}://#{entity_base_url}"
+  end .else do
+    login_entityBaseUrl = entity_base_url_fallback
   end
 
+  login_entityId = p(['login.saml.entityid'], login_entityBaseUrl.sub(/^http.*:\/\//,''))
+
+  login_authorizeUrl = "#{p('uaa.url', entity_base_url_fallback)}/oauth/authorize"
+
+  login_url = p('login.url', login_entityBaseUrl)
+
+  params = params.merge({
+    'require_https' => p('uaa.require_https'),
+    'assetBaseUrl' => p('login.asset_base_url'),
+    'logout' => {
+      'redirect' => {
+        'url' => p('login.logout.redirect.url'),
+        'parameter' => {
+          'disable' => p('login.logout.redirect.parameter.disable')
+        }
+      }
+    },
+    'uaa' => {
+      'url' => uaa_base
+    },
+    'links' => p_arr('login.links'),
+    'login' => {
+      'url' => login_url,
+      'idpDiscoveryEnabled' => p('login.idpDiscoveryEnabled'),
+      'accountChooserEnabled' => p('login.idpDiscoveryEnabled'),
+      'entityBaseURL' => login_entityBaseUrl,
+      'entityID' => login_entityId,
+      'prompt' => {
+        'username' => {
+          'text' => p('login.prompt.username.text')
+        },
+        'password' => {
+          'text' => p('login.prompt.password.text')
+        }
+      },
+      'authorize' => {
+        'url' => login_authorizeUrl
+      },
+      'saml' => {
+        'socket' => {
+          'connectionManagerTimeout' => p_opt('login.saml.socket.connectionManagerTimeout'),
+          'soTimeout' => p_opt('login.saml.socket.soTimeout')
+        }
+      }
+    }
+  })
+
+  add_value(params, p('login.logout.redirect.parameter.whitelist'), 'logout', 'redirect', 'parameter', 'whitelist') if p_opt('login.logout.redirect.parameter.whitelist')
+
+  if_p('login.smtp') do |login_smtp|
+    login_smtp.each do |key,val|
+      add_value(params, val, 'smtp', key)
+    end
+  end
+
+  add_value(params, p('login.notifications.url'), 'notifications', 'url') if p_opt('login.notifications.url')
+
+  add_value(params, p('login.branding.company_name'), 'login', 'branding', 'companyName') if p_opt('login.branding.company_name')
+  add_value(params, p('login.branding.product_logo'), 'login', 'branding', 'productLogo') if p_opt('login.branding.product_logo')
+  add_value(params, p('login.branding.square_logo'), 'login', 'branding', 'squareLogo') if p_opt('login.branding.square_logo')
+  add_value(params, p('login.branding.footer_legal_text'), 'login', 'branding', 'footerLegalText') if p_opt('login.branding.footer_legal_text')
+  add_value(params, p('login.branding.footer_links'), 'login', 'branding', 'footerLinks') if p_opt('login.branding.footer_links')
+
+  add_value(params, p('login.home_redirect'), 'login', 'homeRedirect') if p_opt('login.home_redirect')
+
+  add_value(params, p('login.saml.serviceProviderCertificate'), 'login', 'serviceProviderCertificate') if p_opt('login.saml.serviceProviderCertificate')
+  add_value(params, p('login.saml.serviceProviderKey'), 'login', 'serviceProviderKey') if p_opt('login.saml.serviceProviderKey')
+  add_value(params, p('login.saml.serviceProviderKeyPassword'), 'login', 'serviceProviderKeyPassword') if p_opt('login.saml.serviceProviderKeyPassword')
+
+  add_value(params, p('login.self_service_links_enabled'), 'login', 'selfServiceLinksEnabled')
+
+  if_p('login.oauth.providers') do |providers|
+    providers.each do |idpAlias, provider|
+      provider.each do |key,value|
+        if key.to_s.eql?('attributeMappings') then
+          value.each do |k,v|
+            add_value(params, v, 'login', 'oauth', 'providers', idpAlias, 'attributeMappings', k)
+          end
+        else
+          add_value(params, value, 'login', 'oauth', 'providers', idpAlias, key)
+        end
+      end
+    end
+  end
+
+  add_value(params, p('login.saml.signMetaData'), 'login', 'saml', 'signMetaData') if p_opt('login.saml.signMetaData')
+  add_value(params, p('login.saml.signRequest'), 'login', 'saml', 'signRequest') if p_opt('login.saml.signRequest')
+  add_value(params, p('login.saml.wantAssertionSigned'), 'login', 'saml', 'wantAssertionSigned')
+  if_p('login.saml.signatureAlgorithm') { |alg| add_value(params, alg, 'login', 'saml', 'signatureAlgorithm') }
+
+  if_p('login.saml.providers') do |samlProviders|
+    samlProviders.reject {|k,_| k.to_s == ''}.each do |idpAlias,idpProvider|
+      idpProvider.reject {|k,_| %w(idpMetadata).include?(k.to_s)}.each do |key,value|
+        if key.to_s.eql?('attributeMappings') then
+          value.each do |akey,aval|
+            add_value(params, aval, 'login', 'saml', 'providers', idpAlias, 'attributeMappings', akey)
+          end
+        else
+          add_value(params, value, 'login', 'saml', 'providers', idpAlias, key)
+        end
+      end
+      add_value(params, idpProvider['idpMetadata'], 'login', 'saml', 'providers', idpAlias, 'idpMetadata')
+    end
+  end
+
+  if_p('login.analytics.code', 'login.analytics.domain') do |code, domain|
+    add_value(params, code, 'analytics', 'code')
+    add_value(params, domain, 'analytics', 'domain')
+  end
+
+  #validate that we have all required parameters
+  message = message + (is_missing(params, 'login', 'serviceProviderKey')?'\nMissing property: login.saml.serviceProviderKey' : '')
+  message = message + (is_missing(params, 'login', 'serviceProviderKeyPassword')?'\nMissing property: login.saml.serviceProviderKeyPassword' : '')
+  message = message + (is_missing(params, 'login', 'serviceProviderCertificate')?'\nMissing property: login.saml.serviceProviderCertificate' : '')
+  error_if_exists message
+
 %>
-<%=YAML.dump(params, :indentation => 2)%>
+<%= render(params) %>

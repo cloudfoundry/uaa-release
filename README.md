@@ -83,6 +83,25 @@ Add the following properties to your manifest:
    [submit a pull request](https://help.github.com/articles/creating-a-pull-request)
    selecting `develop` as the target branch
 
+## Deploying to a bosh-lite environment
+
+   We have provided [a sample manifest](docs/bosh-lite-uaa-release.yml)
+   for a bosh-lite uaa-release deployment. 
+   Make sure you modify the director uuid in the manifest to match yours 
+
+       bosh target 192.168.50.4
+       bosh login admin admin
+       bosh upload stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent --skip-if-exists
+       bosh deployment docs/bosh-lite-uaa-release.yml
+       bosh deploy
+    
+   After that you can get the IP address and add the hostname to your `/etc/hosts` file
+  
+   You may want to setup an entry in your `/etc/hosts`
+      
+      10.244.0.118    uaa-minimal.bosh-lite.com
+   
+
 
 ## Acknowledgements
 

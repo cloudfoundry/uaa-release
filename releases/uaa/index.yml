@@ -112,6 +112,18 @@ builds:
     version: '29'
   fd1a2961-ce3e-4cae-a658-8b364e81eb23:
     version: '30'
-  76fa5a45-5268-43bb-acfe-47e43e512b82:
+  979375d9-8575-4a94-89e6-5e7415302659:
+    version: '24.7'
+  ba3235f1-d11b-46fa-b3e3-1c6b69d8c585:
+    version: '13.12'
+  4113c785-79dc-4ff2-8f2c-7b5a196a20e2:
+    version: '31'
+  8eacd4ec-58a8-420e-af1e-8460eb822650:
+    version: '32'
+  9e667d7c-6e4a-475c-ab59-2bde2657e90d:
     version: '30.1'
+  45c0e1f1-fe5a-4783-972b-7964393d58ac:
+    version: '24.8'
+  71eacb66-ee2a-47ed-a8b1-484e1ef5dc03:
+    version: '13.13'
 format-version: '2'

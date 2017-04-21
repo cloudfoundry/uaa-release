@@ -122,4 +122,6 @@ builds:
     version: '32'
   9e667d7c-6e4a-475c-ab59-2bde2657e90d:
     version: '30.1'
+  45c0e1f1-fe5a-4783-972b-7964393d58ac:
+    version: '24.8'
 format-version: '2'

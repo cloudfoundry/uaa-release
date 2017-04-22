@@ -280,6 +280,8 @@ properties:
     disableInternalUserManagement: true
     issuer: http://all-properties-set:8888/uaa
     jwt:
+      queryString:
+        enabled: false
       claims:
         exclude:
         - authorities

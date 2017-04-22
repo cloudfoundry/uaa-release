@@ -340,6 +340,9 @@ properties:
       - roles
       - user_attributes
       - uaa.offline_token
+  uaa.jwt.queryString.enabled:
+    default: true
+    description: "If set to true, the /oauth/token and /check_token endpoints accept GET and query string parameters"
   uaa.jwt.revocable:
     default: false
     description: "Set to true if you wish that even JWT tokens become individually revocable and stored in the UAA token storage. This setting applies to the default zone only."

@@ -48,6 +48,8 @@ zones:
     hostnames: []
 jwt:
   token:
+    queryString:
+      enabled: true
     revocable: false
     policy:
       accessTokenValiditySeconds: 43200

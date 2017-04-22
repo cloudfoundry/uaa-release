@@ -62,6 +62,8 @@ zones:
     - host3.test
 jwt:
   token:
+    queryString:
+      enabled: false
     revocable: true
     policy:
       accessTokenValiditySeconds: 43200

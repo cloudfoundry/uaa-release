@@ -120,6 +120,9 @@ logout:
 uaa:
   url: http://test.uaa.url
 links:
+  global:
+    passwd: "/forgot_password"
+    signup: "/create_account"
   passwd: "/forgot_password"
   signup: "/create_account"
 login:

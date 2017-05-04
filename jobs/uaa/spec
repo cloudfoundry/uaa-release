@@ -166,8 +166,22 @@ properties:
     default: /resources/oss
   login.links:
     description: "A hash of home/passwd/signup URLS (see commented examples below)"
+  login.links.global.passwd:
+    description: |
+      URL for requesting password reset. Displayed on the home page of the UAA.
+      This is set globally for all identity zones but can be overridden via Identity Zone API.
+      The links also support two variables: ${zone.id} and ${zone.subdomain}
+    default: '/forgot_password'
+    example: https://${zone.subdomain}.myaccountmanager.domain.com/z/${zone.id}/forgot_password
+  login.links.global.signup:
+    description: |
+      URL for requesting to signup/register for an account
+      This is set globally for all identity zones but can be overridden via Identity Zone API.
+      The links also support two variables: ${zone.id} and ${zone.subdomain}
+    default: '/create_account'
+    example: https://${zone.subdomain}.myaccountmanager.domain.com/z/${zone.id}/create_account
   login.links.passwd:
-    description: URL for requesting password reset
+    description: URL for requesting password reset for the default zone
     default: '/forgot_password'
   login.links.signup:
     description: URL for requesting to signup/register for an account

@@ -236,8 +236,8 @@ uaa:
   url: http://all-properties-set:8888/uaa
 links:
   global:
-    passwd: "https://${zone.subdomain}.myaccountmanager.domain.com/z/${zone.id}/forgot_password"
-    signup: "https://${zone.subdomain}.myaccountmanager.domain.com/z/${zone.id}/create_account"
+    passwd: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/forgot_password"
+    signup: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/create_account"
   passwd: "/reset_password"
   signup: http://signup.somewhere.else
   custom: http://custom.link

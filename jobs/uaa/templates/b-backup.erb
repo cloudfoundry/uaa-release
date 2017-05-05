@@ -12,11 +12,12 @@ uaa_password = uaa_role['password']
 set -e
 set -u
 
-export PGPASSWORD="<%= uaa_password %>"
-
-/var/vcap/packages/postgres-9.4/bin/pg_dump \
-  --user="<%= uaa_user %>" \
-  --host="<%= p("uaadb.address") %>" \
-  --port="<%= p("uaadb.port") %>" \
-  --format=custom \
-  "<%= uaa_db_name %>" > "$ARTIFACT_DIRECTORY"/uaadb_dump
+if [ -f /var/vcap/packages/postgres-9.4/bin/pg_dump ]; then
+  export PGPASSWORD="<%= uaa_password %>"
+  /var/vcap/packages/postgres-9.4/bin/pg_dump \
+    --user="<%= uaa_user %>" \
+    --host="<%= p("uaadb.address") %>" \
+    --port="<%= p("uaadb.port") %>" \
+    --format=custom \
+    "<%= uaa_db_name %>" > "$ARTIFACT_DIRECTORY"/uaadb_dump
+fi

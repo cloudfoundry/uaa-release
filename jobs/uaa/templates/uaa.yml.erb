@@ -479,7 +479,6 @@
     'uaa' => {
       'url' => uaa_base
     },
-    'links' => p_arr('login.links'),
     'login' => {
       'url' => login_url,
       'idpDiscoveryEnabled' => p('login.idpDiscoveryEnabled'),
@@ -506,6 +505,14 @@
     }
   })
 
+  if_p('login.links') do |login_links|
+    login_links.each do |key,val|
+      add_value(params, val, 'links', key)
+    end
+  end
+  #deprecated property still works
+  add_value(params, p('login.home_redirect'), 'links', 'homeRedirect') if p_opt('login.home_redirect')
+
   add_value(params, p('login.logout.redirect.parameter.whitelist'), 'logout', 'redirect', 'parameter', 'whitelist') if p_opt('login.logout.redirect.parameter.whitelist')
 
   if_p('login.smtp') do |login_smtp|
@@ -521,8 +528,6 @@
   add_value(params, p('login.branding.square_logo'), 'login', 'branding', 'squareLogo') if p_opt('login.branding.square_logo')
   add_value(params, p('login.branding.footer_legal_text'), 'login', 'branding', 'footerLegalText') if p_opt('login.branding.footer_legal_text')
   add_value(params, p('login.branding.footer_links'), 'login', 'branding', 'footerLinks') if p_opt('login.branding.footer_links')
-
-  add_value(params, p('login.home_redirect'), 'login', 'homeRedirect') if p_opt('login.home_redirect')
 
   add_value(params, p('login.saml.serviceProviderCertificate'), 'login', 'serviceProviderCertificate') if p_opt('login.saml.serviceProviderCertificate')
   add_value(params, p('login.saml.serviceProviderKey'), 'login', 'serviceProviderKey') if p_opt('login.saml.serviceProviderKey')

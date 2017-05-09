@@ -161,6 +161,20 @@ describe 'uaa-release erb generation' do
         end
       end
     end
+
+    context 'for deprecated-properties-still-work.yml' do
+      let(:input) { 'spec/input/deprecated-properties-still-work.yml' }
+      let(:output_uaa) { 'spec/compare/deprecated-properties-still-work-uaa.yml' }
+
+      context 'when uaa.yml.erb is provided' do
+        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+        it 'it matches' do
+          yml_compare output_uaa, parsed_yaml.to_yaml
+        end
+      end
+
+    end
   end
 
   context 'when invalid properties are specified' do

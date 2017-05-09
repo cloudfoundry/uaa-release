@@ -1,0 +1,97 @@
+---
+properties:
+  uaadb:
+    address: 10.244.0.30
+    databases:
+    - citext: true
+      name: uaadb
+      tag: uaa
+    db_scheme: sqlserver
+    port: 1433
+    roles:
+    - name: uaaadmin
+      password: admin
+      tag: admin
+  login:
+    home_redirect: http://deprecated.home.redirect
+    saml:
+      serviceProviderKey: |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEogIBAAKCAQEAugUFbC5/uBVijrEdFu5xTP77D8iK8kM7QN1E2kteISwTMqOq
+        1IOTvx3P1i0ZZDypEwhxHD6M/flVjXJNiRIPYd+8wkjTUKHo0fdVXZxkeAczANX5
+        YYcnSUy3ztMQNPnA7cjhe5nL+jL9t13L/nONBOC1FHVdeqiKjpEPm3iXbIp1ppRt
+        a5UuA0JTETKuQ9gXqT0wKE8QHGReI1NTpBFPkyUSG+ojeqtqVM2oOjFtp8lY6nFe
+        BUQjfnWkhuLeznH1FLovi0K9V6a4zDk3g6B0A+0J4Q/CTW3NJW20ElWGmNseWlC4
+        FKa20CCf39x3RcWQ4mC3blkm5GvisI+a4k+91QIDAQABAoIBAGDaAGrFAwaLS9dT
+        a/vmheM61uju1zkvvAgXrKOjngzTb+Nrx6QCJcjZ8r5mmNPRqY4ZVRsJjkslqF+O
+        5cO6PXwOC690T2GqCxhXGIE2zjCYPvvubHtU7SWC5iivR77tUn/7mTrLZqKMLgFs
+        uqtu6jth66YNPXCBlDKKYH/oF58QzF8XOL0ZDTrKse2ps0X2TPXLAx58h1FEHKay
+        IncS8MXAan/U1CsobWJFReXKh1uZXNevBeKec1uJmVgKhyPpDYYwXMeHwQhZ4+qZ
+        4LAf2FQHe7DKzvMIL+3doWjg8Iuh5wZztvv+ilv4OnM+XcvxyjmJXbniBEuwBwhG
+        ncVARcECgYEA6Le2mNtUbcc7A3jy6oeFUxWN0PKXChGK1gdx5B30FsWgwMJT8B/5
+        US7pKCJXoVxiOUmvf3kNkNjdJQTsRcjZnULU1Ma7zZ+QQ3HAvv4h72i5dNAq8R77
+        m4rUFIvmw+uY5jj5GxzweiFiJRFfEeXbVbZ42ut5eC0QqmohCepFuO0CgYEAzKFL
+        N8n+YaTtz+J3bRHDzvmCUfL+jGndlWmKXjbNYavSXy7EfbBmUaqjAJpUtdDtP/Da
+        2xloVFx794zbnCO9GDCA0FzPBCAFM19wVBMIPs3UaGTjUYzdKDXcJUps1EIifmky
+        D1Z4zdJr53Yt6/tmUjG3OIMtAHcxTjXLREeJA4kCgYAaZcx2plp7YWAWUr/rTpgX
+        BpjhnML5R2giQxHuOF+Zva0wcFqpIFddmB6miM675QjXSr53jTm2toLPUjGi8NeO
+        eSg/QpPHDVSF8f9VKuqah5yR3ZMhasxLpoHMGtqAWtcrNkc7hhrZH7RMVB4en54z
+        qNEotBFBSotbaVJ6F3L1OQKBgGurFnu1Qa647BQs0a/G4CNgL0zVMVBKR7fc/1wR
+        M8GHebpxThvgHAYuZXPkwFumIZ86KL2NwdJZkzSuncKrH0zCAJUhsB84heQA/IaQ
+        OQ9ql6+SHfWDy73jkQDiBx8r6SBgU2G0mv2ZEQOJsCHxdmYbGI+Yna4YCQ5gyaIU
+        jagZAoGAK8uj/kErsP42jrjT0jiwFCRAYdsxqaZYotH/GIjF0pwOgzZw0nxD196Z
+        r8ZGJ8TtbkUybJdIA5a6DPawayIiDfFMFGzYB1Rbds39So3daDLwG625Iy/XLwKL
+        PGmj6PrsJmxY4IJfqLbGFgD9jUu+ZKZ5FmfmvQB+m2eODSsr9Po=
+        -----END RSA PRIVATE KEY-----
+      serviceProviderCertificate: |
+        -----BEGIN CERTIFICATE-----
+        MIIEVzCCAz+gAwIBAgIJALO14WHj4newMA0GCSqGSIb3DQEBCwUAMIHAMQswCQYD
+        VQQGEwJVUzELMAkGA1UECAwCQ0ExFjAUBgNVBAcMDVNhbiBGcmFuY2lzY28xITAf
+        BgNVBAoMGFVBQSBSZWxlYXNlIFNwZWMgVGVzdGluZzEUMBIGA1UECwwLVUFBIFJF
+        TEVBU0UxLDAqBgNVBAMMI2dpdGh1Yi5jb20vY2xvdWRmb3VuZHJ5L3VhYS1yZWxl
+        YXNlMSUwIwYJKoZIhvcNAQkBFhZ1YWEtcmVsZWFzZUBnaXRodWIuY29tMCAXDTE3
+        MDEwMzE2MjcxMVoYDzIxMTYxMjEwMTYyNzExWjCBwDELMAkGA1UEBhMCVVMxCzAJ
+        BgNVBAgMAkNBMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2NvMSEwHwYDVQQKDBhVQUEg
+        UmVsZWFzZSBTcGVjIFRlc3RpbmcxFDASBgNVBAsMC1VBQSBSRUxFQVNFMSwwKgYD
+        VQQDDCNnaXRodWIuY29tL2Nsb3VkZm91bmRyeS91YWEtcmVsZWFzZTElMCMGCSqG
+        SIb3DQEJARYWdWFhLXJlbGVhc2VAZ2l0aHViLmNvbTCCASIwDQYJKoZIhvcNAQEB
+        BQADggEPADCCAQoCggEBALoFBWwuf7gVYo6xHRbucUz++w/IivJDO0DdRNpLXiEs
+        EzKjqtSDk78dz9YtGWQ8qRMIcRw+jP35VY1yTYkSD2HfvMJI01Ch6NH3VV2cZHgH
+        MwDV+WGHJ0lMt87TEDT5wO3I4XuZy/oy/bddy/5zjQTgtRR1XXqoio6RD5t4l2yK
+        daaUbWuVLgNCUxEyrkPYF6k9MChPEBxkXiNTU6QRT5MlEhvqI3qralTNqDoxbafJ
+        WOpxXgVEI351pIbi3s5x9RS6L4tCvVemuMw5N4OgdAPtCeEPwk1tzSVttBJVhpjb
+        HlpQuBSmttAgn9/cd0XFkOJgt25ZJuRr4rCPmuJPvdUCAwEAAaNQME4wHQYDVR0O
+        BBYEFLfbFn7Gz0J0HB/wztQpJngzt7eOMB8GA1UdIwQYMBaAFLfbFn7Gz0J0HB/w
+        ztQpJngzt7eOMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBAJea03gj
+        hlljisw0e31Buo/R4b7sH6Hho2klGCFLqqk+yJe5T2R8zmOJ6ygbKT6vnUb6KuDB
+        gIThFoAkMR9OQBPvK/2BB6oLocoQ7vNTnPYqmGKLhI6jPHu6jYxG0LFdFhuKMSAW
+        rsI2hVjobEfjSj8HnEDoXqEwDBpz4hgfNPt/BDrxau3nsDGRyJ3FFBjrQMOb3oKA
+        JXdktdSrILgG0XhvdA5R6cnTmT+xYRUzzkOFmF2lJjQIUIxBhW3xY6O4jgwNBFB3
+        4ioCYqGCr9OdIC6IpnFoxnGyCjwtPzP931wVUbMUZObFGcy7SmqHv8gQP3w5YG2i
+        g8U152rRBEMHBaM=
+        -----END CERTIFICATE-----
+  uaa:
+    url: http://test.uaa.url
+    login:
+      client_secret: secret
+    jwt:
+      policy:
+        active_key_id: key-1
+        keys:
+          key-1:
+            signingKey: |
+              -----BEGIN RSA PRIVATE KEY-----
+              MIICXgIBAAKBgQDfTLadf6QgJeS2XXImEHMsa+1O7MmIt44xaL77N2K+J/JGpfV3
+              AnkyB06wFZ02sBLB7hko42LIsVEOyTuUBird/3vlyHFKytG7UEt60Fl88SbAEfsU
+              JN1i1aSUlunPS/NCz+BKwwKFP9Ss3rNImE9Uc2LMvGy153LHFVW2zrjhTwIDAQAB
+              AoGBAJDh21LRcJITRBQ3CUs9PR1DYZPl+tUkE7RnPBMPWpf6ny3LnDp9dllJeHqz
+              a3ACSgleDSEEeCGzOt6XHnrqjYCKa42Z+Opnjx/OOpjyX1NAaswRtnb039jwv4gb
+              RlwT49Y17UAQpISOo7JFadCBoMG0ix8xr4ScY+zCSoG5v0BhAkEA8llNsiWBJF5r
+              LWQ6uimfdU2y1IPlkcGAvjekYDkdkHiRie725Dn4qRiXyABeaqNm2bpnD620Okwr
+              sf7LY+BMdwJBAOvgt/ZGwJrMOe/cHhbujtjBK/1CumJ4n2r5V1zPBFfLNXiKnpJ6
+              J/sRwmjgg4u3Anu1ENF3YsxYabflBnvOP+kCQCQ8VBCp6OhOMcpErT8+j/gTGQUL
+              f5zOiPhoC2zTvWbnkCNGlqXDQTnPUop1+6gILI2rgFNozoTU9MeVaEXTuLsCQQDC
+              AGuNpReYucwVGYet+LuITyjs/krp3qfPhhByhtndk4cBA5H0i4ACodKyC6Zl7Tmf
+              oYaZoYWi6DzbQQUaIsKxAkEA2rXQjQFsfnSm+w/9067ChWg46p4lq5Na2NpcpFgH
+              waZKhM1W0oB8MX78M+0fG3xGUtywTx0D4N7pr1Tk2GTgNw==
+              -----END RSA PRIVATE KEY-----

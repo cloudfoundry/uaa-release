@@ -403,6 +403,8 @@
       end
     end
 
+    ldap['storeCustomAttributes'] = p_opt('uaa.ldap.storeCustomAttributes')
+
     if_p('uaa.ldap.externalGroupsWhitelist') do |whitelist|
       ldap['externalGroupsWhitelist'] = []
       whitelist.each do |group|

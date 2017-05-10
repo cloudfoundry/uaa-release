@@ -201,8 +201,10 @@ uaa:
 
 links:
   global:
-    passwd: "/forgot_password"
-    signup: "/create_account"
+    passwd: /forgot_password
+    signup: /create_account
+    homeRedirect: '/'
+  homeRedirect: '/'
   passwd: https://login.bosh-lite.com/forgot_password
   signup: https://login.bosh-lite.com/create_account
 

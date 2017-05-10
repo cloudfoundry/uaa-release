@@ -74,6 +74,7 @@ properties:
           - openid
           showLinkText: true
           skipSslValidation: false
+          storeCustomAttributes: false
           tokenKey: |
             token key
             encoded value
@@ -123,6 +124,7 @@ properties:
           showSamlLoginLink: true
           signMetaData: false
           signRequest: false
+          storeCustomAttributes: false
         my-identity-provider:
           assertionConsumerIndex: 0
           groupMappingMode: AS_SCOPES
@@ -362,6 +364,7 @@ properties:
         tls: simple
       sslCertificate: ldap-ssl-cert
       sslCertificateAlias: ldap-ssl-cert-alias
+      storeCustomAttributes: false
       url: ldap://192.168.50.4:389/
       userDN: cn=admin,dc=test,dc=com
       userPassword: password

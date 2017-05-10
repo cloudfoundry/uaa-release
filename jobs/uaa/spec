@@ -642,6 +642,9 @@ properties:
       phone_number: telephoneNumber
       user.attribute.name-of-attribute-in-uaa-id-token: name-of-attribute-in-ldap-record
       user.attribute.name-of-other-attribute-in-uaa-id-token: name-of-other-attribute-in-ldap-record
+  uaa.ldap.storeAttributeMappings:
+    description: "Stores custom attribute mappings from the attributeMappings configurtion in the database so that they can be retrieved using the /userinfo endpoint"
+    default: true
   uaa.ldap.externalGroupsWhitelist:
     description: "Whitelist of external groups from LDAP that get added as roles in the ID Token"
     example:

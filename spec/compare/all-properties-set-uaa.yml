@@ -62,6 +62,8 @@ zones:
     - host3.test
 jwt:
   token:
+    queryString:
+      enabled: false
     revocable: true
     policy:
       accessTokenValiditySeconds: 43200
@@ -213,6 +215,7 @@ ldap:
     phone_number: telephoneNumber
     user.attribute.name-of-attribute-in-uaa-id-token: name-of-attribute-in-ldap-record
     user.attribute.name-of-other-attribute-in-uaa-id-token: name-of-other-attribute-in-ldap-record
+  storeCustomAttributes: false
   externalGroupsWhitelist:
   - admin
   - user
@@ -233,9 +236,14 @@ logout:
 uaa:
   url: http://all-properties-set:8888/uaa
 links:
+  global:
+    passwd: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/forgot_password"
+    signup: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/create_account"
+    homeRedirect: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/success"
   passwd: "/reset_password"
   signup: http://signup.somewhere.else
   custom: http://custom.link
+  homeRedirect: http://custom.home.redirect
 login:
   url: http://all-properties-set:8888/uaa
   idpDiscoveryEnabled: true
@@ -281,6 +289,7 @@ login:
         showSamlLoginLink: true
         signMetaData: false
         signRequest: false
+        storeCustomAttributes: false
         idpMetadata: |
           <EntityDescriptor ID="SM1598b525eada26863eb23b38177f5bc861b48bf93309" entityID="smidp" xmlns="urn:oasis:names:tc:SAML:2.0:metadata">
                 <IDPSSODescriptor ID="SM213f05e6446b0930163464f8875298c3b5ed62a2f9b" WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -343,7 +352,6 @@ login:
     footerLegalText: Legal text
     footerLinks:
       terms of service: http://terms.of.service/
-  homeRedirect: http://custom.home.redirect
   serviceProviderKeyPassword: ""
   serviceProviderCertificate: |
     -----BEGIN CERTIFICATE-----
@@ -408,6 +416,7 @@ login:
         relyingPartyId: "<OIDC Client ID>"
         relyingPartySecret: "<OIDC Client secret>"
         skipSslValidation: false
+        storeCustomAttributes: false
         attributeMappings:
           given_name: first_name
           family_name: last_name

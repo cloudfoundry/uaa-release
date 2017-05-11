@@ -120,13 +120,14 @@ logout:
 uaa:
   url: http://test.uaa.url
 links:
+  passwd: "/forgot_password"
+  signup: "/create_account"
+  homeRedirect: "http://deprecated.home.redirect"
   global:
     passwd: "/forgot_password"
     signup: "/create_account"
     homeRedirect: "/"
-  passwd: "/forgot_password"
-  signup: "/create_account"
-  homeRedirect: "/"
+
 login:
   selfServiceLinksEnabled: true
   serviceProviderKey: |

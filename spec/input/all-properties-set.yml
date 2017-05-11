@@ -21,12 +21,17 @@ properties:
       square_logo: |
         base 64 with line feeds
         for square logo
-    home_redirect: http://custom.home.redirect
+
     idpDiscoveryEnabled: true
     links:
+      global:
+        passwd: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/forgot_password"
+        signup: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/create_account"
+        homeRedirect: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/success"
       custom: http://custom.link
       passwd: /reset_password
       signup: http://signup.somewhere.else
+      homeRedirect: http://custom.home.redirect
     logout:
       redirect:
         parameter:
@@ -69,6 +74,7 @@ properties:
           - openid
           showLinkText: true
           skipSslValidation: false
+          storeCustomAttributes: false
           tokenKey: |
             token key
             encoded value
@@ -118,6 +124,7 @@ properties:
           showSamlLoginLink: true
           signMetaData: false
           signRequest: false
+          storeCustomAttributes: false
         my-identity-provider:
           assertionConsumerIndex: 0
           groupMappingMode: AS_SCOPES
@@ -280,6 +287,8 @@ properties:
     disableInternalUserManagement: true
     issuer: http://all-properties-set:8888/uaa
     jwt:
+      queryString:
+        enabled: false
       claims:
         exclude:
         - authorities
@@ -355,6 +364,7 @@ properties:
         tls: simple
       sslCertificate: ldap-ssl-cert
       sslCertificateAlias: ldap-ssl-cert-alias
+      storeCustomAttributes: false
       url: ldap://192.168.50.4:389/
       userDN: cn=admin,dc=test,dc=com
       userPassword: password

@@ -20,6 +20,8 @@ logging:
 
 jwt:
   token:
+    queryString:
+      enabled: true
     revocable: false
     policy:
       accessTokenValiditySeconds:  43200
@@ -198,6 +200,11 @@ uaa:
   url: https://uaa.bosh-lite.com
 
 links:
+  global:
+    passwd: /forgot_password
+    signup: /create_account
+    homeRedirect: '/'
+  homeRedirect: '/'
   passwd: https://login.bosh-lite.com/forgot_password
   signup: https://login.bosh-lite.com/create_account
 

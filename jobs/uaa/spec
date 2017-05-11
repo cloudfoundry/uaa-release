@@ -11,6 +11,8 @@ templates:
   install_uaa_crt: bin/install_uaa_crt
   pre-start: bin/pre-start
   post-start: bin/post-start
+  b-backup.erb: bin/b-backup
+  b-restore.erb: bin/b-restore
 
   uaa.yml.erb: config/uaa.yml
   newrelic.yml.erb: config/newrelic.yml
@@ -166,14 +168,38 @@ properties:
     default: /resources/oss
   login.links:
     description: "A hash of home/passwd/signup URLS (see commented examples below)"
+  login.links.global.passwd:
+    description: |
+      URL for requesting password reset. Displayed on the home page of the UAA.
+      This is set globally for all identity zones but can be overridden via Identity Zone API.
+      The links also support two variables: {zone.id} and {zone.subdomain}
+    default: '/forgot_password'
+    example: https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/forgot_password
+  login.links.global.signup:
+    description: |
+      URL for requesting to signup/register for an account
+      This is set globally for all identity zones but can be overridden via Identity Zone API.
+      The links also support two variables: {zone.id} and {zone.subdomain}
+    default: '/create_account'
+    example: https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/create_account
+  login.links.global.homeRedirect:
+    description: |
+      Landing URL after successful authentication via UI
+      This is set globally for all identity zones but can be overridden via Identity Zone API.
+      The links also support two variables: {zone.id} and {zone.subdomain}
+    default: '/'
+    example: https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/success
   login.links.passwd:
-    description: URL for requesting password reset
+    description: URL for requesting password reset for the default zone
     default: '/forgot_password'
   login.links.signup:
     description: URL for requesting to signup/register for an account
     default: '/create_account'
+  login.links.homeRedirect:
+    description: Landing URL after successful authentication via UI
+    default: '/'
   login.home_redirect:
-    description: URL for configuring a custom home page
+    description: Deprecated. May 09, 2017. Please use login.links.homeRedirect
   login.self_service_links_enabled:
     description: "Enable self-service account creation and password resets links."
     default: true
@@ -340,6 +366,9 @@ properties:
       - roles
       - user_attributes
       - uaa.offline_token
+  uaa.jwt.queryString.enabled:
+    default: true
+    description: "If set to true, the /oauth/token and /check_token endpoints accept GET and query string parameters"
   uaa.jwt.revocable:
     default: false
     description: "Set to true if you wish that even JWT tokens become individually revocable and stored in the UAA token storage. This setting applies to the default zone only."
@@ -615,6 +644,9 @@ properties:
       phone_number: telephoneNumber
       user.attribute.name-of-attribute-in-uaa-id-token: name-of-attribute-in-ldap-record
       user.attribute.name-of-other-attribute-in-uaa-id-token: name-of-other-attribute-in-ldap-record
+  uaa.ldap.storeCustomAttributes:
+    description: "Stores custom attribute mappings from the attributeMappings configuration in the database so that they can be retrieved using the /userinfo endpoint"
+    default: true
   uaa.ldap.externalGroupsWhitelist:
     description: "Whitelist of external groups from LDAP that get added as roles in the ID Token"
     example:

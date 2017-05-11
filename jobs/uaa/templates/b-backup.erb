@@ -19,5 +19,5 @@ if [ -f /var/vcap/packages/postgres-*/bin/pg_dump ]; then
     --host="<%= p("uaadb.address") %>" \
     --port="<%= p("uaadb.port") %>" \
     --format=custom \
-    "<%= uaa_db_name %>" > "$ARTIFACT_DIRECTORY"/uaadb_dump
+    "<%= uaa_db_name %>" > "$BBR_ARTIFACT_DIRECTORY"/uaadb_dump
 fi

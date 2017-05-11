@@ -21,6 +21,6 @@ if [ -f /var/vcap/packages/postgres-*/bin/pg_restore ]; then
     --format=custom \
     --clean \
     --schema public \
-    --dbname "<%= uaa_db_name %>" "$ARTIFACT_DIRECTORY"/uaadb_dump
+    --dbname "<%= uaa_db_name %>" "$BBR_ARTIFACT_DIRECTORY"/uaadb_dump
 fi
 

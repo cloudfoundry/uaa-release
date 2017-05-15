@@ -537,6 +537,13 @@
 
   add_value(params, p('login.self_service_links_enabled'), 'login', 'selfServiceLinksEnabled')
 
+  add_value(params, p('login.saml.activeKeyId'), 'login', 'saml', 'activeKeyId') if p_opt('login.saml.activeKeyId')
+  if_p('login.saml.keys') do |samlKeys|
+    samlKeys.each do |keyName, keyValue|
+      add_value(params, keyValue, 'login', 'saml', 'keys', keyName, )
+    end
+  end
+
   if_p('login.oauth.providers') do |providers|
     providers.each do |idpAlias, provider|
       provider.each do |key,value|

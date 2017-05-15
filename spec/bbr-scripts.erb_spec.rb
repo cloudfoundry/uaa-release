@@ -10,7 +10,7 @@ describe 'bosh backup and restore script' do
         'uaadb' => {
           'address' => '127.0.0.1',
           'port' => 5432,
-          'db_scheme' => 'postgres',
+          'db_scheme' => 'postgresql',
           'databases' => [{'name' => 'uaa_db_name', 'tag' => 'uaa'}],
           'roles' => [{'name' => 'admin', 'password' => 'example', 'tag' => 'admin'}]
         }
@@ -43,7 +43,7 @@ describe 'bosh backup and restore script' do
 
     describe 'when uaadb.db_scheme is not postgres' do
       it 'should not pg_dump' do
-        properties['properties']['uaadb']['db_scheme'] = 'not-postgres'
+        properties['properties']['uaadb']['db_scheme'] = 'not-postgresql'
         expect(generated_script).to_not include('pg_dump')
       end
     end
@@ -70,7 +70,7 @@ describe 'bosh backup and restore script' do
 
     describe 'when uaadb.db_scheme is not postgres' do
       it 'should not pg_dump' do
-        properties['properties']['uaadb']['db_scheme'] = 'not-postgres'
+        properties['properties']['uaadb']['db_scheme'] = 'not-postgresql'
         expect(generated_script).to_not include('pg_restore')
       end
     end

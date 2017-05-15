@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+<%
+uaa_db = p('uaadb.databases').find { |db| db['tag'] == 'uaa' }
+uaa_db_name = uaa_db['name']
+
+uaa_role = p('uaadb.roles').find { |role| role['tag'] == 'admin' }
+uaa_user = uaa_role['name']
+uaa_password = uaa_role['password']
+%>
+
+set -e
+set -u
+
+if [ -f /var/vcap/packages/postgres-9.4/bin/pg_dump ]; then
+  export PGPASSWORD="<%= uaa_password %>"
+  /var/vcap/packages/postgres-9.4/bin/pg_dump \
+    --user="<%= uaa_user %>" \
+    --host="<%= p("uaadb.address") %>" \
+    --port="<%= p("uaadb.port") %>" \
+    --format=custom \
+    "<%= uaa_db_name %>" > "$BBR_ARTIFACT_DIRECTORY"/uaadb_dump
+fi

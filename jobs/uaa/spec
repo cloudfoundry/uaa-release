@@ -11,6 +11,8 @@ templates:
   install_uaa_crt: bin/install_uaa_crt
   pre-start: bin/pre-start
   post-start: bin/post-start
+  b-backup.erb: bin/b-backup
+  b-restore.erb: bin/b-restore
 
   uaa.yml.erb: config/uaa.yml
   newrelic.yml.erb: config/newrelic.yml

@@ -22,8 +22,8 @@ describe 'bosh backup and restore script' do
     generated_script = ERB.new(File.read(script)).result(binding)
   }
 
-  describe 'b-backup.erb' do
-    let(:script) { "#{__dir__}/../jobs/uaa/templates/b-backup.erb" }
+  describe 'backup.erb' do
+    let(:script) { "#{__dir__}/../jobs/uaa/templates/backup.erb" }
 
     it 'should run pg_dump' do
       expect(generated_script).to include('export PGPASSWORD="example"')
@@ -49,8 +49,8 @@ describe 'bosh backup and restore script' do
     end
   end
 
-  describe 'b-restore.erb' do
-    let(:script) { "#{__dir__}/../jobs/uaa/templates/b-restore.erb" }
+  describe 'restore.erb' do
+    let(:script) { "#{__dir__}/../jobs/uaa/templates/restore.erb" }
 
     it 'should run pg_restore' do
       expect(generated_script).to include('export PGPASSWORD="example"')

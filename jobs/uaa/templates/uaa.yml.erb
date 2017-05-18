@@ -255,7 +255,7 @@
         message = message + "\nMissing property: uaa.clients.#{id}.authorized-grant-types"
       else
         message = message + "\nMissing property: uaa.clients.#{id}.secret" if client_data['secret'].nil? && client_data['authorized-grant-types'] != 'implicit'
-        message = message + "\nMissing property: uaa.clients.#{id}.redirect-uri" if (client_data['redirect-uri'].nil?) && (client_data['authorized-grant-types'] =~ /implicit|authorization_code/)
+        message = message + "\nMissing property: uaa.clients.#{id}.redirect-uri" if (client_data['redirect-uri'].nil? || client_data['redirect-uri'].empty?) && (client_data['authorized-grant-types'] =~ /implicit|authorization_code/)
         message = message + "\nMissing property: uaa.clients.#{id}.authorities" if (client_data['authorities'].nil?) && (client_data['authorized-grant-types'] =~ /client_credentials/)
         message = message + "\nMissing property: uaa.clients.#{id}.scope" if (client_data['scope'].nil?) && (client_data['authorized-grant-types'] != 'client_credentials')
       end

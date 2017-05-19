@@ -105,58 +105,58 @@ echo -e "${CYAN}Performing release from directory:${GREEN} `pwd` ${NC}"
 # initialize sub modules if needed
 sub_update
 
-## ensure we have a clean repo - to avoid unwanted files making it into a release
-#if [[ -n $(git status -s) ]]; then
-#    git status -s
-#    echo
-#    echo -e "${RED}ERROR:${NC} Release must be performed from a fresh clone of the repository."
-#    exit 1
-#fi
-#
-## fetch all branches so that we have the latest data
-#echo -e "${CYAN}Updating all branches${NC}"
-#git fetch --all --prune > /dev/null
-#
-## save the metadata files from master
-## this saves all metadata from master
-## into a temporary directory
-#copy_master_release_metadata
-#
-#echo -e "${CYAN}Creating bosh UAA-release ${GREEN} ${1} ${NC} using `bosh -v`"
-#
-## we save private.yml to a temp directory
-## just in case it gets deleted during branch switch
-#if [ "$#" -ge 3 ]; then
-#    cp $3 /tmp/private.yml
-#elif [ -f config/private.yml ]; then
-#    cp config/private.yml /tmp/private.yml
-#else
-#    echo -e "${RED}ERROR:${NC} Missing private.yml file" >&2
-#    usage
-#    exit 1
-#fi
-#
-## jump to the branch that contains our code and sync submodule
-#git checkout $branch_to_release_from
-#sub_update
-#
-## perform chronological release on branch `releases/version`
-#git checkout -b releases/$1
-## restore private.yml in case it got deleted
-#cp /tmp/private.yml config/
-#
-#echo -e "${CYAN}Building tarball ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
-## create a release tar ball - and a dev release
-#bosh create release --name uaa --version $1 --with-tarball
-#metadata_commit=''
-## finalize release, get commit SHA so that we can cherry pick it later
-#finalize_and_commit $1 metadata_commit
-#echo -e "${CYAN}Finalized metadata with commit SHA ${metadata_commit}${NC}"
-#
-## tag the release and individual metadata
-#echo -e "${CYAN}Tagging and pushing the release branch${NC}"
-#git tag -a v${1} -m "$1 release"
-#git push origin $branch_to_release_from --tags
+# ensure we have a clean repo - to avoid unwanted files making it into a release
+if [[ -n $(git status -s) ]]; then
+    git status -s
+    echo
+    echo -e "${RED}ERROR:${NC} Release must be performed from a fresh clone of the repository."
+    exit 1
+fi
+
+# fetch all branches so that we have the latest data
+echo -e "${CYAN}Updating all branches${NC}"
+git fetch --all --prune > /dev/null
+
+# save the metadata files from master
+# this saves all metadata from master
+# into a temporary directory
+copy_master_release_metadata
+
+echo -e "${CYAN}Creating bosh UAA-release ${GREEN} ${1} ${NC} using `bosh -v`"
+
+# we save private.yml to a temp directory
+# just in case it gets deleted during branch switch
+if [ "$#" -ge 3 ]; then
+    cp $3 /tmp/private.yml
+elif [ -f config/private.yml ]; then
+    cp config/private.yml /tmp/private.yml
+else
+    echo -e "${RED}ERROR:${NC} Missing private.yml file" >&2
+    usage
+    exit 1
+fi
+
+# jump to the branch that contains our code and sync submodule
+git checkout $branch_to_release_from
+sub_update
+
+# perform chronological release on branch `releases/version`
+git checkout -b releases/$1
+# restore private.yml in case it got deleted
+cp /tmp/private.yml config/
+
+echo -e "${CYAN}Building tarball ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
+# create a release tar ball - and a dev release
+bosh create release --name uaa --version $1 --with-tarball
+metadata_commit=''
+# finalize release, get commit SHA so that we can cherry pick it later
+finalize_and_commit $1 metadata_commit
+echo -e "${CYAN}Finalized metadata with commit SHA ${metadata_commit}${NC}"
+
+# tag the release and individual metadata
+echo -e "${CYAN}Tagging and pushing the release branch${NC}"
+git tag -a v${1} -m "$1 release"
+git push origin $branch_to_release_from --tags
 
 # go back to our original release branch
 # so that we can merge back ALL metadata to master

@@ -354,6 +354,38 @@ describe 'uaa-release erb generation' do
         end
       end
 
+      invalid_redirect_uris = %w(http://* http://** http://*/** http://*/* http://**/* http://a*
+          http://*.com http://*domain* http://*domain.com http://*domain/path http://local*
+          *.valid.com/*/with/path** http://**/path https://*.*.*.com/*/with/path** www.*/path www.invalid.com/*/with/path**
+          www.*.invalid.com/*/with/path** http://username:password@*.com http://username:password@*.com/path)
+
+      context 'redirect-uri is invalid' do
+        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        grant_types_requiring_secret = ['authorization_code', 'implicit']
+        invalid_redirect_uris.each do |uri| grant_types_requiring_secret.each do |grant_type|
+          it "raises an error for type:#{grant_type}" do
+            generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type
+            generated_cf_manifest['properties']['uaa']['clients']['app']['redirect-uri'] = uri
+            expect {
+              parsed_yaml
+            }.to raise_error(ArgumentError, /Client redirect-uri is invalid: uaa\.clients\.app\.redirect-uri/)
+          end end
+        end
+      end
+
+      context 'redirect-uri is invalid' do
+        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        grant_types_requiring_secret = ['authorization_code', 'implicit']
+        invalid_redirect_uris.each do |uri| grant_types_requiring_secret.each do |grant_type|
+          it "raises an error for type:#{grant_type}" do
+            generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type
+            generated_cf_manifest['properties']['uaa']['clients']['app']['redirect-uri'] = "http://first.com/,#{uri},https://second.com/path"
+            expect {
+              parsed_yaml
+            }.to raise_error(ArgumentError, /Client redirect-uri is invalid: uaa\.clients\.app\.redirect-uri/)
+          end end
+        end
+      end
 
     end
 

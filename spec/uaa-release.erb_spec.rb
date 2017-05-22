@@ -493,15 +493,15 @@ describe 'uaa-release erb generation' do
     end
 
     it 'outputs json for one-to-one mappings' do
-      expect(@json['uaa']['url']).to eq '<uaa.url>'
+      expect(@json['uaa']['url']).to eq ({'*value' => '<uaa.url>', '*sources'=>{'uaa.url'=>'The base url of the UAA'}})
     end
 
     it 'shows named variables for .each expressions' do
-      expect(@json['login']['saml']['providers']['(idpAlias)']['idpMetadata']).to eq '<login.saml.providers.(idpAlias).idpMetadata>'
+      expect(@json['login']['saml']['providers']['(idpAlias)']['idpMetadata']['*value']).to eq '<login.saml.providers.(idpAlias).idpMetadata>'
     end
 
     it 'simplifies redundant entries' do
-      expect(@json['jwt']['token']['policy']['keys']).to eq '<uaa.jwt.policy.keys>'
+      expect(@json['jwt']['token']['policy']['keys']['*value']).to eq '<uaa.jwt.policy.keys>'
     end
   end
 end

@@ -476,9 +476,9 @@
     'assetBaseUrl' => p('login.asset_base_url'),
     'logout' => {
       'redirect' => {
-        'url' => p('login.logout.redirect.url'),
+        'url' => p('logout.redirect.url'),
         'parameter' => {
-          'disable' => p('login.logout.redirect.parameter.disable')
+          'disable' => p('logout.redirect.parameter.disable')
         }
       }
     },
@@ -519,7 +519,7 @@
   #deprecated property still works
   add_value(params, p('login.home_redirect'), 'links', 'homeRedirect') if p_opt('login.home_redirect')
 
-  add_value(params, p('login.logout.redirect.parameter.whitelist'), 'logout', 'redirect', 'parameter', 'whitelist') if p_opt('login.logout.redirect.parameter.whitelist')
+  add_value(params, p('logout.redirect.parameter.whitelist'), 'logout', 'redirect', 'parameter', 'whitelist') if p_opt('logout.redirect.parameter.whitelist')
 
   if_p('login.smtp') do |login_smtp|
     login_smtp.each do |key,val|

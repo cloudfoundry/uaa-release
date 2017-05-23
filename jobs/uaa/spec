@@ -220,16 +220,6 @@ properties:
             write: Cancel the approvals like this one that you have granted to this and other applications
       scope.tokens.read: View details of your approvals you have granted to this and other applications
       scope.tokens.write: Cancel the approvals like this one that you have granted to this and other applications
-  login.logout.redirect.url:
-    description: "The Location of the redirect header following a logout of the the UAA (/logout.do)."
-    default: /login
-  login.logout.redirect.parameter.disable:
-    description: "When set to false, this allows an operator to leverage an open redirect on the UAA (/logout.do?redirect=google.com). No open redirect enabled"
-    default: true
-  login.logout.redirect.parameter.whitelist:
-    description: "A list of URLs. When this list is non null, including empty, and disable=false,
-    logout redirects are allowed, but limited to the whitelist URLs. If a redirect parameter value is not white
-    listed, redirect will be to the default URL."
   login.prompt.username.text:
     description: "The text used to prompt for a username during login"
     default: Email
@@ -263,6 +253,18 @@ properties:
   login.smtp.starttls:
     description: "If true, send STARTTLS command before login to server. https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html"
     default: false
+
+# Logout configurations
+  logout.redirect.url:
+    description: "The Location of the redirect header following a logout of the the UAA (/logout.do)."
+    default: /login
+  logout.redirect.parameter.disable:
+    description: "When set to false, this allows an operator to leverage an open redirect on the UAA (/logout.do?redirect=google.com). No open redirect enabled"
+    default: true
+  logout.redirect.parameter.whitelist:
+    description: "A list of URLs. When this list is non null, including empty, and disable=false,
+    logout redirects are allowed, but limited to the whitelist URLs. If a redirect parameter value is not white
+    listed, redirect will be to the default URL."
 
   # Delete actions
   uaa.delete:

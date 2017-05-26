@@ -203,6 +203,12 @@ git checkout develop
 git merge --no-ff master -m "Bumping develop with master contents in preparation of next release"
 git push origin develop
 
+# place the release on a branch, because rel-eng doesn't do git fetch --tags
+echo -e "${CYAN}Creating release branch to store tag on${NC}"
+git checkout -b releases/v${1} v${1}
+git push origin releases/v${1}
+git checkout develop
+
 # finally done!
 echo -e "${CYAN}Release ${1} completed with tag v${1} and SHA: ${metadata_commit}{NC}"
 

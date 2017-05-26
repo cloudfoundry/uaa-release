@@ -255,7 +255,11 @@
         message = message + "\nMissing property: uaa.clients.#{id}.authorized-grant-types"
       else
         message = message + "\nMissing property: uaa.clients.#{id}.secret" if client_data['secret'].nil? && client_data['authorized-grant-types'] != 'implicit'
-        message = message + "\nMissing property: uaa.clients.#{id}.redirect-uri" if (client_data['redirect-uri'].nil? || client_data['redirect-uri'].empty?) && (client_data['authorized-grant-types'] =~ /implicit|authorization_code/)
+        if (client_data['redirect-uri'].nil? || client_data['redirect-uri'].empty?)
+          message = message + "\nMissing property: uaa.clients.#{id}.redirect-uri" if client_data['authorized-grant-types'] =~ /implicit|authorization_code/
+        elsif client_data['redirect-uri'].split(',').any? { |uri| !(uri =~ /^http(\*|s)?:\/\/(.*:.*@)?(([a-zA-Z0-9\-\*]+\.)*[a-zA-Z0-9\-]+\.)?[a-zA-Z0-9\-]+(:[0-9]+)?(\/.*|$)/) }
+          message = message + "\nClient redirect-uri is invalid: uaa.clients.#{id}.redirect-uri"
+        end
         message = message + "\nMissing property: uaa.clients.#{id}.authorities" if (client_data['authorities'].nil?) && (client_data['authorized-grant-types'] =~ /client_credentials/)
         message = message + "\nMissing property: uaa.clients.#{id}.scope" if (client_data['scope'].nil?) && (client_data['authorized-grant-types'] != 'client_credentials')
       end

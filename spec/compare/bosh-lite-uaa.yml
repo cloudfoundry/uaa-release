@@ -141,7 +141,7 @@ oauth:
       authorized-grant-types: authorization_code
       autoapprove: true
       override: true
-      redirect-uri: /login
+      redirect-uri: http://ssh-proxy-redirect-domain.com/login
       scope: openid,cloud_controller.read,cloud_controller.write,cloud_controller.admin
       secret: ssh-proxy-secret
     tcp_emitter:
@@ -165,6 +165,13 @@ oauth:
       authorized-grant-types: implicit
       secret: null
       redirect-uri: "http://some.redirect.com/callback"
+    many_redirects:
+      id: many_redirects
+      scope: uaa.user
+      authorized-grant-types: authorization_code
+      secret: secret
+      redirect-uri: http://localhost,http://localhost:8080,http://localhost:8080/uaa,http://valid.com,http://sub.valid.com,http://valid.com/with/path,https://subsub.sub.valid.com/**,https://valid.com/path/*/path,http://sub.valid.com/*/with/path**,http*://sub.valid.com/*/with/path**,http*://*.valid.com/*/with/path**,http://*.valid.com/*/with/path**,https://*.valid.com/*/with/path**,https://*.*.valid.com/*/with/path**,http://sub*.valid.com/*/with/path**,http://*.domain.com,http://username:password@some.server.com,http://username:password@some.server.com/path
+
   user:
     authorities:
       - openid

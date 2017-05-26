@@ -1,4 +1,5 @@
 require 'json'
+require 'yaml'
 require_relative 'mock_property'
 
 module DocOverrides
@@ -73,9 +74,42 @@ module DocOverrides
   def render(params)
     result = simplify(render_str(params))
 
+    spec = YAML.load(File.open('jobs/uaa/spec'))['properties']
+
     structured = {}
     result.keys.sort.each do |k|
-      add_value(structured, result[k], *k.split('.'))
+      prop_descriptions = {}
+
+      values = result[k].is_a?(Array) ? result[k] : [result[k]]
+      values.each do |v|
+        if v.is_a? String
+          source_matches = v.scan /<(.+?)>/
+          pp = source_matches.map { |match| match[0] }
+        elsif v.is_a? MockProperty
+          pp = [v.name]
+        end
+
+        pp.each do |p|
+          pk = spec.keys.max do |a, b|
+            aMatch = p.match("^#{Regexp.quote(a)}(?:$|\\.|\\[)")
+            bMatch = p.match("^#{Regexp.quote(b)}(?:$|\\.|\\[)")
+
+            aStrength = aMatch ? aMatch[0].length : 0
+            bStrength = bMatch ? bMatch[0].length : 0
+
+            aStrength <=> bStrength
+          end
+
+          if p.match("^#{Regexp.quote(pk)}(?:$|\\.|\\[)")
+            pspec = spec[pk]
+            prop_descriptions[pk] = pspec['description'] if pspec && pspec['description']
+          end
+        end
+      end
+
+      entry = {'*value' => result[k]}
+      entry['*sources'] = prop_descriptions unless prop_descriptions.empty?
+      add_value(structured, entry, *k.split('.'))
     end
 
     JSON.dump structured

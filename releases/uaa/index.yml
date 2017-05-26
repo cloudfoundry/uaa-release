@@ -160,4 +160,6 @@ builds:
     version: '34.3'
   1f3a0285-e514-4ff6-8ec3-2e3a5f6617e2:
     version: '30.4'
+  92be7a6b-ad53-49a3-ae66-3b63456b7e7f:
+    version: '24.11'
 format-version: '2'

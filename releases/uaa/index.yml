@@ -164,4 +164,6 @@ builds:
     version: '24.11'
   820a75b0-14d2-4659-90bb-416209dcdce2:
     version: '13.16'
+  8d21899b-b954-4b44-ab18-e4c2dfbc06a5:
+    version: '40'
 format-version: '2'

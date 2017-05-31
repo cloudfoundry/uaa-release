@@ -329,7 +329,8 @@ describe 'uaa-release erb generation' do
                                         'password',
                                         'urn:ietf:params:oauth:grant-type:saml2-bearer',
                                         'user_token',
-                                        'refresh_token']
+                                        'refresh_token',
+                                        'urn:ietf:params:oauth:grant-type:jwt-bearer']
         grant_types_requiring_secret.each do |grant_type|
           it "raises an error for type:#{grant_type}" do
             generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type;

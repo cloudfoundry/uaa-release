@@ -694,7 +694,7 @@ properties:
         discoveryUrl: |
           <URL for OpenID Connect Identity Provider discovery, example: https://accounts.google.com/.well-known/openid-configuration>
           Using this automatic discovery and you can omit several attributes like issuer, auth endpoint,
-          token endpoint, userinfo endpoiint, token key url
+          token endpoint, userinfo endpoint, token key url
         scopes:
           - openid
           - <other scope>

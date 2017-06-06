@@ -4,11 +4,11 @@ disableInternalAuth: true
 disableInternalUserManagement: true
 issuer:
   uri: http://all-properties-set:8888/uaa
-spring_profiles: postgresql,ldap
+spring_profiles: mysql,ldap
 logging:
   config: "/var/vcap/jobs/uaa/config/log4j.properties"
 database:
-  url: jdbc:postgresql://10.244.0.30:5524/uaadb
+  url: jdbc:mysql://10.244.0.30:5524/uaadb?useSSL=true
   username: uaaadmin
   password: admin
   maxactive: 101

@@ -68,7 +68,7 @@
   protocol = p('login.protocol')
   uaa_db_scheme = p('uaadb.db_scheme')
   issuer_uri = p('uaa.issuer', p('uaa.url'))
-
+  uaa_db_tls_enabled = p('uaadb.tls_enabled')
   uaa_db_address = nil
   if_p('uaadb.address') do |address|
     uaa_db_address = address
@@ -160,8 +160,19 @@
   }
   params['delete'] = p('uaa.delete') if p_opt('uaa.delete')
 
+
   if uaa_db_scheme == 'sqlserver' then
     params['database']['url'] = "jdbc:#{p('uaadb.db_scheme')}://#{uaa_db_address}:#{p('uaadb.port')};databaseName=#{uaa_db['name']}"
+  end
+
+  if uaa_db_tls_enabled
+    if uaa_db_scheme == 'postgresql'
+      params['database']['url'] = params['database']['url'] + '?ssl=true'
+    elsif uaa_db_scheme == 'mysql'
+      params['database']['url'] = params['database']['url'] + '?useSSL=true'
+    elsif uaa_db_scheme == 'sqlserver'
+      params['database']['url'] = params['database']['url'] + ';encrypt=true'
+    end
   end
 
   # should the DB not use lower() function in SCIM queries (if true)

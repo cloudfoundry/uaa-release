@@ -63,7 +63,7 @@ describe 'uaa-release erb generation' do
 
       it 'takes precedence over bosh-linked address' do
         expect(parsed_yaml['database']['url']).not_to include('linkedaddress')
-        expect(parsed_yaml['database']['url']).to eq 'jdbc:postgresql://10.244.0.30:5524/uaadb'
+        expect(parsed_yaml['database']['url']).to eq 'jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true'
       end
     end
 
@@ -72,7 +72,7 @@ describe 'uaa-release erb generation' do
       before(:each) { generated_cf_manifest['properties']['uaadb']['address'] = nil }
 
       it 'it uses the bosh-linked address' do
-        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://linkedaddress:5524/uaadb')
+        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://linkedaddress:5524/uaadb?ssl=true')
       end
     end
 
@@ -276,6 +276,20 @@ describe 'uaa-release erb generation' do
     end
 
 
+  end
+
+  context 'when uaadb tls_enabled is set for sqlserver' do
+    let(:generated_cf_manifest) { generate_cf_manifest(input)}
+    let(:input) { 'spec/input/test-defaults.yml' }
+    let(:output_uaa) { 'spec/compare/test-defaults-uaa.yml' }
+    let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
+
+    it 'it adds encrypt in the URL' do
+      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true;
+      expect(parsed_yaml['database']['url']).to eq('jdbc:sqlserver://10.244.0.30:1433;databaseName=uaadb;encrypt=true')
+
+    end
   end
 
   context 'when required properties are missing in the stub' do

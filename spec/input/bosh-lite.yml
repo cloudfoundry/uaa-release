@@ -1356,6 +1356,7 @@ properties:
       tag: uaa
     db_scheme: postgresql
     port: 5524
+    tls_enabled: true
     roles:
     - name: uaaadmin
       password: admin

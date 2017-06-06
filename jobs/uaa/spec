@@ -529,6 +529,9 @@ properties:
     description: "Database scheme for UAA DB"
   uaadb.port:
     description: "The UAA database Port"
+  uaadb.tls_enabled :
+    description: "Use TLS connection for UAA database"
+    default: false
   uaadb.roles:
     description: "The list of database Roles used in UAA database including tag/name/password"
   uaa.database.max_connections:

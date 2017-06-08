@@ -170,4 +170,6 @@ builds:
     version: '41'
   677c7af5-5c97-4cf1-884e-400a7e8e177f:
     version: '30.5'
+  d17668f5-3e47-4461-b4de-0bedc3b0872b:
+    version: '24.12'
 format-version: '2'

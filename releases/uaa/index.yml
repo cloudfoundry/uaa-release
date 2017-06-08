@@ -168,4 +168,6 @@ builds:
     version: '40'
   3d396a3b-315c-414a-a215-ee95abb3853c:
     version: '41'
+  677c7af5-5c97-4cf1-884e-400a7e8e177f:
+    version: '30.5'
 format-version: '2'

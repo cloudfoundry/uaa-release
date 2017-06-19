@@ -174,4 +174,6 @@ builds:
     version: '24.12'
   2bc6ca5f-9b93-49a4-87dd-b4bbd30e1284:
     version: '13.17'
+  ed7a27b0-63d1-40aa-a3ae-fcc12f336c7c:
+    version: '24.13'
 format-version: '2'

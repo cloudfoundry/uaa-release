@@ -300,8 +300,20 @@ describe 'uaa-release erb generation' do
 
     context 'the uaa.yml.erb' do
       let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+      context 'legacy saml keys are sufficient' do
+        it 'does not throw an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('keys')
+          generated_cf_manifest['properties']['login']['saml'].delete('activeKeyId')
+          expect {
+            parsed_yaml
+          }.not_to raise_error
+        end
+      end
+
       context 'login.saml.serviceProviderKey is missing' do
         it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('keys')
+          generated_cf_manifest['properties']['login']['saml'].delete('activeKeyId')
           generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
           expect {
             parsed_yaml
@@ -310,6 +322,8 @@ describe 'uaa-release erb generation' do
       end
       context 'login.saml.serviceProviderKeyPassword is missing' do
         it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('keys')
+          generated_cf_manifest['properties']['login']['saml'].delete('activeKeyId')
           generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
           expect {
             parsed_yaml
@@ -318,10 +332,108 @@ describe 'uaa-release erb generation' do
       end
       context 'login.saml.serviceProviderCertificate is missing' do
         it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('keys')
+          generated_cf_manifest['properties']['login']['saml'].delete('activeKeyId')
           generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
           expect {
             parsed_yaml
           }.to raise_error(ArgumentError, /login.saml.serviceProviderCertificate/)
+        end
+      end
+
+      context 'legacy saml keys are not required' do
+        it 'does not throw an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          expect {
+            parsed_yaml
+          }.not_to raise_error
+        end
+      end
+
+      context 'login.saml.keys is missing' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml'].delete('keys')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.keys/)
+        end
+      end
+
+      context 'login.saml.keys is empty' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml']['keys'].delete('key1')
+          generated_cf_manifest['properties']['login']['saml']['keys'].delete('key2')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.keys/)
+        end
+      end
+
+      context 'login.saml.keys.key1 is missing certificate' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml']['keys']['key1'].delete('certificate')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.keys.key1.certificate/)
+        end
+      end
+
+      context 'login.saml.keys.key1 is missing passphrase' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml']['keys']['key1'].delete('passphrase')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.keys.key1.passphrase/)
+        end
+      end
+
+      context 'login.saml.keys.key1 is missing key' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml']['keys']['key1'].delete('key')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.keys.key1.key/)
+        end
+      end
+
+      context 'login.saml.activeKeyId is pointing to a non existent key' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml']['activeKeyId'] = 'key3'
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.activeKeyId.*key3/)
+        end
+      end
+
+      context 'login.saml.activeKeyId is missing' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml'].delete('activeKeyId')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.activeKey/)
         end
       end
 

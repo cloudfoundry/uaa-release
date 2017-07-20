@@ -14,10 +14,6 @@ uaa/apache-tomcat-8.5.16.tar.gz:
   size: 9417469
   object_id: 41f0fd3c-13c2-48fa-497c-ac892b3d502e
   sha: 6ae7b007fc17eb2821585e2651edaca90708a75b
-uaa/cloudfoundry-identity-statsd-1.0.0.war:
-  size: 12427574
-  object_id: c09c9c08-27cb-49c4-7806-c4a4a5c77ebc
-  sha: 3413198b66329d5a4d7f7922a333723b8b5cb551
 uaa/newrelic.jar:
   size: 7064901
   object_id: 97012cfa-58e4-4a2d-8a22-9be557e980ee

@@ -352,6 +352,17 @@ describe 'uaa-release erb generation' do
         end
       end
 
+      context 'legacy keys not set but password is default' do
+        it 'does not throw an error' do
+          generated_cf_manifest['properties']['login']['saml']['serviceProviderKeyPassword'] = ''
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          expect {
+            parsed_yaml
+          }.not_to raise_error
+        end
+      end
+
       context 'login.saml.keys is missing' do
         it 'throws an error' do
           generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')

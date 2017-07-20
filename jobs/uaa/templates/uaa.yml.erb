@@ -578,7 +578,7 @@
 
   add_value(params, p('login.saml.serviceProviderCertificate'), 'login', 'serviceProviderCertificate') if p_opt('login.saml.serviceProviderCertificate')
   add_value(params, p('login.saml.serviceProviderKey'), 'login', 'serviceProviderKey') if p_opt('login.saml.serviceProviderKey')
-  add_value(params, p('login.saml.serviceProviderKeyPassword'), 'login', 'serviceProviderKeyPassword') if p_opt('login.saml.serviceProviderKeyPassword')
+  add_value(params, p('login.saml.serviceProviderKeyPassword'), 'login', 'serviceProviderKeyPassword') if p_opt('login.saml.serviceProviderKeyPassword') && p_opt('login.saml.serviceProviderKey')
 
   add_value(params, p('login.self_service_links_enabled'), 'login', 'selfServiceLinksEnabled')
 

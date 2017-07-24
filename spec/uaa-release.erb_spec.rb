@@ -63,7 +63,7 @@ describe 'uaa-release erb generation' do
 
       it 'takes precedence over bosh-linked address' do
         expect(parsed_yaml['database']['url']).not_to include('linkedaddress')
-        expect(parsed_yaml['database']['url']).to eq 'jdbc:postgresql://10.244.0.30:5524/uaadb'
+        expect(parsed_yaml['database']['url']).to eq 'jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true'
       end
     end
 
@@ -72,7 +72,7 @@ describe 'uaa-release erb generation' do
       before(:each) { generated_cf_manifest['properties']['uaadb']['address'] = nil }
 
       it 'it uses the bosh-linked address' do
-        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://linkedaddress:5524/uaadb')
+        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://linkedaddress:5524/uaadb?ssl=true')
       end
     end
 
@@ -262,7 +262,8 @@ describe 'uaa-release erb generation' do
                                       'authorization_code',
                                       'password',
                                       'urn:ietf:params:oauth:grant-type:saml2-bearer',
-                                      'user_token']
+                                      'user_token',
+                                      'urn:ietf:params:oauth:grant-type:jwt-bearer']
       grant_types_requiring_secret.each do |grant_type|
         it "raises an error for type:#{grant_type}" do
           generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type;
@@ -277,6 +278,20 @@ describe 'uaa-release erb generation' do
 
   end
 
+  context 'when uaadb tls_enabled is set for sqlserver' do
+    let(:generated_cf_manifest) { generate_cf_manifest(input)}
+    let(:input) { 'spec/input/test-defaults.yml' }
+    let(:output_uaa) { 'spec/compare/test-defaults-uaa.yml' }
+    let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
+
+    it 'it adds encrypt in the URL' do
+      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true;
+      expect(parsed_yaml['database']['url']).to eq('jdbc:sqlserver://10.244.0.30:1433;databaseName=uaadb;encrypt=true')
+
+    end
+  end
+
   context 'when required properties are missing in the stub' do
     let!(:generated_cf_manifest) { generate_cf_manifest(input) }
     let(:as_yml) { true }
@@ -285,8 +300,20 @@ describe 'uaa-release erb generation' do
 
     context 'the uaa.yml.erb' do
       let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+      context 'legacy saml keys are sufficient' do
+        it 'does not throw an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('keys')
+          generated_cf_manifest['properties']['login']['saml'].delete('activeKeyId')
+          expect {
+            parsed_yaml
+          }.not_to raise_error
+        end
+      end
+
       context 'login.saml.serviceProviderKey is missing' do
         it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('keys')
+          generated_cf_manifest['properties']['login']['saml'].delete('activeKeyId')
           generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
           expect {
             parsed_yaml
@@ -295,6 +322,8 @@ describe 'uaa-release erb generation' do
       end
       context 'login.saml.serviceProviderKeyPassword is missing' do
         it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('keys')
+          generated_cf_manifest['properties']['login']['saml'].delete('activeKeyId')
           generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
           expect {
             parsed_yaml
@@ -303,10 +332,119 @@ describe 'uaa-release erb generation' do
       end
       context 'login.saml.serviceProviderCertificate is missing' do
         it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('keys')
+          generated_cf_manifest['properties']['login']['saml'].delete('activeKeyId')
           generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
           expect {
             parsed_yaml
           }.to raise_error(ArgumentError, /login.saml.serviceProviderCertificate/)
+        end
+      end
+
+      context 'legacy saml keys are not required' do
+        it 'does not throw an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          expect {
+            parsed_yaml
+          }.not_to raise_error
+        end
+      end
+
+      context 'legacy keys not set but password is default' do
+        it 'does not throw an error' do
+          generated_cf_manifest['properties']['login']['saml']['serviceProviderKeyPassword'] = ''
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          expect {
+            parsed_yaml
+          }.not_to raise_error
+        end
+      end
+
+      context 'login.saml.keys is missing' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml'].delete('keys')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.keys/)
+        end
+      end
+
+      context 'login.saml.keys is empty' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml']['keys'].delete('key1')
+          generated_cf_manifest['properties']['login']['saml']['keys'].delete('key2')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.keys/)
+        end
+      end
+
+      context 'login.saml.keys.key1 is missing certificate' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml']['keys']['key1'].delete('certificate')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.keys.key1.certificate/)
+        end
+      end
+
+      context 'login.saml.keys.key1 is missing passphrase' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml']['keys']['key1'].delete('passphrase')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.keys.key1.passphrase/)
+        end
+      end
+
+      context 'login.saml.keys.key1 is missing key' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml']['keys']['key1'].delete('key')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.keys.key1.key/)
+        end
+      end
+
+      context 'login.saml.activeKeyId is pointing to a non existent key' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml']['activeKeyId'] = 'key3'
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.activeKeyId.*key3/)
+        end
+      end
+
+      context 'login.saml.activeKeyId is missing' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKeyPassword')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderCertificate')
+          generated_cf_manifest['properties']['login']['saml'].delete('serviceProviderKey')
+          generated_cf_manifest['properties']['login']['saml'].delete('activeKeyId')
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.saml.activeKey/)
         end
       end
 
@@ -328,7 +466,8 @@ describe 'uaa-release erb generation' do
                                         'password',
                                         'urn:ietf:params:oauth:grant-type:saml2-bearer',
                                         'user_token',
-                                        'refresh_token']
+                                        'refresh_token',
+                                        'urn:ietf:params:oauth:grant-type:jwt-bearer']
         grant_types_requiring_secret.each do |grant_type|
           it "raises an error for type:#{grant_type}" do
             generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type;

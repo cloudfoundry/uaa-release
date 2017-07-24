@@ -2,7 +2,7 @@
 name: uaa
 
 database:
-  url: jdbc:postgresql://10.244.0.30:5524/uaadb
+  url: jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true
   username: uaaadmin
   password: "admin"
   maxactive: 100

@@ -622,8 +622,9 @@ properties:
     - citext: true
       name: uaadb
       tag: uaa
-    db_scheme: postgresql
+    db_scheme: mysql
     port: 5524
+    tls_enabled: true
     roles:
     - name: uaaadmin
       password: admin

@@ -63,12 +63,42 @@
     extend DocOverrides
   end
 
+  def validateSamlKeys(currentMap)
+    #if both keys and legacy keys are missing - annotate keys missing
+    #if no `keys` then if legacy keys are incomplete - annotate
+    errorinfo = ''
+    if (is_missing(currentMap, 'login', 'serviceProviderKey') &&
+        is_missing(currentMap, 'login', 'serviceProviderKeyPassword') &&
+        is_missing(currentMap, 'login', 'serviceProviderCertificate'))
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys')?'\nMissing property: login.saml.keys' : '')
+      if errorinfo !~ /login.saml.keys/
+        #validate that the keys are intact
+        currentMap['login']['saml']['keys'].each do |keyName,keyContents|
+          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'certificate')?'\nMissing property: login.saml.keys.' + keyName + '.certificate' : '')
+          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'passphrase')?'\nMissing property: login.saml.keys.' + keyName + '.passphrase' : '')
+          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'key')?'\nMissing property: login.saml.keys.' + keyName + '.key' : '')
+        end
+      end
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'activeKeyId')?'\nMissing property: login.saml.activeKeyId' : '')
+      if errorinfo !~ /login.saml.activeKeyId/
+        #validate that activeKeyId points to a valid key
+        keyId = currentMap['login']['saml']['activeKeyId']
+        errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyId)?'\Invalid login.saml.activeKeyId: login.saml.keys.' + keyId + ' does not exist' : '')
+      end
+    else
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderKey')?'\nMissing property: login.saml.serviceProviderKey' : '')
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderKeyPassword')?'\nMissing property: login.saml.serviceProviderKeyPassword' : '')
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderCertificate')?'\nMissing property: login.saml.serviceProviderCertificate' : '')
+    end
+    return errorinfo
+  end
+
   uaa_db = p_arr('uaadb.databases').find { |db| db['tag'] == 'uaa' }
   uaa_role = p_arr('uaadb.roles').find { |role| role['tag'] == 'admin' }
   protocol = p('login.protocol')
   uaa_db_scheme = p('uaadb.db_scheme')
   issuer_uri = p('uaa.issuer', p('uaa.url'))
-
+  uaa_db_tls_enabled = p('uaadb.tls_enabled')
   uaa_db_address = nil
   if_p('uaadb.address') do |address|
     uaa_db_address = address
@@ -160,8 +190,19 @@
   }
   params['delete'] = p('uaa.delete') if p_opt('uaa.delete')
 
+
   if uaa_db_scheme == 'sqlserver' then
     params['database']['url'] = "jdbc:#{p('uaadb.db_scheme')}://#{uaa_db_address}:#{p('uaadb.port')};databaseName=#{uaa_db['name']}"
+  end
+
+  if uaa_db_tls_enabled
+    if uaa_db_scheme == 'postgresql'
+      params['database']['url'] = params['database']['url'] + '?ssl=true'
+    elsif uaa_db_scheme == 'mysql'
+      params['database']['url'] = params['database']['url'] + '?useSSL=true'
+    elsif uaa_db_scheme == 'sqlserver'
+      params['database']['url'] = params['database']['url'] + ';encrypt=true'
+    end
   end
 
   # should the DB not use lower() function in SCIM queries (if true)
@@ -537,7 +578,7 @@
 
   add_value(params, p('login.saml.serviceProviderCertificate'), 'login', 'serviceProviderCertificate') if p_opt('login.saml.serviceProviderCertificate')
   add_value(params, p('login.saml.serviceProviderKey'), 'login', 'serviceProviderKey') if p_opt('login.saml.serviceProviderKey')
-  add_value(params, p('login.saml.serviceProviderKeyPassword'), 'login', 'serviceProviderKeyPassword') if p_opt('login.saml.serviceProviderKeyPassword')
+  add_value(params, p('login.saml.serviceProviderKeyPassword'), 'login', 'serviceProviderKeyPassword') if p_opt('login.saml.serviceProviderKeyPassword') && p_opt('login.saml.serviceProviderKey')
 
   add_value(params, p('login.self_service_links_enabled'), 'login', 'selfServiceLinksEnabled')
 
@@ -588,9 +629,9 @@
   end
 
   #validate that we have all required parameters
-  message = message + (is_missing(params, 'login', 'serviceProviderKey')?'\nMissing property: login.saml.serviceProviderKey' : '')
-  message = message + (is_missing(params, 'login', 'serviceProviderKeyPassword')?'\nMissing property: login.saml.serviceProviderKeyPassword' : '')
-  message = message + (is_missing(params, 'login', 'serviceProviderCertificate')?'\nMissing property: login.saml.serviceProviderCertificate' : '')
+
+  message = message + validateSamlKeys(params)
+
   error_if_exists message
 
 %>

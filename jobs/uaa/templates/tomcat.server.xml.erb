@@ -20,12 +20,11 @@
       internal_proxies = proxyServers.map { |ip| escape(ip) }
                                      .push(internal_proxies)
                                      .join('|')
-    end.else do
-        if_link('router') do |router|
-          internal_proxies = router.instances.map { |instance| escape(instance.address) }
-                                             .push(internal_proxies)
-                                             .join('|')
-        end
+    end
+    if_link('router') do |router|
+      internal_proxies = router.instances.map { |instance| escape(instance.address) }
+                                         .push(internal_proxies)
+                                         .join('|')
     end
 
     if internal_proxies.to_s.strip.length == 0

@@ -80,17 +80,6 @@
     end
   end
 
-  uaa_db_address = nil
-  if_p('uaadb.address') do |address|
-    uaa_db_address = address
-  end.else do
-    if_link('database') do |db_link|
-      uaa_db_address = db_link.instances[0].address
-    end.else do
-      raise ArgumentError, 'Required uaadb address configuration not specified. Please specify uaadb.address or check your bosh linked database configuration.'
-    end
-  end
-
   spring_profiles = p('uaadb.db_scheme')
   if p_opt('uaa.ldap.enabled')
     spring_profiles = spring_profiles + ',ldap'

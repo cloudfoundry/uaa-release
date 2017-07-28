@@ -20,18 +20,17 @@ describe 'tomcat.server.xml' do
 
     context 'when uaa.proxy.servers is configured in the manifest' do
       before(:each) do
-        manifest['properties']['uaa']['proxy']['servers'] = ["127.1.0.1", "127.1.0.2", "127.1.0.3"]
+        manifest['properties']['uaa']['proxy']['servers'] = ['127.1.0.1', '127.1.0.2', '127.1.0.3']
         manifest['properties']['uaa']['proxy_ips_regex'] = 'proxy_ips_regex'
+        manifest['links'] = {
+            'router' => {'instances' => [{'address' => 'link.ed-add.ress'}]}
+        }
+
       end
-      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml', links) }
-      let(:links) {{
-          'router' => {'instances' => [{address: 'someaddress'}]}
-      }}
+      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
 
       it 'manifest values take precedence over bosh-linked configuration' do
-        expect(internal_proxies).not_to include('someaddress')
-        expect(internal_proxies).to include('proxy_ips_regex')
-        expect(internal_proxies).to eq '127\.1\.0\.1|127\.1\.0\.2|127\.1\.0\.3|proxy_ips_regex'
+        expect(internal_proxies).to eq 'link\.ed-add\.ress|127\.1\.0\.1|127\.1\.0\.2|127\.1\.0\.3|proxy_ips_regex'
       end
     end
     
@@ -75,10 +74,10 @@ describe 'tomcat.server.xml' do
       end
     end
 
-    context 'when uaa.proxy.servers is not congfiured in the manifest' do
+    context 'when uaa.proxy.servers is left to default value in the manifest' do
       before(:each) do
-        manifest['properties']['uaa']['proxy'].delete 'servers'
         manifest['properties']['uaa']['proxy_ips_regex'] = 'proxy_ips_regex'
+        manifest['properties']['uaa']['proxy']['servers'] = []
       end
 
       let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml', links) }
@@ -89,8 +88,7 @@ describe 'tomcat.server.xml' do
         }}
 
         it 'uses the bosh-linked router config' do
-          expect(internal_proxies).to include('proxy_ips_regex')
-          expect(internal_proxies).to include('linked-address')
+          expect(internal_proxies).to eq('linked-address|proxy_ips_regex')
         end
       end
 

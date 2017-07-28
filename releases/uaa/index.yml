@@ -184,4 +184,6 @@ builds:
     version: '44'
   df852547-9707-4084-8dd5-d1cf7d39df7d:
     version: '41.1'
+  3473d842-67fb-4c8a-a854-28b1f0d14d63:
+    version: '45'
 format-version: '2'

@@ -140,8 +140,6 @@ fi
 git checkout $branch_to_release_from
 sub_update
 
-# perform chronological release on branch `releases/version`
-git checkout -b releases/$1
 # restore private.yml in case it got deleted
 cp /tmp/private.yml config/
 
@@ -192,7 +190,7 @@ if [[ ${1} == *.* ]]; then
 else
     echo -e "${CYAN}Merging $branch_to_release_from to master${NC}"
     # merge to master - accept the dev branch as resolutions for conflicts
-    git merge --no-ff ${branch_to_release_from} -m "Merge of branch ${branch_to_release_from} for release ${1}${NC}" -X theirs
+    git merge --no-ff ${branch_to_release_from} -m "Merge of branch ${branch_to_release_from} for release ${1}" -X theirs
 fi
 
 # update develop (merge master to develop so that the next release won't have a conflict

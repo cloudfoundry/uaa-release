@@ -21,6 +21,14 @@ properties:
       square_logo: |
         base 64 with line feeds
         for square logo
+      banner:
+        logo: |
+          base 64 with line feeds
+          for banner logo
+        text: banner text
+        textColor: AABBCC
+        backgroundColor: DDEEFF
+        link: http://www.example.com
 
     idpDiscoveryEnabled: true
     links:

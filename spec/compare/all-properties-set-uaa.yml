@@ -463,6 +463,14 @@ login:
     footerLegalText: Legal text
     footerLinks:
       terms of service: http://terms.of.service/
+    banner:
+      logo: |
+        base 64 with line feeds
+        for banner logo
+      text: banner text
+      textColor: AABBCC
+      backgroundColor: DDEEFF
+      link: http://www.example.com
   serviceProviderKeyPassword: ""
   serviceProviderCertificate: |
     -----BEGIN CERTIFICATE-----

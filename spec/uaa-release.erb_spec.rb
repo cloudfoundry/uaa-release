@@ -195,6 +195,45 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  context 'when login banner have invalid properties' do
+    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
+    let(:as_yml) { true }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
+    let(:input) { 'spec/input/all-properties-set.yml' }
+
+    context 'and text color is not in hex format' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+      it 'raises an error' do
+        generated_cf_manifest['properties']['login']['branding']['banner']['textColor'] = 'FFFGFF';
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /login.branding.banner.textColor value FFFGFF is not a valid hex code/)
+      end
+    end
+
+    context 'and background color is not in hex format' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+      it 'raises an error' do
+        generated_cf_manifest['properties']['login']['branding']['banner']['backgroundColor'] = 'FFFGFF';
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /login.branding.banner.backgroundColor value FFFGFF is not a valid hex code/)
+      end
+    end
+
+    context 'and link is not a valid URI' do
+      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+      it 'raises an error' do
+        generated_cf_manifest['properties']['login']['branding']['banner']['link'] = 'www.example.com';
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /login.branding.banner.link value www.example.com is not a valid uri/)
+      end
+    end
+  end
 
   context 'when clients have invalid properties' do
     let!(:generated_cf_manifest) { generate_cf_manifest(input) }

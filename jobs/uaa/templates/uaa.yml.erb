@@ -1,6 +1,9 @@
 <%
   message = ''
 
+  hex_code_regex = /^[0-9A-Fa-f]{6}$/
+  url_regex = /^(https?):\/\/[-A-Za-z0-9.\/]+[-A-Za-z]$/
+
   # returns null if the property does not have a value
   def p_opt(property)
     p(property, nil)
@@ -564,6 +567,35 @@
   add_value(params, p('login.branding.square_logo'), 'login', 'branding', 'squareLogo') if p_opt('login.branding.square_logo')
   add_value(params, p('login.branding.footer_legal_text'), 'login', 'branding', 'footerLegalText') if p_opt('login.branding.footer_legal_text')
   add_value(params, p('login.branding.footer_links'), 'login', 'branding', 'footerLinks') if p_opt('login.branding.footer_links')
+
+  add_value(params, p('login.branding.banner.logo'), 'login', 'branding', 'banner', 'logo') if p_opt('login.branding.banner.logo')
+  add_value(params, p('login.branding.banner.text'), 'login', 'branding', 'banner', 'text') if p_opt('login.branding.banner.text')
+  if p_opt('login.branding.banner.textColor')
+    textColor = p('login.branding.banner.textColor')
+    if (textColor =~ hex_code_regex) == 0
+      add_value(params, p('login.branding.banner.textColor'), 'login', 'branding', 'banner', 'textColor')
+    else
+      message = message + "\nlogin.branding.banner.textColor value #{textColor} is not a valid hex code"
+    end
+  end
+
+  if p_opt('login.branding.banner.backgroundColor')
+    backgroundColor = p('login.branding.banner.backgroundColor')
+    if (backgroundColor =~ hex_code_regex) == 0
+      add_value(params, p('login.branding.banner.backgroundColor'), 'login', 'branding', 'banner', 'backgroundColor')
+    else
+      message = message + "\nlogin.branding.banner.backgroundColor value #{backgroundColor} is not a valid hex code"
+    end
+  end
+
+  if p_opt('login.branding.banner.link')
+    link = p('login.branding.banner.link')
+    if (link =~ url_regex) == 0
+      add_value(params, p('login.branding.banner.link'), 'login', 'branding', 'banner', 'link')
+    else
+      message = message + "\nlogin.branding.banner.link value #{link} is not a valid uri"
+    end
+  end
 
   add_value(params, p('login.saml.serviceProviderCertificate'), 'login', 'serviceProviderCertificate') if p_opt('login.saml.serviceProviderCertificate')
   add_value(params, p('login.saml.serviceProviderKey'), 'login', 'serviceProviderKey') if p_opt('login.saml.serviceProviderKey')

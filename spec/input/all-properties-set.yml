@@ -358,6 +358,16 @@ properties:
         lockoutAfterFailures: 5
         lockoutPeriodSeconds: 300
     catalina_opts: -Xmx1g -Xms512m
+    client:
+      secret:
+        policy:
+          minLength: 8
+          maxLength: 128
+          requireUpperCaseCharacter: 1
+          requireLowerCaseCharacter: 3
+          requireDigit: 2
+          requireSpecialCharacter: 0
+          expireSecretInMonths: 7
     clients:
       app:
         app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC

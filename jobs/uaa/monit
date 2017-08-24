@@ -1,7 +1,7 @@
 check process uaa
   with pidfile /var/vcap/sys/run/uaa/uaa.pid
   start program "/var/vcap/jobs/uaa/bin/uaa_ctl start"
-  stop program "/var/vcap/jobs/uaa/bin/uaa_ctl stop"
+  stop program "/var/vcap/jobs/uaa/bin/uaa_ctl stop" with timeout 60 seconds
   group vcap
   if failed port 8989 protocol http
     request "/healthz"

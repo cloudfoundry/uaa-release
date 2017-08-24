@@ -967,3 +967,11 @@ properties:
         path: <(String) path for cookie, default is />
         domain: <(String) domain for cookie, default is incoming request domain>
     default: ~
+  uaa.healthcheck.drain_time:
+    description:
+      The amount of time the health check will fail before the uaa process is stopped.
+      This allows load balancers UAA may be behind a chance to unregister the instance.
+      Note, this increases the execution time of the Monit stop operation, which cannot
+      exceed a configured timeout. See the Monit configuration file in this release for
+      the current timeout.
+    default: 20

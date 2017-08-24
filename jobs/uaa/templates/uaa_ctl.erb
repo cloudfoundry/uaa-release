@@ -186,7 +186,7 @@ case $1 in
     # This tells the health_check to return false
     # and the route will be deregistered
     rm -f $STATUS
-    sleep 5
+    sleep <%= p('uaa.healthcheck.drain_time') %>
     echo "[uaa-stop] Health check STATUS file removed"
     if pid_guard $PIDFILE "UAA"
     then

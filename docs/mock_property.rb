@@ -66,4 +66,8 @@ class MockProperty
   def join(delim)
     self
   end
+
+  def strip
+    self
+  end
 end

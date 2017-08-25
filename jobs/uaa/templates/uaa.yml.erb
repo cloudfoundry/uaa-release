@@ -1,8 +1,7 @@
 <%
   message = ''
 
-  hex_code_regex = /^[0-9A-Fa-f]{6}$/
-  url_regex = /^(https?):\/\/[-A-Za-z0-9.\/]+[-A-Za-z]$/
+  hex_code_regex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
 
   # returns null if the property does not have a value
   def p_opt(property)
@@ -589,10 +588,12 @@
   end
 
   if p_opt('login.branding.banner.link')
-    link = p('login.branding.banner.link')
-    if (link =~ url_regex) == 0
+    link = p('login.branding.banner.link').strip
+    begin
+      parsed = URI.parse(link)
+      raise URI::InvalidURIError.new if parsed.instance_of? URI::Generic
       add_value(params, p('login.branding.banner.link'), 'login', 'branding', 'banner', 'link')
-    else
+    rescue URI::InvalidURIError
       message = message + "\nlogin.branding.banner.link value #{link} is not a valid uri"
     end
   end

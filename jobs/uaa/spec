@@ -744,6 +744,11 @@ properties:
       The schema is derived by #{login.protocol} property.
       The default value is #{uaa.url}.replaceFirst('uaa','login'), typically login.example.com
       The UAA will display this link in the cf --sso call if there is a SAML provider enabled.
+  login.saml.enableIdpInitiatedSso:
+    description: |
+      When this flag is set to true, the UAA acting as an identity provider, IDP, can
+      initiate a SAML login from the UAA to a configured service provider, SP.
+    default: false
   login.saml.activeKeyId:
     description: |
       The active key to be used for signing messages and the key to be used to encrypt messages.

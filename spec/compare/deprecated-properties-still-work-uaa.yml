@@ -200,6 +200,7 @@ login:
   authorize:
     url: http://test.uaa.url/oauth/authorize
   saml:
+    enableIdpInitiatedSso: false
     socket:
       connectionManagerTimeout: 10000
       soTimeout: 10000

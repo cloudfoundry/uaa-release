@@ -605,6 +605,7 @@
   add_value(params, p('login.self_service_links_enabled'), 'login', 'selfServiceLinksEnabled')
 
   add_value(params, p('login.saml.activeKeyId'), 'login', 'saml', 'activeKeyId') if p_opt('login.saml.activeKeyId')
+  add_value(params, p('login.saml.enableIdpInitiatedSso'), 'login', 'saml', 'enableIdpInitiatedSso')
   if_p('login.saml.keys') do |samlKeys|
     samlKeys.each do |keyName, keyValue|
       add_value(params, keyValue, 'login', 'saml', 'keys', keyName, )

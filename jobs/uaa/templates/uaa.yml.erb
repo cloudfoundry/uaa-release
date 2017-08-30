@@ -325,25 +325,25 @@
   if p_opt('uaa.client.secret.policy')
     oauth['client']['secret'] = {
       'policy' => {
-        'minLength' => p('uaa.client.secret.policy.minLength'),
-        'maxLength' => p('uaa.client.secret.policy.maxLength'),
-        'requireUpperCaseCharacter' => p('uaa.client.secret.policy.requireUpperCaseCharacter'),
-        'requireLowerCaseCharacter' => p('uaa.client.secret.policy.requireLowerCaseCharacter'),
-        'requireDigit' => p('uaa.client.secret.policy.requireDigit'),
-        'requireSpecialCharacter' => p('uaa.client.secret.policy.requireSpecialCharacter'),
-        'expireSecretInMonths' => p('uaa.client.secret.policy.expireSecretInMonths')
+        'minLength' => p('uaa.client.secret.policy.minLength', 0),
+        'maxLength' => p('uaa.client.secret.policy.maxLength', 255),
+        'requireUpperCaseCharacter' => p('uaa.client.secret.policy.requireUpperCaseCharacter', 0),
+        'requireLowerCaseCharacter' => p('uaa.client.secret.policy.requireLowerCaseCharacter', 0),
+        'requireDigit' => p('uaa.client.secret.policy.requireDigit', 0),
+        'requireSpecialCharacter' => p('uaa.client.secret.policy.requireSpecialCharacter', 0),
+        'expireSecretInMonths' => p('uaa.client.secret.policy.expireSecretInMonths', 0)
       }
     }
 
     if p_opt('uaa.client.secret.policy.global')
       oauth['client']['secret']['policy']['global'] = {
-        'minLength' => p('uaa.client.secret.policy.global.minLength'),
-        'maxLength' => p('uaa.client.secret.policy.global.maxLength'),
-        'requireUpperCaseCharacter' => p('uaa.client.secret.policy.global.requireUpperCaseCharacter'),
-        'requireLowerCaseCharacter' => p('uaa.client.secret.policy.global.requireLowerCaseCharacter'),
-        'requireDigit' => p('uaa.client.secret.policy.global.requireDigit'),
-        'requireSpecialCharacter' => p('uaa.client.secret.policy.global.requireSpecialCharacter'),
-        'expireSecretInMonths' => p('uaa.client.secret.policy.global.expireSecretInMonths')
+        'minLength' => p('uaa.client.secret.policy.global.minLength', 0),
+        'maxLength' => p('uaa.client.secret.policy.global.maxLength', 255),
+        'requireUpperCaseCharacter' => p('uaa.client.secret.policy.global.requireUpperCaseCharacter', 0),
+        'requireLowerCaseCharacter' => p('uaa.client.secret.policy.global.requireLowerCaseCharacter', 0),
+        'requireDigit' => p('uaa.client.secret.policy.global.requireDigit', 0),
+        'requireSpecialCharacter' => p('uaa.client.secret.policy.global.requireSpecialCharacter', 0),
+        'expireSecretInMonths' => p('uaa.client.secret.policy.global.expireSecretInMonths', 0)
       }
     end
    end

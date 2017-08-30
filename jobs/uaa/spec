@@ -287,6 +287,36 @@ properties:
       users:
         - user-to-be-deleted-1
         - user-to-be-deleted-2
+  # client secret policy
+  uaa.client.secret.policy.minLength:
+    description: "Minimum number of characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.maxLength:
+    description: "Maximum number of characters required for secret to be considered valid (defaults to 255)."
+  uaa.client.secret.policy.requireUpperCaseCharacter:
+    description: "Minimum number of uppercase characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.requireLowerCaseCharacter:
+    description: "Minimum number of lowercase characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.requireDigit:
+    description: "Minimum number of digits required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.requireSpecialCharacter:
+    description: "Minimum number of special characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.expireSecretInMonths:
+    description: "Number of months after which current secret expires (defaults to 0)."
+
+  uaa.client.secret.policy.global.minLength:
+    description: "Minimum number of characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.global.maxLength:
+    description: "Maximum number of characters required for secret to be considered valid (defaults to 255)."
+  uaa.client.secret.policy.global.requireUpperCaseCharacter:
+    description: "Minimum number of uppercase characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.global.requireLowerCaseCharacter:
+    description: "Minimum number of lowercase characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.global.requireDigit:
+    description: "Minimum number of digits required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.global.requireSpecialCharacter:
+    description: "Minimum number of special characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.global.expireSecretInMonths:
+    description: "Number of months after which current secret expires (defaults to 0)."
 
   # Clients
   uaa.clients:

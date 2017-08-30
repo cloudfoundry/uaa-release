@@ -319,6 +319,35 @@
 
   oauth['user']['authorities'] = p('uaa.user.authorities')
 
+  if p_opt('uaa.client')
+      oauth['client'] = {}
+  end
+  if p_opt('uaa.client.secret.policy')
+    oauth['client']['secret'] = {
+      'policy' => {
+        'minLength' => p('uaa.client.secret.policy.minLength'),
+        'maxLength' => p('uaa.client.secret.policy.maxLength'),
+        'requireUpperCaseCharacter' => p('uaa.client.secret.policy.requireUpperCaseCharacter'),
+        'requireLowerCaseCharacter' => p('uaa.client.secret.policy.requireLowerCaseCharacter'),
+        'requireDigit' => p('uaa.client.secret.policy.requireDigit'),
+        'requireSpecialCharacter' => p('uaa.client.secret.policy.requireSpecialCharacter'),
+        'expireSecretInMonths' => p('uaa.client.secret.policy.expireSecretInMonths')
+      }
+    }
+
+    if p_opt('uaa.client.secret.policy.global')
+      oauth['client']['secret']['policy']['global'] = {
+        'minLength' => p('uaa.client.secret.policy.global.minLength'),
+        'maxLength' => p('uaa.client.secret.policy.global.maxLength'),
+        'requireUpperCaseCharacter' => p('uaa.client.secret.policy.global.requireUpperCaseCharacter'),
+        'requireLowerCaseCharacter' => p('uaa.client.secret.policy.global.requireLowerCaseCharacter'),
+        'requireDigit' => p('uaa.client.secret.policy.global.requireDigit'),
+        'requireSpecialCharacter' => p('uaa.client.secret.policy.global.requireSpecialCharacter'),
+        'expireSecretInMonths' => p('uaa.client.secret.policy.global.expireSecretInMonths')
+      }
+    end
+   end
+
   scim = {
     'userids_enabled' => p('uaa.scim.userids_enabled'),
     'user' => {

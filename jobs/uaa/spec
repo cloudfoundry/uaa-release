@@ -288,6 +288,19 @@ properties:
         - user-to-be-deleted-1
         - user-to-be-deleted-2
   # client secret policy
+  uaa.client.secret.policy:
+    description: "The client secret policy for clients in the default zone."
+    example:
+      uaa:
+        client:
+          secret:
+            policy:
+              minLength: 0
+              maxLength: 255
+              requireUpperCaseCharacter: 0
+              requireLowerCaseCharacter: 0
+              requireDigit: 0
+              requireSpecialCharacter: 0
   uaa.client.secret.policy.minLength:
     description: "Minimum number of characters required for secret to be considered valid (defaults to 0)."
   uaa.client.secret.policy.maxLength:
@@ -300,9 +313,20 @@ properties:
     description: "Minimum number of digits required for secret to be considered valid (defaults to 0)."
   uaa.client.secret.policy.requireSpecialCharacter:
     description: "Minimum number of special characters required for secret to be considered valid (defaults to 0)."
-  uaa.client.secret.policy.expireSecretInMonths:
-    description: "Number of months after which current secret expires (defaults to 0)."
-
+  uaa.client.secret.policy.global:
+    description: "The global client secret policy for clients in a zone. If the zone doesn't have a client secret policy, this one will be used."
+    example:
+      uaa:
+        client:
+          secret:
+            policy:
+              global:
+                minLength: 0
+                maxLength: 255
+                requireUpperCaseCharacter: 0
+                requireLowerCaseCharacter: 0
+                requireDigit: 0
+                requireSpecialCharacter: 0
   uaa.client.secret.policy.global.minLength:
     description: "Minimum number of characters required for secret to be considered valid (defaults to 0)."
   uaa.client.secret.policy.global.maxLength:
@@ -315,8 +339,6 @@ properties:
     description: "Minimum number of digits required for secret to be considered valid (defaults to 0)."
   uaa.client.secret.policy.global.requireSpecialCharacter:
     description: "Minimum number of special characters required for secret to be considered valid (defaults to 0)."
-  uaa.client.secret.policy.global.expireSecretInMonths:
-    description: "Number of months after which current secret expires (defaults to 0)."
 
   # Clients
   uaa.clients:

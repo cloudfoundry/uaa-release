@@ -97,7 +97,6 @@ properties:
         text: Username
     protocol: http
     saml:
-      enableIdpInitiatedSso: true
       activeKeyId: key1
       keys:
         key1:

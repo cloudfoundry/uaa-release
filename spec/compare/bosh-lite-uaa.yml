@@ -283,7 +283,6 @@ login:
     RpuRBwn3Ei+jCRouxTbzKPsuCVB+1sNyxMTXzf0=
     -----END CERTIFICATE-----
   saml:
-    enableIdpInitiatedSso: false
     signMetaData: true
     signRequest: true
     wantAssertionSigned: true

@@ -142,7 +142,6 @@ login:
   authorize:
     url: http://test.uaa.url/oauth/authorize
   saml:
-    enableIdpInitiatedSso: false
     activeKeyId: saml-key-1
     keys:
       saml-key-1:

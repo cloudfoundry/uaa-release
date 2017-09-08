@@ -163,6 +163,16 @@ properties:
     description: These links appear on the footer of all UAA pages. You may choose to add multiple urls for things like Support, Terms of Service etc.
     example:
       linkDisplayName: linkDisplayUrl
+  login.branding.banner.logo:
+    description: This is a base64 encoded PNG image which will be used as the banner on the UAA discovery login page
+  login.branding.banner.text:
+    description: This is text that will be used in the banner area on the UAA discovery login page if no banner logo is configured
+  login.branding.banner.textColor:
+    description: This is the color to be used for banner text if banner text is defined to be used on the UAA discovery login page
+  login.branding.banner.backgroundColor:
+    description: This is the color to be used for the background of the banner area on the UAA discovery login page
+  login.branding.banner.link:
+    description: This is the link to be used for the banner logo or banner text on the UAA discovery login page
   login.asset_base_url:
     description: "Deprecated in favor of branding properties. Base url for static assets, allows custom styling of the login server.  Use '/resources/pivotal' for Pivotal style."
     default: /resources/oss
@@ -277,6 +287,58 @@ properties:
       users:
         - user-to-be-deleted-1
         - user-to-be-deleted-2
+  # client secret policy
+  uaa.client.secret.policy:
+    description: "The client secret policy for clients in the default zone."
+    example:
+      uaa:
+        client:
+          secret:
+            policy:
+              minLength: 0
+              maxLength: 255
+              requireUpperCaseCharacter: 0
+              requireLowerCaseCharacter: 0
+              requireDigit: 0
+              requireSpecialCharacter: 0
+  uaa.client.secret.policy.minLength:
+    description: "Minimum number of characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.maxLength:
+    description: "Maximum number of characters required for secret to be considered valid (defaults to 255)."
+  uaa.client.secret.policy.requireUpperCaseCharacter:
+    description: "Minimum number of uppercase characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.requireLowerCaseCharacter:
+    description: "Minimum number of lowercase characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.requireDigit:
+    description: "Minimum number of digits required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.requireSpecialCharacter:
+    description: "Minimum number of special characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.global:
+    description: "The global client secret policy for clients in a zone. If the zone doesn't have a client secret policy, this one will be used."
+    example:
+      uaa:
+        client:
+          secret:
+            policy:
+              global:
+                minLength: 0
+                maxLength: 255
+                requireUpperCaseCharacter: 0
+                requireLowerCaseCharacter: 0
+                requireDigit: 0
+                requireSpecialCharacter: 0
+  uaa.client.secret.policy.global.minLength:
+    description: "Minimum number of characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.global.maxLength:
+    description: "Maximum number of characters required for secret to be considered valid (defaults to 255)."
+  uaa.client.secret.policy.global.requireUpperCaseCharacter:
+    description: "Minimum number of uppercase characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.global.requireLowerCaseCharacter:
+    description: "Minimum number of lowercase characters required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.global.requireDigit:
+    description: "Minimum number of digits required for secret to be considered valid (defaults to 0)."
+  uaa.client.secret.policy.global.requireSpecialCharacter:
+    description: "Minimum number of special characters required for secret to be considered valid (defaults to 0)."
 
   # Clients
   uaa.clients:

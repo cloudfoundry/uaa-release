@@ -1,6 +1,8 @@
 <%
   message = ''
 
+  hex_code_regex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
+
   # returns null if the property does not have a value
   def p_opt(property)
     p(property, nil)
@@ -317,6 +319,35 @@
 
   oauth['user']['authorities'] = p('uaa.user.authorities')
 
+  if p_opt('uaa.client')
+      oauth['client'] = {}
+  end
+  if p_opt('uaa.client.secret.policy')
+    oauth['client']['secret'] = {
+      'policy' => {
+        'minLength' => p('uaa.client.secret.policy.minLength', 0),
+        'maxLength' => p('uaa.client.secret.policy.maxLength', 255),
+        'requireUpperCaseCharacter' => p('uaa.client.secret.policy.requireUpperCaseCharacter', 0),
+        'requireLowerCaseCharacter' => p('uaa.client.secret.policy.requireLowerCaseCharacter', 0),
+        'requireDigit' => p('uaa.client.secret.policy.requireDigit', 0),
+        'requireSpecialCharacter' => p('uaa.client.secret.policy.requireSpecialCharacter', 0),
+        'expireSecretInMonths' => p('uaa.client.secret.policy.expireSecretInMonths', 0)
+      }
+    }
+
+    if p_opt('uaa.client.secret.policy.global')
+      oauth['client']['secret']['policy']['global'] = {
+        'minLength' => p('uaa.client.secret.policy.global.minLength', 0),
+        'maxLength' => p('uaa.client.secret.policy.global.maxLength', 255),
+        'requireUpperCaseCharacter' => p('uaa.client.secret.policy.global.requireUpperCaseCharacter', 0),
+        'requireLowerCaseCharacter' => p('uaa.client.secret.policy.global.requireLowerCaseCharacter', 0),
+        'requireDigit' => p('uaa.client.secret.policy.global.requireDigit', 0),
+        'requireSpecialCharacter' => p('uaa.client.secret.policy.global.requireSpecialCharacter', 0),
+        'expireSecretInMonths' => p('uaa.client.secret.policy.global.expireSecretInMonths', 0)
+      }
+    end
+   end
+
   scim = {
     'userids_enabled' => p('uaa.scim.userids_enabled'),
     'user' => {
@@ -564,6 +595,37 @@
   add_value(params, p('login.branding.square_logo'), 'login', 'branding', 'squareLogo') if p_opt('login.branding.square_logo')
   add_value(params, p('login.branding.footer_legal_text'), 'login', 'branding', 'footerLegalText') if p_opt('login.branding.footer_legal_text')
   add_value(params, p('login.branding.footer_links'), 'login', 'branding', 'footerLinks') if p_opt('login.branding.footer_links')
+
+  add_value(params, p('login.branding.banner.logo'), 'login', 'branding', 'banner', 'logo') if p_opt('login.branding.banner.logo')
+  add_value(params, p('login.branding.banner.text'), 'login', 'branding', 'banner', 'text') if p_opt('login.branding.banner.text')
+  if p_opt('login.branding.banner.textColor')
+    textColor = p('login.branding.banner.textColor')
+    if (textColor =~ hex_code_regex) == 0
+      add_value(params, p('login.branding.banner.textColor'), 'login', 'branding', 'banner', 'textColor')
+    else
+      message = message + "\nlogin.branding.banner.textColor value #{textColor} is not a valid hex code"
+    end
+  end
+
+  if p_opt('login.branding.banner.backgroundColor')
+    backgroundColor = p('login.branding.banner.backgroundColor')
+    if (backgroundColor =~ hex_code_regex) == 0
+      add_value(params, p('login.branding.banner.backgroundColor'), 'login', 'branding', 'banner', 'backgroundColor')
+    else
+      message = message + "\nlogin.branding.banner.backgroundColor value #{backgroundColor} is not a valid hex code"
+    end
+  end
+
+  if p_opt('login.branding.banner.link')
+    link = p('login.branding.banner.link').strip
+    begin
+      parsed = URI.parse(link)
+      raise URI::InvalidURIError.new if parsed.instance_of? URI::Generic
+      add_value(params, p('login.branding.banner.link'), 'login', 'branding', 'banner', 'link')
+    rescue URI::InvalidURIError
+      message = message + "\nlogin.branding.banner.link value #{link} is not a valid uri"
+    end
+  end
 
   add_value(params, p('login.saml.serviceProviderCertificate'), 'login', 'serviceProviderCertificate') if p_opt('login.saml.serviceProviderCertificate')
   add_value(params, p('login.saml.serviceProviderKey'), 'login', 'serviceProviderKey') if p_opt('login.saml.serviceProviderKey')

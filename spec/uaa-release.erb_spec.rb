@@ -195,6 +195,100 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  context 'when login banner is specified' do
+    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
+    let(:as_yml) { true }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
+    let(:input) { 'spec/input/all-properties-set.yml' }
+    let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+
+    context 'and text color is in hex format' do
+      it 'does not raise an error' do
+        generated_cf_manifest['properties']['login']['branding']['banner']['textColor'] = '#ab9';
+        parsed_yaml
+      end
+    end
+
+    context 'and background color is in hex format' do
+      it 'does not raise an error' do
+        generated_cf_manifest['properties']['login']['branding']['banner']['backgroundColor'] = '#ab9';
+        parsed_yaml
+      end
+    end
+
+    context 'and text color is not in hex format' do
+      it 'raises an error' do
+        generated_cf_manifest['properties']['login']['branding']['banner']['textColor'] = '#FFFGFF';
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /login.branding.banner.textColor value #FFFGFF is not a valid hex code/)
+      end
+    end
+
+    context 'and background color is not in hex format' do
+      it 'raises an error' do
+        generated_cf_manifest['properties']['login']['branding']['banner']['backgroundColor'] = 'FFFEFF';
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /login.branding.banner.backgroundColor value FFFEFF is not a valid hex code/)
+      end
+    end
+
+    context 'and link is a valid URI' do
+      valid_uris = ['https://example.com',
+                    'https://example.com/',
+                    'http://example.com/',
+                    'ftp://example.com/',
+                    'https://example.com?',
+                    'https://example.com?a=b',
+                    'https://example.com?a=b&c=d',
+                    'https://example.com/?a=b',
+                    'https://example.com/some/path',
+                    'https://example.com#fragment',
+                    'https://example.io',
+                    'https://example.longtld',
+                    'https://subdomain.example.com',
+                    'https://subdomain.example.com',
+                    'https://example.co.uk',
+                    'https://example',
+                    'http://127.0.0.1',
+                    'http://224.1.1.1 '
+      ]
+
+      valid_uris.each do |url|
+        it 'does not raise' do
+          generated_cf_manifest['properties']['login']['branding']['banner']['link'] = url;
+          parsed_yaml
+        end
+      end
+    end
+
+    context 'and link is not a valid URI' do
+      invalid_uris = ['www.example.com',
+                      'gabr://example.com',
+                      'example',
+                      'example.com',
+                      'example.com:666',
+                      '// ',
+                      '//a',
+                      '///a ',
+                      '///',
+                      'rdar://1234',
+                      'h://test ',
+                      ':// should fail',
+                      'ftps://foo.bar/',
+      ]
+
+      invalid_uris.each do |url|
+        it 'raises an error' do
+          generated_cf_manifest['properties']['login']['branding']['banner']['link'] = url;
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError)
+        end
+      end
+    end
+  end
 
   context 'when clients have invalid properties' do
     let!(:generated_cf_manifest) { generate_cf_manifest(input) }
@@ -247,7 +341,7 @@ describe 'uaa-release erb generation' do
     context 'and client_credentials is missing authorities' do
       let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
 
-      it "raises an error for client_credentials" do
+      it 'raises an error for client_credentials' do
         generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = 'client_credentials';
         generated_cf_manifest['properties']['uaa']['clients']['app'].delete('authorities');
         expect {
@@ -587,9 +681,9 @@ describe 'uaa-release erb generation' do
     parsed_login_yaml =  read_and_parse_string_template '../jobs/uaa/templates/login.yml.erb', generated_cf_manifest, true
     parsed_log4j_properties =  read_and_parse_string_template '../jobs/uaa/templates/log4j.properties.erb', generated_cf_manifest, false
 
-    doSaveOutput = ENV['TEST_SAVE'] ? ENV['TEST_SAVE'] : "false"
+    doSaveOutput = ENV['TEST_SAVE'] ? ENV['TEST_SAVE'] : 'false'
 
-    if doSaveOutput == "true"
+    if doSaveOutput == 'true'
       tempDir = '/tmp/uaa-release-tests/'+input
       FileUtils.mkdir_p tempDir
       open(tempDir + '/uaa.yml', 'w') { |f|

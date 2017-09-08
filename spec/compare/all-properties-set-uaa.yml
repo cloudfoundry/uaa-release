@@ -385,6 +385,7 @@ login:
     signMetaData: true
     signRequest: true
     wantAssertionSigned: true
+    disableInResponseToCheck: true
     providers:
       my-identity-provider:
         metadataTrustCheck: false

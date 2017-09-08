@@ -335,6 +335,7 @@ properties:
         connectionManagerTimeout: 10000
         soTimeout: 10000
       wantAssertionSigned: true
+      disableInResponseToCheck: true
     self_service_links_enabled: false
     smtp:
       auth: true

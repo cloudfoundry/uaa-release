@@ -286,6 +286,7 @@ login:
     signMetaData: true
     signRequest: true
     wantAssertionSigned: true
+    disableInResponseToCheck: false
     signatureAlgorithm: SHA256
     socket:
       connectionManagerTimeout: 10000

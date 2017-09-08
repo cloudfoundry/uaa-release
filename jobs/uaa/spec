@@ -997,6 +997,11 @@ properties:
   login.saml.wantAssertionSigned:
     description: "Global property to request that external IDPs sign their SAML assertion before sending them to the UAA"
     default: true
+  login.saml.disableInResponseToCheck:
+    description: |
+      Disable InResponseToField SAML validation on the default zone. For non default zone, this flag is part of the zone configuration.
+      Please see: https://docs.spring.io/spring-security-saml/docs/current/reference/html/chapter-troubleshooting.html
+    default: false
   login.saml.signatureAlgorithm:
     description: "Signature hashing algorithm for SAML. Can be SHA1, SHA256, or SHA512."
     example: SHA256

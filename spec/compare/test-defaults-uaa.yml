@@ -207,6 +207,7 @@ login:
     signMetaData: true
     signRequest: true
     wantAssertionSigned: true
+    disableInResponseToCheck: false
 smtp:
   host: localhost
   port: 2525

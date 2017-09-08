@@ -40,9 +40,9 @@ function invalid_version {
 function finalize_and_commit {
     tarball=dev_releases/uaa/uaa-$1.tgz
     #dryrun
-    bosh finalize release $tarball --dry-run --name uaa --version $1
+    # bosh finalize-release $tarball --dry-run --name uaa --version $1
     #actual
-    bosh finalize release $tarball --name uaa --version $1
+    bosh finalize-release $tarball --name uaa --version $1
     #bosh generated files
     git add .
     git commit --no-verify -m "uaa-release version v${1}"
@@ -145,7 +145,7 @@ cp /tmp/private.yml config/
 
 echo -e "${CYAN}Building tarball ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
 # create a release tar ball - and a dev release
-bosh create release --name uaa --version $1 --with-tarball
+bosh create-release --name uaa --version $1 --tarball dev_releases/uaa/uaa-$1.tgz
 metadata_commit=''
 # finalize release, get commit SHA so that we can cherry pick it later
 finalize_and_commit $1 metadata_commit

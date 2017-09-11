@@ -40,15 +40,6 @@ properties:
       passwd: /reset_password
       signup: http://signup.somewhere.else
       homeRedirect: http://custom.home.redirect
-    logout:
-      redirect:
-        parameter:
-          disable: true
-        url: /
-        whitelist:
-        - http://url1
-        - http://url2
-        - http://url3
     messages:
       scope:
         tokens:
@@ -345,6 +336,16 @@ properties:
       port: 25
       starttls: true
       user: smtp_user
+  logout:
+    redirect:
+      parameter:
+        disable: true
+      url: /
+      whitelist:
+      - http://url1
+      - http://url2
+      - http://url3
+
   uaa:
     admin:
       client_secret: adminsecret

@@ -1004,7 +1004,6 @@ properties:
     links:
       passwd: https://login.bosh-lite.com/forgot_password
       signup: https://login.bosh-lite.com/create_account
-    logout:
     messages:
     notifications:
       url:
@@ -1094,6 +1093,7 @@ properties:
       user:
       from_address:
     url:
+  logout:
   metron_agent:
     buffer_size:
     deployment: cf-warden

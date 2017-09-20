@@ -245,6 +245,17 @@ logout:
       disable: true
 uaa:
   url: http://all-properties-set:8888/uaa
+  limited_funcionality:
+    enabled: false
+    whitelist:
+      endpoints:
+      - /oauth/authorize/**
+      - /oauth/token/**
+      - /check_token/**
+      methods:
+      - GET
+      - HEAD
+
 links:
   global:
     passwd: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/forgot_password"

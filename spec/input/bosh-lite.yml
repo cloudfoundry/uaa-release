@@ -1178,6 +1178,16 @@ properties:
     catalina_opts: "-Xmx192m -XX:MaxMetaspaceSize=128m"
     cc:
       client_secret: cc-secret
+    limited_funcionality:
+      enabled: false
+      whitelist:
+        endpoints:
+        - /oauth/authorize/**
+        - /oauth/token/**
+        - /check_token/**
+        methods:
+        - GET
+        - HEAD
     clients:
       cc-service-dashboards:
         authorities: clients.read,clients.write,clients.admin

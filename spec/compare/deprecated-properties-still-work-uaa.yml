@@ -119,6 +119,17 @@ logout:
       disable: true
 uaa:
   url: http://test.uaa.url
+  limited_funcionality:
+    enabled: false
+    whitelist:
+      endpoints:
+      - /oauth/authorize/**
+      - /oauth/token/**
+      - /check_token/**
+      methods:
+      - GET
+      - HEAD
+
 links:
   passwd: "/forgot_password"
   signup: "/create_account"

@@ -119,6 +119,26 @@ logout:
       disable: true
 uaa:
   url: http://test.uaa.url
+  limited_funcionality:
+    enabled: false
+    whitelist:
+      endpoints:
+      - /oauth/authorize/**
+      - /oauth/token/**
+      - /check_token/**
+      - /login/**
+      - /login.do
+      - /logout/**
+      - /logout.do
+      - /saml/**
+      - /autologin/**
+      - /authenticate/**
+      - /idp_discovery/**
+      methods:
+      - GET
+      - HEAD
+      - OPTIONS
+
 links:
   global:
     passwd: "/forgot_password"

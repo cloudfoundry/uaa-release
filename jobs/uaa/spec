@@ -93,12 +93,33 @@ properties:
   uaa.logging_use_rfc3339:
     description: "Sets the time format for log messages to be yyyy-MM-dd'T'HH:mm:ss.SSSXXX instead of yyyy-MM-dd HH:mm:ss.SSS"
     default: false
-  uaa.read_only_mode:
+  uaa.limited_functionality.enabled:
     description: |
       Setting this flag to true renders UAA in a degraded mode with limited access to the UAA API.
       The allowed API's only a subset of the UAA API and UI needed for Authentication and Authorization.
     default: false
-
+  uaa.limited_functionality.whitelist.endpoints:
+    description: |
+      Set the whitelisted endpoints for UAA in limited mode. Methods and endpoints are unioned with each other: i.e. all methods are permitted for a whitelisted endpoint
+    default:
+    - /oauth/authorize/**
+    - /oauth/token/**
+    - /check_token/**
+    - /login/**
+    - /login.do
+    - /logout/**
+    - /logout.do
+    - /saml/**
+    - /autologin/**
+    - /authenticate/**
+    - /idp_discovery/**
+  uaa.limited_functionality.whitelist.methods:
+    description: |
+      Set the whitelisted methods for UAA in limted mode. Methods and endpoints are unioned with each other: i.e. all endpoints are permitted for a whitelisted method
+    default:
+    - GET
+    - HEAD
+    - OPTIONS
 
   # SSL
   login.protocol:

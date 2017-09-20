@@ -93,6 +93,12 @@ properties:
   uaa.logging_use_rfc3339:
     description: "Sets the time format for log messages to be yyyy-MM-dd'T'HH:mm:ss.SSSXXX instead of yyyy-MM-dd HH:mm:ss.SSS"
     default: false
+  uaa.read_only_mode:
+    description: |
+      Setting this flag to true renders UAA in a degraded mode with limited access to the UAA API.
+      The allowed API's only a subset of the UAA API and UI needed for Authentication and Authorization.
+    default: false
+
 
   # SSL
   login.protocol:

@@ -140,6 +140,13 @@
       'logabandoned' =>  p('uaa.database.log_abandoned'),
       'abandonedtimeout' => p('uaa.database.abandoned_timeout')
     },
+    'degraded' => {
+      'enabled' => p('uaa.read_only_mode'),
+      'whitelist' => {
+        'endpoints' => ['/oauth/authorize/**', '/oauth/token/**', '/check_token/**', '/login/**', '/login.do', '/logout/**', '/logout.do', '/saml/**', '/autologin/**', '/authenticate/**', '/idp_discovery/**'],
+        'methods' => ['GET', 'HEAD', 'OPTIONS']
+      }
+    },
     'authentication' => {
       'policy' => {
         'lockoutAfterFailures' => p('uaa.authentication.policy.lockoutAfterFailures'),

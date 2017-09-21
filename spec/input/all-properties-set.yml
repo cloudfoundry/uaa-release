@@ -358,7 +358,7 @@ properties:
         lockoutAfterFailures: 5
         lockoutPeriodSeconds: 300
     catalina_opts: -Xmx1g -Xms512m
-    limited_funcionality:
+    limited_functionality:
       enabled: false
       whitelist:
         endpoints:

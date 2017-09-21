@@ -94,16 +94,6 @@ properties:
     catalina_opts: "-Xmx192m -XX:MaxMetaspaceSize=128m"
     cc:
       client_secret: cc-secret
-    limited_funcionality:
-      enabled: false
-      whitelist:
-        endpoints:
-        - /oauth/authorize/**
-        - /oauth/token/**
-        - /check_token/**
-        methods:
-        - GET
-        - HEAD
     clients:
       cc-service-dashboards:
         authorities: clients.read,clients.write,clients.admin
@@ -262,6 +252,16 @@ properties:
       /6wtWeX8QMBcZ6ufxs0VgxPv4P8jczrzqxgszLUK8hdnZEL7+xk=
       -----END RSA PRIVATE KEY-----
     url: https://uaa.bosh-lite.com
+    limited_functionality:
+      enabled: false
+      whitelist:
+        endpoints:
+        - /oauth/authorize/**
+        - /oauth/token/**
+        - /check_token/**
+        methods:
+        - GET
+        - HEAD
     zones:
       internal:
         hostnames:

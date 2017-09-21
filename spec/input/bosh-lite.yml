@@ -252,7 +252,7 @@ properties:
       /6wtWeX8QMBcZ6ufxs0VgxPv4P8jczrzqxgszLUK8hdnZEL7+xk=
       -----END RSA PRIVATE KEY-----
     url: https://uaa.bosh-lite.com
-    limited_functionality:
+    limitedFunctionality:
       enabled: false
       whitelist:
         endpoints:

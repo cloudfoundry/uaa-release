@@ -242,7 +242,7 @@ logout:
       disable: true
 uaa:
   url: http://all-properties-set:8888/uaa
-  limited_functionality:
+  limitedFunctionality:
     enabled: false
     whitelist:
       endpoints:

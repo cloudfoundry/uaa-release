@@ -119,7 +119,7 @@ logout:
       disable: true
 uaa:
   url: http://test.uaa.url
-  limited_functionality:
+  limitedFunctionality:
     enabled: false
     whitelist:
       endpoints:

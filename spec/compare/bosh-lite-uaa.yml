@@ -205,7 +205,7 @@ require_https: false
 
 uaa:
   url: https://uaa.bosh-lite.com
-  limited_functionality:
+  limitedFunctionality:
     enabled: false
     whitelist:
       endpoints:

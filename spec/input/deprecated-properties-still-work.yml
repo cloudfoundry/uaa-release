@@ -74,7 +74,7 @@ properties:
     url: http://test.uaa.url
     login:
       client_secret: secret
-    limited_funcionality:
+    limited_functionality:
       enabled: false
       whitelist:
         endpoints:

@@ -2,13 +2,12 @@ require 'rspec'
 require 'yaml'
 require 'bosh/template/evaluation_context'
 require 'json'
-require 'deep_merge'
 require 'support/yaml_eq'
 require 'spec_helper'
 
 describe 'uaa-release erb generation' do
   def perform_erb_transformation_as_yaml erb_file, manifest_file
-    YAML.load(perform_erb_transformation_as_string erb_file, manifest_file)
+    YAML.load(perform_erb_transformation_as_string(erb_file, manifest_file))
   end
 
   def perform_erb_transformation_as_string erb_file, manifest_file

@@ -1,3 +1,5 @@
+require 'active_support/core_ext/hash'
+
 def generate_cf_manifest(file_name, links={})
   spec_defaults = YAML.load_file('jobs/uaa/spec')['properties'].keep_if { |k,v| v.has_key?('default') }.map { |k, v| [k, v['default']] }.to_h
   new_hash = {}
@@ -15,8 +17,10 @@ def generate_cf_manifest(file_name, links={})
   }
 
   external_properties = YAML.load_file(file_name)
-  manifest_hash = manifest_hash.deep_merge!(external_properties)
-  manifest_hash
+
+  # This is meant to simulate how BOSH will merge defaults. This is not 100% accurate as BOSH may have it's own logic
+  # for this same thing.
+  manifest_hash.deep_merge(external_properties)
 end
 
 def add_param_to_hash param_name, param_value, target_hash = {}

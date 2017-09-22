@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-<% p('uaadb.db_scheme') == 'postgresql' && if_p('uaadb.address') do |uaa_db_address|
+<% /^postgres(ql)?$/ =~ p('uaadb.db_scheme') && if_p('uaadb.address') do |uaa_db_address|
 
 uaa_db_port = p("uaadb.port")
 uaa_db = p('uaadb.databases').find { |db| db['tag'] == 'uaa' }

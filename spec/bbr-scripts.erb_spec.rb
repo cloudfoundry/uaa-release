@@ -41,10 +41,17 @@ describe 'bosh backup and restore script' do
       end
     end
 
-    describe 'when uaadb.db_scheme is not postgres' do
+    describe 'when uaadb.db_scheme is not postgresql' do
       it 'should not pg_dump' do
         properties['properties']['uaadb']['db_scheme'] = 'not-postgresql'
         expect(generated_script).to_not include('pg_dump')
+      end
+    end
+
+    describe 'when uaadb.db_scheme is postgres (missing ql)' do
+      it 'should not pg_dump' do
+        properties['properties']['uaadb']['db_scheme'] = 'postgres'
+        expect(generated_script).to include('pg_dump')
       end
     end
   end
@@ -68,11 +75,19 @@ describe 'bosh backup and restore script' do
       end
     end
 
-    describe 'when uaadb.db_scheme is not postgres' do
+    describe 'when uaadb.db_scheme is not postgresql' do
       it 'should not pg_dump' do
         properties['properties']['uaadb']['db_scheme'] = 'not-postgresql'
         expect(generated_script).to_not include('pg_restore')
       end
     end
+
+    describe 'when uaadb.db_scheme is postgres (missing ql)' do
+      it 'should not pg_dump' do
+        properties['properties']['uaadb']['db_scheme'] = 'postgres'
+        expect(generated_script).to include('pg_restore')
+      end
+    end
+
   end
 end

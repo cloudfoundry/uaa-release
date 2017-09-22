@@ -272,7 +272,7 @@ properties:
     - citext: true
       name: uaadb
       tag: uaa
-    db_scheme: postgresql
+    db_scheme: postgres
     port: 5524
     tls_enabled: true
     roles:

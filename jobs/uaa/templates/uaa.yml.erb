@@ -544,7 +544,14 @@
       }
     },
     'uaa' => {
-      'url' => uaa_base
+      'url' => uaa_base,
+      'limitedFunctionality' => {
+        'enabled' => p('uaa.limitedFunctionality.enabled'),
+        'whitelist' => {
+          'endpoints' => p('uaa.limitedFunctionality.whitelist.endpoints'),
+          'methods' => p('uaa.limitedFunctionality.whitelist.methods')
+        }
+      }
     },
     'login' => {
       'url' => login_url,

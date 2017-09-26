@@ -4,27 +4,27 @@ name: uaa
 description: "The UAA is the identity management service for Cloud Foundry. It's primary role is as an OAuth2 provider, issuing tokens for client applications to use when they act on behalf of Cloud Foundry users. It can also authenticate users with their Cloud Foundry credentials, and can act as an SSO service using those credentials (or others). It has endpoints for managing user accounts and for registering OAuth2 clients, as well as various other management functions."
 
 templates:
-  uaa_ctl.erb: bin/uaa_ctl
-  install_crt: bin/install_crt
-  dns_health_check.erb: bin/dns_health_check
-  health_check: bin/health_check
-  install_uaa_crt: bin/install_uaa_crt
-  pre-start: bin/pre-start
-  post-start: bin/post-start
-  backup.erb: bin/bbr/backup
-  restore.erb: bin/bbr/restore
+  bin/uaa_ctl.erb: bin/uaa_ctl
+  bin/install_crt: bin/install_crt
+  bin/dns_health_check.erb: bin/dns_health_check
+  bin/health_check: bin/health_check
+  bin/install_uaa_crt: bin/install_uaa_crt
+  bin/pre-start: bin/pre-start
+  bin/post-start: bin/post-start
+  bin/bbr/backup.erb: bin/bbr/backup
+  bin/bbr/restore.erb: bin/bbr/restore
 
-  uaa.yml.erb: config/uaa.yml
-  newrelic.yml.erb: config/newrelic.yml
-  varz.yml: config/varz.yml
-  log4j.properties.erb: config/log4j.properties
-  varz.log4j.properties: config/varz.log4j.properties
-  tomcat.logging.properties: config/tomcat/logging.properties
-  tomcat.server.xml.erb: config/tomcat/server.xml
-  tomcat.context.xml.erb: config/tomcat/context.xml
-  ldap.crt.erb: config/ldap.crt
-  messages.properties.erb: config/messages.properties
-  uaa.crt.erb: config/uaa.crt
+  config/uaa.yml.erb: config/uaa.yml
+  config/newrelic.yml.erb: config/newrelic.yml
+  config/varz.yml: config/varz.yml
+  config/log4j.properties.erb: config/log4j.properties
+  config/varz.log4j.properties: config/varz.log4j.properties
+  config/ldap.crt.erb: config/ldap.crt
+  config/messages.properties.erb: config/messages.properties
+  config/uaa.crt.erb: config/uaa.crt
+  config/tomcat/tomcat.logging.properties: config/tomcat/logging.properties
+  config/tomcat/tomcat.server.xml.erb: config/tomcat/server.xml
+  config/tomcat/tomcat.context.xml.erb: config/tomcat/context.xml
 
 consumes:
 - name: router

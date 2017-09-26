@@ -14,8 +14,6 @@ templates:
   bin/install_uaa_crt: bin/install_uaa_crt
   bin/pre-start: bin/pre-start
   bin/post-start: bin/post-start
-  bin/bbr/backup.erb: bin/bbr/backup
-  bin/bbr/restore.erb: bin/bbr/restore
 
   config/uaa.yml.erb: config/uaa.yml
   config/bpm.yml.erb: config/bpm.yml
@@ -30,6 +28,17 @@ templates:
   config/tomcat/tomcat.server.xml.erb: config/tomcat/server.xml
   config/tomcat/tomcat.context.xml.erb: config/tomcat/context.xml
 
+  bbr/pre-backup-lock.sh.erb: bin/bbr/pre-backup-lock
+  bbr/pre-restore-lock.sh.erb: bin/bbr/pre-restore-lock
+  bbr/post-backup-unlock.sh.erb: bin/bbr/post-backup-unlock
+  bbr/post-restore-unlock.sh.erb: bin/bbr/post-restore-unlock
+
+provides:
+- name: uaa_db
+  type: uaa_db
+  properties:
+  - uaadb
+
 consumes:
 - name: router
   type: http-router
@@ -43,6 +52,12 @@ packages:
   - uaa
 
 properties:
+  #backup properties
+  release_level_backup:
+    default: true
+    description: "Set to true to include UAA database in backup and restore operations"
+
+  #bpm
   bpm.enabled:
     description: "Experimental feature flag: Enable Bosh Process Manager"
     default: false

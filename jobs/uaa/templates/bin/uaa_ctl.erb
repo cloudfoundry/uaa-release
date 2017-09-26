@@ -15,20 +15,7 @@ STATUS=$DATA_DIR/uaa_status
 PIDFILE=$RUN_DIR/uaa.pid
 
 source "${JOB_DIR}/bin/configure_proxy"
-
-NEWRELIC_OPTS=
-<% if_p('uaa.newrelic') do |newrelic|
-    newrelicenv = newrelic['environment'] || 'production'
-
-    hasnewreliclic = p('uaa.newrelic.common.license_key', nil) || p('uaa.newrelic.'+newrelicenv+'.license_key', '').to_s.strip.length > 0
-
-    if hasnewreliclic %>
-          <%= "NEWRELIC_OPTS=\"-javaagent:/var/vcap/data/uaa/tomcat/bin/newrelic.jar -Dnewrelic.config.file=$JOB_DIR/config/newrelic.yml -Dnewrelic.environment="+newrelicenv+"\"" %><%
-    end
-end %>
-
-export NEWRELIC_OPTS
-echo "[uaa-ctl] UAA New Relic set to:$NEWRELIC_OPTS"
+source "${JOB_DIR}/bin/configure_newrelic"
 
 mkdir -p /var/vcap/sys/log
 
@@ -57,8 +44,6 @@ ensure_no_more_tomcat() {
     done
 }
 
-set +e
-echo "[uaa-ctl] UAA New Relic set to:$NEWRELIC_OPTS"
 case $1 in
   check)
     echo "[uaa-check] UAA check invoked - checking for running process"

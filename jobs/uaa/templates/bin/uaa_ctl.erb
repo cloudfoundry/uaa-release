@@ -45,17 +45,6 @@ ensure_no_more_tomcat() {
 }
 
 case $1 in
-  check)
-    echo "[uaa-check] UAA check invoked - checking for running process"
-    if pid_guard $PIDFILE "UAA"
-    then
-      echo "[uaa-check] UAA not running"
-    else
-      echo "[uaa-check] UAA already running - check successful...."
-      exit 0
-    fi
-
-    ;;
   start)
     echo "[uaa-start] UAA start invoked - checking for running process"
 

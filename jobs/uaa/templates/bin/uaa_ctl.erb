@@ -2,11 +2,10 @@
 
 echo "[uaa-ctl] UAA Control Setting Up Logging"
 
-exec > >(tee -a >(logger -p user.info -t vcap.$(basename $0).stdout) | awk -W interactive '{ system("echo -n [$(date +\"%Y-%m-%d %H:%M:%S%z\")]"); print " " $0 }' >>/var/vcap/sys/log/$(basename $0).log)
-exec 2> >(tee -a >(logger -p user.error -t vcap.$(basename $0).stderr) | awk -W interactive '{ system("echo -n [$(date +\"%Y-%m-%d %H:%M:%S%z\")]"); print " " $0 }' >>/var/vcap/sys/log/$(basename $0).err.log)
+exec > >(tee -a >(logger -p user.info -t vcap.$(basename $0).stdout) | awk -W interactive '{ system("echo -n [$(date +\"%Y-%m-%d %H:%M:%S%z\")]"); print " " $0 }' >>/var/vcap/sys/log/uaa/uaa_ctl.log)
+exec 2> >(tee -a >(logger -p user.error -t vcap.$(basename $0).stderr) | awk -W interactive '{ system("echo -n [$(date +\"%Y-%m-%d %H:%M:%S%z\")]"); print " " $0 }' >>/var/vcap/sys/log/uaa/uaa_ctl.err.log)
 
 echo "[uaa-ctl] UAA Control script invoked"
-export PATH=/var/vcap/packages/uaa/jdk/bin:$PATH
 RUN_DIR=/var/vcap/sys/run/uaa
 LOG_DIR=/var/vcap/sys/log/uaa
 JOB_DIR=/var/vcap/jobs/uaa
@@ -14,10 +13,8 @@ DATA_DIR=/var/vcap/data/uaa
 STATUS=$DATA_DIR/uaa_status
 PIDFILE=$RUN_DIR/uaa.pid
 
-source "${JOB_DIR}/bin/configure_proxy"
-source "${JOB_DIR}/bin/configure_newrelic"
-
-mkdir -p /var/vcap/sys/log
+mkdir -p /var/vcap/sys/run/uaa
+chown vcap:vcap /var/vcap/sys/run/uaa
 
 pid_guard() {
   local return_code=0
@@ -46,6 +43,8 @@ ensure_no_more_tomcat() {
 
 case $1 in
   start)
+    export CLOUD_FOUNDRY_CONFIG_PATH=/var/vcap/jobs/uaa/config
+
     echo "[uaa-start] UAA start invoked - checking for running process"
 
     if pid_guard $PIDFILE "UAA"
@@ -59,36 +58,11 @@ case $1 in
     echo "[uaa-start] Checking whether tomcat is no longer running..."
     ensure_no_more_tomcat
 
-    export CLOUD_FOUNDRY_CONFIG_PATH=/var/vcap/jobs/uaa/config
-    export JAVA_OPTS="-DPID=$$ -Dsun.net.inetaddr.ttl=60 -Dnetworkaddress.cache.ttl=60 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS"
-    export CATALINA_OPTS="<%= p('uaa.catalina_opts') %>"
-
-    <% if p('uaa.ldap.sslCertificate', nil) || p('login.ldap.sslCertificate', nil) %>
-      echo "[uaa-start] Installing LDAP certificate"
-      /var/vcap/jobs/uaa/bin/install_crt ldap.crt ldapcert $KEYSTORE
-      echo "[uaa-start] Installed LDAP certificate"
-    <% end %>
-
-    # Install the server's ssl certificate
-    <% if p("uaa.ssl.port") != -1 %>
-    echo "[uaa-start] Installing Server SSL certificate"
-    /var/vcap/jobs/uaa/bin/install_uaa_crt uaa.crt
-    echo "[uaa-start] Installed Server SSL certificate"
-    <% end %>
-
-    echo "[uaa-start] Creating health check STATUS file"
-    touch $STATUS
-    echo "[uaa-start] Health check STATUS file created"
-
-
-    echo "[uaa-start] About to starting UAA"
+    echo "[uaa-start] About to start UAA"
     echo $$ > $PIDFILE
     chown vcap:vcap $PIDFILE
 
-    cd /var/vcap/data/uaa
-    echo "[uaa-start] Calling Tomcat start up command"
-    exec chpst -u vcap:vcap tomcat/bin/catalina.sh run
-    echo "[uaa-start] Tomcat start up in progress"
+    exec /var/vcap/jobs/uaa/bin/uaa
     ;;
 
   stop)

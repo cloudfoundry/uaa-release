@@ -42,14 +42,12 @@ function process_certs {
 }
 
 function setup_directories {
-    mkdir -p /var/vcap/sys/run/uaa
     mkdir -p /var/vcap/sys/log/uaa
 
-    chown vcap:vcap /var/vcap/sys/run/uaa
     chown -R vcap:vcap /var/vcap/sys/log/uaa
 
     # We want to keep packages pristine, since tomcat is modified in place we stage it elsewhere.
-    rm -rf /var/vcap/data/uaa//tomcat
+    rm -rf /var/vcap/data/uaa/tomcat
     mkdir -p /var/vcap/data/uaa/
     cp -a /var/vcap/packages/uaa/tomcat /var/vcap/data/uaa/
     cp -a /var/vcap/jobs/uaa/config/tomcat/* /var/vcap/data/uaa/tomcat/conf/

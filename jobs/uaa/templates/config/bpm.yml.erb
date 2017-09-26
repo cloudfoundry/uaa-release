@@ -1,0 +1,8 @@
+---
+processes:
+  uaa:
+    executable: /var/vcap/jobs/uaa/bin/uaa
+    args: []
+    env:
+      - "CATALINA_HOME=/var/vcap/data/uaa/tomcat"
+      - "CLOUD_FOUNDRY_CONFIG_PATH=/var/vcap/jobs/uaa/config"

@@ -6,7 +6,6 @@ source "/var/vcap/jobs/uaa/bin/configure_proxy"
 source "/var/vcap/jobs/uaa/bin/configure_newrelic"
 
 export PATH=/var/vcap/packages/uaa/jdk/bin:$PATH
-export CATALINA_OPTS="<%= p('uaa.catalina_opts') %>"
 
 <% if p("bpm.enabled") %>
   export JAVA_OPTS="-DPID=0 -Dsun.net.inetaddr.ttl=60 -Dnetworkaddress.cache.ttl=60 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS"

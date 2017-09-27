@@ -12,7 +12,7 @@ describe 'tomcat.server.xml' do
 
   context 'using bosh links' do
     let(:compiled_xml) { compile_erb(template, manifest) }
-    let(:template) { '../jobs/uaa/templates/tomcat.server.xml.erb' }
+    let(:template) { '../jobs/uaa/templates/config/tomcat/tomcat.server.xml.erb' }
     let(:internal_proxies) do
       config = Nokogiri::XML.parse(compiled_xml)
       config.xpath('//Valve')[0].attributes['internalProxies'].value

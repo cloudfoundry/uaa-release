@@ -1,0 +1,19 @@
+---
+# Add Releases
+- type: replace
+  path: /releases/name=bpm?
+  value:
+    name: bpm
+    version: create
+    url: /Users/pivotal/workspace/bpm-release
+
+# Enable BPM in uaa job
+- type: replace
+  path: /instance_groups/name=uaa/jobs/-
+  value:
+    name: bpm
+    release: bpm
+
+- type: replace
+  path: /instance_groups/name=uaa/jobs/name=uaa/properties/bpm?/enabled?
+  value: true

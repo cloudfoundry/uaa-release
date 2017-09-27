@@ -8,7 +8,7 @@ source "/var/vcap/jobs/uaa/bin/configure_newrelic"
 export PATH=/var/vcap/packages/uaa/jdk/bin:$PATH
 
 <% if p("bpm.enabled") %>
-  export JAVA_OPTS="-DPID=0 -Dsun.net.inetaddr.ttl=60 -Dnetworkaddress.cache.ttl=60 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS"
+  export JAVA_OPTS="-DPID=$BPM_ID -Dsun.net.inetaddr.ttl=60 -Dnetworkaddress.cache.ttl=60 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS"
 <% else %>
   export JAVA_OPTS="-DPID=$$ -Dsun.net.inetaddr.ttl=60 -Dnetworkaddress.cache.ttl=60 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS"
 <% end %>

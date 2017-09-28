@@ -184,6 +184,10 @@ builds:
     version: '44'
   df852547-9707-4084-8dd5-d1cf7d39df7d:
     version: '41.1'
-  b27d4baa-6b06-4330-b90d-ea4317d1f9b0:
+  3473d842-67fb-4c8a-a854-28b1f0d14d63:
     version: '45'
+  df84bf78-be55-4ef5-bcce-cb285ab4d933:
+    version: '50'
+  684eafff-f1ac-48f5-8140-b6adbfdae28c:
+    version: '45.1'
 format-version: '2'

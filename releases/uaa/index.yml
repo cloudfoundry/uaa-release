@@ -190,4 +190,6 @@ builds:
     version: '50'
   684eafff-f1ac-48f5-8140-b6adbfdae28c:
     version: '45.1'
+  bab49cc0-092b-480d-bbdb-005f899f429e:
+    version: '45.2'
 format-version: '2'

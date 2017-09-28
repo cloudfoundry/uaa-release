@@ -65,8 +65,8 @@ function paste_master_release_metadata {
     cp -r $RELEASES/* releases/
     cp -r $FINAL_BUILDS/* .final_builds/
     git add releases .final_builds
-    if git commit -m "Update bosh release metadata information for version ${1}"; then
-        git push origin $1
+    if git commit -m "Update bosh release metadata information for upcoming release version ${1}"; then
+        git push origin HEAD -u
         echo -e "${CYAN}Release metadata merged${NC}"
     else
        echo -e "${CYAN}No merge required. No changes detected${NC}"
@@ -140,6 +140,10 @@ fi
 git checkout $branch_to_release_from
 sub_update
 
+# add the bosh.io metadata from master and apply it
+# to our release branch
+paste_master_release_metadata $1
+
 # restore private.yml in case it got deleted
 cp /tmp/private.yml config/
 
@@ -155,25 +159,6 @@ echo -e "${CYAN}Finalized metadata with commit SHA ${metadata_commit}${NC}"
 echo -e "${CYAN}Tagging and pushing the release branch${NC}"
 git tag -a v${1} -m "$1 release"
 git push origin $branch_to_release_from --tags
-
-# go back to our original release branch
-# so that we can merge back ALL metadata to master
-git checkout $branch_to_release_from
-sub_update
-
-# clean out the old release
-rm releases/uaa/uaa-${1}.tgz
-
-# paste in our metadata from master and commit it
-paste_master_release_metadata $branch_to_release_from
-# restore private.yml in case it got deleted
-mv /tmp/private.yml config/
-
-echo -e "${CYAN}Generating metadata for master ${GREEN}${1}${NC} with tag ${GREEN}v${1}${NC}"
-metadata_commit=''
-# finalize release, get commit SHA so that we can cherry pick it later
-finalize_and_commit $1 metadata_commit
-echo -e "${CYAN}Finalized merge metadata with commit SHA ${metadata_commit}${NC}"
 
 # jump to master branch
 echo -e "${CYAN}Switching to master branch to prep for metadata migration${NC}"

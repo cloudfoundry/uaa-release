@@ -31,7 +31,7 @@ builds:
   77e35322ebfe21993cd9ca0e7d5d0ae84c4d0f0c:
     version: 77e35322ebfe21993cd9ca0e7d5d0ae84c4d0f0c
     sha1: fbea6386ca989be250304e15518d36e6780a9405
-    blobstore_id: 02948cd9-1c45-41c8-90e0-7a946867dc79
+    blobstore_id: '02948cd9-1c45-41c8-90e0-7a946867dc79'
   38ee3bdd1daf4cbc10b8dd08efd8f617df1a1110:
     version: 38ee3bdd1daf4cbc10b8dd08efd8f617df1a1110
     sha1: 609e148f6f49f7c5a0cd66dc82ad74c66d121fd3
@@ -279,7 +279,7 @@ builds:
   517a7bcdf12725b6c1bd39f7c38de9796cd5eb2d:
     version: 517a7bcdf12725b6c1bd39f7c38de9796cd5eb2d
     sha1: a0d76834c09c5b85d2c20d7041997ce0ed85631a
-    blobstore_id: 0965db8f-a2d5-4ae4-99fc-b2b9ca6599b6
+    blobstore_id: '0965db8f-a2d5-4ae4-99fc-b2b9ca6599b6'
   ea08bb6e4c2c11d2f7e3b9872c0a046bcb71dd40:
     version: ea08bb6e4c2c11d2f7e3b9872c0a046bcb71dd40
     sha1: 9fbafbc42c45d6a3f4efd9025a140f5167e47545
@@ -307,7 +307,7 @@ builds:
   78a4e81eb7e9f270a82d5266dcea2e76e20aacb0:
     version: 78a4e81eb7e9f270a82d5266dcea2e76e20aacb0
     sha1: 0b723fdd53960fa4a32908d9ea5a51e9dd508162
-    blobstore_id: 0685eb87-655f-4fee-b599-8edec9944031
+    blobstore_id: '0685eb87-655f-4fee-b599-8edec9944031'
   b7022c8dc66897b688b0920a18aa1863db2c9f19:
     version: b7022c8dc66897b688b0920a18aa1863db2c9f19
     sha1: 43c495c807e5738e4c108c228870834fdfb03a5d
@@ -323,5 +323,13 @@ builds:
   a068b9d45b2aebc3de432923cbb359076ebe8d8e:
     version: a068b9d45b2aebc3de432923cbb359076ebe8d8e
     sha1: 301c923fbc09ed5aedc1c1f14ae3be021b461536
-    blobstore_id: d739a251-9499-4132-810b-6200f64520fe
+    blobstore_id: 47763ed9-8c6f-4670-82f1-59991444807b
+  33f30bbf92ae87d6a542e75ee1e323838257a9e5:
+    version: 33f30bbf92ae87d6a542e75ee1e323838257a9e5
+    sha1: 990efb08f2b59f494303c0756b9549a1ac233b4d
+    blobstore_id: 24eeacc1-fe75-405d-986c-f822070bce3d
+  9b74b5180bfa08abfff7b380b6d58f97dfa0d087:
+    version: 9b74b5180bfa08abfff7b380b6d58f97dfa0d087
+    sha1: f4614f4072a6d273a3645818b00ecf7af7654a03
+    blobstore_id: abe011b6-9e04-488a-858d-f67e35f2bcfe
 format-version: '2'

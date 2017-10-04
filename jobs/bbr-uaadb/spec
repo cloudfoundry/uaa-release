@@ -14,10 +14,3 @@ consumes:
 - name: database # used as a fallback if `uaa_db.uaadb.address` is omitted
   type: database
   optional: true
-
-properties:
-  #backup properties
-  release_level_backup:
-    default: true
-    description: "Set to true to include UAA database in backup and restore operations"
-

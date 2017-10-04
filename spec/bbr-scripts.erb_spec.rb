@@ -10,6 +10,7 @@ describe 'bosh backup and restore script' do
         'uaa_db' => {
           'instances' => [],
           'properties' => {
+            'release_level_backup' => true,
             'uaadb' => {
               'address' => '127.0.0.1',
               'port' => 5432,
@@ -21,7 +22,6 @@ describe 'bosh backup and restore script' do
         }
       },
       'properties' => {
-          'release_level_backup' => true,
           'uaadb' => {
               'address' => '127.0.0.1',
               'port' => 5432,
@@ -37,38 +37,84 @@ describe 'bosh backup and restore script' do
     generated_script = ERB.new(File.read(script)).result(binding)
   }
 
-  describe 'backup.sh.erb' do
-    let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/backup.sh.erb" }
+  context 'release_level_backup is true' do
+    describe 'backup.sh.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/backup.sh.erb" }
 
-    it 'it has all the expected lines' do
-      expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
-      expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
-      expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
-      expect(generated_script).to include('"/var/vcap/jobs/database-backup-restorer/bin/backup" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
+      it 'it has all the expected lines' do
+        expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
+        expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
+        expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
+        expect(generated_script).to include('"/var/vcap/jobs/database-backup-restorer/bin/backup" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
+      end
+    end
+
+    describe 'config.json.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
+
+      it 'it has all the expected lines' do
+        expect(generated_script).to include('"username": "admin"')
+        expect(generated_script).to include('"password": "example"')
+        expect(generated_script).to include('"host": "127.0.0.1"')
+        expect(generated_script).to include('"port": 5432')
+        expect(generated_script).to include('"database": "uaa_db_name"')
+        expect(generated_script).to include('"adapter": "postgres"')
+      end
+    end
+
+    describe 'restore.sh.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/restore.sh.erb" }
+
+      it 'it has all the expected lines' do
+        expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
+        expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
+        expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
+        expect(generated_script).to include('"/var/vcap/jobs/database-backup-restorer/bin/restore" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
+      end
     end
   end
 
-  describe 'config.json.erb' do
-    let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
 
-    it 'it has all the expected lines' do
-      expect(generated_script).to include('"username": "admin"')
-      expect(generated_script).to include('"password": "example"')
-      expect(generated_script).to include('"host": "127.0.0.1"')
-      expect(generated_script).to include('"port": 5432')
-      expect(generated_script).to include('"database": "uaa_db_name"')
-      expect(generated_script).to include('"adapter": "postgres"')
+  context 'release_level_backup is false' do
+
+    before(:each) do
+      properties['links']['uaa_db']['properties']['release_level_backup'] = false
+    end
+
+    describe 'backup.sh.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/backup.sh.erb" }
+
+      it 'does not have the backup command' do
+        expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
+        expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
+        expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
+        expect(generated_script).not_to include('"/var/vcap/jobs/database-backup-restorer/bin/backup" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
+      end
+    end
+
+    describe 'config.json.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
+
+      it 'it has all the expected lines' do
+        expect(generated_script).to include('"username": "admin"')
+        expect(generated_script).to include('"password": "example"')
+        expect(generated_script).to include('"host": "127.0.0.1"')
+        expect(generated_script).to include('"port": 5432')
+        expect(generated_script).to include('"database": "uaa_db_name"')
+        expect(generated_script).to include('"adapter": "postgres"')
+      end
+    end
+
+    describe 'restore.sh.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/restore.sh.erb" }
+
+      it 'does not have the restore command' do
+        expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
+        expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
+        expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
+        expect(generated_script).not_to include('"/var/vcap/jobs/database-backup-restorer/bin/restore" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
+      end
     end
   end
 
-  describe 'restore.sh.erb' do
-    let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/restore.sh.erb" }
-
-    it 'it has all the expected lines' do
-      expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
-      expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
-      expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
-      expect(generated_script).to include('"/var/vcap/jobs/database-backup-restorer/bin/restore" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
-    end
-  end
 end

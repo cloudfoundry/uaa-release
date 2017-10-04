@@ -38,6 +38,7 @@ provides:
   type: uaa_db
   properties:
   - uaadb
+  - release_level_backup
 
 consumes:
 - name: router
@@ -54,7 +55,7 @@ packages:
 properties:
   #backup properties
   release_level_backup:
-    default: true
+    default: false
     description: "Set to true to include UAA database in backup and restore operations"
 
   #bpm

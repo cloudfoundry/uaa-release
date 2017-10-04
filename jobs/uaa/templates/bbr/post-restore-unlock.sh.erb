@@ -4,5 +4,6 @@
 <% if p('release_level_backup') %>
   /var/vcap/bosh/bin/monit start uaa
   #TODO monit is async, we need to wait until above action is successful
+  /var/vcap/jobs/uaa/bin/post-start
   sleep 10
 <% end %>

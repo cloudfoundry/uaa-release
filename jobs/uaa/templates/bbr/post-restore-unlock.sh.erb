@@ -4,6 +4,7 @@
 <% if p('release_level_backup') %>
   /var/vcap/bosh/bin/monit start uaa
   /var/vcap/jobs/uaa/bin/post-start
+
   #wait for route registrar
   sleep 10
 <% end %>

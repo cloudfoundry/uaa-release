@@ -102,6 +102,8 @@ variables:
   type: password
 - name: cf_admin_password
   type: password
+- name: uaa_jwt_signing_key
+  type: rsa
 
 releases:
 - name: uaa

@@ -116,7 +116,7 @@ logout:
   redirect:
     url: "/login"
     parameter:
-      disable: true
+      disable: false
 uaa:
   url: http://test.uaa.url
   limitedFunctionality:

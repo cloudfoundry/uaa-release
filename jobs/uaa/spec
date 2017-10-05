@@ -280,15 +280,13 @@ properties:
       scope.tokens.read: View details of your approvals you have granted to this and other applications
       scope.tokens.write: Cancel the approvals like this one that you have granted to this and other applications
   login.logout.redirect.url:
-    description: "The Location of the redirect header following a logout of the the UAA (/logout.do)."
+    description: "The Location of the redirect header following a logout of the the UAA (/login)."
     default: /login
   login.logout.redirect.parameter.disable:
-    description: "When set to false, this allows an operator to leverage an open redirect on the UAA (/logout.do?redirect=google.com). No open redirect enabled"
-    default: true
+    description: "Deprecated as of v52/uaa-4.7.0. Value ignored. Value is always false. Will be removed in the future."
+    default: false
   login.logout.redirect.parameter.whitelist:
-    description: "A list of URLs. When this list is non null, including empty, and disable=false,
-    logout redirects are allowed, but limited to the whitelist URLs. If a redirect parameter value is not white
-    listed, redirect will be to the default URL."
+    description: "A list of URLs that are accepted and honored as values to the `/logout.do?redirect` parameter . If a redirect parameter value is not white listed, redirect will be to the default URL, /login or to the value of uaa.login.logout.redirect.url if set."
   login.prompt.username.text:
     description: "The text used to prompt for a username during login"
     default: Email

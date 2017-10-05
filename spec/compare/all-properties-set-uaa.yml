@@ -239,7 +239,7 @@ logout:
   redirect:
     url: "/"
     parameter:
-      disable: true
+      disable: false
 uaa:
   url: http://all-properties-set:8888/uaa
   limitedFunctionality:

@@ -14,6 +14,7 @@ templates:
   bin/install_uaa_crt: bin/install_uaa_crt
   bin/pre-start: bin/pre-start
   bin/post-start: bin/post-start
+  bin/tomcat/setenv.sh: bin/tomcat/setenv.sh
 
   config/uaa.yml.erb: config/uaa.yml
   config/bpm.yml.erb: config/bpm.yml

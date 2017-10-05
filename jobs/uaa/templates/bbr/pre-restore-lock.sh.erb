@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# shutdown UAA
 <% if p('release_level_backup') %>
   /var/vcap/bosh/bin/monit stop uaa
-  #TODO monit is async, we need to wait until above action is successful
+
   sleep 10
 <% end %>

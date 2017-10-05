@@ -240,7 +240,7 @@ logout:
   redirect:
     url: /login
     parameter:
-      disable: true
+      disable: false
 
 login:
   url: https://login.bosh-lite.com

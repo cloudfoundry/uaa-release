@@ -61,7 +61,7 @@ properties:
 
   #bpm
   bpm.enabled:
-    description: "Experimental feature flag: Enable Bosh Process Manager"
+    description: "Experimental feature flag, do not use yet: Enable Bosh Process Manager"
     default: false
 
   # General server properties

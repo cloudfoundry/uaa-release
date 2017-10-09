@@ -183,7 +183,8 @@ echo -e "${CYAN}Pushing master branch and release tags${NC}"
 git push origin master --tags
 echo -e "${CYAN}Merging master to develop to avoid conflicts in the future${NC}"
 git checkout develop
-git merge --no-ff master -m "Bumping develop with master contents in preparation of next release"
+git pull origin develop
+git merge master -Xours
 git push origin develop
 
 # place the release on a branch, because rel-eng doesn't do git fetch --tags

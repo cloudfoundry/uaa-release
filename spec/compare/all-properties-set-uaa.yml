@@ -252,6 +252,8 @@ uaa:
       methods:
       - GET
       - HEAD
+  shutdown:
+    sleep: 10000
 
 links:
   global:

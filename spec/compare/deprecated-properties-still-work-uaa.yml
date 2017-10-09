@@ -129,6 +129,8 @@ uaa:
       methods:
       - GET
       - HEAD
+  shutdown:
+    sleep: 5000
 
 links:
   passwd: "/forgot_password"

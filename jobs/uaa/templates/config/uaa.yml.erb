@@ -545,6 +545,9 @@
       }
     },
     'uaa' => {
+      'shutdown' => {
+        'sleep' => p('uaa.shutdown.sleep')
+      },
       'url' => uaa_base,
       'limitedFunctionality' => {
         'enabled' => p('uaa.limitedFunctionality.enabled'),

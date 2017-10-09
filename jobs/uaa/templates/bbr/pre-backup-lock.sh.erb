@@ -1,0 +1,14 @@
+#!/bin/bash
+
+function enable_limited_functionality() {
+  touch /var/vcap/data/uaa/bbr_limited_mode.lock
+}
+
+<% if p('release_level_backup') %>
+  enable_limited_functionality
+
+  /var/vcap/bosh/bin/monit restart uaa
+  /var/vcap/jobs/uaa/bin/post-start
+
+  sleep 10
+<% end %>

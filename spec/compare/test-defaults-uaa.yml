@@ -116,9 +116,29 @@ logout:
   redirect:
     url: "/login"
     parameter:
-      disable: true
+      disable: false
 uaa:
   url: http://test.uaa.url
+  limitedFunctionality:
+    enabled: false
+    whitelist:
+      endpoints:
+      - /oauth/authorize/**
+      - /oauth/token/**
+      - /check_token/**
+      - /login/**
+      - /login.do
+      - /logout/**
+      - /logout.do
+      - /saml/**
+      - /autologin/**
+      - /authenticate/**
+      - /idp_discovery/**
+      methods:
+      - GET
+      - HEAD
+      - OPTIONS
+
 links:
   global:
     passwd: "/forgot_password"
@@ -207,6 +227,7 @@ login:
     signMetaData: true
     signRequest: true
     wantAssertionSigned: true
+    disableInResponseToCheck: false
 smtp:
   host: localhost
   port: 2525

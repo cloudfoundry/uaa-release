@@ -6,14 +6,29 @@ require 'spec_helper'
 describe 'bosh backup and restore script' do
   let(:properties) {
     {
-      'properties' => {
-        'uaadb' => {
-          'address' => '127.0.0.1',
-          'port' => 5432,
-          'db_scheme' => 'postgresql',
-          'databases' => [{'name' => 'uaa_db_name', 'tag' => 'uaa'}],
-          'roles' => [{'name' => 'admin', 'password' => 'example', 'tag' => 'admin'}]
+      'links' => {
+        'uaa_db' => {
+          'instances' => [],
+          'properties' => {
+            'release_level_backup' => true,
+            'uaadb' => {
+              'address' => '127.0.0.1',
+              'port' => 5432,
+              'db_scheme' => 'postgresql',
+              'databases' => [{'name' => 'uaa_db_name', 'tag' => 'uaa'}],
+              'roles' => [{'name' => 'admin', 'password' => 'example', 'tag' => 'admin'}]
+            }
+          }
         }
+      },
+      'properties' => {
+          'uaadb' => {
+              'address' => '127.0.0.1',
+              'port' => 5432,
+              'db_scheme' => 'postgresql',
+              'databases' => [{'name' => 'uaa_db_name', 'tag' => 'uaa'}],
+              'roles' => [{'name' => 'admin', 'password' => 'example', 'tag' => 'admin'}]
+          }
       }
     }
   }
@@ -22,57 +37,84 @@ describe 'bosh backup and restore script' do
     generated_script = ERB.new(File.read(script)).result(binding)
   }
 
-  describe 'backup.erb' do
-    let(:script) { "#{__dir__}/../jobs/uaa/templates/backup.erb" }
+  context 'release_level_backup is true' do
+    describe 'backup.sh.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/backup.sh.erb" }
 
-    it 'should run pg_dump' do
-      expect(generated_script).to include('export PGPASSWORD="example"')
-      expect(generated_script).to include('/var/vcap/packages/postgres-9.4/bin/pg_dump')
-      expect(generated_script).to include('--user="admin"')
-      expect(generated_script).to include('--host="127.0.0.1"')
-      expect(generated_script).to include('--port="5432"')
-      expect(generated_script).to include('"uaa_db_name"')
-    end
-
-    describe 'when uaadb.address is not set' do
-      it 'should not pg_dump' do
-        properties['properties']['uaadb']['address'] = nil
-        expect(generated_script).to_not include('pg_dump')
+      it 'it has all the expected lines' do
+        expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
+        expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
+        expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
+        expect(generated_script).to include('"/var/vcap/jobs/database-backup-restorer/bin/backup" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
       end
     end
 
-    describe 'when uaadb.db_scheme is not postgres' do
-      it 'should not pg_dump' do
-        properties['properties']['uaadb']['db_scheme'] = 'not-postgresql'
-        expect(generated_script).to_not include('pg_dump')
+    describe 'config.json.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
+
+      it 'it has all the expected lines' do
+        expect(generated_script).to include('"username": "admin"')
+        expect(generated_script).to include('"password": "example"')
+        expect(generated_script).to include('"host": "127.0.0.1"')
+        expect(generated_script).to include('"port": 5432')
+        expect(generated_script).to include('"database": "uaa_db_name"')
+        expect(generated_script).to include('"adapter": "postgres"')
+      end
+    end
+
+    describe 'restore.sh.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/restore.sh.erb" }
+
+      it 'it has all the expected lines' do
+        expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
+        expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
+        expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
+        expect(generated_script).to include('"/var/vcap/jobs/database-backup-restorer/bin/restore" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
+      end
+    end
+  end
+
+
+  context 'release_level_backup is false' do
+
+    before(:each) do
+      properties['links']['uaa_db']['properties']['release_level_backup'] = false
+    end
+
+    describe 'backup.sh.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/backup.sh.erb" }
+
+      it 'does not have the backup command' do
+        expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
+        expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
+        expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
+        expect(generated_script).not_to include('"/var/vcap/jobs/database-backup-restorer/bin/backup" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
+      end
+    end
+
+    describe 'config.json.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
+
+      it 'it has all the expected lines' do
+        expect(generated_script).to include('"username": "admin"')
+        expect(generated_script).to include('"password": "example"')
+        expect(generated_script).to include('"host": "127.0.0.1"')
+        expect(generated_script).to include('"port": 5432')
+        expect(generated_script).to include('"database": "uaa_db_name"')
+        expect(generated_script).to include('"adapter": "postgres"')
+      end
+    end
+
+    describe 'restore.sh.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/restore.sh.erb" }
+
+      it 'does not have the restore command' do
+        expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
+        expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
+        expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
+        expect(generated_script).not_to include('"/var/vcap/jobs/database-backup-restorer/bin/restore" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
       end
     end
   end
 
-  describe 'restore.erb' do
-    let(:script) { "#{__dir__}/../jobs/uaa/templates/restore.erb" }
-
-    it 'should run pg_restore' do
-      expect(generated_script).to include('export PGPASSWORD="example"')
-      expect(generated_script).to include('/var/vcap/packages/postgres-9.4/bin/pg_restore')
-      expect(generated_script).to include('--user="admin"')
-      expect(generated_script).to include('--host="127.0.0.1"')
-      expect(generated_script).to include('--port="5432"')
-      expect(generated_script).to include('--dbname "uaa_db_name"')
-    end
-
-    describe 'when uaadb.address is not set' do
-      it 'should not pg_restore' do
-        properties['properties']['uaadb']['address'] = nil
-        expect(generated_script).to_not include('pg_restore')
-      end
-    end
-
-    describe 'when uaadb.db_scheme is not postgres' do
-      it 'should not pg_dump' do
-        properties['properties']['uaadb']['db_scheme'] = 'not-postgresql'
-        expect(generated_script).to_not include('pg_restore')
-      end
-    end
-  end
 end

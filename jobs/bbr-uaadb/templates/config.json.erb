@@ -1,0 +1,35 @@
+<%=
+    require 'json'
+
+    # TODO Implement Link Support into rspec tests
+
+    db = link('uaa_db').p('uaadb.databases').find { |db| db['tag'] == 'uaa' }
+    db_role = link('uaa_db').p('uaadb.roles').find { |role| role['tag'] == 'admin' }
+    db_address = nil
+    link('uaa_db').if_p('uaadb.address') do |host|
+      db_address = host
+    end.else do
+      db_address = link('database').instances[0].address
+    end
+    db_port = link('uaa_db').p('uaadb.port')
+    db_adapter = link('uaa_db').p('uaadb.db_scheme')
+
+    # db_port = p("uaadb.port")
+    # db = p('uaadb.databases').find { |db| db['tag'] == 'uaa' }
+    # db_role = p('uaadb.roles').find { |role| role['tag'] == 'admin' }
+    # db_address = p('uaadb.address')
+    # db_adapter = p('uaadb.db_scheme')
+    if db_adapter == 'postgresql'
+      db_adapter = 'postgres'
+    end
+
+
+    JSON.pretty_generate(
+      'username' => db_role['name'],
+      'password' => db_role['password'],
+      'host' => db_address,
+      'port' => db_port,
+      'database' => db['name'],
+      'adapter' => db_adapter,
+    )
+%>

@@ -41,6 +41,24 @@ function process_certs {
     fi
 }
 
+function setup_directories {
+    mkdir -p /var/vcap/sys/log/uaa
+
+    chown -R vcap:vcap /var/vcap/sys/log/uaa
+
+    # We want to keep packages pristine, since tomcat is modified in place we stage it elsewhere.
+    rm -rf /var/vcap/data/uaa/tomcat
+    mkdir -p /var/vcap/data/uaa/
+    cp -a /var/vcap/packages/uaa/tomcat /var/vcap/data/uaa/
+    cp -a /var/vcap/jobs/uaa/config/tomcat/* /var/vcap/data/uaa/tomcat/conf/
+    cp -a /var/vcap/jobs/uaa/bin/tomcat/* /var/vcap/data/uaa/tomcat/bin/
+    chown -R vcap:vcap /var/vcap/data/uaa/
+
+    # We don't think this does anything since the variable is not set
+    # Keeping it currently to discuss whether to remove or whether this is a regression
+    rm -rf $KEY_STORE_FILE
+}
+
 if [ -a $CERT_CACHE_FILE ] && [ -a $TRUST_STORE_FILE ]; then
     if  diff $CERT_CACHE_FILE $CERT_FILE >/dev/null; then
       echo "No changes to CA certificates. Will not build Java keystore file."
@@ -53,4 +71,8 @@ else
 fi
 cp $TRUST_STORE_FILE $CONF_DIR
 
+setup_directories
+
 echo "uaa-pre-start - completed at `date`"
+
+exit 0

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+function disable_limited_functionality() {
+  rm /var/vcap/data/uaa/bbr_limited_mode.lock
+}
+
+<% if p('release_level_backup') %>
+  disable_limited_functionality
+
+  /var/vcap/bosh/bin/monit restart uaa
+  /var/vcap/jobs/uaa/bin/post-start
+
+  # wait for route registrar
+  sleep 10
+<% end %>

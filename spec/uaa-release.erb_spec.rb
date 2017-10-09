@@ -2,16 +2,15 @@ require 'rspec'
 require 'yaml'
 require 'bosh/template/evaluation_context'
 require 'json'
-require 'deep_merge'
 require 'support/yaml_eq'
 require 'spec_helper'
 
 describe 'uaa-release erb generation' do
-  def perform_erb_transformation_as_yaml erb_file, manifest_file
-    YAML.load(perform_erb_transformation_as_string erb_file, manifest_file)
+  def perform_erb_transformation_as_yaml(erb_file, manifest_file)
+    YAML.load(perform_erb_transformation_as_string(erb_file, manifest_file))
   end
 
-  def perform_erb_transformation_as_string erb_file, manifest_file
+  def perform_erb_transformation_as_string(erb_file, manifest_file)
     binding = Bosh::Template::EvaluationContext.new(manifest_file).get_binding
     ERB.new(erb_file).result(binding)
   end
@@ -54,7 +53,7 @@ describe 'uaa-release erb generation' do
     let(:generated_cf_manifest) { generate_cf_manifest(input, links) }
     let(:input) { 'spec/input/bosh-lite.yml' }
     let(:output_uaa) { 'spec/compare/bosh-lite-uaa.yml' }
-    let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
 
     let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
 
@@ -99,7 +98,7 @@ describe 'uaa-release erb generation' do
       let(:output_log4j) { 'spec/compare/default-log4j.properties' }
 
       context 'when uaa.yml.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
 
         it 'it matches' do
           yml_compare(output_uaa, parsed_yaml.to_yaml)
@@ -107,7 +106,7 @@ describe 'uaa-release erb generation' do
       end
 
       context 'when log4j.properties.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/log4j.properties.erb' }
+        let(:erb_template) { '../jobs/uaa/templates/config/log4j.properties.erb' }
         let(:as_yml) { false }
 
         it 'it matches' do
@@ -122,7 +121,7 @@ describe 'uaa-release erb generation' do
       let(:output_log4j) { 'spec/compare/all-properties-set-log4j.properties' }
 
       context 'when uaa.yml.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
 
         it 'it matches' do
           yml_compare(output_uaa, parsed_yaml.to_yaml)
@@ -130,7 +129,7 @@ describe 'uaa-release erb generation' do
       end
 
       context 'when log4j.properties.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/log4j.properties.erb' }
+        let(:erb_template) { '../jobs/uaa/templates/config/log4j.properties.erb' }
         let(:as_yml) { false }
 
         it 'it matches' do
@@ -145,7 +144,7 @@ describe 'uaa-release erb generation' do
       let(:output_log4j) { 'spec/compare/default-log4j.properties' }
 
       context 'when uaa.yml.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
 
         it 'it matches' do
           yml_compare output_uaa, parsed_yaml.to_yaml
@@ -153,7 +152,7 @@ describe 'uaa-release erb generation' do
       end
 
       context 'when log4j.properties.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/log4j.properties.erb' }
+        let(:erb_template) { '../jobs/uaa/templates/config/log4j.properties.erb' }
         let(:as_yml) { false }
 
         it 'it matches' do
@@ -167,7 +166,7 @@ describe 'uaa-release erb generation' do
       let(:output_uaa) { 'spec/compare/deprecated-properties-still-work-uaa.yml' }
 
       context 'when uaa.yml.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
 
         it 'it matches' do
           yml_compare output_uaa, parsed_yaml.to_yaml
@@ -184,7 +183,7 @@ describe 'uaa-release erb generation' do
     let(:input) { 'spec/input/all-properties-set.yml' }
 
     context 'and token format is invalid' do
-      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
 
       it 'raises an error' do
         generated_cf_manifest['properties']['uaa']['jwt']['refresh']['format'] = 'invalidformat';
@@ -200,7 +199,7 @@ describe 'uaa-release erb generation' do
     let(:as_yml) { true }
     let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
     let(:input) { 'spec/input/all-properties-set.yml' }
-    let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
 
     context 'and text color is in hex format' do
       it 'does not raise an error' do
@@ -297,7 +296,7 @@ describe 'uaa-release erb generation' do
     let(:input) { 'spec/input/all-properties-set.yml' }
 
     context 'and redirect_uri or redirect_url are set' do
-      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
 
       rejected_parameters = ['redirect_uri', 'redirect_url']
       rejected_parameters .each do |property|
@@ -311,7 +310,7 @@ describe 'uaa-release erb generation' do
     end
 
     context 'and invalid integer values are set' do
-      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
 
       invalid_integers = ['access-token-validity', 'refresh-token-validity']
       invalid_integers .each do |property|
@@ -325,7 +324,7 @@ describe 'uaa-release erb generation' do
     end
 
     context 'and boolean integer values are set' do
-      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
 
       invalid_integers = ['override', 'show-on-homepage']
       invalid_integers .each do |property|
@@ -339,7 +338,7 @@ describe 'uaa-release erb generation' do
     end
 
     context 'and client_credentials is missing authorities' do
-      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
 
       it 'raises an error for client_credentials' do
         generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = 'client_credentials';
@@ -351,7 +350,7 @@ describe 'uaa-release erb generation' do
     end
 
     context 'and scopes are required on a client' do
-      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
       grant_types_requiring_secret = ['implicit',
                                       'authorization_code',
                                       'password',
@@ -376,7 +375,7 @@ describe 'uaa-release erb generation' do
     let(:generated_cf_manifest) { generate_cf_manifest(input)}
     let(:input) { 'spec/input/test-defaults.yml' }
     let(:output_uaa) { 'spec/compare/test-defaults-uaa.yml' }
-    let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
     let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
 
     it 'it adds encrypt in the URL' do
@@ -393,7 +392,7 @@ describe 'uaa-release erb generation' do
     let(:input) { 'spec/input/all-properties-set.yml' }
 
     context 'the uaa.yml.erb' do
-      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
       context 'legacy saml keys are sufficient' do
         it 'does not throw an error' do
           generated_cf_manifest['properties']['login']['saml'].delete('keys')
@@ -543,7 +542,7 @@ describe 'uaa-release erb generation' do
       end
 
       context 'authorized grant types is missing' do
-        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
 
         it 'raises an error' do
           generated_cf_manifest['properties']['uaa']['clients']['app'].delete('authorized-grant-types');
@@ -554,7 +553,7 @@ describe 'uaa-release erb generation' do
       end
 
       context 'client secret is missing from non implicit clients' do
-        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
         grant_types_requiring_secret = ['client_credentials',
                                         'authorization_code',
                                         'password',
@@ -574,7 +573,7 @@ describe 'uaa-release erb generation' do
       end
 
       context 'redirect-uri is missing from required grant types' do
-        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
         grant_types_requiring_secret = ['authorization_code', 'implicit']
         grant_types_requiring_secret.each do |grant_type|
           it "raises an error for type:#{grant_type}" do
@@ -593,7 +592,7 @@ describe 'uaa-release erb generation' do
           www.*.invalid.com/*/with/path** http://username:password@*.com http://username:password@*.com/path)
 
       context 'redirect-uri is invalid' do
-        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
         grant_types_requiring_secret = ['authorization_code', 'implicit']
         invalid_redirect_uris.each do |uri| grant_types_requiring_secret.each do |grant_type|
           it "raises an error for type:#{grant_type}" do
@@ -607,7 +606,7 @@ describe 'uaa-release erb generation' do
       end
 
       context 'redirect-uri is invalid' do
-        let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
         grant_types_requiring_secret = ['authorization_code', 'implicit']
         invalid_redirect_uris.each do |uri| grant_types_requiring_secret.each do |grant_type|
           it "raises an error for type:#{grant_type}" do
@@ -623,7 +622,7 @@ describe 'uaa-release erb generation' do
     end
 
     context 'the uaa.yml.erb' do
-      let(:erb_template) { '../jobs/uaa/templates/uaa.yml.erb' }
+      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
       context 'critical JWT key properties are missing' do
         it 'throws an error' do
           generated_cf_manifest['properties']['uaa']['jwt'].delete('signing_key')
@@ -677,9 +676,9 @@ describe 'uaa-release erb generation' do
   def self.perform_compare(input, output_uaa, output_login, output_log4j)
     generated_cf_manifest = generate_cf_manifest(input)
 
-    parsed_uaa_yaml = read_and_parse_string_template '../jobs/uaa/templates/uaa.yml.erb', generated_cf_manifest, true
-    parsed_login_yaml =  read_and_parse_string_template '../jobs/uaa/templates/login.yml.erb', generated_cf_manifest, true
-    parsed_log4j_properties =  read_and_parse_string_template '../jobs/uaa/templates/log4j.properties.erb', generated_cf_manifest, false
+    parsed_uaa_yaml = read_and_parse_string_template '../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true
+    parsed_login_yaml =  read_and_parse_string_template '../jobs/uaa/templates/config/login.yml.erb', generated_cf_manifest, true
+    parsed_log4j_properties =  read_and_parse_string_template '../jobs/uaa/templates/config/log4j.properties.erb', generated_cf_manifest, false
 
     doSaveOutput = ENV['TEST_SAVE'] ? ENV['TEST_SAVE'] : 'false'
 
@@ -709,35 +708,35 @@ describe 'uaa-release erb generation' do
 
     for addProperty in login_yaml_required_properties
       begin
-        read_and_parse_string_template '../jobs/uaa/templates/login.yml.erb', generated_cf_manifest, true
+        read_and_parse_string_template '../jobs/uaa/templates/config/login.yml.erb', generated_cf_manifest, true
         raise 'This line should not be reached'
       rescue ArgumentError
           # expected
       end
       add_param_to_hash addProperty, 'value', generated_cf_manifest
     end
-    read_and_parse_string_template '../jobs/uaa/templates/login.yml.erb', generated_cf_manifest, true
+    read_and_parse_string_template '../jobs/uaa/templates/config/login.yml.erb', generated_cf_manifest, true
 
     begin
-      read_and_parse_string_template '../jobs/uaa/templates/uaa.yml.erb', generated_cf_manifest, true
+      read_and_parse_string_template '../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true
       raise 'This line should not be reached'
     rescue ArgumentError
       # expected
     end
     add_param_to_hash 'properties.uaa.jwt.signing_key', 'value', generated_cf_manifest
-    read_and_parse_string_template '../jobs/uaa/templates/uaa.yml.erb', generated_cf_manifest, true
+    read_and_parse_string_template '../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true
     generated_cf_manifest['properties']['uaa']['jwt']['signing_key'] = nil
     begin
-      read_and_parse_string_template '../jobs/uaa/templates/uaa.yml.erb', generated_cf_manifest, true
+      read_and_parse_string_template '../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true
       raise 'This line should not be reached'
     rescue ArgumentError
       # expected
     end
     add_param_to_hash 'properties.uaa.jwt.policy.active_key_id', 'value', generated_cf_manifest
-    read_and_parse_string_template '../jobs/uaa/templates/uaa.yml.erb', generated_cf_manifest, true
+    read_and_parse_string_template '../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true
     generated_cf_manifest['properties']['uaa']['jwt']['policy']['active_key_id'] = nil
     begin
-      read_and_parse_string_template '../jobs/uaa/templates/uaa.yml.erb', generated_cf_manifest, true
+      read_and_parse_string_template '../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true
       raise 'This line should not be reached'
     rescue ArgumentError
       # expected
@@ -754,7 +753,7 @@ describe 'uaa-release erb generation' do
     let(:output_log4j) { 'spec/compare/default-log4j.properties' }
 
     before(:each) do
-      @json = JSON.parse(read_and_parse_string_template('../jobs/uaa/templates/uaa.yml.erb', generated_cf_manifest, true, :doc))
+      @json = JSON.parse(read_and_parse_string_template('../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true, :doc))
     end
 
     it 'outputs json for one-to-one mappings' do

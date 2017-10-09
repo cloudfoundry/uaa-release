@@ -28,17 +28,11 @@ fi
 #setup Java path
 export PATH=$JAVA_HOME/bin:$PATH
 
-#build cloud foundry STATSD war
-cd ${BUILD_DIR}/uaa_utils/identity-tools/statsd
-GIT_DIR=$(find $RELEASE_DIR -path "*/modules/src/identity-tools") ./gradlew clean assemble
-cp build/libs/cloudfoundry-identity-statsd-*.war ${BUILD_DIR}/uaa/cloudfoundry-identity-statsd.war
-cd ${BUILD_DIR}
-rm -rf ${BUILD_DIR}/uaa_utils/identity-tools
-
 #build cloud foundry UAA war
 cd ${BUILD_DIR}/uaa
-GIT_DIR=$(find $RELEASE_DIR -path "*/modules/src/uaa") ./gradlew :assemble
+GIT_DIR=$(find $RELEASE_DIR -path "*/modules/src/uaa") ./gradlew :clean :assemble
 cp uaa/build/libs/cloudfoundry-identity-uaa-*.war ${BUILD_DIR}/uaa/cloudfoundry-identity-uaa.war
+cp statsd/build/libs/cloudfoundry-identity-statsd-*.war ${BUILD_DIR}/uaa/cloudfoundry-identity-statsd.war
 
 #clean build UAA data and build tools (java)
 ./gradlew clean

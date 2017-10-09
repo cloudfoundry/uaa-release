@@ -61,7 +61,7 @@
   end
 
   if !!defined?(doc) && doc == 'true'
-    require_relative '../../../docs/doc_overrides' unless defined?(MockProperty)
+    require_relative '../../../../docs/doc_overrides' unless defined?(MockProperty)
     extend DocOverrides
   end
 
@@ -99,6 +99,7 @@
   uaa_role = p_arr('uaadb.roles').find { |role| role['tag'] == 'admin' }
   protocol = p('login.protocol')
   uaa_db_scheme = p('uaadb.db_scheme')
+  uaa_db_scheme = uaa_db_scheme == 'postgres' ? 'postgresql' : uaa_db_scheme
   issuer_uri = p('uaa.issuer', p('uaa.url'))
   uaa_db_tls_enabled = p('uaadb.tls_enabled')
   uaa_db_address = nil
@@ -112,7 +113,7 @@
     end
   end
 
-  spring_profiles = p('uaadb.db_scheme')
+  spring_profiles = uaa_db_scheme
   if p_opt('uaa.ldap.enabled')
     spring_profiles = spring_profiles + ',ldap'
   end
@@ -130,7 +131,7 @@
       'config' => '/var/vcap/jobs/uaa/config/log4j.properties'
     },
     'database' => {
-      'url' =>  "jdbc:#{p('uaadb.db_scheme')}://#{uaa_db_address}:#{p('uaadb.port')}/#{uaa_db['name']}",
+      'url' =>  "jdbc:#{uaa_db_scheme}://#{uaa_db_address}:#{p('uaadb.port')}/#{uaa_db['name']}",
       'username' => uaa_role['name'],
       'password' => uaa_role['password'],
       'maxactive' => p('uaa.database.max_connections'),
@@ -183,7 +184,7 @@
 
 
   if uaa_db_scheme == 'sqlserver' then
-    params['database']['url'] = "jdbc:#{p('uaadb.db_scheme')}://#{uaa_db_address}:#{p('uaadb.port')};databaseName=#{uaa_db['name']}"
+    params['database']['url'] = "jdbc:#{uaa_db_scheme}://#{uaa_db_address}:#{p('uaadb.port')};databaseName=#{uaa_db['name']}"
   end
 
   if uaa_db_tls_enabled
@@ -539,12 +540,19 @@
       'redirect' => {
         'url' => p('login.logout.redirect.url'),
         'parameter' => {
-          'disable' => p('login.logout.redirect.parameter.disable')
+          'disable' => false
         }
       }
     },
     'uaa' => {
-      'url' => uaa_base
+      'url' => uaa_base,
+      'limitedFunctionality' => {
+        'enabled' => p('uaa.limitedFunctionality.enabled'),
+        'whitelist' => {
+          'endpoints' => p('uaa.limitedFunctionality.whitelist.endpoints'),
+          'methods' => p('uaa.limitedFunctionality.whitelist.methods')
+        }
+      }
     },
     'login' => {
       'url' => login_url,
@@ -657,6 +665,7 @@
   add_value(params, p('login.saml.signMetaData'), 'login', 'saml', 'signMetaData') if p_opt('login.saml.signMetaData')
   add_value(params, p('login.saml.signRequest'), 'login', 'saml', 'signRequest') if p_opt('login.saml.signRequest')
   add_value(params, p('login.saml.wantAssertionSigned'), 'login', 'saml', 'wantAssertionSigned')
+  add_value(params, p('login.saml.disableInResponseToCheck'), 'login', 'saml', 'disableInResponseToCheck')
   if_p('login.saml.signatureAlgorithm') { |alg| add_value(params, alg, 'login', 'saml', 'signatureAlgorithm') }
 
   if_p('login.saml.providers') do |samlProviders|

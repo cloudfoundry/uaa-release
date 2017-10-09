@@ -159,9 +159,6 @@ oauth:
     - scim.me
     - cloud_controller.read
     - cloud_controller.write
-    - cloud_controller_service_permissions.read
-    - password.write
-    - uaa.user
     - approvals.me
     - oauth.approvals
     - notification_preferences.read
@@ -242,9 +239,20 @@ logout:
   redirect:
     url: "/"
     parameter:
-      disable: true
+      disable: false
 uaa:
   url: http://all-properties-set:8888/uaa
+  limitedFunctionality:
+    enabled: false
+    whitelist:
+      endpoints:
+      - /oauth/authorize/**
+      - /oauth/token/**
+      - /check_token/**
+      methods:
+      - GET
+      - HEAD
+
 links:
   global:
     passwd: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/forgot_password"
@@ -385,6 +393,7 @@ login:
     signMetaData: true
     signRequest: true
     wantAssertionSigned: true
+    disableInResponseToCheck: true
     providers:
       my-identity-provider:
         metadataTrustCheck: false

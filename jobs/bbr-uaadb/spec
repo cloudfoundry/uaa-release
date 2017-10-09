@@ -1,0 +1,16 @@
+---
+name: bbr-uaadb
+
+templates:
+  config.json.erb: config/config.json
+  backup.sh.erb: bin/bbr/backup
+  restore.sh.erb: bin/bbr/restore
+
+packages: []
+
+consumes:
+- name: uaa_db
+  type: uaa_db
+- name: database # used as a fallback if `uaa_db.uaadb.address` is omitted
+  type: database
+  optional: true

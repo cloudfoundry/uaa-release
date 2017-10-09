@@ -205,6 +205,16 @@ require_https: false
 
 uaa:
   url: https://uaa.bosh-lite.com
+  limitedFunctionality:
+    enabled: false
+    whitelist:
+      endpoints:
+      - /oauth/authorize/**
+      - /oauth/token/**
+      - /check_token/**
+      methods:
+      - GET
+      - HEAD
 
 links:
   global:
@@ -230,7 +240,7 @@ logout:
   redirect:
     url: /login
     parameter:
-      disable: true
+      disable: false
 
 login:
   url: https://login.bosh-lite.com
@@ -286,6 +296,7 @@ login:
     signMetaData: true
     signRequest: true
     wantAssertionSigned: true
+    disableInResponseToCheck: false
     signatureAlgorithm: SHA256
     socket:
       connectionManagerTimeout: 10000

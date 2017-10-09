@@ -4,27 +4,42 @@ name: uaa
 description: "The UAA is the identity management service for Cloud Foundry. It's primary role is as an OAuth2 provider, issuing tokens for client applications to use when they act on behalf of Cloud Foundry users. It can also authenticate users with their Cloud Foundry credentials, and can act as an SSO service using those credentials (or others). It has endpoints for managing user accounts and for registering OAuth2 clients, as well as various other management functions."
 
 templates:
-  uaa_ctl.erb: bin/uaa_ctl
-  install_crt: bin/install_crt
-  dns_health_check.erb: bin/dns_health_check
-  health_check: bin/health_check
-  install_uaa_crt: bin/install_uaa_crt
-  pre-start: bin/pre-start
-  post-start: bin/post-start
-  backup.erb: bin/bbr/backup
-  restore.erb: bin/bbr/restore
+  bin/uaa.erb: bin/uaa
+  bin/uaa_ctl.erb: bin/uaa_ctl
+  bin/configure_proxy.erb: bin/configure_proxy
+  bin/configure_newrelic.erb: bin/configure_newrelic
+  bin/install_crt: bin/install_crt
+  bin/dns_health_check.erb: bin/dns_health_check
+  bin/health_check: bin/health_check
+  bin/install_uaa_crt: bin/install_uaa_crt
+  bin/pre-start: bin/pre-start
+  bin/post-start: bin/post-start
+  bin/tomcat/setenv.sh: bin/tomcat/setenv.sh
 
-  uaa.yml.erb: config/uaa.yml
-  newrelic.yml.erb: config/newrelic.yml
-  varz.yml: config/varz.yml
-  log4j.properties.erb: config/log4j.properties
-  varz.log4j.properties: config/varz.log4j.properties
-  tomcat.logging.properties: config/tomcat/logging.properties
-  tomcat.server.xml.erb: config/tomcat/server.xml
-  tomcat.context.xml.erb: config/tomcat/context.xml
-  ldap.crt.erb: config/ldap.crt
-  messages.properties.erb: config/messages.properties
-  uaa.crt.erb: config/uaa.crt
+  config/uaa.yml.erb: config/uaa.yml
+  config/bpm.yml.erb: config/bpm.yml
+  config/newrelic.yml.erb: config/newrelic.yml
+  config/varz.yml: config/varz.yml
+  config/log4j.properties.erb: config/log4j.properties
+  config/varz.log4j.properties: config/varz.log4j.properties
+  config/ldap.crt.erb: config/ldap.crt
+  config/messages.properties.erb: config/messages.properties
+  config/uaa.crt.erb: config/uaa.crt
+  config/tomcat/tomcat.logging.properties: config/tomcat/logging.properties
+  config/tomcat/tomcat.server.xml.erb: config/tomcat/server.xml
+  config/tomcat/tomcat.context.xml.erb: config/tomcat/context.xml
+
+  bbr/pre-backup-lock.sh.erb: bin/bbr/pre-backup-lock
+  bbr/pre-restore-lock.sh.erb: bin/bbr/pre-restore-lock
+  bbr/post-backup-unlock.sh.erb: bin/bbr/post-backup-unlock
+  bbr/post-restore-unlock.sh.erb: bin/bbr/post-restore-unlock
+
+provides:
+- name: uaa_db
+  type: uaa_db
+  properties:
+  - uaadb
+  - release_level_backup
 
 consumes:
 - name: router
@@ -39,6 +54,16 @@ packages:
   - uaa
 
 properties:
+  #backup properties
+  release_level_backup:
+    default: false
+    description: "Set to true to include UAA database in backup and restore operations"
+
+  #bpm
+  bpm.enabled:
+    description: "Experimental feature flag, do not use yet: Enable Bosh Process Manager"
+    default: false
+
   # General server properties
   uaa.catalina_opts:
     description: "The options used to configure Tomcat"
@@ -93,6 +118,31 @@ properties:
   uaa.logging_use_rfc3339:
     description: "Sets the time format for log messages to be yyyy-MM-dd'T'HH:mm:ss.SSSXXX instead of yyyy-MM-dd HH:mm:ss.SSS"
     default: false
+  uaa.limitedFunctionality.enabled:
+    description: |
+      Setting this flag to true renders UAA in a degraded mode with limited access to the UAA API.
+      The allowed API's only a subset of the UAA API and UI needed for Authentication and Authorization.
+    default: false
+  uaa.limitedFunctionality.whitelist.endpoints:
+    description: "Set the whitelisted API for UAA in degraded mode. Methods and Endpoints are unioned with each other: i.e. all methods are permitted for a whitelisted endpoint, and all endpoints are permitted for a whitelisted method"
+    default:
+      - /oauth/authorize/**
+      - /oauth/token/**
+      - /check_token/**
+      - /login/**
+      - /login.do
+      - /logout/**
+      - /logout.do
+      - /saml/**
+      - /autologin/**
+      - /authenticate/**
+      - /idp_discovery/**
+  uaa.limitedFunctionality.whitelist.methods:
+    description: "Set the whitelisted API for UAA in degraded mode. Methods and Endpoints are unioned with each other: i.e. all methods are permitted for a whitelisted endpoint, and all endpoints are permitted for a whitelisted method"
+    default:
+      - GET
+      - HEAD
+      - OPTIONS
 
   # SSL
   login.protocol:
@@ -231,15 +281,13 @@ properties:
       scope.tokens.read: View details of your approvals you have granted to this and other applications
       scope.tokens.write: Cancel the approvals like this one that you have granted to this and other applications
   login.logout.redirect.url:
-    description: "The Location of the redirect header following a logout of the the UAA (/logout.do)."
+    description: "The Location of the redirect header following a logout of the the UAA (/login)."
     default: /login
   login.logout.redirect.parameter.disable:
-    description: "When set to false, this allows an operator to leverage an open redirect on the UAA (/logout.do?redirect=google.com). No open redirect enabled"
-    default: true
+    description: "Deprecated as of v52/uaa-4.7.0. Value ignored. Value is always false. Will be removed in the future."
+    default: false
   login.logout.redirect.parameter.whitelist:
-    description: "A list of URLs. When this list is non null, including empty, and disable=false,
-    logout redirects are allowed, but limited to the whitelist URLs. If a redirect parameter value is not white
-    listed, redirect will be to the default URL."
+    description: "A list of URLs that are accepted and honored as values to the `/logout.do?redirect` parameter . If a redirect parameter value is not white listed, redirect will be to the default URL, /login or to the value of uaa.login.logout.redirect.url if set."
   login.prompt.username.text:
     description: "The text used to prompt for a username during login"
     default: Email
@@ -997,6 +1045,11 @@ properties:
   login.saml.wantAssertionSigned:
     description: "Global property to request that external IDPs sign their SAML assertion before sending them to the UAA"
     default: true
+  login.saml.disableInResponseToCheck:
+    description: |
+      Disable InResponseToField SAML validation on the default zone. For non default zone, this flag is part of the zone configuration.
+      Please see: https://docs.spring.io/spring-security-saml/docs/current/reference/html/chapter-troubleshooting.html
+    default: false
   login.saml.signatureAlgorithm:
     description: "Signature hashing algorithm for SAML. Can be SHA1, SHA256, or SHA512."
     example: SHA256

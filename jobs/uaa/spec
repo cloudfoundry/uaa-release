@@ -124,7 +124,7 @@ properties:
       The allowed API's only a subset of the UAA API and UI needed for Authentication and Authorization.
     default: false
   uaa.limitedFunctionality.whitelist.endpoints:
-    description: "Set the whitelisted endpoints for UAA in limited mode. Methods and endpoints are unioned with each other: i.e. all methods are permitted for a whitelisted endpoint"
+    description: "Set the whitelisted API for UAA in degraded mode. Methods and Endpoints are unioned with each other: i.e. all methods are permitted for a whitelisted endpoint, and all endpoints are permitted for a whitelisted method"
     default:
       - /oauth/authorize/**
       - /oauth/token/**
@@ -138,7 +138,7 @@ properties:
       - /authenticate/**
       - /idp_discovery/**
   uaa.limitedFunctionality.whitelist.methods:
-    description: "Set the whitelisted methods for UAA in limted mode. Methods and endpoints are unioned with each other: i.e. all endpoints are permitted for a whitelisted method"
+    description: "Set the whitelisted API for UAA in degraded mode. Methods and Endpoints are unioned with each other: i.e. all methods are permitted for a whitelisted endpoint, and all endpoints are permitted for a whitelisted method"
     default:
       - GET
       - HEAD

@@ -27,7 +27,25 @@ echo "[uaa-start] Health check STATUS file created"
 
 echo "[uaa-start] Calling Tomcat start up command"
 <% if p("bpm.enabled") %>
-  exec /var/vcap/packages/uaa/tomcat/bin/catalina.sh run
+    graceful_uaa_exit() {
+      echo "[uaa-trap] trap invoked"
+      trap - TERM INT
+      echo "[uaa-trap] trap disabled"
+      rm -f /var/vcap/data/uaa/uaa_status
+      echo "[uaa-trap] status file deleted, letting async jobs pick up changes"
+      sleep 5
+      kill -TERM 0
+      echo "[uaa-trap] sent signal to tomcat, waiting to finish"
+      wait
+      echo "[uaa-trap] trap completed"
+    }
+    trap 'graceful_uaa_exit' TERM INT
+    /var/vcap/packages/uaa/tomcat/bin/catalina.sh run &
+    echo "[uaa-start] uaa/tomcat started in background. Waiting for signals"
+    wait
+    EXIT_STATUS=$?
+    echo "[uaa-start] uaa/tomcat job exiting."
+    exit $EXIT_STATUS
 <% else %>
   exec chpst -u vcap:vcap /var/vcap/data/uaa/tomcat/bin/catalina.sh run
 <% end %>

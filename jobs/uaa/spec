@@ -71,6 +71,12 @@ properties:
   uaa.port:
     description: "Port that uaa will accept connections on"
     default: 8080
+  uaa.shutdown.sleep:
+    description: |
+      Used for draining connection during a graceful shutdown. When the UAA process receives a kill signal
+      it will delay the shutdown for the configured number of milliseconds. During this period,
+      the /healthz endpoint will return 503/stopping while all other endpoints continue to function.
+    default: 5000
   uaa.url:
     description: "The base url of the UAA"
   uaa.zones.internal.hostnames:

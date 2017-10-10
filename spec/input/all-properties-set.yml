@@ -639,6 +639,8 @@ properties:
       - roles
       - user_attributes
       - uaa.offline_token
+    shutdown:
+      sleep: 10000
     zones:
       internal:
         hostnames:

@@ -138,6 +138,8 @@ uaa:
       - GET
       - HEAD
       - OPTIONS
+  shutdown:
+    sleep: 5000
 
 links:
   global:

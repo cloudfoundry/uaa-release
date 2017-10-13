@@ -7,3 +7,5 @@ processes:
     CLOUD_FOUNDRY_CONFIG_PATH: /var/vcap/jobs/uaa/config
     CATALINA_OPTS: "<%= p('uaa.catalina_opts') %>"
   args: []
+  limits:
+    open_files: 65536

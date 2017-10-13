@@ -43,6 +43,7 @@ ensure_no_more_tomcat() {
 
 case $1 in
   start)
+    ulimit -n 65536
     export CLOUD_FOUNDRY_CONFIG_PATH=/var/vcap/jobs/uaa/config
     export CATALINA_OPTS="<%= p('uaa.catalina_opts') %>"
 

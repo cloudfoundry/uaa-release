@@ -24,7 +24,7 @@ export JAVA_OPTS="-DPID=$$ -Dsun.net.inetaddr.ttl=60 -Dnetworkaddress.cache.ttl=
 echo "[uaa-start] Creating health check STATUS file"
 touch /var/vcap/data/uaa/uaa_status
 echo "[uaa-start] Health check STATUS file created"
-
+ulimit -n 65536
 echo "[uaa-start] Calling Tomcat start up command"
 <% if p("bpm.enabled") %>
     graceful_uaa_exit() {

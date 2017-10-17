@@ -1066,6 +1066,11 @@ properties:
       The UAA uses this as a base domain for internal hostnames so that subdomain can be detected
       This defaults to the uaa.url property, and if not set, to login.<domain>
     default: ~
+  uaa.servlet.idle-timeout:
+    description: |
+      Optional configuration of the UAA session idle timeout.
+      - default to 1800 seconds
+    default: 1800
   uaa.servlet.session-cookie:
     description: |
       Optional configuration of the UAA session cookie.

@@ -343,3 +343,6 @@ login:
         providerDescription: 'Human readable description of this provider'
   authorize:
     url: https://uaa.bosh-lite.com/oauth/authorize
+
+servlet:
+  idle-timeout: 1800

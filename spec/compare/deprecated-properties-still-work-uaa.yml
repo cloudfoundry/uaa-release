@@ -225,3 +225,6 @@ smtp:
   port: 2525
   auth: false
   starttls: false
+
+servlet:
+  idle-timeout: 1800

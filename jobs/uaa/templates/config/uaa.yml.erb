@@ -491,10 +491,13 @@
     params['ldap'] = ldap
   end
 
+  servlet = {
+    'idle-timeout' => p('uaa.servlet.idle-timeout')
+  }
+  params['servlet'] = servlet
+
   if_p('uaa.servlet.session-cookie') do |sessioncookie|
-    params['servlet'] = {
-      'session-cookie' => {}
-    }
+    params['servlet']['session-cookie'] = {}
     sessioncookie.each do |cookiename, cookievalue|
       params['servlet']['session-cookie'][cookiename] = cookievalue
     end

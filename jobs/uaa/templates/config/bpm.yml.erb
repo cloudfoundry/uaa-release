@@ -8,3 +8,5 @@ processes:
     CATALINA_OPTS: "<%= p('uaa.catalina_opts') %>"
   args: []
   ephemeral_disk: true
+  limits:
+    open_files: 65536

@@ -75,7 +75,6 @@ properties:
     login:
       client_secret: secret
     limitedFunctionality:
-      enabled: false
       whitelist:
         endpoints:
         - /oauth/authorize/**

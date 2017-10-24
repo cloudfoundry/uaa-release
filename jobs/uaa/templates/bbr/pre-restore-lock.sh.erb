@@ -2,6 +2,6 @@
 
 <% if p('release_level_backup') %>
   /var/vcap/bosh/bin/monit stop uaa
-
-  sleep 10
+  #give monit and route registrar enough time
+  sleep 15
 <% end %>

@@ -359,7 +359,7 @@ properties:
         lockoutPeriodSeconds: 300
     catalina_opts: -Xmx1g -Xms512m
     limitedFunctionality:
-      enabled: false
+      statusFile: /var/vcap/data/uaa/test_bbr_limited_mode.lock
       whitelist:
         endpoints:
         - /oauth/authorize/**

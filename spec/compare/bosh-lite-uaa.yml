@@ -206,7 +206,7 @@ require_https: false
 uaa:
   url: https://uaa.bosh-lite.com
   limitedFunctionality:
-    enabled: false
+    statusFile: /var/vcap/data/uaa/bbr_limited_mode.lock
     whitelist:
       endpoints:
       - /oauth/authorize/**

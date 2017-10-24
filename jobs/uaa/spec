@@ -14,7 +14,6 @@ templates:
   bin/install_uaa_crt: bin/install_uaa_crt
   bin/pre-start: bin/pre-start
   bin/post-start: bin/post-start
-  bin/tomcat/setenv.sh: bin/tomcat/setenv.sh
 
   config/uaa.yml.erb: config/uaa.yml
   config/bpm.yml.erb: config/bpm.yml
@@ -124,11 +123,13 @@ properties:
   uaa.logging_use_rfc3339:
     description: "Sets the time format for log messages to be yyyy-MM-dd'T'HH:mm:ss.SSSXXX instead of yyyy-MM-dd HH:mm:ss.SSS"
     default: false
-  uaa.limitedFunctionality.enabled:
+  uaa.limitedFunctionality.statusFile:
     description: |
-      Setting this flag to true renders UAA in a degraded mode with limited access to the UAA API.
-      The allowed API's only a subset of the UAA API and UI needed for Authentication and Authorization.
-    default: false
+      The UAA checks for the presence of this file. If this file exists, the UAA will continue to function
+      but in limited mode. This means any authentication or token action will continue to work, but more
+      API endpoints that change configuration will return 503 UNAVAILABLE.
+      Normally, there is no need to change this value, unless you have other scripts that may rely on it
+    default: /var/vcap/data/uaa/bbr_limited_mode.lock
   uaa.limitedFunctionality.whitelist.endpoints:
     description: "Set the whitelisted API for UAA in degraded mode. Methods and Endpoints are unioned with each other: i.e. all methods are permitted for a whitelisted endpoint, and all endpoints are permitted for a whitelisted method"
     default:

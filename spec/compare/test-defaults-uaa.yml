@@ -120,7 +120,7 @@ logout:
 uaa:
   url: http://test.uaa.url
   limitedFunctionality:
-    enabled: false
+    statusFile: /var/vcap/data/uaa/bbr_limited_mode.lock
     whitelist:
       endpoints:
       - /oauth/authorize/**

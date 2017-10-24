@@ -51,7 +51,6 @@ function setup_directories {
     mkdir -p /var/vcap/data/uaa/
     cp -a /var/vcap/packages/uaa/tomcat /var/vcap/data/uaa/
     cp -a /var/vcap/jobs/uaa/config/tomcat/* /var/vcap/data/uaa/tomcat/conf/
-    cp -a /var/vcap/jobs/uaa/bin/tomcat/* /var/vcap/data/uaa/tomcat/bin/
     chown -R vcap:vcap /var/vcap/data/uaa/
 
     # We don't think this does anything since the variable is not set

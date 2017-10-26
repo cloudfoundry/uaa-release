@@ -184,7 +184,7 @@ git push origin master --tags
 echo -e "${CYAN}Merging master to develop to avoid conflicts in the future${NC}"
 git checkout develop
 git pull origin develop
-git merge master -Xours
+git merge master -Xours -m "Merge back master into develop to avoid future conflicts"
 git push origin develop
 
 # place the release on a branch, because rel-eng doesn't do git fetch --tags

@@ -1,0 +1,38 @@
+---
+packages:
+- name: uaa
+  version: 87d7ef32056c0c853b37946bf071b47555601e1b
+  fingerprint: 87d7ef32056c0c853b37946bf071b47555601e1b
+  sha1: 6cdb1577fc9673f2ef4e84f5800d37789004cac0
+  dependencies: []
+- name: uaa_postgres-9.4.14
+  version: 8a72527101520d05d594d7e5c2cb060f7ee668ec
+  fingerprint: 8a72527101520d05d594d7e5c2cb060f7ee668ec
+  sha1: 05221fc2cc555556f7837165b59c928c7ecd1816
+  dependencies: []
+- name: uaa_utils
+  version: 20557445bf996af17995a5f13bf5f87000600f2e
+  fingerprint: 20557445bf996af17995a5f13bf5f87000600f2e
+  sha1: 8990d77d56c5f5b82b6db1eb4e8b9b0214b47e3a
+  dependencies: []
+jobs:
+- name: uaa
+  version: a7d81228d6b68e2f9a7b0602cde4c5695747931f
+  fingerprint: a7d81228d6b68e2f9a7b0602cde4c5695747931f
+  sha1: 23ebe1cd3f3f05b744d6e8ed98910aac60bed60e
+- name: bbr-uaadb
+  version: f1df78813987b58b6ecb5b65de24b46dc1cbbacb
+  fingerprint: f1df78813987b58b6ecb5b65de24b46dc1cbbacb
+  sha1: 3c3922099b2e27e326513364177bcff0c20ca8b6
+- name: uaa_postgres
+  version: e384393784e4636d53f945adc32d9bae039505d5
+  fingerprint: e384393784e4636d53f945adc32d9bae039505d5
+  sha1: 85c06be2d2c58d596c0827638789ae001e06ed4b
+license:
+  version: 43aff6a01f4ba508f9cb013dcec9c612287e6c57
+  fingerprint: 43aff6a01f4ba508f9cb013dcec9c612287e6c57
+  sha1: 18461c918f686ee6cf8a3f777a2bbc2837e5fa96
+commit_hash: 0d879c55
+uncommitted_changes: false
+name: uaa
+version: '52.1'

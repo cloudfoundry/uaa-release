@@ -14,3 +14,33 @@ consumes:
 - name: database # used as a fallback if `uaa_db.uaadb.address` is omitted
   type: database
   optional: true
+
+properties:
+  #uaa database host configuration, exact same as the `uaa` job
+  uaadb.address:
+    description: |
+      The UAA database IP address. If this property is not set, the UAA will look for a `database` link
+      and use the first instance address it can find in the list
+  uaadb.databases:
+    description: |
+      The list of databases used in UAA database including tag/name. The UAA will always look for the `uaa` tag
+      and use the database name from that tag
+    example:
+      - name: uaa
+        tag: uaa
+  uaadb.db_scheme:
+    description: "Database scheme for UAA DB"
+  uaadb.port:
+    description: "The UAA database Port"
+  uaadb.tls_enabled :
+    description: "Use TLS connection for UAA database"
+    default: false
+  uaadb.roles:
+    description: |
+      The list of database Roles used in UAA database including tag/name/password
+      The UAA will always look for the tag `admin` and use the
+      `name` and `password` properties as the database credentials
+    example:
+      - name: uaa
+        password: database-password-for-user-uaa
+        tag: admin

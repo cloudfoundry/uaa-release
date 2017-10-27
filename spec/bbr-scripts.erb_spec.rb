@@ -29,11 +29,11 @@ describe 'bosh backup and restore script' do
               }
           },
           'uaadb' => {
-              'address' => '127.0.0.1',
-              'port' => 5432,
-              'db_scheme' => 'postgresql',
-              'databases' => [{'name' => 'uaa_db_name', 'tag' => 'uaa'}],
-              'roles' => [{'name' => 'admin', 'password' => 'example', 'tag' => 'admin'}]
+              'address' => '127.0.0.2',
+              'port' => 2222,
+              'db_scheme' => 'postgres',
+              'databases' => [{'name' => 'uaa_db_2_name', 'tag' => 'uaa'}],
+              'roles' => [{'name' => 'ad2min', 'password' => 'exam2ple', 'tag' => 'admin'}]
           }
       }
     }
@@ -103,6 +103,23 @@ describe 'bosh backup and restore script' do
         expect(generated_script).to include('"host": "127.0.0.1"')
         expect(generated_script).to include('"port": 5432')
         expect(generated_script).to include('"database": "uaa_db_name"')
+        expect(generated_script).to include('"adapter": "postgres"')
+      end
+    end
+
+    describe 'config.json when properties are used instead of links' do
+      before(:each) do
+        properties['links'] = nil
+      end
+
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
+
+      it 'it has all the expected lines' do
+        expect(generated_script).to include('"username": "ad2min"')
+        expect(generated_script).to include('"password": "exam2ple"')
+        expect(generated_script).to include('"host": "127.0.0.2"')
+        expect(generated_script).to include('"port": 2222')
+        expect(generated_script).to include('"database": "uaa_db_2_name"')
         expect(generated_script).to include('"adapter": "postgres"')
       end
     end

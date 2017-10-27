@@ -64,6 +64,35 @@ properties:
     description: "Experimental feature flag, do not use yet: Enable Bosh Process Manager"
     default: false
 
+  #uaa database host configuration
+  uaadb.address:
+    description: |
+      The UAA database IP address. If this property is not set, the UAA will look for a `database` link
+      and use the first instance address it can find in the list
+  uaadb.databases:
+    description: |
+      The list of databases used in UAA database including tag/name. The UAA will always look for the `uaa` tag
+      and use the database name from that tag
+    example:
+      - name: uaa
+        tag: uaa
+  uaadb.db_scheme:
+    description: "Database scheme for UAA DB"
+  uaadb.port:
+    description: "The UAA database Port"
+  uaadb.tls_enabled :
+    description: "Use TLS connection for UAA database"
+    default: false
+  uaadb.roles:
+    description: |
+      The list of database Roles used in UAA database including tag/name/password
+      The UAA will always look for the tag `admin` and use the
+      `name` and `password` properties as the database credentials
+    example:
+      - name: uaa
+        password: database-password-for-user-uaa
+        tag: admin
+
   # General server properties
   uaa.catalina_opts:
     description: "The options used to configure Tomcat"
@@ -629,21 +658,7 @@ properties:
             groups:
               my-test-group: 'My test group description'
               another-group: 'Another group description'
-
-  # Database
-  uaadb.address:
-    description: "The UAA database IP address"
-  uaadb.databases:
-    description: "The list of databases used in UAA database including tag/name"
-  uaadb.db_scheme:
-    description: "Database scheme for UAA DB"
-  uaadb.port:
-    description: "The UAA database Port"
-  uaadb.tls_enabled :
-    description: "Use TLS connection for UAA database"
-    default: false
-  uaadb.roles:
-    description: "The list of database Roles used in UAA database including tag/name/password"
+  # connection pool properties
   uaa.database.max_connections:
     description: "The max number of open connections to the DB from a running UAA instance"
     default: 100

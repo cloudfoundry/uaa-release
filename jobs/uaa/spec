@@ -79,9 +79,18 @@ properties:
     description: "Database scheme for UAA DB"
   uaadb.port:
     description: "The UAA database Port"
-  uaadb.tls_enabled :
+  uaadb.tls_enabled:
     description: "Use TLS connection for UAA database"
     default: false
+  uaadb.tls_protocols:
+    description: |
+      if `tls_enabled` is set to true, this property can be used to narrow down the protocols used
+      by the UAA database driver.
+      The default is null, the database driver will pick the protocol to use.
+      The values can be comma separated.
+      This option only takes into effect when using `mysql` as `uaadb.db_scheme`.
+      PostgreSQL and SQLServer default to TLSv1.2 through the JDBC driver.
+    example: TLSv1.2,TLSv1.1
   uaadb.roles:
     description: |
       The list of database Roles used in UAA database including tag/name/password

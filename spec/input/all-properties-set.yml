@@ -657,6 +657,7 @@ properties:
     db_scheme: mysql
     port: 5524
     tls_enabled: true
+    tls_protocols: TLSv1.2
     roles:
     - name: uaaadmin
       password: admin

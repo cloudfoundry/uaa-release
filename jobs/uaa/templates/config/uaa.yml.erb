@@ -192,6 +192,9 @@
       params['database']['url'] = params['database']['url'] + '?ssl=true'
     elsif uaa_db_scheme == 'mysql'
       params['database']['url'] = params['database']['url'] + '?useSSL=true'
+      if_p('uaadb.tls_protocols') do |dbTlsProtocol|
+        params['database']['url'] = params['database']['url'] + '&enabledSslProtocolSuites=' + dbTlsProtocol
+      end
     elsif uaa_db_scheme == 'sqlserver'
       params['database']['url'] = params['database']['url'] + ';encrypt=true'
     end

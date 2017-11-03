@@ -44,7 +44,7 @@ function finalize_and_commit {
     #actual
     bosh finalize release $tarball --name uaa --version $1
     #bosh generated files
-    git add .
+    git add releases/
     git commit --no-verify -m "uaa-release version v${1}"
     local result=$2
     eval $result="`git rev-parse HEAD`"

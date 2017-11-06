@@ -800,6 +800,16 @@ properties:
     description: "If set to false, only users pre-populated in the UAA user database will be allowed to authenticate via LDAP. If set to true, any user from LDAP will be allowed to authenticate and an internal user will be created if one does not yet exist."
     default: true
 
+  # Multifactor Authentication
+  login.mfa.providers:
+    description: "A list of providers and their configuration. Currently only `google-authenticator` are supported with no additional attributes."
+    example:
+      my-example-provider:
+        type: google-authenticator
+        config:
+          providerDescription: test adding a google authenticator to the default zone
+    default: ~
+
   # OpenID Connect/OAuth
 
   login.oauth.providers:

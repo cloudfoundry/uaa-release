@@ -802,12 +802,13 @@ properties:
 
   # Multifactor Authentication
   login.mfa.providers:
-    description: "A list of providers and their configuration. Currently only `google-authenticator` are supported with no additional attributes."
+    description: "A list of providers and their configuration. Currently only `google-authenticator` are supported with no additional attributes. Issuer is optional."
     example:
       my-example-provider:
         type: google-authenticator
         config:
           providerDescription: test adding a google authenticator to the default zone
+          issuer: uaa
     default: ~
 
   # OpenID Connect/OAuth

@@ -12,6 +12,7 @@ properties:
           type: google-authenticator
           config:
             providerDescription: test google authenticator
+            issuer: google
     analytics:
       code: code
       domain: domain

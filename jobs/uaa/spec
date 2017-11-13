@@ -802,9 +802,9 @@ properties:
 
   # Multifactor Authentication
   login.mfa.providers:
-    description: "A list of providers and their configuration. Currently only `google-authenticator` are supported with no additional attributes. Issuer is optional."
+    description: "A list of providers and their configuration. Provider names must be alphanumeric. Currently only `google-authenticator` is supported with no additional attributes. Issuer is optional."
     example:
-      my-example-provider:
+      myExampleProvider1:
         type: google-authenticator
         config:
           providerDescription: test adding a google authenticator to the default zone

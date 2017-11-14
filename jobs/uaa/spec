@@ -732,8 +732,6 @@ properties:
     default: "org.cloudfoundry.identity.uaa.ldap.DynamicPasswordComparator"
   uaa.ldap.sslCertificate:
     description: "Used with ldaps:// URLs. The certificate, if self signed, to be trusted by this connection."
-  uaa.ldap.sslCertificateAlias:
-    description: "Used with ldaps:// URLs. The certificate alias, to be trusted by this connection and stored in the keystore."
   uaa.ldap.ssl.skipverification:
     description: "Set to true, and LDAPS connection will not validate the server certificate."
     default: false

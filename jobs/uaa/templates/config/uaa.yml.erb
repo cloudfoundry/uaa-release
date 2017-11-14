@@ -438,9 +438,6 @@
     }
     unless p_opt('uaa.ldap.sslCertificate').nil?
       ldap['ssl']['sslCertificate'] = p_opt('uaa.ldap.sslCertificate')
-      unless p_opt('uaa.ldap.sslCertificateAlias').nil?
-        ldap['ssl']['sslCertificateAlias'] = p_opt('uaa.ldap.sslCertificateAlias')
-      end
     end
     if p_opt('uaa.ldap.profile_type') == 'simple-bind'
       ldap['base']['userDnPattern'] = p_opt('uaa.ldap.userDNPattern')

@@ -12,7 +12,7 @@ templates:
   bin/dns_health_check.erb: bin/dns_health_check
   bin/health_check: bin/health_check
   bin/install_uaa_crt: bin/install_uaa_crt
-  bin/pre-start: bin/pre-start
+  bin/pre-start.erb: bin/pre-start
   bin/post-start: bin/post-start
 
   config/uaa.yml.erb: config/uaa.yml

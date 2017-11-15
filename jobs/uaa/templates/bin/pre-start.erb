@@ -68,6 +68,20 @@ if [ -a $CERT_CACHE_FILE ] && [ -a $TRUST_STORE_FILE ]; then
 else
     process_certs
 fi
+
+<% if p('uaa.ldap.sslCertificate', nil) || p('login.ldap.sslCertificate', nil) %>
+    echo "[uaa-pre-start] Installing LDAP certificate"
+    /var/vcap/jobs/uaa/bin/install_crt ldap.crt ldapcert $TRUST_STORE_FILE
+    echo "[uaa-pre-start] Installed LDAP certificate"
+<% end %>
+
+# Install the server's ssl certificate
+<% if p("uaa.ssl.port") != -1 %>
+    echo "[uaa-pre-start] Installing Server SSL certificate"
+    /var/vcap/jobs/uaa/bin/install_uaa_crt uaa.crt
+    echo "[uaa-pre-start] Installed Server SSL certificate"
+<% end %>
+
 cp $TRUST_STORE_FILE $CONF_DIR
 
 setup_directories

@@ -184,7 +184,7 @@
 
 
   if uaa_db_scheme == 'sqlserver' then
-    params['database']['url'] = "jdbc:#{uaa_db_scheme}://#{uaa_db_address}:#{p('uaadb.port')};databaseName=#{uaa_db['name']}"
+    params['database']['url'] = "jdbc:#{uaa_db_scheme}://#{uaa_db_address}:#{p('uaadb.port')};databaseName=#{uaa_db['name']};"
   end
 
   if uaa_db_tls_enabled
@@ -196,7 +196,7 @@
         params['database']['url'] = params['database']['url'] + '&enabledSslProtocolSuites=' + dbTlsProtocol
       end
     elsif uaa_db_scheme == 'sqlserver'
-      params['database']['url'] = params['database']['url'] + ';encrypt=true'
+      params['database']['url'] = params['database']['url'] + 'encrypt=true;'
     end
   end
 

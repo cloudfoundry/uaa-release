@@ -380,7 +380,7 @@ describe 'uaa-release erb generation' do
 
     it 'it adds encrypt in the URL' do
       generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true;
-      expect(parsed_yaml['database']['url']).to eq('jdbc:sqlserver://10.244.0.30:1433;databaseName=uaadb;encrypt=true')
+      expect(parsed_yaml['database']['url']).to eq('jdbc:sqlserver://10.244.0.30:1433;databaseName=uaadb;encrypt=true;')
 
     end
   end

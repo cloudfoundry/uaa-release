@@ -69,7 +69,7 @@ describe 'bosh backup and restore script' do
       it 'it has all the expected lines' do
         expect(generated_script).to include('/var/vcap/bosh/bin/monit start uaa')
         expect(generated_script).to include('/var/vcap/jobs/uaa/bin/post-start')
-        expect(generated_script).to include('sleep 15')
+        expect(generated_script).to include('sleep 40')
       end
     end
 

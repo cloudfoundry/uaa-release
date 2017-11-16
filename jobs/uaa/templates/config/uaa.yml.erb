@@ -189,14 +189,18 @@
 
   if uaa_db_tls_enabled
     if uaa_db_scheme == 'postgresql'
-      params['database']['url'] = params['database']['url'] + '?ssl=true'
+      params['database']['url'] += '?ssl=true'
+
+      if_p('uaadb.skip_ssl_validation') do |db_skip_ssl_validation|
+          params['database']['url'] += '&sslfactory=org.postgresql.ssl.NonValidatingFactory' if db_skip_ssl_validation
+      end
     elsif uaa_db_scheme == 'mysql'
-      params['database']['url'] = params['database']['url'] + '?useSSL=true'
+      params['database']['url'] += '?useSSL=true' +  "&trustServerCertificate=#{p('uaadb.skip_ssl_validation')}"
       if_p('uaadb.tls_protocols') do |dbTlsProtocol|
-        params['database']['url'] = params['database']['url'] + '&enabledSslProtocolSuites=' + dbTlsProtocol
+        params['database']['url'] += '&enabledSslProtocolSuites=' + dbTlsProtocol
       end
     elsif uaa_db_scheme == 'sqlserver'
-      params['database']['url'] = params['database']['url'] + 'encrypt=true;'
+      params['database']['url'] += 'encrypt=true;' + "trustServerCertificate=#{p('uaadb.skip_ssl_validation')};"
     end
   end
 

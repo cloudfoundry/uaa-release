@@ -379,9 +379,60 @@ describe 'uaa-release erb generation' do
     let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
 
     it 'it adds encrypt in the URL' do
-      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true;
-      expect(parsed_yaml['database']['url']).to eq('jdbc:sqlserver://10.244.0.30:1433;databaseName=uaadb;encrypt=true;')
+      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
+      expect(parsed_yaml['database']['url']).to eq('jdbc:sqlserver://10.244.0.30:1433;databaseName=uaadb;encrypt=true;trustServerCertificate=false;')
+    end
 
+    it 'can skip ssl validation' do
+      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
+      generated_cf_manifest['properties']['uaadb']['skip_ssl_validation'] = true
+      expect(parsed_yaml['database']['url']).to eq('jdbc:sqlserver://10.244.0.30:1433;databaseName=uaadb;encrypt=true;trustServerCertificate=true;')
+    end
+  end
+
+  context 'when uaadb tls_enabled is set for mysql' do
+    let(:generated_cf_manifest) { generate_cf_manifest(input)}
+    let(:input) { 'spec/input/test-defaults.yml' }
+    let(:output_uaa) { 'spec/compare/test-defaults-uaa.yml' }
+    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
+    before(:each) {
+      generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'mysql'
+      generated_cf_manifest['properties']['uaadb']['port'] = '5524'
+    }
+
+    it 'it adds encrypt in the URL' do
+      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
+      expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:5524/uaadb?useSSL=true&trustServerCertificate=false')
+    end
+
+    it 'can skip ssl validation' do
+      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
+      generated_cf_manifest['properties']['uaadb']['skip_ssl_validation'] = true
+      expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:5524/uaadb?useSSL=true&trustServerCertificate=true')
+    end
+  end
+
+  context 'when uaadb tls_enabled is set for postgres' do
+    let(:generated_cf_manifest) { generate_cf_manifest(input)}
+    let(:input) { 'spec/input/test-defaults.yml' }
+    let(:output_uaa) { 'spec/compare/test-defaults-uaa.yml' }
+    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
+    before(:each) {
+      generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'postgres'
+      generated_cf_manifest['properties']['uaadb']['port'] = '5524'
+    }
+
+    it 'it adds encrypt in the URL' do
+      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
+      expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true')
+    end
+
+    it 'can skip ssl validation' do
+      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
+      generated_cf_manifest['properties']['uaadb']['skip_ssl_validation'] = true
+      expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory')
     end
   end
 

@@ -1,3 +1,14 @@
-language: ruby
-rvm:
-  - 2.2
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      language: ruby
+      rvm:
+        - 2.3
+
+before_install:
+- git submodule update --init --recursive --force'
+- cd src/uaa
+- git checkout develop
+- cd ../..
+

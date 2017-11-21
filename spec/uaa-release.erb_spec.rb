@@ -719,33 +719,68 @@ describe 'uaa-release erb generation' do
       end
 
     end
-
-
   end
 
 
-  def self.perform_compare(input, output_uaa, output_login, output_log4j)
-    generated_cf_manifest = generate_cf_manifest(input)
+  describe 'uaa.yml for DB TLS tests' do
+    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
+    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+    let(:parsed_yaml) { read_and_parse_string_template erb_template, generated_cf_manifest, true }
+    let(:input) { 'spec/input/database-tls-tests.yml' }
+    let(:tempDir) {'/tmp/uaa-release-tests/'}
 
-    parsed_uaa_yaml = read_and_parse_string_template '../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true
-    parsed_login_yaml =  read_and_parse_string_template '../jobs/uaa/templates/config/login.yml.erb', generated_cf_manifest, true
-    parsed_log4j_properties =  read_and_parse_string_template '../jobs/uaa/templates/config/log4j.properties.erb', generated_cf_manifest, false
+    before(:each) {
+      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
+      generated_cf_manifest['properties']['uaadb']['skip_ssl_validation'] = true
+    }
 
-    doSaveOutput = ENV['TEST_SAVE'] ? ENV['TEST_SAVE'] : 'false'
+    context 'is generated for MySQL' do
+      let(:filename) {'mysql'}
+      it 'and writes the file' do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'mysql'
+        generated_cf_manifest['properties']['uaadb']['port'] = '3306'
+        generated_cf_manifest['properties']['uaadb']['roles'][0]['password'] = 'changeme'
 
-    if doSaveOutput == 'true'
-      tempDir = '/tmp/uaa-release-tests/'+input
-      FileUtils.mkdir_p tempDir
-      open(tempDir + '/uaa.yml', 'w') { |f|
-        f.puts parsed_uaa_yaml.to_yaml(:Indent => 2, :UseHeader => true, :UseVersion => true)
-      }
-      open(tempDir + '/login.yml', 'w') { |f|
-        f.puts parsed_login_yaml.to_yaml(:Indent => 2, :UseHeader => true, :UseVersion => true)
-      }
-      open(tempDir + '/log4j.properties', 'w') { |f|
-        f.puts parsed_log4j_properties.to_s
-      }
+        FileUtils.mkdir_p tempDir
+        open(tempDir + '/'+filename+'.yml', 'w') { |f|
+          f.puts parsed_yaml.to_yaml(:Indent => 2, :UseHeader => true, :UseVersion => true)
+        }
+      end
     end
+
+    context 'is generated for PostgreSQL' do
+      let(:filename) {'postgresql'}
+      it 'and writes the file' do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'postgres'
+        generated_cf_manifest['properties']['uaadb']['port'] = '5432'
+        generated_cf_manifest['properties']['uaadb']['roles'][0]['password'] = 'changeme'
+        FileUtils.mkdir_p tempDir
+        open(tempDir + '/'+filename+'.yml', 'w') { |f|
+          f.puts parsed_yaml.to_yaml(:Indent => 2, :UseHeader => true, :UseVersion => true)
+        }
+      end
+    end
+
+    context 'is generated for SQL Server' do
+      let(:filename) {'sqlserver'}
+      it 'and writes the file' do
+        FileUtils.mkdir_p tempDir
+        open(tempDir + '/'+filename+'.yml', 'w') { |f|
+          f.puts parsed_yaml.to_yaml(:Indent => 2, :UseHeader => true, :UseVersion => true)
+        }
+      end
+    end
+  end
+
+
+  def self.perform_compare(input)
+    generated_cf_manifest = generate_cf_manifest(input)
+    parsed_uaa_yaml = read_and_parse_string_template '../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true
+    tempDir = '/tmp/uaa-release-tests/'+input
+    FileUtils.mkdir_p tempDir
+    open(tempDir + '/uaa.yml', 'w') { |f|
+      f.puts parsed_uaa_yaml.to_yaml(:Indent => 2, :UseHeader => true, :UseVersion => true)
+    }
   end
 
   def self.validate_required_properties input

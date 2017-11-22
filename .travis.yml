@@ -47,7 +47,7 @@ before_install:
 - cp $TRAVIS_BUILD_DIR/scripts/init.gradle $HOME/.gradle
 - git submodule update --init --recursive --force
 - cd src/uaa
-- git checkout feature/db_ci_tests
+- git checkout develop
 - cd ../..
 install:
 - bundle install

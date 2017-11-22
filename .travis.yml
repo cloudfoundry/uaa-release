@@ -40,14 +40,18 @@ cache:
   apt: true
   directories:
   - $HOME/.gradle
+  - $HOME/.rvm/gems
 
 before_install:
+- mkdir -p $HOME/.gradle
+- cp $TRAVIS_BUILD_DIR/scripts/init.gradle $HOME/.gradle
 - git submodule update --init --recursive --force
 - cd src/uaa
 - git checkout feature/db_ci_tests
 - cd ../..
 install:
 - bundle install
+- bundle show rspec
 - cd src/uaa
 - if [ "$TESTENV" = "postgresql" ]; then
     psql -c 'drop database if exists uaa;' -U postgres;
@@ -84,7 +88,7 @@ install:
 - cd ../..
 
 script:
--  bundle exec rspec spec
+- bundle exec rspec spec
 - if [ "$TESTENV" != "default" ]; then
     cd src/uaa;
     cp /tmp/uaa-release-tests/${TESTENV}.yml uaa/src/main/resources/uaa.yml;

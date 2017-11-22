@@ -96,6 +96,9 @@ script:
     ./gradlew cloudfoundry-identity-uaa:test -Dspring.profiles.active=${TESTENV} --tests=org.cloudfoundry.identity.uaa.db.DatabaseConnectTest;
   fi
 
+after_success:
+- for i in $(find $HOME/build/cloudfoundry/uaa-release/src/uaa -name reports -type d); do rm -rf $i; done
+
 addons:
   artifacts:
     key:

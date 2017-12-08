@@ -812,6 +812,13 @@ properties:
           issuer: uaa
     default: ~
 
+  login.mfa.providerName:
+    description: "The unique name of the MFA provider to use for default zone."
+    default: ~
+  login.mfa.enabled:
+    description: "Set true to enable Multi-factor Authentication (MFA) for the default zone. Defaults to false."
+    default: false
+
   # OpenID Connect/OAuth
 
   login.oauth.providers:

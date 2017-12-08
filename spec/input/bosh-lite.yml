@@ -1,6 +1,9 @@
 ---
 properties:
   login:
+    mfa:
+      enabled: true
+      providerName: myExampleProvider
     brand: oss
     enabled: true
     links:

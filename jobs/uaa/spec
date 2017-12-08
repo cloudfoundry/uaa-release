@@ -813,10 +813,10 @@ properties:
     default: ~
 
   login.mfa.providerName:
-    description: "Name of MFA provider to use in default zone"
+    description: "The unique name of the MFA provider to use for default zone."
     default: ~
   login.mfa.enabled:
-    description: "Enables or disables MFA in default zone. If enabled it refers to provider name specified in login.mfa.providerName."
+    description: "Set true to enable Multi-factor Authentication (MFA) for the default zone. Defaults to false."
     default: false
 
   # OpenID Connect/OAuth

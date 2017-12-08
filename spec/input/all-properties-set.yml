@@ -7,6 +7,8 @@ properties:
     no_proxy: localhost,127.0.0.0/8
   login:
     mfa:
+      enabled: true
+      providerName: myExampleProvider
       providers:
         myExampleProvider:
           type: google-authenticator

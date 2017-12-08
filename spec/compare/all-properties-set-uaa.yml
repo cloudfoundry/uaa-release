@@ -536,6 +536,8 @@ login:
     -----END RSA PRIVATE KEY-----
   selfServiceLinksEnabled: false
   mfa:
+    enabled: true
+    providerName: myExampleProvider
     providers:
       myExampleProvider:
         type: google-authenticator

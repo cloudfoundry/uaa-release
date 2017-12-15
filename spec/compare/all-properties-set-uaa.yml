@@ -543,9 +543,6 @@ login:
         type: google-authenticator
         config:
           providerDescription: test google authenticator
-          digits: 6
-          duration: 30
-          algorithm: SHA1
           issuer: google
   oauth:
     providers:

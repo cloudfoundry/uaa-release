@@ -663,10 +663,6 @@
       provider.each do |key,value|
         add_value(params, value, 'login', 'mfa', 'providers', mfaName, key)
       end
-      # these values do not exist
-      add_value(params, p('login.mfa.providers.'+mfaName+'.config.digits',6), 'login', 'mfa', 'providers', mfaName, 'config', 'digits')
-      add_value(params, p('login.mfa.providers.'+mfaName+'.config.duration', 30), 'login', 'mfa', 'providers', mfaName, 'config', 'duration')
-      add_value(params, p('login.mfa.providers.'+mfaName+'.config.algorithm', 'SHA1'), 'login', 'mfa', 'providers', mfaName, 'config', 'algorithm')
       add_value(params, p('login.mfa.providers.'+mfaName+'.config.issuer'), 'login', 'mfa', 'providers', mfaName, 'config', 'issuer') if p_opt('login.mfa.providers.'+mfaName+'.config.issuer')
     end
   end

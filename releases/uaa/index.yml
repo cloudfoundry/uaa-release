@@ -210,4 +210,6 @@ builds:
     version: '52.4'
   d8e2aec9-4b1d-4c62-9f35-db3cd55e1b29:
     version: '52.5'
+  d5d9bcbf-28aa-4a68-8030-c7643bc6748f:
+    version: '52.6'
 format-version: '2'

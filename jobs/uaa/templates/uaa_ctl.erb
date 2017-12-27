@@ -134,6 +134,8 @@ case $1 in
 
     echo "[uaa-start] About to starting UAA"
     ensure_no_more_tomcat
+    echo "[uaa-start] Configuring ulimit"
+    ulimit -n 65536
 
     echo "[uaa-start] Creating health check STATUS file"
     touch $STATUS

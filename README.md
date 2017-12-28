@@ -1,6 +1,6 @@
 # UAA release
 
-See [docs](https://github.com/cloudfoundry/bosh-micro-cli/blob/master/docs/uaa.md) in bosh-micro-cli.
+See [docs](https://github.com/cloudfoundry/uaa-release/blob/develop/docs/uaa.md) taken from bosh-micro-cli circa mid-2015.
 
 ## Configuring required properties for UAA start-up
 

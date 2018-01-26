@@ -72,6 +72,7 @@ properties:
     oauth:
       providers:
         my-oauth-provider:
+          override: false
           addShadowUserOnLogin: true
           attributeMappings:
             external_groups:
@@ -220,6 +221,7 @@ properties:
       nameID: urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified
       providers:
         CA_SM1:
+          override: false
           assertionConsumerIndex: 0
           attributeMappings:
             email: mail
@@ -431,6 +433,9 @@ properties:
       users:
         - user-to-be-deleted-1
         - user-to-be-deleted-2
+      identityProviders:
+        - google
+        - octa
     disableInternalAuth: true
     disableInternalUserManagement: true
     issuer: http://all-properties-set:8888/uaa
@@ -478,6 +483,7 @@ properties:
         verification-key with some
         line feeds in it
     ldap:
+      override: false
       add_shadow_user_on_login: false
       attributeMappings:
         family_name: sn

@@ -26,6 +26,9 @@ delete:
   users:
     - user-to-be-deleted-1
     - user-to-be-deleted-2
+  identityProviders:
+    - google
+    - octa
 
 authentication:
   policy:
@@ -194,6 +197,7 @@ scim:
       - internal_group5
 require_https: false
 ldap:
+  override: false
   ldapdebug: Ldap configured through UAA
   profile:
     file: ldap/ldap-search-and-bind.xml
@@ -409,6 +413,7 @@ login:
         idpMetadata: http://my.identityprovider.com/saml2/idp/metadata.php
         skipSslValidation: false
       CA_SM1:
+        override: false
         assertionConsumerIndex: 0
         attributeMappings:
           email: mail
@@ -547,6 +552,7 @@ login:
   oauth:
     providers:
       my-oauth-provider:
+        override: false
         type: oidc1.0
         authUrl: http://authUrl
         tokenUrl: http://tokenUrl

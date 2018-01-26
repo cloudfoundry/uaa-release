@@ -711,6 +711,11 @@ properties:
   uaa.ldap.enabled:
     description: "Set to true to enable LDAP"
     default: false
+  uaa.ldap.override:
+    description: |
+      If the LDAP configuration has `override: false` set, the LDAP values will only be stored
+      in the database if the LDAP has not been configured yet.
+      If property is omitted, the default is override: true
   uaa.ldap.profile_type:
     description: "The file to be used for configuring the LDAP authentication. Options are: 'simple-bind', 'search-and-bind', 'search-and-compare'"
     default: search-and-bind
@@ -830,9 +835,15 @@ properties:
   # OpenID Connect/OAuth
 
   login.oauth.providers:
-    description: "Contains a hash of OpenID Connect/Oauth Identity Providers, the key will be used as the origin key for that provider, followed by key/value pairs. Presence of the userInfoUrl will mark it as an OpenID provider instead of OAuth."
+    description: |
+      Contains a hash of OpenID Connect/Oauth Identity Providers,
+      the key will be used as the origin key for that provider, followed by key/value pairs.
+      Presence of the userInfoUrl will mark it as an OpenID provider instead of OAuth.
+      If the provider has `override: false` set, the provider values will only be stored
+      in the database if the provider doesn't exist.
     example:
       my-oauth-provider:
+        override: false
         type: oauth2.0
         authUrl: <URL to the authorize endpoint of the provider>
         tokenUrl: <URL to the token endpoint of the provider>
@@ -1073,9 +1084,15 @@ properties:
       lshe50nayKrT
       -----END CERTIFICATE----
   login.saml.providers:
-    description: "Contains a hash of SAML Identity Providers, the key is the IDP Alias, followed by key/value pairs. To learn more about how to setup a saml identity provider go to https://simplesamlphp.org"
+    description: |
+      Contains a hash of SAML Identity Providers,
+      the key is the IDP Alias, followed by key/value pairs.
+      To learn more about how to setup a saml identity provider go to https://simplesamlphp.org
+      If the provider has `override: false` set, the provider values will only be stored
+      in the database if the provider doesn't exist.
     example:
       my-identity-provider:
+        override: false
         metadataTrustCheck: false
         idpMetadata: http://my.identityprovider.com/saml2/idp/metadata.php
         nameID: urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress

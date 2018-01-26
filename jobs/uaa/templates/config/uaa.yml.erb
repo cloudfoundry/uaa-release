@@ -494,7 +494,17 @@
     ldap['groups']['searchSubtree'] = p('uaa.ldap.groups.searchSubtree')
     ldap['groups']['maxSearchDepth'] = p('uaa.ldap.groups.maxSearchDepth')
     params['ldap'] = ldap
+  else
+    unless p_opt('uaa.ldap.override').nil?
+      ldap = {
+        'override' => p('uaa.ldap.override')
+      }
+      params['ldap'] = ldap
+    end
   end
+
+
+
 
   servlet = {
     'idle-timeout' => p('uaa.servlet.idle-timeout')

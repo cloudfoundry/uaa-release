@@ -371,6 +371,22 @@ describe 'uaa-release erb generation' do
 
   end
 
+  context 'when ldap is not enabled' do
+    let(:generated_cf_manifest) { generate_cf_manifest(input)}
+    let(:input) { 'spec/input/all-properties-set.yml' }
+    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
+
+    context 'ldap override flag present when ldap.enabled is false' do
+      it 'places property ldap.override in uaa.yml' do
+        generated_cf_manifest['properties']['uaa']['ldap']['enabled'] = false
+        generated_cf_manifest['properties']['uaa']['ldap']['override'] = false
+        expect(parsed_yaml['ldap']['override']).to eq(false)
+      end
+    end
+
+  end
+
   context 'when uaadb tls_enabled is set for sqlserver' do
     let(:generated_cf_manifest) { generate_cf_manifest(input)}
     let(:input) { 'spec/input/test-defaults.yml' }

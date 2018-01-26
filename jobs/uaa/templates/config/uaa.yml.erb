@@ -423,6 +423,7 @@
 
   if p_opt('uaa.ldap.enabled')
     ldap = {
+      'override' => p('uaa.ldap.override', true),
       'ldapdebug' => 'Ldap configured through UAA',
       'profile' => {
         'file' => "ldap/ldap-#{p_opt('uaa.ldap.profile_type')}.xml"

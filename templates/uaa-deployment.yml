@@ -25,14 +25,12 @@ instance_groups:
           serviceProviderKey: "((uaa_login_saml.private_key))"
           serviceProviderCertificate: "((uaa_login_saml.certificate))"
       uaa:
-        admin:
-          client_secret: "((uaa_admin_client_secret))"
         clients:
           admin:
             authorized-grant-types: client_credentials
             scope: uaa.none
             authorities: uaa.admin,clients.read,clients.write,clients.secret,scim.read,scim.write,clients.admin
-            secret: adminsecret
+            secret: "((uaa_admin_client_secret))"
         jwt:
           policy:
             active_key_id: key-1
@@ -107,10 +105,10 @@ variables:
 
 releases:
 - name: uaa
-  url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=50
-  version: "50"
-  sha1: f0fdb16065e41044718ab6c972baff8728ae913b
+  url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=54
+  version: "54"
+  sha1: aa61f0013aa4c42d84cec2fcdac6cf548950011e
 stemcells:
 - alias: default
   os: ubuntu-trusty
-  version: "3445.11"
+  version: "3468.21"

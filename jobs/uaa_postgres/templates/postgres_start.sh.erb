@@ -1,18 +1,8 @@
 #!/bin/bash -e
 
-POSTGRES_VERSION=9.4.14
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $SCRIPT_DIR/postgres_env.sh
 
-JOB_DIR=/var/vcap/jobs/uaa_postgres
-PACKAGE_DIR=/var/vcap/packages/uaa_postgres-${POSTGRES_VERSION}
-PACKAGE_DIR_OLD=/var/vcap/packages/uaa_postgres
-
-STORE_DIR=/var/vcap/store
-DATA_DIR=$STORE_DIR/uaa_postgres-${POSTGRES_VERSION}
-DATA_DIR_OLD=$STORE_DIR/uaa_postgres
-DATA_DIR_PREVIOUS=$STORE_DIR/postgres-previous
-
-RUN_DIR=/var/vcap/sys/run/uaa_postgres
-PIDFILE=$RUN_DIR/uaa_postgres.pid
 
 HOST='0.0.0.0'
 PORT="<%= p("postgres.port") %>"

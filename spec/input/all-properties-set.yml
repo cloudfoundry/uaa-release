@@ -6,6 +6,15 @@ properties:
     https_proxy: http://test.ssl.proxy:8080
     no_proxy: localhost,127.0.0.0/8
   login:
+    mfa:
+      enabled: true
+      providerName: myExampleProvider
+      providers:
+        myExampleProvider:
+          type: google-authenticator
+          config:
+            providerDescription: test google authenticator
+            issuer: google
     analytics:
       code: code
       domain: domain
@@ -63,6 +72,7 @@ properties:
     oauth:
       providers:
         my-oauth-provider:
+          override: false
           addShadowUserOnLogin: true
           attributeMappings:
             external_groups:
@@ -211,6 +221,7 @@ properties:
       nameID: urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified
       providers:
         CA_SM1:
+          override: false
           assertionConsumerIndex: 0
           attributeMappings:
             email: mail
@@ -359,7 +370,7 @@ properties:
         lockoutPeriodSeconds: 300
     catalina_opts: -Xmx1g -Xms512m
     limitedFunctionality:
-      enabled: false
+      statusFile: /var/vcap/data/uaa/test_bbr_limited_mode.lock
       whitelist:
         endpoints:
         - /oauth/authorize/**
@@ -422,6 +433,9 @@ properties:
       users:
         - user-to-be-deleted-1
         - user-to-be-deleted-2
+      identityProviders:
+        - google
+        - octa
     disableInternalAuth: true
     disableInternalUserManagement: true
     issuer: http://all-properties-set:8888/uaa
@@ -469,6 +483,7 @@ properties:
         verification-key with some
         line feeds in it
     ldap:
+      override: false
       add_shadow_user_on_login: false
       attributeMappings:
         family_name: sn
@@ -502,7 +517,6 @@ properties:
         skipverification: true
         tls: simple
       sslCertificate: ldap-ssl-cert
-      sslCertificateAlias: ldap-ssl-cert-alias
       storeCustomAttributes: false
       url: ldap://192.168.50.4:389/
       userDN: cn=admin,dc=test,dc=com
@@ -657,6 +671,7 @@ properties:
     db_scheme: mysql
     port: 5524
     tls_enabled: true
+    tls_protocols: TLSv1.2
     roles:
     - name: uaaadmin
       password: admin

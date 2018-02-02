@@ -8,7 +8,7 @@ spring_profiles: sqlserver
 logging:
   config: "/var/vcap/jobs/uaa/config/log4j.properties"
 database:
-  url: jdbc:sqlserver://10.244.0.30:1433;databaseName=uaadb
+  url: jdbc:sqlserver://10.244.0.30:1433;databaseName=uaadb;
   username: uaaadmin
   password: admin
   maxactive: 100
@@ -120,7 +120,7 @@ logout:
 uaa:
   url: http://test.uaa.url
   limitedFunctionality:
-    enabled: false
+    statusFile: /var/vcap/data/uaa/bbr_limited_mode.lock
     whitelist:
       endpoints:
       - /oauth/authorize/**

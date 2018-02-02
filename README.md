@@ -1,6 +1,6 @@
 # UAA release
 
-See [docs](https://github.com/cloudfoundry/bosh-micro-cli/blob/master/docs/uaa.md) in bosh-micro-cli.
+See [docs](https://github.com/cloudfoundry/uaa-release/blob/develop/docs/uaa.md) taken from bosh-micro-cli circa mid-2015.
 
 ## Configuring required properties for UAA start-up
 
@@ -89,19 +89,25 @@ Add the following properties to your manifest:
    for a bosh-lite uaa-release deployment. 
    Make sure you modify the director uuid in the manifest to match yours 
 
-       bosh target 192.168.50.4
-       bosh login admin admin
-       bosh upload stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent --skip-if-exists
-       bosh deployment docs/bosh-lite-uaa-release.yml
-       bosh deploy
+
+       bosh upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent --skip-if-exists
+       bosh create-release
+       bosh upload-release
+       bosh -n -e vbox -d uaa  deploy \
+         templates/uaa-deployment.yml \
+         --vars-store creds.yml \
+         -v system_domain=uaa-standalone.com
+
     
    After that you can get the IP address and add the hostname to your `/etc/hosts` file
   
    You may want to setup an entry in your `/etc/hosts`
       
-      10.244.0.118    uaa-minimal.bosh-lite.com
+       10.244.0.118    uaa.uaa-standalone.com
    
+   And you access it using
 
+       https://uaa.uaa-standalone.com:8443/
 
 ## Acknowledgements
 

@@ -1,4 +1,0 @@
----
-name: uaa_postgres-9.4.6
-files:
-  - postgres/postgresql-9.4.6.tar.gz

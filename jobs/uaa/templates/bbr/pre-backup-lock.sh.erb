@@ -1,14 +1,11 @@
 #!/bin/bash
 
+<% if p('release_level_backup') %>
 function enable_limited_functionality() {
-  touch /var/vcap/data/uaa/bbr_limited_mode.lock
+  touch '<%= p('uaa.limitedFunctionality.statusFile', '/tmp/uaa-non-existent') %>'
 }
 
-<% if p('release_level_backup') %>
   enable_limited_functionality
-
-  /var/vcap/bosh/bin/monit restart uaa
-  /var/vcap/jobs/uaa/bin/post-start
-
-  sleep 10
+  #uaa checks the file system every 5 seconds
+  sleep 6
 <% end %>

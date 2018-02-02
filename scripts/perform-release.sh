@@ -44,7 +44,8 @@ function finalize_and_commit {
     #actual
     bosh finalize release $tarball --name uaa --version $1
     #bosh generated files
-    git add .
+    git add releases/
+    git add .final_builds/
     git commit --no-verify -m "uaa-release version v${1}"
     local result=$2
     eval $result="`git rev-parse HEAD`"
@@ -120,7 +121,7 @@ git fetch --all --prune > /dev/null
 # save the metadata files from master
 # this saves all metadata from master
 # into a temporary directory
-copy_master_release_metadata
+# copy_master_release_metadata
 
 echo -e "${CYAN}Creating bosh UAA-release ${GREEN} ${1} ${NC} using `bosh -v`"
 
@@ -140,10 +141,6 @@ fi
 git checkout $branch_to_release_from
 sub_update
 
-# add the bosh.io metadata from master and apply it
-# to our release branch
-paste_master_release_metadata $1
-
 # restore private.yml in case it got deleted
 cp /tmp/private.yml config/
 
@@ -153,7 +150,7 @@ bosh create release --name uaa --version $1 --with-tarball
 metadata_commit=''
 # finalize release, get commit SHA so that we can cherry pick it later
 finalize_and_commit $1 metadata_commit
-echo -e "${CYAN}Finalized metadata with commit SHA ${metadata_commit}${NC}"
+echo -e "${CYAN}Finalized metadata for release with commit SHA ${metadata_commit}${NC}"
 
 # tag the release and individual metadata
 echo -e "${CYAN}Tagging and pushing the release branch${NC}"
@@ -165,18 +162,19 @@ echo -e "${CYAN}Switching to master branch to prep for metadata migration${NC}"
 git checkout master
 git reset --hard origin/master
 sub_update
+finalize_and_commit $1 metadata_commit
 
-# merge release branch, with all metadata, to master
-# a patch release has a dot in it
-if [[ ${1} == *.* ]]; then
-    #patch releases, that contain dots, we cherry pick the commit metadata only
-    echo -e "${CYAN}Cherry picking metadata commit to master for release ${1} and sha ${metadata_commit}${NC}"
-    git cherry-pick ${metadata_commit}
-else
-    echo -e "${CYAN}Merging $branch_to_release_from to master${NC}"
-    # merge to master - accept the dev branch as resolutions for conflicts
-    git merge --no-ff ${branch_to_release_from} -m "Merge of branch ${branch_to_release_from} for release ${1}" -X theirs
-fi
+## merge release branch, with all metadata, to master
+## a patch release has a dot in it
+#if [[ ${1} == *.* ]]; then
+#    #patch releases, that contain dots, we cherry pick the commit metadata only
+#    echo -e "${CYAN}Cherry picking metadata commit to master for release ${1} and sha ${metadata_commit}${NC}"
+#    git cherry-pick ${metadata_commit}
+#else
+#    echo -e "${CYAN}Merging $branch_to_release_from to master${NC}"
+#    # merge to master - accept the dev branch as resolutions for conflicts
+#    git merge --no-ff ${branch_to_release_from} -m "Merge of branch ${branch_to_release_from} for release ${1}" -X theirs
+#fi
 
 # update develop (merge master to develop so that the next release won't have a conflict
 echo -e "${CYAN}Pushing master branch and release tags${NC}"
@@ -184,7 +182,7 @@ git push origin master --tags
 echo -e "${CYAN}Merging master to develop to avoid conflicts in the future${NC}"
 git checkout develop
 git pull origin develop
-git merge master -Xours
+git merge master -m "Merge back master into develop to avoid future conflicts" -Xours
 git push origin develop
 
 # place the release on a branch, because rel-eng doesn't do git fetch --tags

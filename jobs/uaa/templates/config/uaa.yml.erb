@@ -184,16 +184,23 @@
 
 
   if uaa_db_scheme == 'sqlserver' then
-    params['database']['url'] = "jdbc:#{uaa_db_scheme}://#{uaa_db_address}:#{p('uaadb.port')};databaseName=#{uaa_db['name']}"
+    params['database']['url'] = "jdbc:#{uaa_db_scheme}://#{uaa_db_address}:#{p('uaadb.port')};databaseName=#{uaa_db['name']};"
   end
 
   if uaa_db_tls_enabled
     if uaa_db_scheme == 'postgresql'
-      params['database']['url'] = params['database']['url'] + '?ssl=true'
+      params['database']['url'] += '?ssl=true'
+
+      if_p('uaadb.skip_ssl_validation') do |db_skip_ssl_validation|
+          params['database']['url'] += '&sslfactory=org.postgresql.ssl.NonValidatingFactory' if db_skip_ssl_validation
+      end
     elsif uaa_db_scheme == 'mysql'
-      params['database']['url'] = params['database']['url'] + '?useSSL=true'
+      params['database']['url'] += '?useSSL=true' +  "&trustServerCertificate=#{p('uaadb.skip_ssl_validation')}"
+      if_p('uaadb.tls_protocols') do |dbTlsProtocol|
+        params['database']['url'] += '&enabledSslProtocolSuites=' + dbTlsProtocol
+      end
     elsif uaa_db_scheme == 'sqlserver'
-      params['database']['url'] = params['database']['url'] + ';encrypt=true'
+      params['database']['url'] += 'encrypt=true;' + "trustServerCertificate=#{p('uaadb.skip_ssl_validation')};"
     end
   end
 
@@ -416,6 +423,7 @@
 
   if p_opt('uaa.ldap.enabled')
     ldap = {
+      'override' => p('uaa.ldap.override', true),
       'ldapdebug' => 'Ldap configured through UAA',
       'profile' => {
         'file' => "ldap/ldap-#{p_opt('uaa.ldap.profile_type')}.xml"
@@ -435,9 +443,6 @@
     }
     unless p_opt('uaa.ldap.sslCertificate').nil?
       ldap['ssl']['sslCertificate'] = p_opt('uaa.ldap.sslCertificate')
-      unless p_opt('uaa.ldap.sslCertificateAlias').nil?
-        ldap['ssl']['sslCertificateAlias'] = p_opt('uaa.ldap.sslCertificateAlias')
-      end
     end
     if p_opt('uaa.ldap.profile_type') == 'simple-bind'
       ldap['base']['userDnPattern'] = p_opt('uaa.ldap.userDNPattern')
@@ -489,7 +494,17 @@
     ldap['groups']['searchSubtree'] = p('uaa.ldap.groups.searchSubtree')
     ldap['groups']['maxSearchDepth'] = p('uaa.ldap.groups.maxSearchDepth')
     params['ldap'] = ldap
+  else
+    unless p_opt('uaa.ldap.override').nil?
+      ldap = {
+        'override' => p('uaa.ldap.override')
+      }
+      params['ldap'] = ldap
+    end
   end
+
+
+
 
   servlet = {
     'idle-timeout' => p('uaa.servlet.idle-timeout')
@@ -553,7 +568,7 @@
       },
       'url' => uaa_base,
       'limitedFunctionality' => {
-        'enabled' => p('uaa.limitedFunctionality.enabled'),
+        'statusFile' => p('uaa.limitedFunctionality.statusFile'),
         'whitelist' => {
           'endpoints' => p('uaa.limitedFunctionality.whitelist.endpoints'),
           'methods' => p('uaa.limitedFunctionality.whitelist.methods')
@@ -653,6 +668,18 @@
       add_value(params, keyValue, 'login', 'saml', 'keys', keyName, )
     end
   end
+
+  if_p('login.mfa.providers') do |providers|
+    providers.each do |mfaName, provider|
+      provider.each do |key,value|
+        add_value(params, value, 'login', 'mfa', 'providers', mfaName, key)
+      end
+      add_value(params, p('login.mfa.providers.'+mfaName+'.config.issuer'), 'login', 'mfa', 'providers', mfaName, 'config', 'issuer') if p_opt('login.mfa.providers.'+mfaName+'.config.issuer')
+    end
+  end
+
+  add_value(params, p('login.mfa.providerName'), 'login', 'mfa', 'providerName') if p_opt('login.mfa.providerName')
+  add_value(params, p('login.mfa.enabled'), 'login', 'mfa', 'enabled') if p_opt('login.mfa.enabled')
 
   if_p('login.oauth.providers') do |providers|
     providers.each do |idpAlias, provider|

@@ -8,7 +8,7 @@ spring_profiles: mysql,ldap
 logging:
   config: "/var/vcap/jobs/uaa/config/log4j.properties"
 database:
-  url: jdbc:mysql://10.244.0.30:5524/uaadb?useSSL=true
+  url: jdbc:mysql://10.244.0.30:5524/uaadb?useSSL=true&trustServerCertificate=false&enabledSslProtocolSuites=TLSv1.2
   username: uaaadmin
   password: admin
   maxactive: 101
@@ -26,6 +26,9 @@ delete:
   users:
     - user-to-be-deleted-1
     - user-to-be-deleted-2
+  identityProviders:
+    - google
+    - octa
 
 authentication:
   policy:
@@ -194,6 +197,7 @@ scim:
       - internal_group5
 require_https: false
 ldap:
+  override: false
   ldapdebug: Ldap configured through UAA
   profile:
     file: ldap/ldap-search-and-bind.xml
@@ -201,7 +205,6 @@ ldap:
     tls: simple
     skipverification: true
     sslCertificate: ldap-ssl-cert
-    sslCertificateAlias: ldap-ssl-cert-alias
   base:
     url: ldap://192.168.50.4:389/
     mailAttributeName: mail
@@ -243,7 +246,7 @@ logout:
 uaa:
   url: http://all-properties-set:8888/uaa
   limitedFunctionality:
-    enabled: false
+    statusFile: /var/vcap/data/uaa/test_bbr_limited_mode.lock
     whitelist:
       endpoints:
       - /oauth/authorize/**
@@ -410,6 +413,7 @@ login:
         idpMetadata: http://my.identityprovider.com/saml2/idp/metadata.php
         skipSslValidation: false
       CA_SM1:
+        override: false
         assertionConsumerIndex: 0
         attributeMappings:
           email: mail
@@ -536,9 +540,19 @@ login:
     waZKhM1W0oB8MX78M+0fG3xGUtywTx0D4N7pr1Tk2GTgNw==
     -----END RSA PRIVATE KEY-----
   selfServiceLinksEnabled: false
+  mfa:
+    enabled: true
+    providerName: myExampleProvider
+    providers:
+      myExampleProvider:
+        type: google-authenticator
+        config:
+          providerDescription: test google authenticator
+          issuer: google
   oauth:
     providers:
       my-oauth-provider:
+        override: false
         type: oidc1.0
         authUrl: http://authUrl
         tokenUrl: http://tokenUrl

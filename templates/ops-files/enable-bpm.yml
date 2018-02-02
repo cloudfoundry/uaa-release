@@ -4,8 +4,9 @@
   path: /releases/name=bpm?
   value:
     name: bpm
-    version: create
-    url: /Users/pivotal/workspace/bpm-release
+    version: 0.2.0
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/bpm-release
+    sha1: f2bd126b17b3591160f501d88d79ccf0aba1ae54
 
 # Enable BPM in uaa job
 - type: replace

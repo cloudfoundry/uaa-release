@@ -1,6 +1,9 @@
 ---
 properties:
   login:
+    mfa:
+      enabled: true
+      providerName: myExampleProvider
     brand: oss
     enabled: true
     links:
@@ -253,7 +256,6 @@ properties:
       -----END RSA PRIVATE KEY-----
     url: https://uaa.bosh-lite.com
     limitedFunctionality:
-      enabled: false
       whitelist:
         endpoints:
         - /oauth/authorize/**

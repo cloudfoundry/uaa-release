@@ -12,9 +12,8 @@ templates:
   bin/dns_health_check.erb: bin/dns_health_check
   bin/health_check: bin/health_check
   bin/install_uaa_crt: bin/install_uaa_crt
-  bin/pre-start: bin/pre-start
+  bin/pre-start.erb: bin/pre-start
   bin/post-start: bin/post-start
-  bin/tomcat/setenv.sh: bin/tomcat/setenv.sh
 
   config/uaa.yml.erb: config/uaa.yml
   config/bpm.yml.erb: config/bpm.yml
@@ -63,6 +62,47 @@ properties:
   bpm.enabled:
     description: "Experimental feature flag, do not use yet: Enable Bosh Process Manager"
     default: false
+
+  #uaa database host configuration
+  uaadb.address:
+    description: |
+      The UAA database IP address. If this property is not set, the UAA will look for a `database` link
+      and use the first instance address it can find in the list
+  uaadb.databases:
+    description: |
+      The list of databases used in UAA database including tag/name. The UAA will always look for the `uaa` tag
+      and use the database name from that tag
+    example:
+      - name: uaa
+        tag: uaa
+  uaadb.db_scheme:
+    description: "Database scheme for UAA DB"
+  uaadb.port:
+    description: "The UAA database Port"
+  uaadb.tls_enabled:
+    description: "Use TLS connection for UAA database"
+    default: false
+  uaadb.skip_ssl_validation:
+    description: "Skip TLS veriication for database server certificate"
+    default: false
+  uaadb.tls_protocols:
+    description: |
+      if `tls_enabled` is set to true, this property can be used to narrow down the protocols used
+      by the UAA database driver.
+      The default is null, the database driver will pick the protocol to use.
+      The values can be comma separated.
+      This option only takes into effect when using `mysql` as `uaadb.db_scheme`.
+      PostgreSQL and SQLServer default to TLSv1.2 through the JDBC driver.
+    example: TLSv1.2,TLSv1.1
+  uaadb.roles:
+    description: |
+      The list of database Roles used in UAA database including tag/name/password
+      The UAA will always look for the tag `admin` and use the
+      `name` and `password` properties as the database credentials
+    example:
+      - name: uaa
+        password: database-password-for-user-uaa
+        tag: admin
 
   # General server properties
   uaa.catalina_opts:
@@ -124,11 +164,13 @@ properties:
   uaa.logging_use_rfc3339:
     description: "Sets the time format for log messages to be yyyy-MM-dd'T'HH:mm:ss.SSSXXX instead of yyyy-MM-dd HH:mm:ss.SSS"
     default: false
-  uaa.limitedFunctionality.enabled:
+  uaa.limitedFunctionality.statusFile:
     description: |
-      Setting this flag to true renders UAA in a degraded mode with limited access to the UAA API.
-      The allowed API's only a subset of the UAA API and UI needed for Authentication and Authorization.
-    default: false
+      The UAA checks for the presence of this file. If this file exists, the UAA will continue to function
+      but in limited mode. This means any authentication or token action will continue to work, but more
+      API endpoints that change configuration will return 503 UNAVAILABLE.
+      Normally, there is no need to change this value, unless you have other scripts that may rely on it
+    default: /var/vcap/data/uaa/bbr_limited_mode.lock
   uaa.limitedFunctionality.whitelist.endpoints:
     description: "Set the whitelisted API for UAA in degraded mode. Methods and Endpoints are unioned with each other: i.e. all methods are permitted for a whitelisted endpoint, and all endpoints are permitted for a whitelisted method"
     default:
@@ -158,7 +200,7 @@ properties:
     description: "Request came in on a secure connection. Expect the load balancer/proxy to set the proper headers (x-forwarded-for, x-forwarded-proto)"
     default: true
   uaa.ssl.port:
-    description: If this property Tomcat will listen to this port and expect https traffic. If set to -1, Tomcat will not listen for https traffic.
+    description: If this property is set, Tomcat will listen to this port and expect https traffic. If set to -1, Tomcat will not listen for https traffic.
     default: 8443
   uaa.ssl.protocol_header:
     description: The header to look for to determine if ssl termination was performed by a front end load balancer.
@@ -331,9 +373,13 @@ properties:
   # Delete actions
   uaa.delete:
     description: |
-      Contains a map of actions, each with a list of IDs. Possible delete actions are 'users' and 'clients'.
+      Contains a map of actions, each with a list of IDs.
+      Possible delete actions are 'identityProviders', 'users' and 'clients'.
+      Identity providers are identified by their alias
       These will be deleted in the database (default zone).
-      Unrecognized map keys will be ignored
+      Unrecognized map keys will be ignored.
+      If the ID exists both in the delete and create sections
+      the delete section takes preceden
     example: |
       clients:
         - client-to-be-deleted-1
@@ -341,6 +387,10 @@ properties:
       users:
         - user-to-be-deleted-1
         - user-to-be-deleted-2
+      identityProviders:
+        - octa
+        - google
+
   # client secret policy
   uaa.client.secret.policy:
     description: "The client secret policy for clients in the default zone."
@@ -529,11 +579,11 @@ properties:
     description: "Disallows refresh-token grant for any client for which the user has not approved the `uaa.offline_token` scope"
     default: false
   uaa.jwt.refresh.unique:
-      description: "If true, uaa will only issue one refresh token per client_id/user_id combination"
-      default: false
+    description: "Revokes existing refresh tokens for client-user combination when creating a new refresh token. Note: only applies if `uaa.jwt.revocable` is true."
+    default: false
   uaa.jwt.refresh.format:
-      description: "The format for the refresh token. Allowed values are `jwt`, `opaque`"
-      default: jwt
+    description: "The format for the refresh token. Allowed values are `jwt`, `opaque`"
+    default: jwt
 
   # Global security policies (for all zones)
   uaa.authentication.policy.global.lockoutAfterFailures:
@@ -635,21 +685,7 @@ properties:
             groups:
               my-test-group: 'My test group description'
               another-group: 'Another group description'
-
-  # Database
-  uaadb.address:
-    description: "The UAA database IP address"
-  uaadb.databases:
-    description: "The list of databases used in UAA database including tag/name"
-  uaadb.db_scheme:
-    description: "Database scheme for UAA DB"
-  uaadb.port:
-    description: "The UAA database Port"
-  uaadb.tls_enabled :
-    description: "Use TLS connection for UAA database"
-    default: false
-  uaadb.roles:
-    description: "The list of database Roles used in UAA database including tag/name/password"
+  # connection pool properties
   uaa.database.max_connections:
     description: "The max number of open connections to the DB from a running UAA instance"
     default: 100
@@ -675,6 +711,11 @@ properties:
   uaa.ldap.enabled:
     description: "Set to true to enable LDAP"
     default: false
+  uaa.ldap.override:
+    description: |
+      If the LDAP configuration has `override: false` set, the LDAP values will only be stored
+      in the database if the LDAP has not been configured yet.
+      If property is omitted, the default is override: true
   uaa.ldap.profile_type:
     description: "The file to be used for configuring the LDAP authentication. Options are: 'simple-bind', 'search-and-bind', 'search-and-compare'"
     default: search-and-bind
@@ -707,8 +748,6 @@ properties:
     default: "org.cloudfoundry.identity.uaa.ldap.DynamicPasswordComparator"
   uaa.ldap.sslCertificate:
     description: "Used with ldaps:// URLs. The certificate, if self signed, to be trusted by this connection."
-  uaa.ldap.sslCertificateAlias:
-    description: "Used with ldaps:// URLs. The certificate alias, to be trusted by this connection and stored in the keystore."
   uaa.ldap.ssl.skipverification:
     description: "Set to true, and LDAPS connection will not validate the server certificate."
     default: false
@@ -775,12 +814,36 @@ properties:
     description: "If set to false, only users pre-populated in the UAA user database will be allowed to authenticate via LDAP. If set to true, any user from LDAP will be allowed to authenticate and an internal user will be created if one does not yet exist."
     default: true
 
+  # Multifactor Authentication
+  login.mfa.providers:
+    description: "A list of providers and their configuration. Provider names must be alphanumeric. Currently only `google-authenticator` is supported with no additional attributes. Issuer is optional."
+    example:
+      myExampleProvider1:
+        type: google-authenticator
+        config:
+          providerDescription: test adding a google authenticator to the default zone
+          issuer: uaa
+    default: ~
+
+  login.mfa.providerName:
+    description: "The unique name of the MFA provider to use for default zone."
+    default: ~
+  login.mfa.enabled:
+    description: "Set true to enable Multi-factor Authentication (MFA) for the default zone. Defaults to false."
+    default: false
+
   # OpenID Connect/OAuth
 
   login.oauth.providers:
-    description: "Contains a hash of OpenID Connect/Oauth Identity Providers, the key will be used as the origin key for that provider, followed by key/value pairs. Presence of the userInfoUrl will mark it as an OpenID provider instead of OAuth."
+    description: |
+      Contains a hash of OpenID Connect/Oauth Identity Providers,
+      the key will be used as the origin key for that provider, followed by key/value pairs.
+      Presence of the userInfoUrl will mark it as an OpenID provider instead of OAuth.
+      If the provider has `override: false` set, the provider values will only be stored
+      in the database if the provider doesn't exist.
     example:
       my-oauth-provider:
+        override: false
         type: oauth2.0
         authUrl: <URL to the authorize endpoint of the provider>
         tokenUrl: <URL to the token endpoint of the provider>
@@ -1021,9 +1084,15 @@ properties:
       lshe50nayKrT
       -----END CERTIFICATE----
   login.saml.providers:
-    description: "Contains a hash of SAML Identity Providers, the key is the IDP Alias, followed by key/value pairs. To learn more about how to setup a saml identity provider go to https://simplesamlphp.org"
+    description: |
+      Contains a hash of SAML Identity Providers,
+      the key is the IDP Alias, followed by key/value pairs.
+      To learn more about how to setup a saml identity provider go to https://simplesamlphp.org
+      If the provider has `override: false` set, the provider values will only be stored
+      in the database if the provider doesn't exist.
     example:
       my-identity-provider:
+        override: false
         metadataTrustCheck: false
         idpMetadata: http://my.identityprovider.com/saml2/idp/metadata.php
         nameID: urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress

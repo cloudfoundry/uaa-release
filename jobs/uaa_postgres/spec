@@ -6,12 +6,13 @@ description: "The Postgres server provides a single instance Postgres database t
 templates:
   postgres_ctl.erb: bin/postgres_ctl
   postgres_start.sh.erb: bin/postgres_start.sh
+  postgres_env.sh.erb: bin/postgres_env.sh
   postgresql.conf.erb: config/postgresql.conf
   pg_hba.conf.erb: config/pg_hba.conf
 
 packages:
   - uaa_utils
-  - uaa_postgres-9.4.6
+  - uaa_postgres
 
 provides:
   - name: postgres

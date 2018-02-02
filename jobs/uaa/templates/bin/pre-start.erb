@@ -13,13 +13,25 @@ function setup_directories {
     mkdir -p /var/vcap/data/uaa/
     cp -a /var/vcap/packages/uaa/tomcat /var/vcap/data/uaa/
     cp -a /var/vcap/jobs/uaa/config/tomcat/* /var/vcap/data/uaa/tomcat/conf/
-    cp -a /var/vcap/jobs/uaa/bin/tomcat/* /var/vcap/data/uaa/tomcat/bin/
     chown -R vcap:vcap /var/vcap/data/uaa/
 
     # We don't think this does anything since the variable is not set
     # Keeping it currently to discuss whether to remove or whether this is a regression
     rm -rf $KEY_STORE_FILE
 }
+
+<% if p('uaa.ldap.sslCertificate', nil) || p('login.ldap.sslCertificate', nil) %>
+    echo "[uaa-pre-start] Installing LDAP certificate"
+    /var/vcap/jobs/uaa/bin/install_crt ldap.crt ldapcert $TRUST_STORE_FILE
+    echo "[uaa-pre-start] Installed LDAP certificate"
+<% end %>
+
+# Install the server's ssl certificate
+<% if p("uaa.ssl.port") != -1 %>
+    echo "[uaa-pre-start] Installing Server SSL certificate"
+    /var/vcap/jobs/uaa/bin/install_uaa_crt uaa.crt
+    echo "[uaa-pre-start] Installed Server SSL certificate"
+<% end %>
 
 setup_directories
 

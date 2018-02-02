@@ -16,6 +16,32 @@ PIDFILE=$RUN_DIR/uaa.pid
 mkdir -p /var/vcap/sys/run/uaa
 chown vcap:vcap /var/vcap/sys/run/uaa
 
+function process_certs {
+    echo "Processing certificates for Java cacerts file"
+    rm -f $CERT_CACHE_FILE
+    rm -f $TRUST_STORE_FILE
+    COUNTER=0
+    for N in $(seq 0 $(($CERTS - 1))); do
+      # Get the alias
+      ALIAS="${CERT_FILE%.*}-$N"
+      # Load the cert into the Java keystore
+      cat $CERT_FILE |
+        awk "n==$N { print }; /END CERTIFICATE/ { n++ }" |
+          /var/vcap/packages/uaa/jdk/bin/keytool -noprompt \
+                  -import \
+                  -trustcacerts \
+                  -alias $ALIAS \
+                  -keystore $TRUST_STORE_FILE \
+                  -storepass changeit
+      let COUNTER=COUNTER+1
+      echo "[uaa-ctl]   Processed certificate $COUNTER of $CERTS"
+    done
+    if [ "$COUNTER" -eq "$CERTS" ]; then
+        echo "[uaa-ctl] Java keystore creation completed."
+        cp $CERT_FILE $CERT_CACHE_FILE
+    fi
+}
+
 pid_guard() {
   local return_code=0
   pidfile=$1
@@ -43,6 +69,33 @@ ensure_no_more_tomcat() {
 
 case $1 in
   start)
+    echo "[uaa-ctl] UAA Control Preparing Certs"
+    CERT_FILE=/tmp/ca-certificates.crt
+    cp /etc/ssl/certs/ca-certificates.crt $CERT_FILE
+
+    CONF_DIR=/var/vcap/jobs/uaa/config
+    CACHE_DIR=/var/vcap/data/uaa/cert-cache
+
+    mkdir -p $CACHE_DIR
+
+    CERT_CACHE_FILE=$CACHE_DIR/cacerts-cache.txt
+    TRUST_STORE_FILE=$CACHE_DIR/cacerts
+
+    CERTS=$(grep 'END CERTIFICATE' $CERT_FILE| wc -l)
+
+    if [ -a $CERT_CACHE_FILE ] && [ -a $TRUST_STORE_FILE ]; then
+        if  diff $CERT_CACHE_FILE $CERT_FILE >/dev/null; then
+          echo "[uaa-ctl] No changes to CA certificates. Will not build Java keystore file."
+        else
+          echo "[uaa-ctl] Changes to CA certificates detected."
+          process_certs
+       fi
+    else
+        process_certs
+    fi
+    cp $TRUST_STORE_FILE $CONF_DIR
+    rm -f $CERT_FILE
+
     ulimit -n 65536
     export CLOUD_FOUNDRY_CONFIG_PATH=/var/vcap/jobs/uaa/config
     export CATALINA_OPTS="<%= p('uaa.catalina_opts') %>"

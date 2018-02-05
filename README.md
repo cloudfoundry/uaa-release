@@ -109,6 +109,19 @@ Add the following properties to your manifest:
 
        https://uaa.uaa-standalone.com:8443/
 
+## Java Runtime Environments
+
+   Java Runtime Environments are gracefully supplied by the Cloud Foundry
+   Java Buildpack Team
+
+   JDK - https://java-buildpack.cloudfoundry.org/openjdk-jdk/trusty/x86_64/index.yml
+   
+   JRE - https://java-buildpack.cloudfoundry.org/openjdk/trusty/x86_64/index.yml
+   
+   Mac JDK - https://java-buildpack.cloudfoundry.org/openjdk-jdk/mountainlion/x86_64/index.yml
+   
+   Mac JRE - https://java-buildpack.cloudfoundry.org/openjdk/mountainlion/x86_64/index.yml
+
 ## Acknowledgements
 
 * We'd like to extend a thank you to all our users, contributors and supporters!

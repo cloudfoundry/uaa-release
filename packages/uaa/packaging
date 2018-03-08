@@ -5,7 +5,7 @@ set -e -x
 TOMCAT_VERSION=8.5.23
 
 cd ${BOSH_INSTALL_TARGET}
-mkdir jdk && tar zxvf ${BOSH_COMPILE_TARGET}/openjdk/openjdk-1.8.0_152-x86_64-trusty.tar.gz -C jdk
+mkdir jdk && tar zxvf ${BOSH_COMPILE_TARGET}/openjdk/openjdk-1.8.0_162-x86_64-trusty.tar.gz -C jdk
 if [[ $? != 0 ]] ; then
   echo "Cannot unpack JDK"
   exit 1

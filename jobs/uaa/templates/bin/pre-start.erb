@@ -2,44 +2,10 @@
 set -e
 
 echo "uaa-pre-start - starting at `date`"
-
-CERT_FILE=/etc/ssl/certs/ca-certificates.crt
-
-CONF_DIR=/var/vcap/jobs/uaa/config
 CACHE_DIR=/var/vcap/data/uaa/cert-cache
+test -d $CACHE_DIR || mkdir -p $CACHE_DIR
 
-mkdir -p $CACHE_DIR
-
-CERT_CACHE_FILE=$CACHE_DIR/cacerts-cache.txt
 TRUST_STORE_FILE=$CACHE_DIR/cacerts
-
-CERTS=$(grep 'END CERTIFICATE' $CERT_FILE| wc -l)
-
-function process_certs {
-    echo "Processing certificates for Java cacerts file"
-    rm -f $CERT_CACHE_FILE
-    rm -f $TRUST_STORE_FILE
-    COUNTER=0
-    for N in $(seq 0 $(($CERTS - 1))); do
-      # Get the alias
-      ALIAS="${CERT_FILE%.*}-$N"
-      # Load the cert into the Java keystore
-      cat $CERT_FILE |
-        awk "n==$N { print }; /END CERTIFICATE/ { n++ }" |
-          /var/vcap/packages/uaa/jdk/bin/keytool -noprompt \
-                  -import \
-                  -trustcacerts \
-                  -alias $ALIAS \
-                  -keystore $TRUST_STORE_FILE \
-                  -storepass changeit
-      let COUNTER=COUNTER+1
-      echo "Processed certificate $COUNTER of $CERTS"
-    done
-    if [ "$COUNTER" -eq "$CERTS" ]; then
-        echo "Java keystore creation completed."
-        cp $CERT_FILE $CERT_CACHE_FILE
-    fi
-}
 
 function setup_directories {
     mkdir -p /var/vcap/sys/log/uaa
@@ -58,17 +24,6 @@ function setup_directories {
     rm -rf $KEY_STORE_FILE
 }
 
-if [ -a $CERT_CACHE_FILE ] && [ -a $TRUST_STORE_FILE ]; then
-    if  diff $CERT_CACHE_FILE $CERT_FILE >/dev/null; then
-      echo "No changes to CA certificates. Will not build Java keystore file."
-    else
-      echo "Changes to CA certificates detected."
-      process_certs
-    fi
-else
-    process_certs
-fi
-
 <% if p('uaa.ldap.sslCertificate', nil) || p('login.ldap.sslCertificate', nil) %>
     echo "[uaa-pre-start] Installing LDAP certificate"
     /var/vcap/jobs/uaa/bin/install_crt ldap.crt ldapcert $TRUST_STORE_FILE
@@ -81,8 +36,6 @@ fi
     /var/vcap/jobs/uaa/bin/install_uaa_crt uaa.crt
     echo "[uaa-pre-start] Installed Server SSL certificate"
 <% end %>
-
-cp $TRUST_STORE_FILE $CONF_DIR
 
 setup_directories
 

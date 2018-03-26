@@ -21,25 +21,29 @@ function process_certs {
     rm -f $CERT_CACHE_FILE
     rm -f $TRUST_STORE_FILE
     COUNTER=0
-    for N in $(seq 0 $(($CERTS - 1))); do
-      # Get the alias
-      ALIAS="${CERT_FILE%.*}-$N"
-      # Load the cert into the Java keystore
-      cat $CERT_FILE |
-        awk "n==$N { print }; /END CERTIFICATE/ { n++ }" |
-          /var/vcap/packages/uaa/jdk/bin/keytool -noprompt \
-                  -import \
-                  -trustcacerts \
-                  -alias $ALIAS \
-                  -keystore $TRUST_STORE_FILE \
-                  -storepass changeit
+    # Load the cert into the Java keystore
+    TEMP_CA_CERTS=$(mktemp -d)
+
+    cat $CERT_FILE |
+    awk "split_after==1{n++;split_after=0} /-----END CERTIFICATE-----/ {split_after=1} {print > (\"$TEMP_CA_CERTS/cert\" n \".pem\")}"
+
+
+    for cert in $TEMP_CA_CERTS/*; do
+      cat $cert | /var/vcap/packages/uaa/jdk/bin/keytool -noprompt \
+              -import \
+              -trustcacerts \
+              -alias $(basename $cert) \
+              -keystore $TRUST_STORE_FILE \
+              -storepass changeit
       let COUNTER=COUNTER+1
       echo "[uaa-ctl]   Processed certificate $COUNTER of $CERTS"
     done
+
     if [ "$COUNTER" -eq "$CERTS" ]; then
         echo "[uaa-ctl] Java keystore creation completed."
         cp $CERT_FILE $CERT_CACHE_FILE
     fi
+    rm -rf $TEMP_CA_CERTS
 }
 
 pid_guard() {

@@ -146,7 +146,14 @@ properties:
       The syntax that must adhere to documentation in https://docs.newrelic.com/docs/agents/java-agent/configuration/java-agent-configuration-config-file
       The JVM option -javaagent:/path/to/newrelic.jar will be added to Apache Tomcat's startup script
       The enablement of the NewRelic agent in the UAA is triggered by the property uaa.newrelic.common.license_key
-      The property uaa.newrelic.common.license_key must be set!
+      The property uaa.newrelic.common.license_key must be set.
+    example: |
+      uaa:
+        newrelic:
+          common:
+            app_name: ((uaa_app_name))
+            license_key: ((uaa_license_key))
+
   env.http_proxy:
     description: "The http_proxy across the VMs used for all requests over http"
     example: http://test.proxy:8080

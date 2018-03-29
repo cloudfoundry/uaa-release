@@ -60,10 +60,6 @@ Add the following properties to your manifest:
 
 `openssl x509 -sha256 -days 365 -in server.csr -signkey server.key -out selfsigned.crt`
 
-## Notes
-
-- The property `uaa.port` can't be set to `8989` because this port is used by BOSH to monitor the server.
-
 ## Contributing to uaa-release
 
 ### General workflow

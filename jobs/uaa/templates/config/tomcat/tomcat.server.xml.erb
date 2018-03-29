@@ -37,7 +37,7 @@
                protocol="HTTP/1.1"
                connectionTimeout="20000"
                port="<%= p('uaa.port') %>"
-               bindOnInit="false"
+               bindOnInit="true"
     />
     <% end %>
 
@@ -59,12 +59,6 @@
     />
     <% end %>
 
-
-    <Connector protocol="org.apache.coyote.http11.Http11NioProtocol"
-               connectionTimeout="20000"
-               port="8989"
-               address="127.0.0.1"
-               bindOnInit="true"/>
     <Engine name="Catalina" defaultHost="localhost">
 
       <Host name="localhost"

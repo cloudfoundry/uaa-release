@@ -6,11 +6,12 @@ import (
 	"os/exec"
 	"github.com/onsi/gomega/gexec"
 	"time"
-	"fmt"
 	"encoding/json"
 	"strconv"
 	"strings"
 	"unicode"
+	. "github.com/onsi/ginkgo/extensions/table"
+	"fmt"
 )
 
 type row struct {
@@ -28,15 +29,29 @@ type sshResult struct {
 
 var _ = Describe("UaaRelease", func() {
 
-	It("should have loaded every certificate into the jdk truststore", func() {
+	AfterEach(func() {
+		deleteUAA()
+	})
+
+	DescribeTable("uaa truststore", func(addedCertificates int, optFiles ...string) {
+		numCertificatesBeforeDeploy := getNumOfOSCertificates()
+		deployUAA(optFiles...)
+		numCertificatesAfterDeploy := getNumOfOSCertificates()
+		Expect(numCertificatesAfterDeploy).To(Equal(numCertificatesBeforeDeploy + addedCertificates))
+
 		cmd := exec.Command(boshBinaryPath, []string{"ssh", "uaa", "-c", "sudo /var/vcap/packages/uaa/jdk/bin/keytool --keystore /var/vcap/data/uaa/cert-cache/cacerts --storepass changeit -list"}...)
 		session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 
 		Eventually(session, 10*time.Second).Should(gexec.Exit(0))
 		output := string(session.Out.Contents())
-		Expect(output).To(MatchRegexp(fmt.Sprintf("Your keystore contains %d entries", getNumOfOSCertificates())))
-	})
+		Expect(output).To(MatchRegexp(fmt.Sprintf("Your keystore contains %d entries", numCertificatesAfterDeploy)))
+	},
+		Entry("without BPM enabled", 0, "./opsfiles/disable-bpm.yml", "./opsfiles/os-conf-0-certificate.yml"),
+		Entry("without BPM enabled and os-conf", 1, "./opsfiles/disable-bpm.yml", "./opsfiles/os-conf-1-certificate.yml"),
+		Entry("with BPM enabled", 0, "./opsfiles/enable-bpm.yml", "./opsfiles/os-conf-0-certificate.yml"),
+		Entry("with BPM enabled and os-conf", 1, "./opsfiles/enable-bpm.yml", "./opsfiles/os-conf-1-certificate.yml"),
+	)
 })
 
 func getNumOfOSCertificates() int {

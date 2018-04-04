@@ -15,6 +15,8 @@ import (
 
 	boshdir "github.com/cloudfoundry/bosh-cli/director"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
+	"fmt"
+	"github.com/onsi/gomega/gbytes"
 	"github.com/onsi/gomega/gstruct"
 )
 
@@ -31,12 +33,19 @@ var (
 
 	directorClient       string
 	directorClientSecret string
+
+	deployCmd = []string{"-n", "deploy", "/tmp/uaa-deployment.yml", "--vars-store=/tmp/uaa-store.json", "-v", "system_domain=localhost"}
+	deleteCmd = []string{"-n", "delete-deployment", "-d", "uaa"}
 )
 
 var _ = BeforeSuite(func() {
 	setBoshEnvironmentVariables()
 
 	ensureUAAHasBeenDeployedAndRunning()
+})
+
+var _ = BeforeEach(func() {
+	deployUAA()
 })
 
 func setBoshEnvironmentVariables() {
@@ -71,12 +80,14 @@ func setBoshEnvironmentVariables() {
 }
 
 func ensureUAAHasBeenDeployedAndRunning() {
-	instanceInfos := getInstanceInfos(boshBinaryPath)
-	Expect(instanceInfos).ToNot(BeEmpty())
-	Expect(instanceInfos).To(ContainElement(gstruct.MatchFields(gstruct.IgnoreExtras, gstruct.Fields{
-		"InstanceGroup": Equal("uaa"),
-		"ProcessState":  Equal("running"),
-	})))
+	By("checking uaa is deployed and running", func() {
+		instanceInfos := getInstanceInfos(boshBinaryPath)
+		Expect(instanceInfos).ToNot(BeEmpty())
+		Expect(instanceInfos).To(ContainElement(gstruct.MatchFields(gstruct.IgnoreExtras, gstruct.Fields{
+			"InstanceGroup": Equal("uaa"),
+			"ProcessState":  Equal("running"),
+		})))
+	})
 }
 
 type instanceInfo struct {
@@ -131,4 +142,36 @@ func getInstanceInfos(boshBinary string) []instanceInfo {
 	}
 
 	return out
+}
+
+func deleteUAA() {
+	By(fmt.Sprintf("delete uaa: %v", deleteCmd), func() {
+		Expect(os.Remove("/tmp/uaa-store.json")).To(Succeed())
+		cmd := exec.Command(boshBinaryPath, deleteCmd...)
+		session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+		Expect(err).NotTo(HaveOccurred())
+		Eventually(session, 10*time.Minute).Should(gexec.Exit(0))
+
+		Eventually(session).Should(gbytes.Say("Removing deployment"))
+	})
+}
+
+func deployUAA(optFiles ...string) {
+	updatedDeployCmd := make([]string, len(deployCmd))
+	copy(updatedDeployCmd, deployCmd)
+
+	for _, optFile := range optFiles {
+		updatedDeployCmd = append(updatedDeployCmd, "-o", optFile)
+	}
+
+	By(fmt.Sprintf("deploying uaa: %v", updatedDeployCmd), func() {
+		os.Remove("/tmp/uaa-store.json")
+		cmd := exec.Command(boshBinaryPath, updatedDeployCmd...)
+		session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+		Expect(err).NotTo(HaveOccurred())
+		Eventually(session, 10*time.Minute).Should(gexec.Exit(0))
+
+		Eventually(session).Should(gbytes.Say("Preparing deployment: Preparing deployment"))
+	})
+
 }

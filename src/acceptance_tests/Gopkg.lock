@@ -102,6 +102,7 @@
   packages = [
     ".",
     "config",
+    "extensions/table",
     "internal/codelocation",
     "internal/containernode",
     "internal/failer",
@@ -227,6 +228,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c6d0fcb3fcd8ba0354912794cd809970dedbf47945455b97952bd4be02b46cf6"
+  inputs-digest = "658a0499fbf6e3402ac70ceec3bfdb38b225ce1a5feeb386cf1e2155bfc45c55"
   solver-name = "gps-cdcl"
   solver-version = 1

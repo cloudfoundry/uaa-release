@@ -34,7 +34,7 @@ var (
 	directorClient       string
 	directorClientSecret string
 
-	deployCmd = []string{"-n", "deploy", "/tmp/uaa-deployment.yml", "--vars-store=/tmp/uaa-store.json", "-v", "system_domain=localhost"}
+	deployCmd = []string{"-n", "deploy", "/tmp/uaa-deployment.yml", "-o", "./opsfiles/enable-local-uaa.yml", "--vars-store=/tmp/uaa-store.json", "-v", "system_domain=localhost"}
 	deleteCmd = []string{"-n", "delete-deployment", "-d", "uaa"}
 )
 

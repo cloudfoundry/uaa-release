@@ -2,6 +2,102 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "code.cloudfoundry.org/clock"
+  packages = ["."]
+  revision = "e9dc86bbf0e5bbe6bf7ff5a6f71e048959b61f71"
+
+[[projects]]
+  name = "github.com/bmatcuk/doublestar"
+  packages = ["."]
+  revision = "b3608229437ba4dc33dae64d56a79a2a73f1f6b2"
+  version = "v1.0.9"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/charlievieth/fs"
+  packages = ["."]
+  revision = "7dc373669fa10ddf827c37c595dee30a2f001be9"
+
+[[projects]]
+  name = "github.com/cheggaaa/pb"
+  packages = ["."]
+  revision = "c1f48d5ce4f292dfb775ef52aaedd15be323510d"
+
+[[projects]]
+  name = "github.com/cloudfoundry/bosh-cli"
+  packages = [
+    "director",
+    "ui",
+    "ui/fmt",
+    "ui/table"
+  ]
+  revision = "712bfd7271b478ba03c3f604339e2eefbec4647c"
+  version = "v3.0.1"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/cloudfoundry/bosh-utils"
+  packages = [
+    "crypto",
+    "errors",
+    "httpclient",
+    "logger",
+    "retrystrategy",
+    "system",
+    "uuid"
+  ]
+  revision = "f4c293340f7527c63b0679a8eb6d4c25a70b31ef"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/cloudfoundry/go-socks5"
+  packages = ["."]
+  revision = "54f73bdb8a8e85a6611d3d29ab9bbf98c2a060d7"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/cloudfoundry/socks5-proxy"
+  packages = ["."]
+  revision = "3c6b4eec9c2d16c1dac4c42bdb5f755ba09daff8"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/cppforlife/go-semi-semantic"
+  packages = ["version"]
+  revision = "576b6af77ae4f3ccef356902fb3b9a9ae22e0b11"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/dustin/go-humanize"
+  packages = ["."]
+  revision = "bb3d318650d48840a39aa21a027c6630e198e626"
+
+[[projects]]
+  name = "github.com/fatih/color"
+  packages = ["."]
+  revision = "507f6050b8568533fb3f5504de8e5205fa62a114"
+  version = "v1.6.0"
+
+[[projects]]
+  name = "github.com/mattn/go-colorable"
+  packages = ["."]
+  revision = "167de6bfdfba052fa6b2d3664c8f5272e23c9072"
+  version = "v0.0.9"
+
+[[projects]]
+  name = "github.com/mattn/go-isatty"
+  packages = ["."]
+  revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
+  version = "v0.0.3"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/nu7hatch/gouuid"
+  packages = ["."]
+  revision = "179d4d0c4d8d407a32af483c2354df1d2c91e6c3"
+
+[[projects]]
   name = "github.com/onsi/ginkgo"
   packages = [
     ".",
@@ -31,6 +127,10 @@
   packages = [
     ".",
     "format",
+    "gbytes",
+    "gexec",
+    "gstruct",
+    "gstruct/errors",
     "internal/assertion",
     "internal/asyncassertion",
     "internal/oraclematcher",
@@ -47,19 +147,52 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/pivotal-cf/paraphernalia"
+  packages = ["secure/tlsconfig"]
+  revision = "a64ae2051c20c5cde13292a41db01029566134ba"
+
+[[projects]]
+  name = "github.com/vito/go-interact"
+  packages = [
+    "interact",
+    "interact/terminal"
+  ]
+  revision = "fa338ed9e9ecbb0e9c2e6c7a0160d9fc9b0efbd9"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+  packages = [
+    "curve25519",
+    "ed25519",
+    "ed25519/internal/edwards25519",
+    "internal/chacha20",
+    "poly1305",
+    "ssh",
+    "ssh/terminal"
+  ]
+  revision = "b2aa35443fbc700ab74c586ae79b81c171851023"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/net"
   packages = [
+    "context",
     "html",
     "html/atom",
-    "html/charset"
+    "html/charset",
+    "proxy"
   ]
   revision = "b68f30494add4df6bd8ef5e82803f308e7f7c59c"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix"]
-  revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
+  packages = [
+    "unix",
+    "windows"
+  ]
+  revision = "fcb792cfc275f85145c640d36af94b591eed4275"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -94,6 +227,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "07a827d61fe65a74d1b73774f44e1f4c58b25b640e73fff288370225da90b0e5"
+  inputs-digest = "c6d0fcb3fcd8ba0354912794cd809970dedbf47945455b97952bd4be02b46cf6"
   solver-name = "gps-cdcl"
   solver-version = 1

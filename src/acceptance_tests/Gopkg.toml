@@ -36,3 +36,7 @@
 [prune]
   go-tests = true
   unused-packages = true
+
+[[override]]
+  name = "github.com/cheggaaa/pb"
+  revision = "c1f48d5ce4f292dfb775ef52aaedd15be323510d"

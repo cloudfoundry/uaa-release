@@ -147,6 +147,12 @@
   version = "v1.3.0"
 
 [[projects]]
+  name = "github.com/pavel-v-chernykh/keystore-go"
+  packages = ["."]
+  revision = "7bbcda7e585ed7a01e8610f6e19dde5bc2c1f6d0"
+  version = "v2.1.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/pivotal-cf/paraphernalia"
   packages = ["secure/tlsconfig"]
@@ -228,6 +234,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "658a0499fbf6e3402ac70ceec3bfdb38b225ce1a5feeb386cf1e2155bfc45c55"
+  inputs-digest = "05dbcd5377f0cd7589363988510d84001da2852c3b0a026c846a4e307e5ff904"
   solver-name = "gps-cdcl"
   solver-version = 1

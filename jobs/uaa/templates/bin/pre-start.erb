@@ -70,11 +70,11 @@ function setup_directories {
     rm -rf $KEY_STORE_FILE
 }
 
-if [ -a $CERT_CACHE_FILE ] && [ -a $TRUST_STORE_FILE ]; then
-    if  diff $CERT_CACHE_FILE $CERT_FILE >/dev/null; then
-      echo "No changes to CA certificates. Will not build Java keystore file."
+if [ -a "$CERT_CACHE_FILE" ] && [ -a "$TRUST_STORE_FILE" ]; then
+    if  diff "$CERT_CACHE_FILE" "$CERT_FILE" >/dev/null; then
+      echo 'No changes to CA certificates. Will not build Java keystore file.'
     else
-      echo "Changes to CA certificates detected."
+      echo 'Changes to CA certificates detected.'
       process_certs
     fi
 else
@@ -94,7 +94,9 @@ fi
     echo "[uaa-pre-start] Installed Server SSL certificate"
 <% end %>
 
-cp $TRUST_STORE_FILE $CONF_DIR
+chmod g+xw "$TRUST_STORE_FILE"
+ln -fs "$TRUST_STORE_FILE" "$CONF_DIR/cacerts"
+
 
 setup_directories
 

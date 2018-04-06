@@ -29,6 +29,7 @@ var (
 	boshBinaryPath = "bosh"
 
 	directorURL    string
+	directorIP     string
 	directorCACert string
 
 	directorClient       string
@@ -54,6 +55,9 @@ func setBoshEnvironmentVariables() {
 	directorURL, envFound = os.LookupEnv("BOSH_ENVIRONMENT")
 	Expect(envFound).To(BeTrue(), "BOSH_ENVIRONMENT was not set")
 
+	directorIP, envFound = os.LookupEnv("BOSH_DIRECTOR_IP")
+	Expect(envFound).To(BeTrue(), "BOSH_DIRECTOR_IP was not set")
+
 	_, envFound = os.LookupEnv("BOSH_DEPLOYMENT")
 	Expect(envFound).To(BeTrue(), "BOSH_DEPLOYMENT was not set")
 
@@ -70,7 +74,7 @@ func setBoshEnvironmentVariables() {
 	Expect(err).NotTo(HaveOccurred())
 	directorCACert = string(boshCACertContents)
 
-	director, err := buildDirector()
+	director, err := buildDirector(directorIP)
 	Expect(err).NotTo(HaveOccurred())
 
 	info, err := director.Info()
@@ -98,11 +102,11 @@ type instanceInfo struct {
 	ProcessState  string
 }
 
-func buildDirector() (boshdir.Director, error) {
+func buildDirector(directorIP string) (boshdir.Director, error) {
 	logger := boshlog.NewLogger(boshlog.LevelError)
 	factory := boshdir.NewFactory(logger)
 
-	config, err := boshdir.NewConfigFromURL(directorURL)
+	config, err := boshdir.NewConfigFromURL(directorIP)
 	if err != nil {
 		return nil, err
 	}

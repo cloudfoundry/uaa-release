@@ -95,9 +95,25 @@
     return errorinfo
   end
 
+
+  active_key_found = false
+  missing_passphrases = []
+  p('encryption.encryption_keys').each do |key|
+    if key['label'] == p('encryption.active_key_label') then
+      active_key_found = true
+    end
+    passphrase = key['passphrase']
+    if passphrase.nil? || passphrase.empty? then
+      missing_passphrases << "label=#{key['label']}"
+    end
+  end
+
+  raise ArgumentError, 'UAA cannot be started without encryption key value uaa.encryption.active_key_label' if p('encryption.active_key_label').empty?
+  raise ArgumentError, "UAA cannot be started as encryption key passphrase for uaa.encryption.encryption_keys/[#{missing_passphrases.join(', ')}] is undefined" unless missing_passphrases.empty?
+  raise ArgumentError, "UAA cannot be started as encryption key passphrase for uaa.encryption.encryption_keys/[label=#{p('encryption.active_key_label')}] is undefined" unless active_key_found
+
   keys_with_invalid_passphrases = []
   p('encryption.encryption_keys').each do |v|
-
     if v['passphrase'].to_str.length < 8 then
       keys_with_invalid_passphrases << v['label'].to_str
     end

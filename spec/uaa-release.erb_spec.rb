@@ -502,6 +502,57 @@ describe 'uaa-release erb generation' do
         end
       end
 
+      context 'a valid key label does not exist' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['active_key_label'] = 'key-does-not-exist'
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /UAA cannot be started as encryption key passphrase for uaa.encryption.encryption_keys\/\[label=key-does-not-exist\] is undefined/)
+        end
+      end
+
+      context 'single encryption key is missing a passphrase' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] << {'label' => 'key42', 'passphrase' => nil}
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /UAA cannot be started as encryption key passphrase for uaa.encryption.encryption_keys\/\[label=key42\] is undefined/)
+        end
+      end
+
+      context 'multiple encryption keys are missing a passphrase' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] << {'label' => 'key2', 'passphrase' => nil}
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] << {'label' => 'key3', 'passphrase' => ''}
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /UAA cannot be started as encryption key passphrase for uaa.encryption.encryption_keys\/\[label=key2, label=key3\] is undefined/)
+        end
+      end
+
+      context 'when active key is set without any encryption keys defined' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] = []
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /UAA cannot be started as encryption key passphrase for uaa.encryption.encryption_keys\/\[label=key1\] is undefined/)
+        end
+      end
+
+      context 'when the active key is set to an empty string' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['active_key_label'] = ''
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, 'UAA cannot be started without encryption key value uaa.encryption.active_key_label')
+        end
+      end
+
       context 'encryption.encryption_keys is missing' do
         it 'throws an error' do
           generated_cf_manifest['properties']['encryption'].delete('encryption_keys')
@@ -886,30 +937,5 @@ describe 'uaa-release erb generation' do
       # expected
     end
 
-  end
-
-  describe 'Doc Mode' do
-    let(:generated_cf_manifest) { generate_cf_manifest(input) }
-    let(:as_yml) { true }
-    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
-    let(:input) { 'spec/input/bosh-lite.yml' }
-    let(:output_uaa) { 'spec/compare/bosh-lite-uaa.yml' }
-    let(:output_log4j) { 'spec/compare/default-log4j.properties' }
-
-    before(:each) do
-      @json = JSON.parse(read_and_parse_string_template('../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true, :doc))
-    end
-
-    it 'outputs json for one-to-one mappings' do
-      expect(@json['uaa']['url']).to eq ({'*value' => '<uaa.url>', '*sources'=>{'uaa.url'=>'The base url of the UAA'}})
-    end
-
-    it 'shows named variables for .each expressions' do
-      expect(@json['login']['saml']['providers']['(idpAlias)']['idpMetadata']['*value']).to eq '<login.saml.providers.(idpAlias).idpMetadata>'
-    end
-
-    it 'simplifies redundant entries' do
-      expect(@json['jwt']['token']['policy']['keys']['*value']).to eq '<uaa.jwt.policy.keys>'
-    end
   end
 end

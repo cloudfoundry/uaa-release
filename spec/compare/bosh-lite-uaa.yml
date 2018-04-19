@@ -4,8 +4,8 @@ name: uaa
 encryption:
   active_key_label: key1
   encryption_keys:
-    - label: key1
-      passphrase: my-passphrase
+  - label: key1
+    passphrase: my-passphrase
 
 database:
   url: jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true

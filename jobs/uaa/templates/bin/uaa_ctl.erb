@@ -46,7 +46,7 @@ case $1 in
 
     ulimit -n 65536
     export CLOUD_FOUNDRY_CONFIG_PATH=/var/vcap/jobs/uaa/config
-    export CATALINA_OPTS="<%= p('uaa.catalina_opts') %>"
+    export CATALINA_OPTS="-Djava.security.policy=unlimited <%= p('uaa.catalina_opts') %>"
 
     echo "[uaa-start] UAA start invoked - checking for running process"
 

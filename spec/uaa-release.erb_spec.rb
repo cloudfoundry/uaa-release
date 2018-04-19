@@ -480,6 +480,28 @@ describe 'uaa-release erb generation' do
         end
       end
 
+      context 'a single encryption passphrase is less than 8 characters long' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['encryption_keys'].first['passphrase'] = '1234567'
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /The required length of the encryption passphrases for \["key1"\] need to be at least 8 characters long./)
+        end
+      end
+
+      context 'multiple encryption passphrases are less than 8 characters long' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] << {'label' => 'key3', 'passphrase' => '87654321'}
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] << {'label' => 'key2', 'passphrase' => '7654321'}
+          generated_cf_manifest['properties']['encryption']['encryption_keys'].first['passphrase'] = '1234567'
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /The required length of the encryption passphrases for \["key1", "key2"\] need to be at least 8 characters long./)
+        end
+      end
+
       context 'encryption.encryption_keys is missing' do
         it 'throws an error' do
           generated_cf_manifest['properties']['encryption'].delete('encryption_keys')

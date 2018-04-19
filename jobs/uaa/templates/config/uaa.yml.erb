@@ -95,6 +95,17 @@
     return errorinfo
   end
 
+  keys_with_invalid_passphrases = []
+  p('encryption.encryption_keys').each do |v|
+
+    if v['passphrase'].to_str.length < 8 then
+      keys_with_invalid_passphrases << v['label'].to_str
+    end
+
+  end
+
+  raise ArgumentError, "The required length of the encryption passphrases for #{keys_with_invalid_passphrases} need to be at least 8 characters long." unless keys_with_invalid_passphrases.length == 0
+
   uaa_db = p_arr('uaadb.databases').find { |db| db['tag'] == 'uaa' }
   uaa_role = p_arr('uaadb.roles').find { |role| role['tag'] == 'admin' }
   protocol = p('login.protocol')

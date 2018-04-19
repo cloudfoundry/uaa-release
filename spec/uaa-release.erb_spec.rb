@@ -533,6 +533,16 @@ describe 'uaa-release erb generation' do
         end
       end
 
+      context 'multiple encryption keys with the same key label' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] << {'label' => 'key1', 'passphrase' => '987654321'}
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /UAA cannot be started as multiple keys have the same label in uaa.encryption.encryption_keys\/\[label=key1\]/)
+        end
+      end
+
       context 'when active key is set without any encryption keys defined' do
         it 'throws an error' do
           generated_cf_manifest['properties']['encryption']['encryption_keys'] = []

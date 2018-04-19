@@ -121,6 +121,10 @@
   #simple properties
   params = {
     'name' => 'uaa',
+    'encryption' => {
+      'active_key_label' => p('encryption.active_key_label'),
+      'encryption_keys' => p('encryption.encryption_keys')
+    },
     'disableInternalAuth' => p('uaa.disableInternalAuth'),
     'disableInternalUserManagement' => p('uaa.disableInternalUserManagement'),
     'issuer' => {

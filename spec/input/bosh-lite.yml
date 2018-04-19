@@ -1,5 +1,10 @@
 ---
 properties:
+  encryption:
+    active_key_label: key1
+    encryption_keys:
+      - label: key1
+        passphrase: my-passphrase
   login:
     mfa:
       enabled: true

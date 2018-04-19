@@ -1,5 +1,11 @@
 ---
 properties:
+  encryption:
+    active_key_label: key1
+    encryption_keys:
+      - label: key1
+        passphrase: my-passphrase
+
   domain: test-domain.com
   env:
     http_proxy: http://test.proxy:8080

@@ -53,6 +53,11 @@ packages:
   - uaa
 
 properties:
+  encryption.encryption_keys:
+    description: "The encryption key is some arbitrary string of text"
+  encryption.active_key_label:
+    description: "Encryption key to use for encryption"
+
   #backup properties
   release_level_backup:
     default: false

@@ -470,6 +470,26 @@ describe 'uaa-release erb generation' do
         end
       end
 
+      context 'encryption.active_key_label is missing' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption'].delete('active_key_label')
+
+          expect {
+            parsed_yaml
+          }.to raise_error(Bosh::Template::UnknownProperty, /encryption.active_key_label/)
+        end
+      end
+
+      context 'encryption.encryption_keys is missing' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption'].delete('encryption_keys')
+
+          expect {
+            parsed_yaml
+          }.to raise_error(Bosh::Template::UnknownProperty, /encryption.encryption_keys/)
+        end
+      end
+
       context 'login.saml.serviceProviderKey is missing' do
         it 'throws an error' do
           generated_cf_manifest['properties']['login']['saml'].delete('keys')

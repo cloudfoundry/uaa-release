@@ -54,9 +54,15 @@ packages:
 
 properties:
   encryption.encryption_keys:
-    description: "The encryption key is some arbitrary string of text"
+    description: "Map of key labels and encryption passphrases that will be used to create keys using a Key Derivation Function."
+    example: 'key-1'
   encryption.active_key_label:
-    description: "Encryption key to use for encryption"
+    description: "The key label of the encryption passphrase that will be used to create the key using a Key Derivation Function for encrypting new data within the UAA database."
+    example: |
+      - label: 'key-1'
+      passphrase: 'MY-PASSPHRASE'
+      - label: 'key-2'
+      passphrase: 'MY-PASSPHRASE-TWO'
 
   #backup properties
   release_level_backup:

@@ -24,9 +24,9 @@ instance_groups:
         active_key_label: 'key-1'
         encryption_keys:
           - label: 'key-1'
-          passphrase: 'MY-PASSPHRASE'
+            passphrase: 'MY-PASSPHRASE'
           - label: 'key-2'
-          passphrase: 'MY-PASSPHRASE-TWO'
+            passphrase: 'MY-PASSPHRASE-TWO'
       login:
         saml:
           serviceProviderKey: "((uaa_login_saml.private_key))"

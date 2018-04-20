@@ -95,24 +95,23 @@
     return errorinfo
   end
 
-
   active_key_found = false
   missing_passphrases = []
   found_keys = []
   duplicate_keys = []
 
   p('encryption.encryption_keys').each do |key|
-    if key['label'] == p('encryption.active_key_label') then
+    if key['label'].to_s == p('encryption.active_key_label').to_s then
       active_key_found = true
     end
-    passphrase = key['passphrase']
+    passphrase = key['passphrase'].to_s
     if passphrase.nil? || passphrase.empty? then
       missing_passphrases << "label=#{key['label']}"
     end
-    if found_keys.include? key['label'] then
+    if found_keys.include? key['label'].to_s then
       duplicate_keys << "label=#{key['label']}"
     else
-      found_keys << key['label']
+      found_keys << key['label'].to_s
     end
   end
 
@@ -123,8 +122,8 @@
 
   keys_with_invalid_passphrases = []
   p('encryption.encryption_keys').each do |v|
-    if v['passphrase'].to_str.length < 8 then
-      keys_with_invalid_passphrases << v['label'].to_str
+    if v['passphrase'].to_s.length < 8 then
+      keys_with_invalid_passphrases << v['label'].to_s
     end
 
   end

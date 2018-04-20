@@ -4,7 +4,7 @@ properties:
     active_key_label: key1
     encryption_keys:
       - label: key1
-        passphrase: my-passphrase
+        passphrase: 12345678
 
   domain: test-domain.com
   env:

@@ -10,7 +10,7 @@ templates:
   bin/configure_newrelic.erb: bin/configure_newrelic
   bin/install_crt: bin/install_crt
   bin/dns_health_check.erb: bin/dns_health_check
-  bin/health_check: bin/health_check
+  bin/health_check.erb: bin/health_check
   bin/install_uaa_crt: bin/install_uaa_crt
   bin/pre-start.erb: bin/pre-start
   bin/post-start: bin/post-start

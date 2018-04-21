@@ -63,6 +63,30 @@ var _ = Describe("UaaRelease", func() {
 	)
 })
 
+var _ = Describe("setting a custom UAA port", func() {
+	Describe("with bpm enabled", func() {
+		It("health_check should check the health on the correct port", func() {
+			deployUAA("./opsfiles/non-default-uaa-port.yml")
+
+			healthCheckCmd := exec.Command(boshBinaryPath, []string{"--json", "ssh", "--results", "uaa", "-c", "/var/vcap/jobs/uaa/bin/health_check"}...)
+			session, err := gexec.Start(healthCheckCmd, GinkgoWriter, GinkgoWriter)
+			Expect(err).NotTo(HaveOccurred())
+			Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
+		})
+	})
+
+	Describe("with bpm disabled", func() {
+		It("health_check should check the health on the correct port", func() {
+			deployUAA("./opsfiles/non-default-uaa-port.yml", "./opsfiles/disable-bpm.yml")
+
+			healthCheckCmd := exec.Command(boshBinaryPath, []string{"--json", "ssh", "--results", "uaa", "-c", "/var/vcap/jobs/uaa/bin/health_check"}...)
+			session, err := gexec.Start(healthCheckCmd, GinkgoWriter, GinkgoWriter)
+			Expect(err).NotTo(HaveOccurred())
+			Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
+		})
+	})
+})
+
 func buildTruststoreMap() map[string]interface{} {
 	By("downloading the truststore")
 	localKeyStorePath := scpTruststore()

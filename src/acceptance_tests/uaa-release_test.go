@@ -1,21 +1,21 @@
 package acceptance_tests_test
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-	"os/exec"
-	"github.com/onsi/gomega/gexec"
-	"time"
 	"encoding/json"
+	"encoding/pem"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gexec"
+	"github.com/pavel-v-chernykh/keystore-go"
+	"io/ioutil"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
-	. "github.com/onsi/ginkgo/extensions/table"
-	"github.com/pavel-v-chernykh/keystore-go"
-	"os"
-	"path/filepath"
-	"encoding/pem"
-	"io/ioutil"
 )
 
 type row struct {
@@ -120,7 +120,7 @@ func buildCACertificatesPemEncodedMap() map[string]interface{} {
 
 	caCertificates := map[string]interface{}{}
 
-	for ; ; {
+	for {
 		caCertificatesPem, rest = pem.Decode(caCertificatesContent)
 
 		if caCertificatesPem == nil {

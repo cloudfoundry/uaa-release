@@ -3,19 +3,19 @@ package acceptance_tests_test
 import (
 	"testing"
 
+	"encoding/json"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
-	"os"
-	"time"
-	"encoding/json"
-	"strings"
-	"os/exec"
 	"io/ioutil"
+	"os"
+	"os/exec"
+	"strings"
+	"time"
 
+	"fmt"
 	boshdir "github.com/cloudfoundry/bosh-cli/director"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
-	"fmt"
 	"github.com/onsi/gomega/gbytes"
 	"github.com/onsi/gomega/gstruct"
 )

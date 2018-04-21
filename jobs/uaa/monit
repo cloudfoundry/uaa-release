@@ -4,7 +4,7 @@ check process uaa
   start program "/var/vcap/jobs/bpm/bin/bpm start uaa"
   stop program "/var/vcap/jobs/bpm/bin/bpm stop uaa"
   group vcap
-  if failed port 8080 protocol http
+  if failed port <%= p("uaa.port") %> protocol http
     request "/healthz"
     with timeout 60 seconds for 15 cycles
   then restart
@@ -14,7 +14,7 @@ check process uaa
   start program "/var/vcap/jobs/uaa/bin/uaa_ctl start"
   stop program "/var/vcap/jobs/uaa/bin/uaa_ctl stop"
   group vcap
-  if failed port 8080 protocol http
+  if failed port <%= p("uaa.port") %> protocol http
     request "/healthz"
     with timeout 60 seconds for 15 cycles
   then restart

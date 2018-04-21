@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HEALTH_RESPONSE=$(curl --max-time 5 --connect-timeout 2 127.0.0.1:8080/healthz)
+HEALTH_RESPONSE=$(curl --max-time 5 --connect-timeout 2 127.0.0.1:<%= p('uaa.port') %>/healthz)
 
 DATA_DIR=/var/vcap/data/uaa
 STATUS_FILE=$DATA_DIR/uaa_status

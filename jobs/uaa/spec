@@ -40,6 +40,12 @@ provides:
   - uaadb
   - release_level_backup
 
+- name: uaa_keys
+  type: uaa_keys
+  properties:
+  - encryption.active_key_label
+  - encryption.encryption_keys
+
 consumes:
 - name: router
   type: http-router

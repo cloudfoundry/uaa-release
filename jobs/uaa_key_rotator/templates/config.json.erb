@@ -1,0 +1,15 @@
+<%
+  uaa_db = link('uaa_db').p('uaadb.databases').find { |db| db['tag'] == 'uaa' }
+  uaa_role = link('uaa_db').p('uaadb.roles').find { |role| role['tag'] == 'admin' }
+
+%>
+{
+  "activeKeyLabel": "<%= link('uaa_keys').p('encryption.active_key_label')%>",
+  "encryptionKeys": <%= link('uaa_keys').p('encryption.encryption_keys').to_json%>,
+  "databaseHostname": "<%= link('uaa_db').p('uaadb.address')%>",
+  "databasePort": "<%= link('uaa_db').p('uaadb.port')%>",
+  "databaseScheme": "<%= link('uaa_db').p('uaadb.db_scheme')%>",
+  "databaseName": "<%= uaa_db['name'] %>",
+  "databaseUsername": "<%= uaa_role['name'] %>",
+  "databasePassword": "<%= uaa_role['password'] %>"
+}

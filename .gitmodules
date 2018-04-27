@@ -1,3 +1,6 @@
 [submodule "src/uaa"]
 	path = src/uaa
 	url = https://github.com/cloudfoundry/uaa.git
+[submodule "src/github.com/cloudfoundry/uaa-key-rotator"]
+	path = src/github.com/cloudfoundry/uaa-key-rotator
+	url = https://github.com/cloudfoundry/uaa-key-rotator

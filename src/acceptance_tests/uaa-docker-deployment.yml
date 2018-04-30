@@ -84,7 +84,8 @@ instance_groups:
           - tag: uaa
             name: uaadb
             citext: true
-
+  - name: uaa_key_rotator
+    release: uaa
 variables:
 - name: uaa_ca
   type: certificate

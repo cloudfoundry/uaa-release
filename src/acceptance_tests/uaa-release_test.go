@@ -63,6 +63,17 @@ var _ = Describe("UaaRelease", func() {
 	)
 })
 
+var _ = Describe("uaa-rotator-errand", func() {
+	It("running the key-rotator errand should exit 0", func() {
+		deployUAA()
+
+		runErrandCmd := exec.Command(boshBinaryPath, "run-errand", "uaa_key_rotator")
+		session, err := gexec.Start(runErrandCmd, GinkgoWriter, GinkgoWriter)
+		Expect(err).NotTo(HaveOccurred())
+		Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
+	})
+})
+
 var _ = Describe("setting a custom UAA port", func() {
 	Describe("with bpm enabled", func() {
 		It("health_check should check the health on the correct port", func() {

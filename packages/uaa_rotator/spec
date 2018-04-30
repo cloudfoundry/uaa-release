@@ -11,6 +11,7 @@ files:
   - github.com/cloudfoundry/uaa-key-rotator/db/*.go # gosub
   - github.com/cloudfoundry/uaa-key-rotator/entity/*.go # gosub
   - github.com/cloudfoundry/uaa-key-rotator/rotator/*.go # gosub
+  - github.com/cloudfoundry/uaa-key-rotator/vendor/code.cloudfoundry.org/lager/*.go # gosub
   - github.com/cloudfoundry/uaa-key-rotator/vendor/github.com/go-sql-driver/mysql/*.go # gosub
   - github.com/cloudfoundry/uaa-key-rotator/vendor/github.com/jmoiron/sqlx/*.go # gosub
   - github.com/cloudfoundry/uaa-key-rotator/vendor/github.com/jmoiron/sqlx/reflectx/*.go # gosub

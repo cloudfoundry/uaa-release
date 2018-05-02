@@ -15,5 +15,8 @@ consumes:
   - name: uaa_db
     type: uaa_db
     optional: true
+  - name: database
+    type: database
+    optional: true
 
 properties: {}

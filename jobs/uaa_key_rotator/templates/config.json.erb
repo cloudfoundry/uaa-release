@@ -2,14 +2,28 @@
   uaa_db = link('uaa_db').p('uaadb.databases').find { |db| db['tag'] == 'uaa' }
   uaa_role = link('uaa_db').p('uaadb.roles').find { |role| role['tag'] == 'admin' }
 
+ uaa_db_address = nil
+ link('uaa_db').if_p('address') do |address|
+    uaa_db_address = address
+  end.else do
+    if_link('database') do |db_link|
+      uaa_db_address = db_link.instances[0].address
+    end.else do
+      raise 'Required uaadb address configuration not specified. Please specify uaadb.address (on the uaa job) or check your bosh linked database configuration.'
+    end
+  end
+
 %>
 {
   "activeKeyLabel": "<%= link('uaa_keys').p('encryption.active_key_label')%>",
   "encryptionKeys": <%= link('uaa_keys').p('encryption.encryption_keys').to_json%>,
-  "databaseHostname": "<%= link('uaa_db').p('uaadb.address')%>",
+  "databaseHostname": "<%= uaa_db_address%>",
   "databasePort": "<%= link('uaa_db').p('uaadb.port')%>",
   "databaseScheme": "<%= link('uaa_db').p('uaadb.db_scheme')%>",
   "databaseName": "<%= uaa_db['name'] %>",
   "databaseUsername": "<%= uaa_role['name'] %>",
-  "databasePassword": "<%= uaa_role['password'] %>"
+  "databasePassword": "<%= uaa_role['password'] %>",
+  "databaseTlsEnabled":"<%= link('uaa_db').p('uaadb.tls_enabled')%>",
+  "databaseSkipSSLValidation":"<%= link('uaa_db').p('uaadb.skip_ssl_validation')%>",
+  "databaseTLSProtocols":"<%= link('uaa_db').p('uaadb.tls_protocols')%>"
 }

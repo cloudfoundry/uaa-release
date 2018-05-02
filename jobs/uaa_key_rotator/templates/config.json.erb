@@ -13,6 +13,20 @@
     end
   end
 
+  database_tls_enabled = false
+  link('uaa_db').if_p('uaadb.tls_enabled') do |uaa_db_database_tls_enabled|
+    database_tls_enabled = uaa_db_database_tls_enabled
+  end
+
+  skip_ssl_validation = false
+  link('uaa_db').if_p('uaadb.skip_ssl_validation') do |uaa_db_skip_ssl_validation|
+    skip_ssl_validation = uaa_db_skip_ssl_validation
+  end
+
+  tls_protocols = ''
+  link('uaa_db').if_p('uaadb.tls_protocols') do |uaa_db_tls_protocols|
+    tls_protocols = uaa_db_tls_protocols
+  end
 %>
 {
   "activeKeyLabel": "<%= link('uaa_keys').p('encryption.active_key_label')%>",
@@ -23,7 +37,7 @@
   "databaseName": "<%= uaa_db['name'] %>",
   "databaseUsername": "<%= uaa_role['name'] %>",
   "databasePassword": "<%= uaa_role['password'] %>",
-  "databaseTlsEnabled":"<%= link('uaa_db').p('uaadb.tls_enabled')%>",
-  "databaseSkipSSLValidation":"<%= link('uaa_db').p('uaadb.skip_ssl_validation')%>",
-  "databaseTLSProtocols":"<%= link('uaa_db').p('uaadb.tls_protocols')%>"
+  "databaseTlsEnabled":"<%= database_tls_enabled%>",
+  "databaseSkipSSLValidation":"<%= skip_ssl_validation%>",
+  "databaseTLSProtocols":"<%= tls_protocols %>"
 }

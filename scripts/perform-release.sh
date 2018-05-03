@@ -24,7 +24,7 @@ function usage {
     echo -e "Usage: ${GREEN}$(basename $0) bosh_release_version [branch_to_release_from/develop] [/path/to/private.yml]${NC}"
     echo -e "Usage: ${GREEN}$(basename $0) ${RED}11.4 v11.4-branch /path/to/private.yml${NC}"
     echo -e "\n\n${GREEN}$(basename $0)${NC} requires a completely pristine clone of ${CYAN}uaa-release${NC}, containing no uncommitted changes or untracked or ignored files."
-    echo -e "\nBefore performing the release, it is strongly recommended that you update blobs with ${GREEN}bosh sync blobs${NC}"
+    echo -e "\nBefore performing the release, it is strongly recommended that you update blobs with ${GREEN}bosh sync-blobs${NC}"
     echo -e "\nThe ${CYAN}uaa${NC} submodule should be bumped by checking out the appropriate version ${BOLD}tag (not the branch)${NC} and committing the submodule update before running ${GREEN}$(basename $0)${NC}"
     echo -e "Specify the new ${YELLOW}bosh_release_version${NC}. The script will update the relevant branches and tags."
     echo -e "\nFor a usual release, the ${YELLOW}branch_to_release_from${NC} should be develop. For patch releases, it should be a previous release."
@@ -38,11 +38,9 @@ function invalid_version {
 }
 
 function finalize_and_commit {
-    tarball=dev_releases/uaa/uaa-$1.tgz
-    #dryrun
-    bosh finalize release $tarball --dry-run --name uaa --version $1
+    tarball=/tmp/uaa-release.tgz
     #actual
-    bosh finalize release $tarball --name uaa --version $1
+    bosh finalize-release $tarball --name uaa --version $1
     #bosh generated files
     git add releases/
     git add .final_builds/
@@ -146,7 +144,7 @@ cp /tmp/private.yml config/
 
 echo -e "${CYAN}Building tarball ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
 # create a release tar ball - and a dev release
-bosh create release --name uaa --version $1 --with-tarball
+bosh create-release --name uaa --version $1 --tarball=/tmp/uaa-release.tgz
 metadata_commit=''
 # finalize release, get commit SHA so that we can cherry pick it later
 finalize_and_commit $1 metadata_commit

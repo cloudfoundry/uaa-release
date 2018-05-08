@@ -85,9 +85,13 @@ func setBoshEnvironmentVariables() {
 
 func ensureUAAHasBeenDeployedAndRunning() {
 	By("checking uaa is deployed and running", func() {
-		instanceInfos := getInstanceInfos(boshBinaryPath)
-		Expect(instanceInfos).ToNot(BeEmpty())
-		Expect(instanceInfos).To(ContainElement(gstruct.MatchFields(gstruct.IgnoreExtras, gstruct.Fields{
+		Eventually(func() []instanceInfo {
+			return getInstanceInfos(boshBinaryPath)
+		}, 1*time.Minute).ShouldNot(BeEmpty())
+
+		Eventually(func() []instanceInfo {
+			return getInstanceInfos(boshBinaryPath)
+		}, 1*time.Minute).Should(ContainElement(gstruct.MatchFields(gstruct.IgnoreExtras, gstruct.Fields{
 			"InstanceGroup": Equal("uaa"),
 			"ProcessState":  Equal("running"),
 		})))

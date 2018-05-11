@@ -29,6 +29,7 @@ instance_groups:
             passphrase: 'MY-PASSPHRASE-TWO'
       login:
         saml:
+          activeKeyId: key1
           keys:
             key1:
               key: "((uaa_login_saml.private_key))"

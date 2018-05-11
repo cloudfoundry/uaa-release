@@ -29,8 +29,11 @@ instance_groups:
             passphrase: 'MY-PASSPHRASE-TWO'
       login:
         saml:
-          serviceProviderKey: "((uaa_login_saml.private_key))"
-          serviceProviderCertificate: "((uaa_login_saml.certificate))"
+          keys:
+            key1:
+              key: "((uaa_login_saml.private_key))"
+              passphrase: password
+              certificate: "((uaa_login_saml.certificate))"
       uaa:
         clients:
           admin:

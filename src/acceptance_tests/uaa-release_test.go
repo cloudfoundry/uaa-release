@@ -16,6 +16,7 @@ import (
 	"strings"
 	"time"
 	"unicode"
+	"fmt"
 )
 
 type row struct {
@@ -74,54 +75,64 @@ var _ = Describe("uaa-rotator-errand", func() {
 	})
 })
 
+var portTests = func(bpmOpsFile string) {
+	Context(fmt.Sprintf("bpm %s", bpmOpsFile), func() {
+		var opsFiles []string
+
+		BeforeEach(func() {
+			opsFiles = []string{bpmOpsFile}
+		})
+
+		JustBeforeEach(func() {
+			deployUAA(opsFiles...)
+		})
+
+		Context(fmt.Sprintf("when deploying a http only uaa %s", bpmOpsFile), func() {
+			BeforeEach(func() {
+				opsFiles = append(opsFiles, "./opsfiles/enable-http.yml", "./opsfiles/disable-https.yml")
+			})
+
+			It(fmt.Sprintf("upgrading to https only should be healthy on the https port %s", bpmOpsFile), func() {
+				deployUAA(bpmOpsFile, "./opsfiles/enable-https.yml", "./opsfiles/disable-http.yml")
+
+				healthCheckCmd := exec.Command(boshBinaryPath, []string{"--json", "ssh", "--results", "uaa", "-c", "/var/vcap/jobs/uaa/bin/health_check"}...)
+				session, err := gexec.Start(healthCheckCmd, GinkgoWriter, GinkgoWriter)
+				Expect(err).NotTo(HaveOccurred())
+				Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
+			})
+		})
+
+		Context("with http only on a custom port", func() {
+			BeforeEach(func() {
+				opsFiles = append(opsFiles, "./opsfiles/non-default-uaa-port.yml")
+			})
+
+			It("health_check should check the health on the correct port", func() {
+				healthCheckCmd := exec.Command(boshBinaryPath, []string{"--json", "ssh", "--results", "uaa", "-c", "/var/vcap/jobs/uaa/bin/health_check"}...)
+				session, err := gexec.Start(healthCheckCmd, GinkgoWriter, GinkgoWriter)
+				Expect(err).NotTo(HaveOccurred())
+				Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
+			})
+		})
+
+		Context("with https only", func() {
+			BeforeEach(func() {
+				opsFiles = append(opsFiles, "./opsfiles/enable-ssl.yml")
+			})
+
+			It("health_check should check the health on the correct port", func() {
+				healthCheckCmd := exec.Command(boshBinaryPath, []string{"--json", "ssh", "--results", "uaa", "-c", "/var/vcap/jobs/uaa/bin/health_check"}...)
+				session, err := gexec.Start(healthCheckCmd, GinkgoWriter, GinkgoWriter)
+				Expect(err).NotTo(HaveOccurred())
+				Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
+			})
+		})
+	})
+}
+
 var _ = Describe("setting a custom UAA port", func() {
-	Context("without SSL enabled", func() {
-		Describe("with bpm enabled", func() {
-			It("health_check should check the health on the correct port", func() {
-				deployUAA("./opsfiles/non-default-uaa-port.yml")
-
-				healthCheckCmd := exec.Command(boshBinaryPath, []string{"--json", "ssh", "--results", "uaa", "-c", "/var/vcap/jobs/uaa/bin/health_check"}...)
-				session, err := gexec.Start(healthCheckCmd, GinkgoWriter, GinkgoWriter)
-				Expect(err).NotTo(HaveOccurred())
-				Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
-			})
-		})
-
-		Describe("with bpm disabled", func() {
-			It("health_check should check the health on the correct port", func() {
-				deployUAA("./opsfiles/non-default-uaa-port.yml", "./opsfiles/disable-bpm.yml")
-
-				healthCheckCmd := exec.Command(boshBinaryPath, []string{"--json", "ssh", "--results", "uaa", "-c", "/var/vcap/jobs/uaa/bin/health_check"}...)
-				session, err := gexec.Start(healthCheckCmd, GinkgoWriter, GinkgoWriter)
-				Expect(err).NotTo(HaveOccurred())
-				Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
-			})
-		})
-	})
-
-	Context("with SSL enabled", func() {
-		Describe("with bpm enabled", func() {
-			It("health_check should check the health on the correct port", func() {
-				deployUAA("./opsfiles/enable-ssl.yml")
-
-				healthCheckCmd := exec.Command(boshBinaryPath, []string{"--json", "ssh", "--results", "uaa", "-c", "/var/vcap/jobs/uaa/bin/health_check"}...)
-				session, err := gexec.Start(healthCheckCmd, GinkgoWriter, GinkgoWriter)
-				Expect(err).NotTo(HaveOccurred())
-				Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
-			})
-		})
-
-		Describe("with bpm disabled", func() {
-			It("health_check should check the health on the correct port", func() {
-				deployUAA("./opsfiles/enable-ssl.yml", "./opsfiles/disable-bpm.yml")
-
-				healthCheckCmd := exec.Command(boshBinaryPath, []string{"--json", "ssh", "--results", "uaa", "-c", "/var/vcap/jobs/uaa/bin/health_check"}...)
-				session, err := gexec.Start(healthCheckCmd, GinkgoWriter, GinkgoWriter)
-				Expect(err).NotTo(HaveOccurred())
-				Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
-			})
-		})
-	})
+	portTests("./opsfiles/enable-bpm.yml")
+	portTests("./opsfiles/disable-bpm.yml")
 })
 
 func buildTruststoreMap() map[string]interface{} {

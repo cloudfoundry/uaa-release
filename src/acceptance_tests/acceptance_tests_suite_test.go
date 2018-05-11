@@ -165,21 +165,25 @@ func deleteUAA() {
 }
 
 func deployUAA(optFiles ...string) {
+	session := boshDeploy(optFiles...)
+	Eventually(session, 10*time.Minute).Should(gexec.Exit(0))
+	Eventually(session).Should(gbytes.Say("Preparing deployment: Preparing deployment"))
+}
+
+func boshDeploy(optFiles ...string) *gexec.Session {
 	updatedDeployCmd := make([]string, len(deployCmd))
 	copy(updatedDeployCmd, deployCmd)
-
 	for _, optFile := range optFiles {
 		updatedDeployCmd = append(updatedDeployCmd, "-o", optFile)
 	}
 
+	var session *gexec.Session
+	var err error
 	By(fmt.Sprintf("deploying uaa: %v", updatedDeployCmd), func() {
 		os.Remove("/tmp/uaa-store.json")
 		cmd := exec.Command(boshBinaryPath, updatedDeployCmd...)
-		session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
-		Eventually(session, 10*time.Minute).Should(gexec.Exit(0))
-
-		Eventually(session).Should(gbytes.Say("Preparing deployment: Preparing deployment"))
 	})
-
+	return session
 }

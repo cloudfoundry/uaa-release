@@ -16,7 +16,7 @@ check process uaa
   group vcap
   if failed port <%= active_uaa_port %> protocol http
     request "/healthz"
-    with timeout 60 seconds for 15 cycles
+    with timeout 60 seconds for 64 cycles
   then restart
 <% else %>
 check process uaa
@@ -26,6 +26,6 @@ check process uaa
   group vcap
   if failed port <%= active_uaa_port %> protocol http
     request "/healthz"
-    with timeout 60 seconds for 15 cycles
+    with timeout 60 seconds for 64 cycles
   then restart
 <% end %>

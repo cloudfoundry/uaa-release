@@ -194,6 +194,85 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  context 'when branding consent is specified for default zone' do
+    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
+    let(:as_yml) { true }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
+    let(:input) { 'spec/input/all-properties-set.yml' }
+    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+
+    context 'and only consent text is provided' do
+      it 'does not raise an error' do
+        generated_cf_manifest['properties']['login']['branding']['consent'].delete('link')
+        parsed_yaml
+      end
+    end
+
+    context 'and only consent link is provided' do
+      it 'raises an error' do
+        generated_cf_manifest['properties']['login']['branding']['consent'].delete('text')
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /login.branding.consent.text must also be provided if specifying login.branding.consent.link/)
+      end
+    end
+
+    context 'and consent link is a valid URI' do
+      valid_uris = ['https://example.com',
+        'https://example.com/',
+        'http://example.com/',
+        'ftp://example.com/',
+        'https://example.com?',
+        'https://example.com?a=b',
+        'https://example.com?a=b&c=d',
+        'https://example.com/?a=b',
+        'https://example.com/some/path',
+        'https://example.com#fragment',
+        'https://example.io',
+        'https://example.longtld',
+        'https://subdomain.example.com',
+        'https://subdomain.example.com',
+        'https://example.co.uk',
+        'https://example',
+        'http://127.0.0.1',
+        'http://224.1.1.1 '
+      ]
+
+      valid_uris.each do |url|
+        it 'does not raise an error' do
+          generated_cf_manifest['properties']['login']['branding']['consent']['link'] = url
+          parsed_yaml
+        end
+      end
+    end
+
+    context 'and consent link is not a valid URI' do
+      invalid_uris = ['www.example.com',
+        'gabr://example.com',
+        'example',
+        'example.com',
+        'example.com:666',
+        '// ',
+        '//a',
+        '///a ',
+        '///',
+        'rdar://1234',
+        'h://test ',
+        ':// should fail',
+        'ftps://foo.bar/',
+      ]
+
+      invalid_uris.each do |url|
+        it 'raises an error' do
+          generated_cf_manifest['properties']['login']['branding']['consent']['link'] = url
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.branding.consent.link value .* is not a valid uri/)
+        end
+      end
+    end
+  end
+
   context 'when login banner is specified' do
     let!(:generated_cf_manifest) { generate_cf_manifest(input) }
     let(:as_yml) { true }

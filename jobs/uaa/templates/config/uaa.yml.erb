@@ -658,6 +658,25 @@
 
   add_value(params, p('login.notifications.url'), 'notifications', 'url') if p_opt('login.notifications.url')
 
+  if p_opt('login.branding.consent')
+    add_value(params, p('login.branding.consent.text'), 'login', 'branding', 'consent', 'text') if p_opt('login.branding.consent.text')
+
+    if p_opt('login.branding.consent.link')
+      if p_opt('login.branding.consent.text')
+        link = p('login.branding.consent.link').strip
+        begin
+          parsed = URI.parse(link)
+          raise URI::InvalidURIError.new if parsed.instance_of? URI::Generic
+          add_value(params, link, 'login', 'branding', 'consent', 'link')
+        rescue URI::InvalidURIError
+          message = message + "\nlogin.branding.consent.link value #{link} is not a valid uri"
+        end
+      else
+        message = message + "\nlogin.branding.consent.text must also be provided if specifying login.branding.consent.link"
+      end
+    end
+  end
+
   add_value(params, p('login.branding.company_name'), 'login', 'branding', 'companyName') if p_opt('login.branding.company_name')
   add_value(params, p('login.branding.product_logo'), 'login', 'branding', 'productLogo') if p_opt('login.branding.product_logo')
   add_value(params, p('login.branding.square_logo'), 'login', 'branding', 'squareLogo') if p_opt('login.branding.square_logo')
@@ -689,7 +708,7 @@
     begin
       parsed = URI.parse(link)
       raise URI::InvalidURIError.new if parsed.instance_of? URI::Generic
-      add_value(params, p('login.branding.banner.link'), 'login', 'branding', 'banner', 'link')
+      add_value(params, link, 'login', 'branding', 'banner', 'link')
     rescue URI::InvalidURIError
       message = message + "\nlogin.branding.banner.link value #{link} is not a valid uri"
     end

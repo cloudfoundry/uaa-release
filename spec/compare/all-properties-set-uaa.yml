@@ -501,6 +501,9 @@ login:
       textColor: "#AABBCC"
       backgroundColor: "#DDEEFF"
       link: http://www.example.com
+    consent:
+      text: Terms and Conditions
+      link: http://www.example.com
   serviceProviderKeyPassword: ""
   serviceProviderCertificate: |
     -----BEGIN CERTIFICATE-----

@@ -108,6 +108,7 @@ properties:
             here
           tokenKeyUrl: http://tokenKeyUrl
           tokenUrl: http://tokenUrl
+          passwordGrantEnabled: false
           type: oidc1.0
     prompt:
       password:

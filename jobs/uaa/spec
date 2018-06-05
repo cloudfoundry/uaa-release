@@ -916,6 +916,7 @@ properties:
         relyingPartySecret: <OIDC Client secret>
         skipSslValidation: false
         storeCustomAttributes: true
+        passwordGrantEnabled: false
         attributeMappings:
           given_name: <Attribute holding given name in the OIDC ID Token>
           family_name: <Attribute holding family name in the OIDC ID Token>

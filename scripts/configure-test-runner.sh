@@ -8,7 +8,7 @@ export BOSH_ENVIRONMENT="https://10.245.0.3:25555"
 bosh upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
 
 cp /root/uaa-release/src/acceptance_tests/uaa-docker-deployment.yml /tmp/uaa-deployment.yml
-alias refresh="/root/uaa-release/scripts/refresh-uaa-deployment.sh"
+cp /root/uaa-release/scripts/refresh-uaa-deployment.sh /usr/local/bin/refresh
 
 pushd "/root/uaa-release"
     bosh reset-release

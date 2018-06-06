@@ -779,6 +779,10 @@
     add_value(params, domain, 'analytics', 'domain')
   end
 
+  if_p('uaa.ca_certs') do |ca_certs|
+    add_value(params, ca_certs, 'uaa', 'ca_certs')
+  end
+
   #validate that we have all required parameters
 
   message = message + validateSamlKeys(params)

@@ -272,6 +272,29 @@ properties:
       oyCimvs0CgUOknhTmJJSkwJBAPaI298JxTnWncC3Zu7d5QYCJXjU403Aj4LdcVeI
       6A15MzQdj5Hm82vlmpC4LzXofLjiN4E5ZLluzEw+1TjRE7c=
       -----END RSA PRIVATE KEY-----
+  uaa.ca_certs:
+    description: "Array of CA certificates to load into the UAA's truststore"
+    example:
+      - |
+        -----BEGIN CERTIFICATE-----
+        MIIDAjCCAmugAwIBAgIJAJtrcBsKNfWDMA0GCSqGSIb3DQEBCwUAMIGZMQswCQYD
+        VQQGEwJVUzETMBEGA1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5j
+        aXNjbzEQMA4GA1UECgwHUGl2b3RhbDERMA8GA1UECwwISWRlbnRpdHkxFjAUBgNV
+        BAMMDU1hcmlzc2EgS29hbGExIDAeBgkqhkiG9w0BCQEWEW1rb2FsYUBwaXZvdGFs
+        LmlvMB4XDTE1MDczMDE5Mzk0NVoXDTI1MDcyOTE5Mzk0NVowgZkxCzAJBgNVBAYT
+        AlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2Nv
+        MRAwDgYDVQQKDAdQaXZvdGFsMREwDwYDVQQLDAhJZGVudGl0eTEWMBQGA1UEAwwN
+        TWFyaXNzYSBLb2FsYTEgMB4GCSqGSIb3DQEJARYRbWtvYWxhQHBpdm90YWwuaW8w
+        gZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAPVOIGvG8MFbkqi+ytdBHVbEGde4
+        jaCphmvGm89/4Ks0r+041VsS55XNYnHsxXTlh1FiB2KcbrDb33pgvuAIYpcAO2I0
+        gqGeRoS2hNsxzcFdkgSZn1umDAeoE4bCATrquN93KMcw/coY5jacUfb9P2CQztkS
+        e2o+QWtIaWYAvI3bAgMBAAGjUDBOMB0GA1UdDgQWBBTkEjA4CEjevAGfnPBciyXC
+        3v4zMzAfBgNVHSMEGDAWgBTkEjA4CEjevAGfnPBciyXC3v4zMzAMBgNVHRMEBTAD
+        AQH/MA0GCSqGSIb3DQEBCwUAA4GBAIEd8U32tkcvwG9qCOfe5raBENHM4ltTuhju
+        zZWIM5Ik1bFf6+rA71HVDD1Z5fRozidhMOl6mrrGShfu6VUjtqzctJeSjaOPIJL+
+        wvrXXcAkCYZ9QKf0sqlUWcIRy90nqrD5sL/rHAjNjxQ3lqIOj7yWOgty4LUzFQNr
+        FHiyd3T6
+        -----END CERTIFICATE-----
 
   #Branding/Customization
   login.branding.company_name:

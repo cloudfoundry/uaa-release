@@ -5,6 +5,14 @@ echo "uaa-pre-start - starting at `date`"
 
 CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
+# add certs from manifest to OS certs
+<% p('uaa.ca_certs', []).each do |cert| %>
+    echo 'Adding certificate from manifest to OS certs'
+    echo -n '<%= cert %>' >> "${CERT_FILE}"
+<% end %>
+# trim newline at end of OS cert file potentially added above
+sed -i '$ { /^$/ d}' "${CERT_FILE}"
+
 # os-conf will write to CERT_FILE in its pre-start, using a copy to prevent race conditions
 INTERNAL_CERT_FILE=/tmp/internal_ca_certificates.crt
 
@@ -96,7 +104,6 @@ fi
 
 chmod g+xw "$TRUST_STORE_FILE"
 ln -fs "$TRUST_STORE_FILE" "$CONF_DIR/cacerts"
-
 
 setup_directories
 

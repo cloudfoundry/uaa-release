@@ -57,10 +57,17 @@ var _ = Describe("UaaRelease", func() {
 		}
 
 	},
-		Entry("without BPM enabled", 0, "./opsfiles/disable-bpm.yml", "./opsfiles/os-conf-0-certificate.yml"),
+		Entry("without BPM enabled and os-conf not adding certs", 0, "./opsfiles/disable-bpm.yml", "./opsfiles/os-conf-0-certificate.yml"),
 		Entry("without BPM enabled and with os-conf adding a certificate", 1, "./opsfiles/disable-bpm.yml", "./opsfiles/os-conf-1-certificate.yml"),
-		Entry("with BPM enabled", 0, "./opsfiles/enable-bpm.yml", "./opsfiles/os-conf-0-certificate.yml"),
+		Entry("with BPM enabled and os-conf not adding certs", 0, "./opsfiles/enable-bpm.yml", "./opsfiles/os-conf-0-certificate.yml"),
 		Entry("with BPM enabled and os-conf adding a certificate", 1, "./opsfiles/enable-bpm.yml", "./opsfiles/os-conf-1-certificate.yml"),
+
+		Entry("without BPM and with manifest adding a certificate", 1, "./opsfiles/disable-bpm.yml", "./opsfiles/load-ca-certs.yml"),
+		Entry("with BPM enabled and with manifest adding a certificate", 1, "./opsfiles/enable-bpm.yml", "./opsfiles/load-ca-certs.yml"),
+		Entry("without BPM and with manifest adding multiple certificates", 10,
+			"./opsfiles/disable-bpm.yml", "./opsfiles/load-more-ca-certs.yml"),
+		Entry("with BPM enabled and with manifest adding multiple certificates", 10,
+			"./opsfiles/enable-bpm.yml", "./opsfiles/load-more-ca-certs.yml"),
 	)
 })
 

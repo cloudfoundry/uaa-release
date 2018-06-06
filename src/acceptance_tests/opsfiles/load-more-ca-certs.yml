@@ -1,0 +1,22 @@
+---
+- type: replace
+  path: /variables/-
+  value:
+    name: more_cas
+    type: certificate
+    options:
+      common_name: some_ca
+      is_ca: true
+- type: replace
+  path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaa/ca_certs?
+  value:
+    - ((more_cas.certificate))
+    - ((more_cas.certificate))
+    - ((more_cas.certificate))
+    - ((more_cas.certificate))
+    - ((more_cas.certificate))
+    - ((more_cas.certificate))
+    - ((more_cas.certificate))
+    - ((more_cas.certificate))
+    - ((more_cas.certificate))
+    - ((more_cas.certificate))

@@ -928,6 +928,16 @@ properties:
             attribute:
               name-of-attribute-in-uaa-id-token: name-of-attribute-in-provider-token
               name-of-other-attribute-in-uaa-id-token: name-of-other-attribute-in-provider-token
+        prompts:
+          - name: username
+            type: text
+            text: Email
+          - name: password
+            type: password
+            text: Password
+          - name: passcode
+            type: password
+            text: Temporary Authentication Code (Get on at /passcode)
 
   # Saml
   login.saml.entityid:

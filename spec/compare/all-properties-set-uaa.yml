@@ -579,6 +579,17 @@ login:
         relyingPartySecret: "<OIDC Client secret>"
         skipSslValidation: false
         storeCustomAttributes: false
+        passwordGrantEnabled: false
+        prompts:
+          - name: username
+            type: text
+            text: Email
+          - name: password
+            type: password
+            text: Password
+          - name: passcode
+            type: password
+            text: Temporary Authentication Code (Get on at /passcode)
         attributeMappings:
           given_name: first_name
           family_name: last_name

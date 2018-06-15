@@ -47,7 +47,7 @@ properties:
       consent:
         text: Terms and Conditions
         link: http://www.example.com
-
+    defaultIdentityProvider: uaa
     idpDiscoveryEnabled: true
     links:
       global:

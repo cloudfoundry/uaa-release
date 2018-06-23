@@ -974,7 +974,7 @@ properties:
       If set it overrides the default.
       This URL should NOT have the schema (http:// or https:// prefix in it) instead just the hostname.
       The schema is derived by #{login.protocol} property.
-      The default value is #{uaa.url}.replaceFirst('uaa','login'), typically login.example.com
+      The default value is `p("uaa.url").sub("://uaa.", "://login.")`, typically login.example.com
       The UAA will display this link in the cf --sso call if there is a SAML provider enabled.
   login.saml.activeKeyId:
     description: |

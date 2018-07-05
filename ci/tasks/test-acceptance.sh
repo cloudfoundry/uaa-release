@@ -17,7 +17,7 @@ export BOSH_DIRECTOR_IP="10.245.0.3"
 export BOSH_BINARY_PATH="$(which bosh)"
 export BOSH_DEPLOYMENT="uaa"
 
-bosh upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
+bosh upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-xenial-go_agent
 
 pushd "$ROOT_DIR/uaa-release"
     bosh create-release

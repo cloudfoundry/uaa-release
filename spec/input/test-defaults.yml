@@ -18,6 +18,7 @@ properties:
       password: admin
       tag: admin
   login:
+    defaultIdentityProvider: uaa
     saml:
       activeKeyId: saml-key-1
       keys:

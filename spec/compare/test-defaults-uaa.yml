@@ -157,6 +157,7 @@ links:
 login:
   selfServiceLinksEnabled: true
   url: http://test.uaa.url
+  defaultIdentityProvider: uaa
   idpDiscoveryEnabled: false
   accountChooserEnabled: false
   entityBaseURL: http://test.uaa.url

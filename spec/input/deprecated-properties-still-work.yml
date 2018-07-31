@@ -18,6 +18,7 @@ properties:
       password: admin
       tag: admin
   login:
+    defaultIdentityProvider: uaa
     home_redirect: http://deprecated.home.redirect
     saml:
       serviceProviderKey: |

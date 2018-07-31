@@ -274,6 +274,7 @@ links:
   homeRedirect: http://custom.home.redirect
 login:
   url: http://all-properties-set:8888/uaa
+  defaultIdentityProvider: uaa
   idpDiscoveryEnabled: true
   accountChooserEnabled: true
   entityBaseURL: http://all-properties-set:8888/uaa

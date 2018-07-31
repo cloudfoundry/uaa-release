@@ -6,6 +6,7 @@ properties:
     - label: key1
       passphrase: my-passphrase
   login:
+    defaultIdentityProvider: uaa
     mfa:
       enabled: true
       providerName: myExampleProvider

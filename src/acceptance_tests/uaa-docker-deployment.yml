@@ -28,6 +28,7 @@ instance_groups:
           - label: 'key-2'
             passphrase: 'MY-PASSPHRASE-TWO'
       login:
+        defaultIdentityProvider: 'uaa'
         saml:
           activeKeyId: key1
           keys:

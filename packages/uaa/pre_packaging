@@ -34,9 +34,3 @@ GIT_DIR=$(find $RELEASE_DIR -path "*/modules/src/uaa") ./gradlew :clean :assembl
 cp uaa/build/libs/cloudfoundry-identity-uaa-*.war ${BUILD_DIR}/uaa/cloudfoundry-identity-uaa.war
 cp statsd/build/libs/cloudfoundry-identity-statsd-*.war ${BUILD_DIR}/uaa/cloudfoundry-identity-statsd.war
 
-#clean build UAA data and build tools (java)
-./gradlew clean
-cd ${BUILD_DIR}
-rm -rf java
-rm -rf openjdk/openjdk-1.8.0_162-x86_64-mountainlion.tar.gz
-${BUILD_DIR}/uaa/.clean-cf-release-build

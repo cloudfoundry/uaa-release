@@ -142,7 +142,7 @@
     uaa_db_address = address
   end.else do
     if_link('database') do |db_link|
-      uaa_db_address = db_link.instances[0].address
+      uaa_db_address = db_link.address
     end.else do
       raise ArgumentError, 'Required uaadb address configuration not specified. Please specify uaadb.address or check your bosh linked database configuration.'
     end

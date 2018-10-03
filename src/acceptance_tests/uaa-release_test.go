@@ -17,6 +17,9 @@ import (
 	"time"
 	"unicode"
 	"fmt"
+	"net/http"
+	"github.com/onsi/gomega/gbytes"
+	"crypto/tls"
 )
 
 type row struct {
@@ -63,6 +66,77 @@ var _ = Describe("UaaRelease", func() {
 		Entry("with BPM enabled and os-conf not adding certs", 0, "./opsfiles/enable-bpm.yml", "./opsfiles/os-conf-0-certificate.yml"),
 		Entry("with BPM enabled and and with os-conf + ca_cert property adding certificates", 11, "./opsfiles/enable-bpm.yml", "./opsfiles/os-conf-1-certificate.yml", "./opsfiles/load-more-ca-certs.yml"),
 	)
+
+	Context("UAA consuming the `database` link", func() {
+		var originalEtcHostsContents []byte
+
+		BeforeEach(func() {
+			etcHosts, err := os.OpenFile("/etc/hosts", os.O_RDWR|os.O_APPEND, os.ModePerm)
+			Expect(err).NotTo(HaveOccurred())
+
+			originalEtcHostsContents, err = ioutil.ReadAll(etcHosts)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		AfterEach(func() {
+			Expect(ioutil.WriteFile("/etc/hosts", originalEtcHostsContents, os.ModePerm)).To(Succeed())
+		})
+
+		It("should connect to a healthy database instance", func() {
+			deployUAA("./opsfiles/two-db-instances.yml")
+
+			transCfg := &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			}
+			client := &http.Client{Transport: transCfg}
+
+			By("disabling bosh resurrection", func() {
+				disableResurrectionCmd := exec.Command(boshBinaryPath, "-d", "uaa", "update-resurrection", "-n", "off")
+				session, err := gexec.Start(disableResurrectionCmd, GinkgoWriter, GinkgoWriter)
+				Expect(err).NotTo(HaveOccurred())
+				Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
+			})
+
+			var uaaDomainName string
+			By("setting a local domain name: uaa.localhost to point to localhost", func() {
+				uaaIp, found := getUaaIP()
+				Expect(found).To(BeTrue())
+
+				etcHosts, err := os.OpenFile("/etc/hosts", os.O_RDWR|os.O_APPEND, os.ModePerm)
+				Expect(err).NotTo(HaveOccurred())
+
+				uaaDomainName = "uaa.localhost"
+				_, err = etcHosts.WriteString(fmt.Sprintf("%s %s\n", uaaIp, uaaDomainName))
+				Expect(err).NotTo(HaveOccurred())
+
+			})
+
+			By("stopping the first DB instance", func() {
+				cmd := exec.Command(boshBinaryPath, "-d", "uaa", "stop", "-n", "database/0")
+				session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+				Expect(err).NotTo(HaveOccurred())
+				Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
+			})
+
+			uaaHealthzEndpoint := fmt.Sprintf("https://%s:8443/healthz", uaaDomainName)
+			By(fmt.Sprintf("calling /healthz endpoint %s should return health", uaaHealthzEndpoint), func() {
+				healthzResp, err := client.Get(uaaHealthzEndpoint)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(healthzResp.Status).To(Equal("200 "))
+				Eventually(gbytes.BufferReader(healthzResp.Body)).Should(gbytes.Say("ok"))
+			})
+
+			uaaRootEndpoint := fmt.Sprintf("https://%s:8443/", uaaDomainName)
+			By(fmt.Sprintf("calling root / endpoint %s should return 200", uaaRootEndpoint), func() {
+				Eventually(func() string {
+					rootUrl, err := client.Get(uaaRootEndpoint)
+					Expect(err).NotTo(HaveOccurred())
+					return rootUrl.Status
+				}, time.Second * 2).Should(Equal("200 "))
+			})
+		})
+
+	})
 })
 
 var _ = Describe("uaa-rotator-errand", func() {

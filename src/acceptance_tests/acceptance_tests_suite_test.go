@@ -152,6 +152,18 @@ func getInstanceInfos(boshBinary string) []instanceInfo {
 	return out
 }
 
+
+func getUaaIP() (string, bool) {
+	instanceInfos := getInstanceInfos(boshBinaryPath)
+	for _, instanceInfo := range instanceInfos {
+		if strings.Contains(instanceInfo.InstanceGroup, "uaa") {
+			return instanceInfo.IP, true
+		}
+	}
+
+	return "", false
+}
+
 func deleteUAA() {
 	By(fmt.Sprintf("delete uaa: %v", deleteCmd), func() {
 		Expect(os.Remove("/tmp/uaa-store.json")).To(Succeed())
@@ -164,8 +176,8 @@ func deleteUAA() {
 	})
 }
 
-func deployUAA(optFiles ...string) {
-	session := boshDeploy(optFiles...)
+func deployUAA(opsFiles ...string) {
+	session := boshDeploy(opsFiles...)
 	Eventually(session, 10*time.Minute).Should(gexec.Exit(0))
 	Eventually(session).Should(gbytes.Say("Preparing deployment: Preparing deployment"))
 }

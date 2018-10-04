@@ -178,7 +178,7 @@ func deleteUAA() {
 
 func deployUAA(opsFiles ...string) {
 	session := boshDeploy(opsFiles...)
-	Eventually(session, 10*time.Minute).Should(gexec.Exit(0))
+	Eventually(session, 20*time.Minute).Should(gexec.Exit(0))
 	Eventually(session).Should(gbytes.Say("Preparing deployment: Preparing deployment"))
 }
 

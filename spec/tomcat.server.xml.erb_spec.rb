@@ -6,7 +6,7 @@ require 'spec_helper'
 describe 'tomcat.server.xml' do
   def compile_erb(erb_template_location, manifest)
     erb_content = File.read(File.join(File.dirname(__FILE__), erb_template_location))
-    binding = Bosh::Template::EvaluationContext.new(manifest).get_binding
+    binding = Bosh::Template::EvaluationContext.new(manifest, nil).get_binding
     ERB.new(erb_content).result(binding)
   end
 

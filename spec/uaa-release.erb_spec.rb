@@ -5,13 +5,20 @@ require 'json'
 require 'support/yaml_eq'
 require 'spec_helper'
 
+class MockDNSEncoder
+  def encode_query(full_criteria, use_short_dns)
+    return 'linkedaddress'
+  end
+end
+
 describe 'uaa-release erb generation' do
   def perform_erb_transformation_as_yaml(erb_file, manifest_file)
     YAML.load(perform_erb_transformation_as_string(erb_file, manifest_file))
   end
 
   def perform_erb_transformation_as_string(erb_file, manifest_file)
-    binding = Bosh::Template::EvaluationContext.new(manifest_file).get_binding
+
+    binding = Bosh::Template::EvaluationContext.new(manifest_file, MockDNSEncoder.new).get_binding
     ERB.new(erb_file).result(binding)
   end
 
@@ -58,7 +65,14 @@ describe 'uaa-release erb generation' do
     let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
 
     context 'when uaadb.address is specified' do
-      let(:links) {{ 'database' => {'instances' => [ {'address' => 'linkedaddress'}]}}}
+      let(:links) do
+        {
+            'database' => {
+                'instances' => [],
+                'properties' => {'database' => {'address' => 'linkedaddress'}}
+            }
+        }
+      end
 
       it 'takes precedence over bosh-linked address' do
         expect(parsed_yaml['database']['url']).not_to include('linkedaddress')
@@ -67,7 +81,15 @@ describe 'uaa-release erb generation' do
     end
 
     context 'when uaadb.address missing but bosh-link address available' do
-      let(:links) {{ 'database' => {'instances' => [ {'address' => 'linkedaddress'}]}}}
+      let(:links) do
+        {
+            'database' => {
+                'instances' => [],
+                'properties' => {'database' => {'address' => 'linkedaddress'}}
+            }
+        }
+      end
+
       before(:each) { generated_cf_manifest['properties']['uaadb']['address'] = nil }
 
       it 'it uses the bosh-linked address' do

@@ -3,7 +3,7 @@ gem 'rspec'
 gem 'rake'
 gem 'nokogiri', '1.8.2'
 gem 'activesupport'
-gem 'bosh-template', path: '../bosh/src/bosh-template'
+gem 'bosh-template'
 
 group :test do
   gem 'pry-byebug'

@@ -15,7 +15,7 @@ GEM
       bosh_common (~> 1.3262.0)
       httpclient (= 2.7.1)
       multi_json (~> 1.1)
-    bosh-template (1.3262.0)
+    bosh-template (2.2.0)
       semi_semantic (~> 1.2.0)
     bosh_cli (1.3262.0)
       blobstore_client (~> 1.3262.0)

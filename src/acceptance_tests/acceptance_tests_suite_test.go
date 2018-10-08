@@ -43,6 +43,12 @@ var _ = BeforeSuite(func() {
 	setBoshEnvironmentVariables()
 
 	ensureUAAHasBeenDeployedAndRunning()
+	By("disabling bosh resurrection", func() {
+		disableResurrectionCmd := exec.Command(boshBinaryPath, "-d", "uaa", "update-resurrection", "-n", "off")
+		session, err := gexec.Start(disableResurrectionCmd, GinkgoWriter, GinkgoWriter)
+		Expect(err).NotTo(HaveOccurred())
+		Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
+	})
 })
 
 var _ = BeforeEach(func() {
@@ -198,4 +204,13 @@ func boshDeploy(optFiles ...string) *gexec.Session {
 		Expect(err).NotTo(HaveOccurred())
 	})
 	return session
+}
+
+func addLocalDNS(uaaDomainName string) {
+	uaaIp, found := getUaaIP()
+	Expect(found).To(BeTrue())
+	etcHosts, err := os.OpenFile("/etc/hosts", os.O_RDWR|os.O_APPEND, os.ModePerm)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = etcHosts.WriteString(fmt.Sprintf("%s %s\n", uaaIp, uaaDomainName))
+	Expect(err).NotTo(HaveOccurred())
 }

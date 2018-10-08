@@ -286,7 +286,7 @@ func getNumOfOSCertificates() int {
 	caCertificatesSSHStdoutCmd := exec.Command(boshBinaryPath, []string{"--json", "ssh", "--results", "uaa", "-c", "sudo grep 'END CERTIFICATE' /etc/ssl/certs/ca-certificates.crt | wc -l"}...)
 	session, err := gexec.Start(caCertificatesSSHStdoutCmd, GinkgoWriter, GinkgoWriter)
 	Expect(err).NotTo(HaveOccurred())
-	Eventually(session, 10*time.Second).Should(gexec.Exit(0))
+	Eventually(session, 1*time.Minute).Should(gexec.Exit(0))
 
 	var result = &sshResult{}
 	err = json.Unmarshal(session.Out.Contents(), result)

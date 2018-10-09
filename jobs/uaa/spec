@@ -101,7 +101,7 @@ properties:
     description: "Use TLS connection for UAA database"
     default: false
   uaadb.skip_ssl_validation:
-    description: "Skip TLS veriication for database server certificate"
+    description: "Skip TLS verification for database server certificate"
     default: false
   uaadb.tls_protocols:
     description: |

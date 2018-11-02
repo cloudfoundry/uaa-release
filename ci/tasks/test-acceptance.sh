@@ -18,7 +18,7 @@ export BOSH_BINARY_PATH="$(which bosh)"
 export BOSH_DEPLOYMENT="uaa"
 
 bosh upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-xenial-go_agent
-bosh upload-stemcell https://s3.amazonaws.com/bosh-core-stemcells/warden/bosh-stemcell-97.28-warden-boshlite-ubuntu-xenial-go_agent.tgz
+bosh upload-stemcell https://s3.amazonaws.com/bosh-core-stemcells/warden/bosh-stemcell-97.18-warden-boshlite-ubuntu-xenial-go_agent.tgz
 
 pushd "$ROOT_DIR/uaa-release"
     bosh create-release

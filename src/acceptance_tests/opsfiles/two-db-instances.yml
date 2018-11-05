@@ -9,7 +9,7 @@
     - z1
     instances: 2
     vm_type: default
-    stemcell: default
+    stemcell: db-stemcell
     networks:
     - name: default
     jobs:
@@ -147,3 +147,10 @@
     sha1: 9101651c0e51e82399715912fbc42bcbcfa23eca
     url: https://storage.googleapis.com/cf-deployment-compiled-releases/cf-mysql-36.15.0-ubuntu-xenial-97.18-20180925-180805-323206939.tgz
     version: 36.15.0
+
+- type: replace
+  path: /stemcells/-
+  value:
+    alias: db-stemcell
+    os: ubuntu-xenial
+    version: "97.18"

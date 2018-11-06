@@ -1,8 +1,10 @@
 openjdk/openjdk-1.8.0_192-x86_64-mountainlion.tar.gz:
   size: 75777887
+  object_id: 86560712-7e2a-4a03-504f-d41ae0ce1800
   sha: a7739219e719a61cff20efbd21cf26aa41ca88a5
 openjdk/openjdk-1.8.0_192-x86_64-trusty.tar.gz:
   size: 77683184
+  object_id: ea13ad54-6ce0-4d83-652a-842f5968a0a6
   sha: ea0e2e63a87aeb22ff5c172d10d2ba759bee29ad
 postgres/postgresql-9.6.6.tar.gz:
   size: 25709021

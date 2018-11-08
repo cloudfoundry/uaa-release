@@ -23,6 +23,7 @@ if [[ $? != 0 ]] ; then
 fi
 
 mv apache-tomcat-${TOMCAT_VERSION} tomcat
+rm ${BOSH_COMPILE_TARGET}/uaa/apache-tomcat-${TOMCAT_VERSION}.tar.gz
 
 cd tomcat
 rm -rf webapps/*

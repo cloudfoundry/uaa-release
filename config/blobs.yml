@@ -6,10 +6,10 @@ openjdk/openjdk-1.8.0_192-x86_64-trusty.tar.gz:
   size: 77683184
   object_id: ea13ad54-6ce0-4d83-652a-842f5968a0a6
   sha: ea0e2e63a87aeb22ff5c172d10d2ba759bee29ad
-postgres/postgresql-9.6.6.tar.gz:
-  size: 25709021
-  object_id: 83560585-c849-4cc0-b2c2-e4912443cf0f
-  sha: fff718c31685b7c2b6b99e97916260f8cf7f0083
+postgres/postgresql-11.1.tar.gz:
+  size: 28078799
+  object_id: b1461def-d2af-43b4-69ee-e9b7c7a5f26c
+  sha: 5f3e45d5ad5ec3372474eda83e6441ca885ab2cd
 uaa/apache-tomcat-8.5.23.tar.gz:
   size: 9472492
   object_id: 5a4a6eef-b6b0-438d-a604-0b4f70403b97

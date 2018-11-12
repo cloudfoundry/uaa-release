@@ -2,7 +2,7 @@
 
 set -e -x
 
-TOMCAT_VERSION=8.5.23
+TOMCAT_VERSION=8.5.34
 
 cd ${BOSH_INSTALL_TARGET}
 mkdir jdk && tar zxvf ${BOSH_COMPILE_TARGET}/openjdk/openjdk-1.8.0_192-x86_64-trusty.tar.gz -C jdk

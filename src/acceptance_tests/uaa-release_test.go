@@ -138,7 +138,7 @@ var _ = Describe("UaaRelease", func() {
 						rootUrl, err := client.Get(uaaRootEndpoint)
 						Expect(err).NotTo(HaveOccurred())
 						return rootUrl.Status
-					}, time.Second*2).Should(Equal("200 "))
+					}, time.Second*10).Should(Equal("200 "))
 				})
 			})
 		})

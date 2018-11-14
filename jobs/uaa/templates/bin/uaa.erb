@@ -8,11 +8,6 @@ source '/var/vcap/jobs/uaa/bin/configure_newrelic'
 export PATH="/var/vcap/packages/uaa/jdk/bin:$PATH"
 export JAVA_OPTS="-DPID=$$ -Dnetworkaddress.cache.ttl=0 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS"
 
-echo '[uaa-start] Creating health check STATUS file'
-touch /var/vcap/data/uaa/uaa_status
-echo '[uaa-start] Health check STATUS file created'
-echo '[uaa-start] Calling Tomcat start up command'
-
 function process_certs {
   echo "Processing certificates for Java cacerts file"
   rm -f "$CERT_CACHE_FILE"
@@ -75,26 +70,5 @@ else
   process_certs &
 fi
 
-<% if p("bpm.enabled") %>
-    graceful_uaa_exit() {
-      echo '[uaa-trap] trap invoked'
-      trap - TERM INT
-      echo '[uaa-trap] trap disabled'
-      rm -f /var/vcap/data/uaa/uaa_status
-      echo '[uaa-trap] status file deleted, letting async jobs pick up changes'
-      sleep 5
-      kill -TERM 0
-      echo '[uaa-trap] sent signal to tomcat, waiting to finish'
-      wait
-      echo '[uaa-trap] trap completed'
-    }
-    trap 'graceful_uaa_exit' TERM INT
-    /var/vcap/packages/uaa/tomcat/bin/catalina.sh run &
-    echo '[uaa-start] uaa/tomcat started in background. Waiting for signals'
-    wait
-    EXIT_STATUS=$?
-    echo '[uaa-start] uaa/tomcat job exiting.'
-    exit $EXIT_STATUS
-<% else %>
-  exec chpst -u vcap:vcap /var/vcap/data/uaa/tomcat/bin/catalina.sh run
-<% end %>
+echo '[uaa-start] Calling Tomcat start up command'
+exec chpst -u vcap:vcap /var/vcap/data/uaa/tomcat/bin/catalina.sh run

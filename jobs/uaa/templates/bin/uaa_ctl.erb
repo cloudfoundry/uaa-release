@@ -10,7 +10,6 @@ RUN_DIR=/var/vcap/sys/run/uaa
 LOG_DIR=/var/vcap/sys/log/uaa
 JOB_DIR=/var/vcap/jobs/uaa
 DATA_DIR=/var/vcap/data/uaa
-STATUS=$DATA_DIR/uaa_status
 PIDFILE=$RUN_DIR/uaa.pid
 
 mkdir -p /var/vcap/sys/run/uaa
@@ -70,11 +69,6 @@ case $1 in
 
   stop)
     echo "[uaa-stop] About to stop UAA"
-    # This tells the health_check to return false
-    # and the route will be deregistered
-    rm -f $STATUS
-    sleep 5
-    echo "[uaa-stop] Health check STATUS file removed"
     if pid_guard $PIDFILE "UAA"
     then
         echo "[uaa-check] UAA not running"

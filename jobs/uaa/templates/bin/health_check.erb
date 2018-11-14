@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -u
+
 <%
     active_uaa_port='-1'
     uaa_protocol=''
@@ -14,14 +16,9 @@
 
 HEALTH_RESPONSE=$(curl -k --max-time 5 --connect-timeout 2 <%=uaa_protocol%>://127.0.0.1:<%= active_uaa_port %>/healthz)
 
-DATA_DIR=/var/vcap/data/uaa
-STATUS_FILE=$DATA_DIR/uaa_status
-
-if [[ $HEALTH_RESPONSE == "ok" && -f $STATUS_FILE ]]
-then
+if [[ "${HEALTH_RESPONSE}" == "ok" ]]; then
   exit 0
-elif [[ $HEALTH_RESPONSE == "FAILURE" && -f $STATUS_FILE ]]
-then
+elif [[ "${HEALTH_RESPONSE}" == "FAILURE" ]]; then
   exit 2
 else
   exit 1

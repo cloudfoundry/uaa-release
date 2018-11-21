@@ -10,7 +10,7 @@ templates:
   bin/configure_newrelic.erb: bin/configure_newrelic
   bin/install_crt: bin/install_crt
   bin/dns_health_check.erb: bin/dns_health_check
-  bin/health_check: bin/health_check
+  bin/health_check.erb: bin/health_check
   bin/install_uaa_crt: bin/install_uaa_crt
   bin/pre-start.erb: bin/pre-start
   bin/post-start: bin/post-start
@@ -40,6 +40,12 @@ provides:
   - uaadb
   - release_level_backup
 
+- name: uaa_keys
+  type: uaa_keys
+  properties:
+  - encryption.active_key_label
+  - encryption.encryption_keys
+
 consumes:
 - name: router
   type: http-router
@@ -53,6 +59,18 @@ packages:
   - uaa
 
 properties:
+  encryption.encryption_keys:
+    description: "Map of key labels and encryption passphrases that will be used to create keys using a Key Derivation Function. All passphrase values must be at least 8 characters long."
+    example: |
+      - label: 'key-1'
+        passphrase: 'MY-PASSPHRASE'
+      - label: 'key-2'
+        passphrase: 'MY-PASSPHRASE-TWO'
+
+  encryption.active_key_label:
+    description: "The key label of the encryption passphrase that will be used to create the key using a Key Derivation Function for encrypting new data within the UAA database."
+    example: 'key-1'
+
   #backup properties
   release_level_backup:
     default: false
@@ -83,7 +101,7 @@ properties:
     description: "Use TLS connection for UAA database"
     default: false
   uaadb.skip_ssl_validation:
-    description: "Skip TLS veriication for database server certificate"
+    description: "Skip TLS verification for database server certificate"
     default: false
   uaadb.tls_protocols:
     description: |
@@ -146,7 +164,14 @@ properties:
       The syntax that must adhere to documentation in https://docs.newrelic.com/docs/agents/java-agent/configuration/java-agent-configuration-config-file
       The JVM option -javaagent:/path/to/newrelic.jar will be added to Apache Tomcat's startup script
       The enablement of the NewRelic agent in the UAA is triggered by the property uaa.newrelic.common.license_key
-      The property uaa.newrelic.common.license_key must be set!
+      The property uaa.newrelic.common.license_key must be set.
+    example: |
+      uaa:
+        newrelic:
+          common:
+            app_name: ((uaa_app_name))
+            license_key: ((uaa_license_key))
+
   env.http_proxy:
     description: "The http_proxy across the VMs used for all requests over http"
     example: http://test.proxy:8080
@@ -247,6 +272,29 @@ properties:
       oyCimvs0CgUOknhTmJJSkwJBAPaI298JxTnWncC3Zu7d5QYCJXjU403Aj4LdcVeI
       6A15MzQdj5Hm82vlmpC4LzXofLjiN4E5ZLluzEw+1TjRE7c=
       -----END RSA PRIVATE KEY-----
+  uaa.ca_certs:
+    description: "Array of CA certificates to load into the UAA's truststore"
+    example:
+      - |
+        -----BEGIN CERTIFICATE-----
+        MIIDAjCCAmugAwIBAgIJAJtrcBsKNfWDMA0GCSqGSIb3DQEBCwUAMIGZMQswCQYD
+        VQQGEwJVUzETMBEGA1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5j
+        aXNjbzEQMA4GA1UECgwHUGl2b3RhbDERMA8GA1UECwwISWRlbnRpdHkxFjAUBgNV
+        BAMMDU1hcmlzc2EgS29hbGExIDAeBgkqhkiG9w0BCQEWEW1rb2FsYUBwaXZvdGFs
+        LmlvMB4XDTE1MDczMDE5Mzk0NVoXDTI1MDcyOTE5Mzk0NVowgZkxCzAJBgNVBAYT
+        AlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2Nv
+        MRAwDgYDVQQKDAdQaXZvdGFsMREwDwYDVQQLDAhJZGVudGl0eTEWMBQGA1UEAwwN
+        TWFyaXNzYSBLb2FsYTEgMB4GCSqGSIb3DQEJARYRbWtvYWxhQHBpdm90YWwuaW8w
+        gZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAPVOIGvG8MFbkqi+ytdBHVbEGde4
+        jaCphmvGm89/4Ks0r+041VsS55XNYnHsxXTlh1FiB2KcbrDb33pgvuAIYpcAO2I0
+        gqGeRoS2hNsxzcFdkgSZn1umDAeoE4bCATrquN93KMcw/coY5jacUfb9P2CQztkS
+        e2o+QWtIaWYAvI3bAgMBAAGjUDBOMB0GA1UdDgQWBBTkEjA4CEjevAGfnPBciyXC
+        3v4zMzAfBgNVHSMEGDAWgBTkEjA4CEjevAGfnPBciyXC3v4zMzAMBgNVHRMEBTAD
+        AQH/MA0GCSqGSIb3DQEBCwUAA4GBAIEd8U32tkcvwG9qCOfe5raBENHM4ltTuhju
+        zZWIM5Ik1bFf6+rA71HVDD1Z5fRozidhMOl6mrrGShfu6VUjtqzctJeSjaOPIJL+
+        wvrXXcAkCYZ9QKf0sqlUWcIRy90nqrD5sL/rHAjNjxQ3lqIOj7yWOgty4LUzFQNr
+        FHiyd3T6
+        -----END CERTIFICATE-----
 
   #Branding/Customization
   login.branding.company_name:
@@ -271,6 +319,10 @@ properties:
     description: This is the color to be used for the background of the banner area on the UAA discovery login page
   login.branding.banner.link:
     description: This is the link to be used for the banner logo or banner text on the UAA discovery login page
+  login.branding.consent.text:
+    description: This text appears on registration and invitation after the words `I agree to` alongside a checkbox that must be selected before the user can continue.
+  login.branding.consent.link:
+    description: If `login.branding.consent.text` is set, the text after `I agree to` will be hyperlinked to this location.
   login.asset_base_url:
     description: "Deprecated in favor of branding properties. Base url for static assets, allows custom styling of the login server.  Use '/resources/pivotal' for Pivotal style."
     default: /resources/oss
@@ -345,6 +397,10 @@ properties:
   login.idpDiscoveryEnabled:
     description: "IDP Discovery should be set to true if you have configured more than one identity provider for UAA. The discovery relies on email domain being set for each additional provider. This property will also enable a list of selectable accounts that have signed in via the browser."
     default: false
+  login.defaultIdentityProvider:
+    description: "This value can be set to the origin key of an identity provider. If set, the user will be directed to this identity provider automatically if no other identity provider is discovered or selected via login_hint. When not set, legacy chained authentication (where uaa is attempted first followed by ldap) is used."
+    example: uaa
+    default: null
 
   # Email
   login.notifications.url:
@@ -925,6 +981,7 @@ properties:
         relyingPartySecret: <OIDC Client secret>
         skipSslValidation: false
         storeCustomAttributes: true
+        passwordGrantEnabled: false
         attributeMappings:
           given_name: <Attribute holding given name in the OIDC ID Token>
           family_name: <Attribute holding family name in the OIDC ID Token>
@@ -936,6 +993,16 @@ properties:
             attribute:
               name-of-attribute-in-uaa-id-token: name-of-attribute-in-provider-token
               name-of-other-attribute-in-uaa-id-token: name-of-other-attribute-in-provider-token
+        prompts:
+          - name: username
+            type: text
+            text: Email
+          - name: password
+            type: password
+            text: Password
+          - name: passcode
+            type: password
+            text: Temporary Authentication Code (Get on at /passcode)
 
   # Saml
   login.saml.entityid:
@@ -949,7 +1016,7 @@ properties:
       If set it overrides the default.
       This URL should NOT have the schema (http:// or https:// prefix in it) instead just the hostname.
       The schema is derived by #{login.protocol} property.
-      The default value is #{uaa.url}.replaceFirst('uaa','login'), typically login.example.com
+      The default value is `p("uaa.url").sub("://uaa.", "://login.")`, typically login.example.com
       The UAA will display this link in the cf --sso call if there is a SAML provider enabled.
   login.saml.activeKeyId:
     description: |

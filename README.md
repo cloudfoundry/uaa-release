@@ -60,10 +60,6 @@ Add the following properties to your manifest:
 
 `openssl x509 -sha256 -days 365 -in server.csr -signkey server.key -out selfsigned.crt`
 
-## Notes
-
-- The property `uaa.port` can't be set to `8989` because this port is used by BOSH to monitor the server.
-
 ## Contributing to uaa-release
 
 ### General workflow
@@ -108,6 +104,19 @@ Add the following properties to your manifest:
    And you access it using
 
        https://uaa.uaa-standalone.com:8443/
+
+## Java Runtime Environments
+
+   Java Runtime Environments are gracefully supplied by the Cloud Foundry
+   Java Buildpack Team
+
+   JDK - https://java-buildpack.cloudfoundry.org/openjdk-jdk/trusty/x86_64/index.yml
+   
+   JRE - https://java-buildpack.cloudfoundry.org/openjdk/trusty/x86_64/index.yml
+   
+   Mac JDK - https://java-buildpack.cloudfoundry.org/openjdk-jdk/mountainlion/x86_64/index.yml
+   
+   Mac JRE - https://java-buildpack.cloudfoundry.org/openjdk/mountainlion/x86_64/index.yml
 
 ## Acknowledgements
 

@@ -20,6 +20,13 @@ instance_groups:
   - name: uaa
     release: uaa
     properties:
+      encryption:
+        active_key_label: 'key-1'
+        encryption_keys:
+          - label: 'key-1'
+            passphrase: 'MY-PASSPHRASE'
+          - label: 'key-2'
+            passphrase: 'MY-PASSPHRASE-TWO'
       login:
         saml:
           serviceProviderKey: "((uaa_login_saml.private_key))"
@@ -77,6 +84,10 @@ instance_groups:
           - tag: uaa
             name: uaadb
             citext: true
+  - name: uaa_key_rotator
+    release: uaa
+    lifecycle: errand
+
 
 variables:
 - name: uaa_ca
@@ -111,4 +122,4 @@ releases:
 stemcells:
 - alias: default
   os: ubuntu-trusty
-  version: "3468.21"
+  version: "latest"

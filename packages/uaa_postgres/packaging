@@ -1,7 +1,7 @@
 set -e -x
 
-pgversion="postgresql-9.6.6"
-archive="$pgversion.tar.gz"
+pgversion="postgresql-11.1"
+archive="${pgversion}.tar.gz"
 
 if [[ -f postgres/$archive ]] ; then
   echo "Archive found"
@@ -11,14 +11,14 @@ else
 fi
 
 echo "Extracting archive..."
-tar xzf postgres/$archive
+tar xzf "postgres/${archive}"
 
-cd $pgversion
+cd "${pgversion}"
 
 if [[ `uname -a` =~ "x86_64" ]] ; then
-  ./configure --prefix=${BOSH_INSTALL_TARGET}
+  ./configure --prefix="${BOSH_INSTALL_TARGET}"
 else
-  CFLAGS=-m32 LDFLAGS=-m32 CXXFLAGS=-m32 ./configure --prefix=${BOSH_INSTALL_TARGET}
+  CFLAGS=-m32 LDFLAGS=-m32 CXXFLAGS=-m32 ./configure --prefix="${BOSH_INSTALL_TARGET}"
 fi
 
 pushd src/bin/pg_config
@@ -26,7 +26,7 @@ make
 make install
 popd
 
-cp -LR src/include ${BOSH_INSTALL_TARGET}
+cp -LR src/include "${BOSH_INSTALL_TARGET}"
 pushd src/interfaces/libpq
 make
 make install

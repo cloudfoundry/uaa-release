@@ -1,5 +1,10 @@
 ---
 properties:
+  encryption:
+    active_key_label: key1
+    encryption_keys:
+      - label: key1
+        passphrase: my-passphrase
   uaadb:
     address: 10.244.0.30
     databases:
@@ -13,6 +18,7 @@ properties:
       password: admin
       tag: admin
   login:
+    defaultIdentityProvider: uaa
     saml:
       activeKeyId: saml-key-1
       keys:

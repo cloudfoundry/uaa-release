@@ -5,13 +5,20 @@ require 'json'
 require 'support/yaml_eq'
 require 'spec_helper'
 
+class MockDNSEncoder
+  def encode_query(full_criteria, use_short_dns)
+    return 'linkedaddress'
+  end
+end
+
 describe 'uaa-release erb generation' do
   def perform_erb_transformation_as_yaml(erb_file, manifest_file)
     YAML.load(perform_erb_transformation_as_string(erb_file, manifest_file))
   end
 
   def perform_erb_transformation_as_string(erb_file, manifest_file)
-    binding = Bosh::Template::EvaluationContext.new(manifest_file).get_binding
+
+    binding = Bosh::Template::EvaluationContext.new(manifest_file, MockDNSEncoder.new).get_binding
     ERB.new(erb_file).result(binding)
   end
 
@@ -58,7 +65,14 @@ describe 'uaa-release erb generation' do
     let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
 
     context 'when uaadb.address is specified' do
-      let(:links) {{ 'database' => {'instances' => [ {'address' => 'linkedaddress'}]}}}
+      let(:links) do
+        {
+            'database' => {
+                'instances' => [],
+                'properties' => {'database' => {'address' => 'linkedaddress'}}
+            }
+        }
+      end
 
       it 'takes precedence over bosh-linked address' do
         expect(parsed_yaml['database']['url']).not_to include('linkedaddress')
@@ -67,7 +81,15 @@ describe 'uaa-release erb generation' do
     end
 
     context 'when uaadb.address missing but bosh-link address available' do
-      let(:links) {{ 'database' => {'instances' => [ {'address' => 'linkedaddress'}]}}}
+      let(:links) do
+        {
+            'database' => {
+                'instances' => [],
+                'properties' => {'database' => {'address' => 'linkedaddress'}}
+            }
+        }
+      end
+
       before(:each) { generated_cf_manifest['properties']['uaadb']['address'] = nil }
 
       it 'it uses the bosh-linked address' do
@@ -176,6 +198,36 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  context 'dns_health_check' do
+    let(:input) {'spec/input/bosh-lite.yml'}
+    let!(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, false)}
+    let(:output_dns_health_check) {'spec/compare/dns-health-check'}
+
+    context 'for a bosh-lite.yml' do
+      let(:as_yml) {false}
+      let(:erb_template) {'../jobs/uaa/templates/bin/dns_health_check.erb'}
+      context 'when dns-health-check has a http port' do
+        it 'it uses the http port' do
+          str_compare output_dns_health_check, parsed_yaml.to_s
+        end
+      end
+
+      context 'when http port is -1 and https is enabled' do
+        let(:output_dns_health_check) {'spec/compare/dns-health-check-https'}
+
+        before(:each) do
+          generated_cf_manifest['properties']['uaa']['port'] = -1
+          generated_cf_manifest['properties']['uaa']['ssl']['port'] = 9090
+        end
+
+        it 'it correctly generates dns health check with https port' do
+          str_compare output_dns_health_check, parsed_yaml.to_s
+        end
+      end
+    end
+  end
+
   context 'when invalid properties are specified' do
     let!(:generated_cf_manifest) { generate_cf_manifest(input) }
     let(:as_yml) { true }
@@ -190,6 +242,85 @@ describe 'uaa-release erb generation' do
         expect {
           parsed_yaml
         }.to raise_error(ArgumentError, /uaa.jwt.refresh.format invalidformat must be one of/)
+      end
+    end
+  end
+
+  context 'when branding consent is specified for default zone' do
+    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
+    let(:as_yml) { true }
+    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
+    let(:input) { 'spec/input/all-properties-set.yml' }
+    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+
+    context 'and only consent text is provided' do
+      it 'does not raise an error' do
+        generated_cf_manifest['properties']['login']['branding']['consent'].delete('link')
+        parsed_yaml
+      end
+    end
+
+    context 'and only consent link is provided' do
+      it 'raises an error' do
+        generated_cf_manifest['properties']['login']['branding']['consent'].delete('text')
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /login.branding.consent.text must also be provided if specifying login.branding.consent.link/)
+      end
+    end
+
+    context 'and consent link is a valid URI' do
+      valid_uris = ['https://example.com',
+        'https://example.com/',
+        'http://example.com/',
+        'ftp://example.com/',
+        'https://example.com?',
+        'https://example.com?a=b',
+        'https://example.com?a=b&c=d',
+        'https://example.com/?a=b',
+        'https://example.com/some/path',
+        'https://example.com#fragment',
+        'https://example.io',
+        'https://example.longtld',
+        'https://subdomain.example.com',
+        'https://subdomain.example.com',
+        'https://example.co.uk',
+        'https://example',
+        'http://127.0.0.1',
+        'http://224.1.1.1 '
+      ]
+
+      valid_uris.each do |url|
+        it 'does not raise an error' do
+          generated_cf_manifest['properties']['login']['branding']['consent']['link'] = url
+          parsed_yaml
+        end
+      end
+    end
+
+    context 'and consent link is not a valid URI' do
+      invalid_uris = ['www.example.com',
+        'gabr://example.com',
+        'example',
+        'example.com',
+        'example.com:666',
+        '// ',
+        '//a',
+        '///a ',
+        '///',
+        'rdar://1234',
+        'h://test ',
+        ':// should fail',
+        'ftps://foo.bar/',
+      ]
+
+      invalid_uris.each do |url|
+        it 'raises an error' do
+          generated_cf_manifest['properties']['login']['branding']['consent']['link'] = url
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /login.branding.consent.link value .* is not a valid uri/)
+        end
       end
     end
   end
@@ -467,6 +598,109 @@ describe 'uaa-release erb generation' do
           expect {
             parsed_yaml
           }.not_to raise_error
+        end
+      end
+
+      context 'encryption.active_key_label is missing' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption'].delete('active_key_label')
+
+          expect {
+            parsed_yaml
+          }.to raise_error(Bosh::Template::UnknownProperty, /encryption.active_key_label/)
+        end
+      end
+
+      context 'a single encryption passphrase is less than 8 characters long' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['encryption_keys'].first['passphrase'] = '1234567'
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /The required length of the encryption passphrases for \["key1"\] need to be at least 8 characters long./)
+        end
+      end
+
+      context 'multiple encryption passphrases are less than 8 characters long' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] << {'label' => 'key3', 'passphrase' => '87654321'}
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] << {'label' => 'key2', 'passphrase' => '7654321'}
+          generated_cf_manifest['properties']['encryption']['encryption_keys'].first['passphrase'] = '1234567'
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /The required length of the encryption passphrases for \["key1", "key2"\] need to be at least 8 characters long./)
+        end
+      end
+
+      context 'a valid key label does not exist' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['active_key_label'] = 'key-does-not-exist'
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /UAA cannot be started as encryption key passphrase for uaa.encryption.encryption_keys\/\[label=key-does-not-exist\] is undefined/)
+        end
+      end
+
+      context 'single encryption key is missing a passphrase' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] << {'label' => 'key42', 'passphrase' => nil}
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /UAA cannot be started as encryption key passphrase for uaa.encryption.encryption_keys\/\[label=key42\] is undefined/)
+        end
+      end
+
+      context 'multiple encryption keys are missing a passphrase' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] << {'label' => 'key2', 'passphrase' => nil}
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] << {'label' => 'key3', 'passphrase' => ''}
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /UAA cannot be started as encryption key passphrase for uaa.encryption.encryption_keys\/\[label=key2, label=key3\] is undefined/)
+        end
+      end
+
+      context 'multiple encryption keys with the same key label' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] << {'label' => 'key1', 'passphrase' => '987654321'}
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /UAA cannot be started as multiple keys have the same label in uaa.encryption.encryption_keys\/\[label=key1\]/)
+        end
+      end
+
+      context 'when active key is set without any encryption keys defined' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['encryption_keys'] = []
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /UAA cannot be started as encryption key passphrase for uaa.encryption.encryption_keys\/\[label=key1\] is undefined/)
+        end
+      end
+
+      context 'when the active key is set to an empty string' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption']['active_key_label'] = ''
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, 'UAA cannot be started without encryption key value uaa.encryption.active_key_label')
+        end
+      end
+
+      context 'encryption.encryption_keys is missing' do
+        it 'throws an error' do
+          generated_cf_manifest['properties']['encryption'].delete('encryption_keys')
+
+          expect {
+            parsed_yaml
+          }.to raise_error(Bosh::Template::UnknownProperty, /encryption.encryption_keys/)
         end
       end
 
@@ -844,30 +1078,5 @@ describe 'uaa-release erb generation' do
       # expected
     end
 
-  end
-
-  describe 'Doc Mode' do
-    let(:generated_cf_manifest) { generate_cf_manifest(input) }
-    let(:as_yml) { true }
-    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
-    let(:input) { 'spec/input/bosh-lite.yml' }
-    let(:output_uaa) { 'spec/compare/bosh-lite-uaa.yml' }
-    let(:output_log4j) { 'spec/compare/default-log4j.properties' }
-
-    before(:each) do
-      @json = JSON.parse(read_and_parse_string_template('../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true, :doc))
-    end
-
-    it 'outputs json for one-to-one mappings' do
-      expect(@json['uaa']['url']).to eq ({'*value' => '<uaa.url>', '*sources'=>{'uaa.url'=>'The base url of the UAA'}})
-    end
-
-    it 'shows named variables for .each expressions' do
-      expect(@json['login']['saml']['providers']['(idpAlias)']['idpMetadata']['*value']).to eq '<login.saml.providers.(idpAlias).idpMetadata>'
-    end
-
-    it 'simplifies redundant entries' do
-      expect(@json['jwt']['token']['policy']['keys']['*value']).to eq '<uaa.jwt.policy.keys>'
-    end
   end
 end

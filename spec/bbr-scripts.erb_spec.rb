@@ -39,7 +39,7 @@ describe 'bosh backup and restore script' do
     }
   }
   let(:generated_script) {
-    binding = Bosh::Template::EvaluationContext.new(properties).get_binding
+    binding = Bosh::Template::EvaluationContext.new(properties, nil).get_binding
     generated_script = ERB.new(File.read(script)).result(binding)
   }
 

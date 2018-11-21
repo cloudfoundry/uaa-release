@@ -76,6 +76,11 @@ jobs:
     - name: cf1
 
   properties:
+    encryption:
+      active_key_label: key1
+      encryption_keys:
+        - label: key1
+          passphrase: my-passphrase
     uaadb:
       address: 127.0.0.1
       databases:

@@ -1,5 +1,11 @@
 ---
 properties:
+  encryption:
+    active_key_label: key1
+    encryption_keys:
+      - label: key1
+        passphrase: 12345678
+
   domain: test-domain.com
   env:
     http_proxy: http://test.proxy:8080
@@ -38,7 +44,10 @@ properties:
         textColor: "#AABBCC"
         backgroundColor: "#DDEEFF"
         link: http://www.example.com
-
+      consent:
+        text: Terms and Conditions
+        link: http://www.example.com
+    defaultIdentityProvider: uaa
     idpDiscoveryEnabled: true
     links:
       global:
@@ -99,6 +108,17 @@ properties:
             here
           tokenKeyUrl: http://tokenKeyUrl
           tokenUrl: http://tokenUrl
+          passwordGrantEnabled: false
+          prompts:
+            - name: username
+              type: text
+              text: Email
+            - name: password
+              type: password
+              text: Password
+            - name: passcode
+              type: password
+              text: Temporary Authentication Code (Get on at /passcode)
           type: oidc1.0
     prompt:
       password:

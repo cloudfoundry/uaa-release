@@ -10,3 +10,6 @@ processes:
   ephemeral_disk: true
   limits:
     open_files: 65536
+  additional_volumes:
+  - path: /var/vcap/data/uaa/cert-cache
+    writable: true

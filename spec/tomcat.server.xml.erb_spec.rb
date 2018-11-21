@@ -6,7 +6,7 @@ require 'spec_helper'
 describe 'tomcat.server.xml' do
   def compile_erb(erb_template_location, manifest)
     erb_content = File.read(File.join(File.dirname(__FILE__), erb_template_location))
-    binding = Bosh::Template::EvaluationContext.new(manifest).get_binding
+    binding = Bosh::Template::EvaluationContext.new(manifest, nil).get_binding
     ERB.new(erb_content).result(binding)
   end
 
@@ -18,22 +18,50 @@ describe 'tomcat.server.xml' do
       config.xpath('//Valve')[0].attributes['internalProxies'].value
     end
 
-    context 'when uaa.proxy.servers is configured in the manifest' do
+    context 'when http port and https port are disabled' do
       before(:each) do
-        manifest['properties']['uaa']['proxy']['servers'] = ['127.1.0.1', '127.1.0.2', '127.1.0.3']
-        manifest['properties']['uaa']['proxy_ips_regex'] = 'proxy_ips_regex'
-        manifest['links'] = {
-            'router' => {'instances' => [{'address' => 'link.ed-add.ress'}]}
-        }
+        manifest['properties']['uaa']['port'] = -1
+        manifest['properties']['uaa']['ssl']['port'] = -1
 
       end
       let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
 
-      it 'manifest values take precedence over bosh-linked configuration' do
-        expect(internal_proxies).to eq 'link\.ed-add\.ress|127\.1\.0\.1|127\.1\.0\.2|127\.1\.0\.3|proxy_ips_regex'
+      it 'returns an error' do
+        expect {
+          compiled_xml
+        }.to raise_error(ArgumentError, /You have to set either an http port or an https port./)
       end
     end
-    
+
+    context 'when http port is invalid' do
+      before(:each) do
+        manifest['properties']['uaa']['port'] = -2
+
+      end
+      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
+
+      it 'returns an error' do
+        expect {
+          compiled_xml
+        }.to raise_error(ArgumentError, /An invalid http port has been specified./)
+      end
+    end
+
+
+    context 'when https port is invalid' do
+      before(:each) do
+        manifest['properties']['uaa']['ssl']['port'] = -2
+
+      end
+      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
+
+      it 'returns an error' do
+        expect {
+          compiled_xml
+        }.to raise_error(ArgumentError, /An invalid https port has been specified./)
+      end
+    end
+
     context 'when uaa.proxy_ips_regex is in the manifest' do
       let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
 

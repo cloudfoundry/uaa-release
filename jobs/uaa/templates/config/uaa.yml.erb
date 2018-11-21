@@ -95,6 +95,41 @@
     return errorinfo
   end
 
+  active_key_found = false
+  missing_passphrases = []
+  found_keys = []
+  duplicate_keys = []
+
+  p('encryption.encryption_keys').each do |key|
+    if key['label'].to_s == p('encryption.active_key_label').to_s then
+      active_key_found = true
+    end
+    passphrase = key['passphrase'].to_s
+    if passphrase.nil? || passphrase.empty? then
+      missing_passphrases << "label=#{key['label']}"
+    end
+    if found_keys.include? key['label'].to_s then
+      duplicate_keys << "label=#{key['label']}"
+    else
+      found_keys << key['label'].to_s
+    end
+  end
+
+  raise ArgumentError, 'UAA cannot be started without encryption key value uaa.encryption.active_key_label' if p('encryption.active_key_label').empty?
+  raise ArgumentError, "UAA cannot be started as encryption key passphrase for uaa.encryption.encryption_keys/[#{missing_passphrases.join(', ')}] is undefined" unless missing_passphrases.empty?
+  raise ArgumentError, "UAA cannot be started as encryption key passphrase for uaa.encryption.encryption_keys/[label=#{p('encryption.active_key_label')}] is undefined" unless active_key_found
+  raise ArgumentError, "UAA cannot be started as multiple keys have the same label in uaa.encryption.encryption_keys/[#{duplicate_keys.join(', ')}]" unless duplicate_keys.empty?
+
+  keys_with_invalid_passphrases = []
+  p('encryption.encryption_keys').each do |v|
+    if v['passphrase'].to_s.length < 8 then
+      keys_with_invalid_passphrases << v['label'].to_s
+    end
+
+  end
+
+  raise ArgumentError, "The required length of the encryption passphrases for #{keys_with_invalid_passphrases} need to be at least 8 characters long." unless keys_with_invalid_passphrases.length == 0
+
   uaa_db = p_arr('uaadb.databases').find { |db| db['tag'] == 'uaa' }
   uaa_role = p_arr('uaadb.roles').find { |role| role['tag'] == 'admin' }
   protocol = p('login.protocol')
@@ -107,7 +142,7 @@
     uaa_db_address = address
   end.else do
     if_link('database') do |db_link|
-      uaa_db_address = db_link.instances[0].address
+      uaa_db_address = db_link.address
     end.else do
       raise ArgumentError, 'Required uaadb address configuration not specified. Please specify uaadb.address or check your bosh linked database configuration.'
     end
@@ -121,6 +156,10 @@
   #simple properties
   params = {
     'name' => 'uaa',
+    'encryption' => {
+      'active_key_label' => p('encryption.active_key_label'),
+      'encryption_keys' => p('encryption.encryption_keys')
+    },
     'disableInternalAuth' => p('uaa.disableInternalAuth'),
     'disableInternalUserManagement' => p('uaa.disableInternalUserManagement'),
     'issuer' => {
@@ -601,6 +640,10 @@
     }
   })
 
+  if_p('login.defaultIdentityProvider') do |login_defaultIdentityProvider|
+    add_value(params, login_defaultIdentityProvider, 'login', 'defaultIdentityProvider')
+  end
+
   if_p('login.links') do |login_links|
     login_links.each do |key,val|
       add_value(params, val, 'links', key)
@@ -618,6 +661,25 @@
   end
 
   add_value(params, p('login.notifications.url'), 'notifications', 'url') if p_opt('login.notifications.url')
+
+  if p_opt('login.branding.consent')
+    add_value(params, p('login.branding.consent.text'), 'login', 'branding', 'consent', 'text') if p_opt('login.branding.consent.text')
+
+    if p_opt('login.branding.consent.link')
+      if p_opt('login.branding.consent.text')
+        link = p('login.branding.consent.link').strip
+        begin
+          parsed = URI.parse(link)
+          raise URI::InvalidURIError.new if parsed.instance_of? URI::Generic
+          add_value(params, link, 'login', 'branding', 'consent', 'link')
+        rescue URI::InvalidURIError
+          message = message + "\nlogin.branding.consent.link value #{link} is not a valid uri"
+        end
+      else
+        message = message + "\nlogin.branding.consent.text must also be provided if specifying login.branding.consent.link"
+      end
+    end
+  end
 
   add_value(params, p('login.branding.company_name'), 'login', 'branding', 'companyName') if p_opt('login.branding.company_name')
   add_value(params, p('login.branding.product_logo'), 'login', 'branding', 'productLogo') if p_opt('login.branding.product_logo')
@@ -650,7 +712,7 @@
     begin
       parsed = URI.parse(link)
       raise URI::InvalidURIError.new if parsed.instance_of? URI::Generic
-      add_value(params, p('login.branding.banner.link'), 'login', 'branding', 'banner', 'link')
+      add_value(params, link, 'login', 'branding', 'banner', 'link')
     rescue URI::InvalidURIError
       message = message + "\nlogin.branding.banner.link value #{link} is not a valid uri"
     end
@@ -735,6 +797,10 @@
   add_value(params, p('uaa.cors.xhr.allowed.methods'), 'cors', 'xhr', 'allowed', 'methods') if p_opt('uaa.cors.xhr.allowed.methods')
   add_value(params, p('uaa.cors.xhr.allowed.credentials'), 'cors', 'xhr', 'allowed', 'credentials') if p_opt('uaa.cors.xhr.allowed.credentials')
   add_value(params, p('uaa.cors.xhr.max_age'), 'cors', 'xhr', 'max_age') if p_opt('uaa.cors.xhr.max_age')
+
+  if_p('uaa.ca_certs') do |ca_certs|
+    add_value(params, ca_certs, 'uaa', 'ca_certs')
+  end
 
   #validate that we have all required parameters
 

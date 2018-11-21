@@ -29,6 +29,7 @@ while [ $WHEN_NOW -ot $WHEN_FINISH ]; do
     elif  [ "$check" == "2" ]
     then
         echo "uaa-post-start - post start failed - server failed to start successfully at `date`"
+        echo "check uaa.log to find out why the server failed to start"
         delete_ts_files
         exit 1
     fi

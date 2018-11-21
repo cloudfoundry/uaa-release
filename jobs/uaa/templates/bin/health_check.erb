@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -u
+
+<%
+    active_uaa_port='-1'
+    uaa_protocol=''
+    if p('uaa.port') != -1
+        active_uaa_port = p('uaa.port')
+        uaa_protocol = 'http'
+    elsif p('uaa.ssl.port') != -1
+        active_uaa_port = p('uaa.ssl.port')
+        uaa_protocol = 'https'
+    end
+%>
+
+HEALTH_RESPONSE=$(curl -k --max-time 5 --connect-timeout 2 <%=uaa_protocol%>://127.0.0.1:<%= active_uaa_port %>/healthz)
+
+if [[ "${HEALTH_RESPONSE}" == "ok" ]]; then
+  exit 0
+elif [[ "${HEALTH_RESPONSE}" == "FAILURE" ]]; then
+  exit 2
+else
+  exit 1
+fi

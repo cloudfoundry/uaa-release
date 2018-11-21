@@ -1,5 +1,10 @@
 ---
 name: uaa
+encryption:
+  active_key_label: key1
+  encryption_keys:
+    - label: key1
+      passphrase: 12345678
 disableInternalAuth: true
 disableInternalUserManagement: true
 issuer:
@@ -309,6 +314,7 @@ links:
   homeRedirect: http://custom.home.redirect
 login:
   url: http://all-properties-set:8888/uaa
+  defaultIdentityProvider: uaa
   idpDiscoveryEnabled: true
   accountChooserEnabled: true
   entityBaseURL: http://all-properties-set:8888/uaa
@@ -536,6 +542,9 @@ login:
       textColor: "#AABBCC"
       backgroundColor: "#DDEEFF"
       link: http://www.example.com
+    consent:
+      text: Terms and Conditions
+      link: http://www.example.com
   serviceProviderKeyPassword: ""
   serviceProviderCertificate: |
     -----BEGIN CERTIFICATE-----
@@ -611,6 +620,17 @@ login:
         relyingPartySecret: "<OIDC Client secret>"
         skipSslValidation: false
         storeCustomAttributes: false
+        passwordGrantEnabled: false
+        prompts:
+          - name: username
+            type: text
+            text: Email
+          - name: password
+            type: password
+            text: Password
+          - name: passcode
+            type: password
+            text: Temporary Authentication Code (Get on at /passcode)
         attributeMappings:
           given_name: first_name
           family_name: last_name

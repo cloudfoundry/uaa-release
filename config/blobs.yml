@@ -1,21 +1,20 @@
----
+openjdk/openjdk-1.8.0_192-x86_64-mountainlion.tar.gz:
+  size: 75777887
+  object_id: 86560712-7e2a-4a03-504f-d41ae0ce1800
+  sha: a7739219e719a61cff20efbd21cf26aa41ca88a5
+openjdk/openjdk-1.8.0_192-x86_64-trusty.tar.gz:
+  size: 77683184
+  object_id: ea13ad54-6ce0-4d83-652a-842f5968a0a6
+  sha: ea0e2e63a87aeb22ff5c172d10d2ba759bee29ad
+postgres/postgresql-11.1.tar.gz:
+  size: 28078799
+  object_id: b1461def-d2af-43b4-69ee-e9b7c7a5f26c
+  sha: 5f3e45d5ad5ec3372474eda83e6441ca885ab2cd
+uaa/apache-tomcat-8.5.34.tar.gz:
+  size: 9625824
+  object_id: 46202ef1-2c35-4eb8-4941-6dbb678c2951
+  sha: a1c43dafefc9fcffcc74f871bc5b84086c5e34e7
 uaa/newrelic.jar:
-  size: 7064901
-  object_id: 97012cfa-58e4-4a2d-8a22-9be557e980ee
-  sha: a5070963fc84bea27acc1d492cb9e3143f0c4715
-uaa/apache-tomcat-8.5.23.tar.gz:
-  object_id: 5a4a6eef-b6b0-438d-a604-0b4f70403b97
-  sha: 1ba27c1bb86ab9c8404e98068800f90bd662523c
-  size: 9472492
-openjdk/openjdk-1.8.0_152-x86_64-trusty.tar.gz:
-  object_id: fdb70c92-c698-40e2-9219-631ddabcf167
-  sha: 16a408d79a81499f525427c6d74a70ad5780a6ac
-  size: 78240380
-openjdk/openjdk-1.8.0_152-x86_64-mountainlion.tar.gz:
-  object_id: 69b3009b-7509-4390-9861-4b154a8e4ce5
-  sha: 60fa4b6827f11c86c4ae52d5c5756ee9e4465dd5
-  size: 75736351
-postgres/postgresql-9.6.6.tar.gz:
-  object_id: 83560585-c849-4cc0-b2c2-e4912443cf0f
-  sha: fff718c31685b7c2b6b99e97916260f8cf7f0083
-  size: 25709021
+  size: 10612298
+  object_id: dcb04454-dc24-497b-4926-908456c10fc8
+  sha: 239f655f63233b9ba403d85b5a652d5c75957fb2

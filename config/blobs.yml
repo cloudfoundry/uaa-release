@@ -10,10 +10,10 @@ postgres/postgresql-11.1.tar.gz:
   size: 28078799
   object_id: b1461def-d2af-43b4-69ee-e9b7c7a5f26c
   sha: 5f3e45d5ad5ec3372474eda83e6441ca885ab2cd
-uaa/apache-tomcat-8.5.34.tar.gz:
-  size: 9625824
-  object_id: 46202ef1-2c35-4eb8-4941-6dbb678c2951
-  sha: a1c43dafefc9fcffcc74f871bc5b84086c5e34e7
+uaa/apache-tomcat-9.0.13.tar.gz:
+  size: 9988120
+  object_id: 491f73e0-5965-422e-6116-9c71d1679f43
+  sha: e57f860069cf5a0d0fee2c958671a5f4df71d3e6
 uaa/newrelic.jar:
   size: 10612298
   object_id: dcb04454-dc24-497b-4926-908456c10fc8

@@ -145,8 +145,8 @@
   value:
     name: cf-mysql
     sha1: 9101651c0e51e82399715912fbc42bcbcfa23eca
-    url: https://storage.googleapis.com/cf-deployment-compiled-releases/cf-mysql-36.15.0-ubuntu-xenial-97.18-20180925-180805-323206939.tgz
-    version: 36.15.0
+    url: https://storage.googleapis.com/cf-deployment-compiled-releases/cf-mysql-36.16.0-ubuntu-xenial-170.9-20181119-232745-090612782.tgz
+    version: 36.16.0
 
 - type: replace
   path: /stemcells/-

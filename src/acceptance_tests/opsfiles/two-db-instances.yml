@@ -144,7 +144,7 @@
   path: /releases/-
   value:
     name: cf-mysql
-    sha1: 9101651c0e51e82399715912fbc42bcbcfa23eca
+    sha1: 1918047d94df62167f26136353b40baa70549b9a
     url: https://storage.googleapis.com/cf-deployment-compiled-releases/cf-mysql-36.16.0-ubuntu-xenial-170.9-20181119-232745-090612782.tgz
     version: 36.16.0
 

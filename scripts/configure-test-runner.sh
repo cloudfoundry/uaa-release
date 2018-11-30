@@ -5,7 +5,7 @@ set -eux
 source /tmp/local-bosh/director/env
 export BOSH_ENVIRONMENT="https://10.245.0.3:25555"
 
-bosh upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-xenial-go_agent
+bosh upload-stemcell https://s3.amazonaws.com/bosh-core-stemcells/warden/bosh-stemcell-170.9-warden-boshlite-ubuntu-xenial-go_agent.tgz
 
 cp /root/uaa-release/src/acceptance_tests/uaa-docker-deployment.yml /tmp/uaa-deployment.yml
 cp /root/uaa-release/scripts/refresh-uaa-deployment.sh /usr/local/bin/refresh

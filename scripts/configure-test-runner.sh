@@ -11,9 +11,7 @@ cp /root/uaa-release/src/acceptance_tests/uaa-docker-deployment.yml /tmp/uaa-dep
 cp /root/uaa-release/scripts/refresh-uaa-deployment.sh /usr/local/bin/refresh
 
 pushd "/root/uaa-release"
-    bosh reset-release
-    bosh create-release --force
-    bosh upload-release
+    bosh upload-release tmp/uaa-dev-release.tgz
 popd
 
 export GOPATH="/root/uaa-release"

@@ -31,13 +31,18 @@
       db_adapter = 'postgres'
     end
 
+    bbr_config = {
+        'username' => db_role['name'],
+        'password' => db_role['password'],
+        'host' => db_address,
+        'port' => db_port,
+        'database' => db['name'],
+        'adapter' => db_adapter,
+    }
 
-    JSON.pretty_generate(
-      'username' => db_role['name'],
-      'password' => db_role['password'],
-      'host' => db_address,
-      'port' => db_port,
-      'database' => db['name'],
-      'adapter' => db_adapter,
-    )
+    if_p('uaadb.ca_cert') do |ca_cert|
+        bbr_config['tls'] = { 'cert' => { 'ca' => ca_cert } }
+    end
+
+    JSON.pretty_generate(bbr_config)
 %>

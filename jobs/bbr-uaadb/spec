@@ -32,9 +32,10 @@ properties:
     description: "Database scheme for UAA DB"
   uaadb.port:
     description: "The UAA database Port"
-  uaadb.tls_enabled :
-    description: "Use TLS connection for UAA database"
-    default: false
+  uaadb.ca_cert:
+    description: |
+      Database CA certificate to pass into back-and-restore-sdk config.json.
+      Providing this will enable TLS.
   uaadb.roles:
     description: |
       The list of database Roles used in UAA database including tag/name/password

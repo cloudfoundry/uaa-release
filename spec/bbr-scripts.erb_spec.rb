@@ -33,7 +33,8 @@ describe 'bosh backup and restore script' do
               'port' => 2222,
               'db_scheme' => 'postgres',
               'databases' => [{'name' => 'uaa_db_2_name', 'tag' => 'uaa'}],
-              'roles' => [{'name' => 'ad2min', 'password' => 'exam2ple', 'tag' => 'admin'}]
+              'roles' => [{'name' => 'ad2min', 'password' => 'exam2ple', 'tag' => 'admin'}],
+              'ca_cert' => '---not a real cert---',
           }
       }
     }
@@ -94,33 +95,60 @@ describe 'bosh backup and restore script' do
       end
     end
 
-    describe 'config.json.erb' do
-      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
+    context 'config.json.erb' do
 
-      it 'it has all the expected lines' do
-        expect(generated_script).to include('"username": "admin"')
-        expect(generated_script).to include('"password": "example"')
-        expect(generated_script).to include('"host": "127.0.0.1"')
-        expect(generated_script).to include('"port": 5432')
-        expect(generated_script).to include('"database": "uaa_db_name"')
-        expect(generated_script).to include('"adapter": "postgres"')
+      describe 'when link is used' do
+        let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
+
+        it 'it has all the expected lines' do
+          expect(generated_script).to include('"username": "admin"')
+          expect(generated_script).to include('"password": "example"')
+          expect(generated_script).to include('"host": "127.0.0.1"')
+          expect(generated_script).to include('"port": 5432')
+          expect(generated_script).to include('"database": "uaa_db_name"')
+          expect(generated_script).to include('"adapter": "postgres"')
+          expect(generated_script).to include(' "tls": {
+    "cert": {
+      "ca": "---not a real cert---"
+    }
+  }')
+        end
       end
-    end
 
-    describe 'config.json when properties are used instead of links' do
-      before(:each) do
-        properties['links'] = nil
+      describe 'when properties are used instead of links' do
+        before(:each) do
+          properties['links'] = nil
+        end
+
+        let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
+
+        it 'it has all the expected lines' do
+          expect(generated_script).to include('"username": "ad2min"')
+          expect(generated_script).to include('"password": "exam2ple"')
+          expect(generated_script).to include('"host": "127.0.0.2"')
+          expect(generated_script).to include('"port": 2222')
+          expect(generated_script).to include('"database": "uaa_db_2_name"')
+          expect(generated_script).to include('"adapter": "postgres"')
+          expect(generated_script).to include('"tls": {
+    "cert": {
+      "ca": "---not a real cert---"
+    }
+  }')
+        end
       end
 
-      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
+      describe 'when ca_cert is not specified' do
+        before(:each) do
+          properties['properties']['uaadb']['ca_cert'] = nil
+        end
 
-      it 'it has all the expected lines' do
-        expect(generated_script).to include('"username": "ad2min"')
-        expect(generated_script).to include('"password": "exam2ple"')
-        expect(generated_script).to include('"host": "127.0.0.2"')
-        expect(generated_script).to include('"port": 2222')
-        expect(generated_script).to include('"database": "uaa_db_2_name"')
-        expect(generated_script).to include('"adapter": "postgres"')
+        let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
+
+        it 'should not contain tls.cert.ca' do
+          expect(generated_script).not_to include('tls')
+          expect(generated_script).not_to include('cert')
+          expect(generated_script).not_to include('ca')
+        end
       end
     end
 
@@ -204,6 +232,11 @@ describe 'bosh backup and restore script' do
         expect(generated_script).to include('"port": 5432')
         expect(generated_script).to include('"database": "uaa_db_name"')
         expect(generated_script).to include('"adapter": "postgres"')
+        expect(generated_script).to include('"tls": {
+    "cert": {
+      "ca": "---not a real cert---"
+    }
+  }')
       end
     end
 

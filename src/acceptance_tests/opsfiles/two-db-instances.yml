@@ -153,4 +153,4 @@
   value:
     alias: db-stemcell
     os: ubuntu-xenial
-    version: "97.18"
+    version: "170.9"

@@ -19,6 +19,10 @@ describe 'tomcat.server.xml' do
   let(:template) { '../jobs/uaa/templates/config/tomcat/tomcat.server.xml.erb' }
   let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
 
+  it 'matches the expected result' do
+    expect(compiled_xml.gsub(/\s/, '')).to eq(read_file('compare/all-properties-tomcat-server.xml').gsub(/\s/, ''))
+  end
+
   context 'when http port and https port are disabled' do
     before(:each) do
       manifest['properties']['uaa']['port'] = -1

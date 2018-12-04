@@ -52,6 +52,7 @@
                connectionTimeout="20000"
                port="<%= p('uaa.port') %>"
                bindOnInit="true"
+               maxHttpHeaderSize="14336"
     />
     <% end %>
 
@@ -70,6 +71,7 @@
                keyAlias="uaa_ssl_cert"
                keystorePass="k0*l*s3cur1tyr0ck$"
                bindOnInit="false"
+               maxHttpHeaderSize="14336"
     />
     <% end %>
 

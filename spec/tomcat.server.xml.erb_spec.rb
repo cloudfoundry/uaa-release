@@ -2,69 +2,70 @@ require 'rspec'
 require 'nokogiri'
 require 'bosh/template/evaluation_context'
 require 'spec_helper'
+require 'yaml'
 
 describe 'tomcat.server.xml' do
+  def read_file(relative_path)
+    File.read(File.join(File.dirname(__FILE__), relative_path))
+  end
+  
   def compile_erb(erb_template_location, manifest)
-    erb_content = File.read(File.join(File.dirname(__FILE__), erb_template_location))
+    erb_content = read_file(erb_template_location)
     binding = Bosh::Template::EvaluationContext.new(manifest, nil).get_binding
     ERB.new(erb_content).result(binding)
   end
 
+  let(:compiled_xml) { compile_erb(template, manifest) }
+  let(:template) { '../jobs/uaa/templates/config/tomcat/tomcat.server.xml.erb' }
+  let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
+
+  context 'when http port and https port are disabled' do
+    before(:each) do
+      manifest['properties']['uaa']['port'] = -1
+      manifest['properties']['uaa']['ssl']['port'] = -1
+
+    end
+
+    it 'returns an error' do
+      expect {
+        compiled_xml
+      }.to raise_error(ArgumentError, /You have to set either an http port or an https port./)
+    end
+  end
+
+  context 'when http port is invalid' do
+    before(:each) do
+      manifest['properties']['uaa']['port'] = -2
+
+    end
+
+    it 'returns an error' do
+      expect {
+        compiled_xml
+      }.to raise_error(ArgumentError, /An invalid http port has been specified./)
+    end
+  end
+
+  context 'when https port is invalid' do
+    before(:each) do
+      manifest['properties']['uaa']['ssl']['port'] = -2
+
+    end
+
+    it 'returns an error' do
+      expect {
+        compiled_xml
+      }.to raise_error(ArgumentError, /An invalid https port has been specified./)
+    end
+  end
+
   context 'using bosh links' do
-    let(:compiled_xml) { compile_erb(template, manifest) }
-    let(:template) { '../jobs/uaa/templates/config/tomcat/tomcat.server.xml.erb' }
     let(:internal_proxies) do
       config = Nokogiri::XML.parse(compiled_xml)
       config.xpath('//Valve')[0].attributes['internalProxies'].value
     end
 
-    context 'when http port and https port are disabled' do
-      before(:each) do
-        manifest['properties']['uaa']['port'] = -1
-        manifest['properties']['uaa']['ssl']['port'] = -1
-
-      end
-      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
-
-      it 'returns an error' do
-        expect {
-          compiled_xml
-        }.to raise_error(ArgumentError, /You have to set either an http port or an https port./)
-      end
-    end
-
-    context 'when http port is invalid' do
-      before(:each) do
-        manifest['properties']['uaa']['port'] = -2
-
-      end
-      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
-
-      it 'returns an error' do
-        expect {
-          compiled_xml
-        }.to raise_error(ArgumentError, /An invalid http port has been specified./)
-      end
-    end
-
-
-    context 'when https port is invalid' do
-      before(:each) do
-        manifest['properties']['uaa']['ssl']['port'] = -2
-
-      end
-      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
-
-      it 'returns an error' do
-        expect {
-          compiled_xml
-        }.to raise_error(ArgumentError, /An invalid https port has been specified./)
-      end
-    end
-
     context 'when uaa.proxy_ips_regex is in the manifest' do
-      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
-
       it 'includes the proxy_ips_regex when uaa.proxy.servers not set and bosh links not available' do
         manifest['properties']['uaa']['proxy']['servers'] = []
         manifest['properties']['uaa']['proxy_ips_regex'] = 'proxy_ips_regex'

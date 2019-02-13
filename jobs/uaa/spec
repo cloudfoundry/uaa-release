@@ -57,6 +57,7 @@ consumes:
 packages:
   - uaa_utils
   - uaa
+  - ruby-2.4-r5
 
 properties:
   encryption.encryption_keys:

@@ -32,3 +32,30 @@ cp -a ${BOSH_COMPILE_TARGET}/uaa/newrelic.jar bin/newrelic.jar
 
 chmod 0755 bin/
 chmod 0755 bin/*.sh
+
+# install UAAC
+source "${BOSH_PACKAGES_DIR:-/var/vcap/packages}/ruby-2.4-r5/bosh/compile.env"
+source "${BOSH_PACKAGES_DIR:-/var/vcap/packages}/ruby-2.4-r5/bosh/runtime.env"
+
+cd ${BOSH_INSTALL_TARGET}
+tar zxvf ${BOSH_COMPILE_TARGET}/uaac/gem.tar.gz
+if [[ $? != 0 ]] ; then
+  echo "Cannot unpack UAAC"
+  exit 1
+fi
+
+cd uaac
+mkdir -p vendor/cache
+gem install cf-uaac-4.1.0.gem --install-dir="./vendor/cache"
+cp "./vendor/cache/bin/uaac" .
+
+# create login script used to setup Ruby environment needed to run UAAC
+cat > "./setup" << EOF
+#!/usr/bin/env bash
+source "${BOSH_PACKAGES_DIR:-/var/vcap/packages}/ruby-2.4-r5/bosh/runtime.env"
+export GEM_HOME="${BOSH_PACKAGES_DIR:-/var/vcap/packages}/uaa/uaac/vendor/cache"
+export GEM_PATH="${BOSH_PACKAGES_DIR:-/var/vcap/packages}/uaa/uaac/vendor/cache"
+EOF
+
+rm cf-uaac-4.1.0.gem
+

@@ -123,6 +123,12 @@ ln -fs "$TRUST_STORE_FILE" "$CONF_DIR/cacerts"
 
 setup_directories
 
+# setup Ruby env to use UAAC
+source "${BOSH_PACKAGES_DIR:-/var/vcap/packages}/ruby-2.4-r5/bosh/runtime.env"
+cp "${BOSH_PACKAGES_DIR:-/var/vcap/packages}/uaa/uaac/setup" /etc/profile.d/uaac_setup.sh
+chmod +x /etc/profile.d/uaac_setup.sh
+chown :vcap /etc/profile.d/uaac_setup.sh
+
 echo "uaa-pre-start - completed at `date`"
 
 exit 0

@@ -1,11 +1,11 @@
-openjdk/openjdk-1.8.0_192-x86_64-mountainlion.tar.gz:
-  size: 75777887
-  object_id: 86560712-7e2a-4a03-504f-d41ae0ce1800
-  sha: a7739219e719a61cff20efbd21cf26aa41ca88a5
-openjdk/openjdk-1.8.0_192-x86_64-trusty.tar.gz:
-  size: 77683184
-  object_id: ea13ad54-6ce0-4d83-652a-842f5968a0a6
-  sha: ea0e2e63a87aeb22ff5c172d10d2ba759bee29ad
+openjdk/openjdk-1.8.0_202-x86_64-mountainlion.tar.gz:
+  size: 101468874
+  object_id: 75e918ce-effa-44b0-7771-76cae4c235e7
+  sha: 8b1c4f973ea4d4b5876431a3b58728ea6b3dea6e
+openjdk/openjdk-1.8.0_202-x86_64-trusty.tar.gz:
+  size: 103343856
+  object_id: 3dd729c1-c064-45c3-40c9-26f6450d2519
+  sha: 8ae76b80ffd1be54f43cf3490e6e1a871fc88e8e
 postgres/postgresql-11.1.tar.gz:
   size: 28078799
   object_id: b1461def-d2af-43b4-69ee-e9b7c7a5f26c

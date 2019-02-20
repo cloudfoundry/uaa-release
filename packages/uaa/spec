@@ -4,6 +4,6 @@ dependencies:
 - ruby-2.4-r5
 files:
 - uaa/**/*
-- openjdk/openjdk-1.8.0_192-x86_64-mountainlion.tar.gz
-- openjdk/openjdk-1.8.0_192-x86_64-trusty.tar.gz
+- openjdk/openjdk-1.8.0_*-x86_64-mountainlion.tar.gz
+- openjdk/openjdk-1.8.0_*-x86_64-trusty.tar.gz
 - uaac/gem.tar.gz

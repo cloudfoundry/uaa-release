@@ -19,7 +19,7 @@ export BOSH_DEPLOYMENT="uaa"
 
 bosh upload-stemcell https://s3.amazonaws.com/bosh-core-stemcells/warden/bosh-stemcell-170.9-warden-boshlite-ubuntu-xenial-go_agent.tgz
 # BOSH DNS expected
-bosh -n update-runtime-config /usr/local/bosh-deployment/runtime-configs/dns.yml
+bosh -n update-runtime-config /usr/local/bosh-deployment/runtime-configs/dns.yml --vars-store=/tmp/uaa-store.json
 
 pushd "$ROOT_DIR/uaa-release"
     bosh create-release

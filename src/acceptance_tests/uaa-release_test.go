@@ -1,14 +1,13 @@
 package acceptance_tests_test
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"encoding/pem"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/ginkgo/extensions/table"
-	. "github.com/onsi/gomega"
-	"github.com/onsi/gomega/gexec"
+	"fmt"
 	"github.com/pavel-v-chernykh/keystore-go"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -16,10 +15,12 @@ import (
 	"strings"
 	"time"
 	"unicode"
-	"fmt"
-	"net/http"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
-	"crypto/tls"
+	"github.com/onsi/gomega/gexec"
 )
 
 type row struct {
@@ -144,6 +145,23 @@ var _ = Describe("UaaRelease", func() {
 		})
 
 	})
+
+	DescribeTable("UAA log format", func(uaaLogFormat string, optFiles ...string) {
+		deployUAA(optFiles...)
+
+		logPath := scpUAALog()
+
+		tailLogFileCmd := exec.Command("tail", "-n1", logPath)
+		session, err := gexec.Start(tailLogFileCmd, GinkgoWriter, GinkgoWriter)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(string(session.Wait().Out.Contents())).To(MatchRegexp(uaaLogFormat))
+	},
+		Entry("when UAA logs are configured to *NOT* honor RFC 3339",
+			`^\[(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}\.\d{3})\] uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`),
+		Entry("when UAA logs are configured to honor RFC 3339",
+			`^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{3})Z\] uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`,
+			"./opsfiles/use-rfc3339-log-format.yml"),
+	)
 })
 
 var _ = Describe("uaa-rotator-errand", func() {
@@ -280,6 +298,15 @@ func scpTruststore() string {
 	Expect(err).NotTo(HaveOccurred())
 	Eventually(session, 10*time.Second).Should(gexec.Exit(0))
 	return localKeyStorePath
+}
+
+func scpUAALog() string {
+	localUAALogPath := filepath.Join(os.TempDir(), "uaa.log")
+	cmd := exec.Command(boshBinaryPath, "scp", "uaa:/var/vcap/sys/log/uaa/uaa.log", localUAALogPath)
+	session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+	Expect(err).NotTo(HaveOccurred())
+	Eventually(session, 10*time.Second).Should(gexec.Exit(0))
+	return localUAALogPath
 }
 
 func getNumOfOSCertificates() int {

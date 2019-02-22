@@ -31,8 +31,10 @@ export PATH="${GOPATH}/bin:$PATH"
 go get github.com/onsi/ginkgo/ginkgo
 go install github.com/onsi/ginkgo/ginkgo
 
-cp $ROOT_DIR/uaa-release/src/acceptance_tests/uaa-docker-deployment.yml /tmp/uaa-deployment.yml
-bosh -n deploy /tmp/uaa-deployment.yml -o "$ROOT_DIR/uaa-release/src/acceptance_tests/opsfiles/enable-local-uaa.yml" --vars-store=/tmp/uaa-store.json -v system_domain=`hostname --fqdn`
+pushd "${ROOT_DIR}/uaa-deployment"
+    cp uaa.yml /tmp/uaa-deployment.yml
+    bosh -n deploy /tmp/uaa-deployment.yml -o "$ROOT_DIR/uaa-release/src/acceptance_tests/opsfiles/enable-local-uaa.yml" --vars-store=/tmp/uaa-store.json -v system_domain=`hostname --fqdn`
+popd
 
 pushd "$GOPATH/src/acceptance_tests"
    ginkgo -v -keepGoing -randomizeAllSpecs -randomizeSuites -race -r .

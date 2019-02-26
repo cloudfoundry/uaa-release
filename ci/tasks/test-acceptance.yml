@@ -7,6 +7,5 @@ image_resource:
 inputs:
   - name: identity-ci
   - name: uaa-release
-  - name: uaa-deployment
 run:
   path: uaa-release/ci/tasks/test-acceptance.sh

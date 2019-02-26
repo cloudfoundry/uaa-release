@@ -18,8 +18,7 @@ export BOSH_BINARY_PATH="$(which bosh)"
 export BOSH_DEPLOYMENT="uaa"
 
 bosh upload-stemcell https://s3.amazonaws.com/bosh-core-stemcells/warden/bosh-stemcell-170.9-warden-boshlite-ubuntu-xenial-go_agent.tgz
-# BOSH DNS expected
-bosh -n update-runtime-config /usr/local/bosh-deployment/runtime-configs/dns.yml --vars-store=/tmp/uaa-store.json
+
 
 pushd "$ROOT_DIR/uaa-release"
     bosh create-release
@@ -32,10 +31,8 @@ export PATH="${GOPATH}/bin:$PATH"
 go get github.com/onsi/ginkgo/ginkgo
 go install github.com/onsi/ginkgo/ginkgo
 
-pushd "${ROOT_DIR}/uaa-deployment"
-    cp uaa.yml /tmp/uaa-deployment.yml
-    bosh -n deploy /tmp/uaa-deployment.yml -o "$ROOT_DIR/uaa-release/src/acceptance_tests/opsfiles/enable-local-uaa.yml" --vars-store=/tmp/uaa-store.json -v system_domain=`hostname --fqdn`
-popd
+cp $ROOT_DIR/uaa-release/src/acceptance_tests/uaa-docker-deployment.yml /tmp/uaa-deployment.yml
+bosh -n deploy /tmp/uaa-deployment.yml -o "$ROOT_DIR/uaa-release/src/acceptance_tests/opsfiles/enable-local-uaa.yml" --vars-store=/tmp/uaa-store.json -v system_domain=`hostname --fqdn`
 
 pushd "$GOPATH/src/acceptance_tests"
    ginkgo -v -keepGoing -randomizeAllSpecs -randomizeSuites -race -r .

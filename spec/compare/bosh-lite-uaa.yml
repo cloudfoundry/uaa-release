@@ -22,7 +22,7 @@ database:
 spring_profiles: postgresql
 
 logging:
-  config: /var/vcap/jobs/uaa/config/log4j.properties
+  config: /var/vcap/jobs/uaa/config/log4j2.properties
 
 jwt:
   token:

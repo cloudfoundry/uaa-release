@@ -11,7 +11,7 @@ issuer:
   uri: http://test.uaa.url
 spring_profiles: sqlserver
 logging:
-  config: "/var/vcap/jobs/uaa/config/log4j.properties"
+  config: "/var/vcap/jobs/uaa/config/log4j2.properties"
 database:
   url: jdbc:sqlserver://10.244.0.30:1433;databaseName=uaadb;
   username: uaaadmin

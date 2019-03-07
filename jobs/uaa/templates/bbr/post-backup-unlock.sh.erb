@@ -1,5 +1,26 @@
 #!/bin/bash
 
+function give_route_registrar_enough_time() {
+  local max_attempts=180
+  local min_successes=10
+  local uaa_endpoint=<%= p('uaa.url').sub("://uaa.", "://login.") %>
+  local successes=0
+  echo -n "Waiting for $uaa_endpoint to become available"
+  for attempt in $(seq "${max_attempts}"); do
+    local http_code=$(curl -k -w "%{http_code}" -o /dev/null -s "${uaa_endpoint}")
+    if [[ "${http_code}" == "200" ]]; then
+      let successes="${successes}"+1
+    else
+      let successes=0
+    fi
+    if [[ "${successes}" -ge "${min_successes}" ]]; then
+      break
+    fi
+    echo -n "."
+    sleep 1
+  done
+  echo
+}
 
 <% if p('release_level_backup') %>
 function disable_limited_functionality() {
@@ -9,4 +30,5 @@ function disable_limited_functionality() {
   disable_limited_functionality
   #uaa checks the file system every 5 seconds
   sleep 6
+  give_route_registrar_enough_time
 <% end %>

@@ -4,6 +4,10 @@ require 'bosh/template/evaluation_context'
 require 'spec_helper'
 
 describe 'bosh backup and restore script' do
+  def read_file(relative_path)
+    File.read(File.join(File.dirname(__FILE__), relative_path))
+  end
+
   let(:properties) {
     {
       'links' => {
@@ -26,7 +30,8 @@ describe 'bosh backup and restore script' do
           'uaa' => {
               'limitedFunctionality' => {
                   'statusFile' => '/var/vcap/data/uaa/bbr_limited_mode.lock'
-              }
+              },
+              'url' => 'http://uaa.test.uaa.url'
           },
           'uaadb' => {
               'address' => '127.0.0.2',
@@ -68,9 +73,7 @@ describe 'bosh backup and restore script' do
       let(:script) { "#{__dir__}/../jobs/uaa/templates/bbr/post-restore-unlock.sh.erb" }
 
       it 'it has all the expected lines' do
-        expect(generated_script).to include('/var/vcap/bosh/bin/monit start uaa')
-        expect(generated_script).to include('/var/vcap/jobs/uaa/bin/post-start')
-        expect(generated_script).to include('sleep 40')
+        expect(generated_script).to eq(read_file('compare/post-restore-unlock.sh'))
       end
     end
 

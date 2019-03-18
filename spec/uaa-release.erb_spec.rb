@@ -117,7 +117,7 @@ describe 'uaa-release erb generation' do
     context 'for a bosh-lite.yml' do
       let(:input) { 'spec/input/bosh-lite.yml' }
       let(:output_uaa) { 'spec/compare/bosh-lite-uaa.yml' }
-      let(:output_log4j) { 'spec/compare/default-log4j.properties' }
+      let(:output_log4j2) { 'spec/compare/default-log4j2.properties' }
 
       context 'when uaa.yml.erb is provided' do
         let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
@@ -127,12 +127,12 @@ describe 'uaa-release erb generation' do
         end
       end
 
-      context 'when log4j.properties.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/config/log4j.properties.erb' }
+      context 'when log4j2.properties.erb is provided' do
+        let(:erb_template) { '../jobs/uaa/templates/config/log4j2.properties.erb' }
         let(:as_yml) { false }
 
         it 'it matches' do
-          str_compare output_log4j, parsed_yaml.to_s
+          str_compare output_log4j2, parsed_yaml.to_s
         end
       end
     end
@@ -140,7 +140,7 @@ describe 'uaa-release erb generation' do
     context 'for a all-properties-set.yml' do
       let(:input) { 'spec/input/all-properties-set.yml' }
       let(:output_uaa) { 'spec/compare/all-properties-set-uaa.yml' }
-      let(:output_log4j) { 'spec/compare/all-properties-set-log4j.properties' }
+      let(:output_log4j2) { 'spec/compare/all-properties-set-log4j2.properties' }
 
       context 'when uaa.yml.erb is provided' do
         let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
@@ -150,12 +150,12 @@ describe 'uaa-release erb generation' do
         end
       end
 
-      context 'when log4j.properties.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/config/log4j.properties.erb' }
+      context 'when log4j2.properties.erb is provided' do
+        let(:erb_template) { '../jobs/uaa/templates/config/log4j2.properties.erb' }
         let(:as_yml) { false }
 
         it 'it matches' do
-          str_compare output_log4j, parsed_yaml.to_s
+          str_compare output_log4j2, parsed_yaml.to_s
         end
       end
     end
@@ -163,7 +163,7 @@ describe 'uaa-release erb generation' do
     context 'for test-defaults.yml' do
       let(:input) { 'spec/input/test-defaults.yml' }
       let(:output_uaa) { 'spec/compare/test-defaults-uaa.yml' }
-      let(:output_log4j) { 'spec/compare/default-log4j.properties' }
+      let(:output_log4j2) { 'spec/compare/default-log4j2.properties' }
 
       context 'when uaa.yml.erb is provided' do
         let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
@@ -173,12 +173,12 @@ describe 'uaa-release erb generation' do
         end
       end
 
-      context 'when log4j.properties.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/config/log4j.properties.erb' }
+      context 'when log4j2.properties.erb is provided' do
+        let(:erb_template) { '../jobs/uaa/templates/config/log4j2.properties.erb' }
         let(:as_yml) { false }
 
         it 'it matches' do
-          str_compare output_log4j, parsed_yaml.to_s
+          str_compare output_log4j2, parsed_yaml.to_s
         end
       end
     end

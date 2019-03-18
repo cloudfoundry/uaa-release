@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
-	"github.com/pavel-v-chernykh/keystore-go"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -150,9 +149,15 @@ var _ = Describe("UaaRelease", func() {
 		deployUAA(optFiles...)
 
 		logPath := scpUAALog()
+		auditLogPath := scpUaaAuditLog()
 
 		tailLogFileCmd := exec.Command("tail", "-n1", logPath)
 		session, err := gexec.Start(tailLogFileCmd, GinkgoWriter, GinkgoWriter)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(string(session.Wait().Out.Contents())).To(MatchRegexp(uaaLogFormat))
+
+		tailAuditLogFileCmd := exec.Command("tail", "-n1", auditLogPath)
+		session, err = gexec.Start(tailAuditLogFileCmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(string(session.Wait().Out.Contents())).To(MatchRegexp(uaaLogFormat))
 	},
@@ -303,6 +308,15 @@ func scpTruststore() string {
 func scpUAALog() string {
 	localUAALogPath := filepath.Join(os.TempDir(), "uaa.log")
 	cmd := exec.Command(boshBinaryPath, "scp", "uaa:/var/vcap/sys/log/uaa/uaa.log", localUAALogPath)
+	session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+	Expect(err).NotTo(HaveOccurred())
+	Eventually(session, 10*time.Second).Should(gexec.Exit(0))
+	return localUAALogPath
+}
+
+func scpUaaAuditLog() string {
+	localUAALogPath := filepath.Join(os.TempDir(), "uaa_events.log")
+	cmd := exec.Command(boshBinaryPath, "scp", "uaa:/var/vcap/sys/log/uaa/uaa_events.log", localUAALogPath)
 	session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 	Expect(err).NotTo(HaveOccurred())
 	Eventually(session, 10*time.Second).Should(gexec.Exit(0))

@@ -18,9 +18,7 @@ templates:
   config/uaa.yml.erb: config/uaa.yml
   config/bpm.yml.erb: config/bpm.yml
   config/newrelic.yml.erb: config/newrelic.yml
-  config/varz.yml: config/varz.yml
   config/log4j2.properties.erb: config/log4j2.properties
-  config/varz.log4j.properties: config/varz.log4j.properties
   config/ldap.crt.erb: config/ldap.crt
   config/messages.properties.erb: config/messages.properties
   config/uaa.crt.erb: config/uaa.crt

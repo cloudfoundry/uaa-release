@@ -23,30 +23,50 @@ describe 'tomcat.server.xml' do
     expect(compiled_xml.gsub(/\s/, '')).to eq(read_file('compare/all-properties-tomcat-server.xml').gsub(/\s/, ''))
   end
 
-  context 'when http port and https port are disabled' do
+  let (:connectors) do
+    config = Nokogiri::XML.parse(compiled_xml)
+    config.xpath('//Connector')
+  end
+
+  let(:http_connector) do
+    connectors[0]
+  end
+
+  it 'has two connector elements' do
+    expect(connectors.length).to eq(2)
+  end
+
+  context 'when http port set to -1' do
     before(:each) do
       manifest['properties']['uaa']['port'] = -1
-      manifest['properties']['uaa']['ssl']['port'] = -1
-
     end
 
-    it 'returns an error' do
-      expect {
-        compiled_xml
-      }.to raise_error(ArgumentError, /You have to set either an http port or an https port./)
+    it 'has two connector elements' do
+      expect(connectors.length).to eq(2)
+    end
+
+    it 'has an http connector with http port value of 8080' do
+      expect(http_connector["port"]).to eq("8080")
     end
   end
 
-  context 'when http port is invalid' do
+  context 'when localhost_http_port is set' do
     before(:each) do
-      manifest['properties']['uaa']['port'] = -2
-
+      manifest['properties']['uaa']['localhost_http_port'] = 12345
     end
 
-    it 'returns an error' do
-      expect {
-        compiled_xml
-      }.to raise_error(ArgumentError, /An invalid http port has been specified./)
+    it 'has an http connector with http port value of 12345' do
+      expect(http_connector["port"]).to eq("12345")
+    end
+  end
+
+  context 'when https port is disabled' do
+    before(:each) do
+      manifest['properties']['uaa']['ssl']['port'] = -1
+    end
+
+    it 'has two connector elements' do
+      expect(connectors.length).to eq(2)
     end
   end
 

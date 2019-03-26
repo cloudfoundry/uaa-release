@@ -1,41 +1,43 @@
 #!/bin/bash
 
-echo "uaa-post-start - starting at `date`"
+echo "uaa-post-start - starting at $(date)"
 
 TS_DIR=/var/vcap/data/uaa/post-start
-mkdir -p $TS_DIR
-WHEN_FINISH=$TS_DIR/when-finish.timestamp
-WHEN_NOW=$TS_DIR/when-now.timestamp
+mkdir -p ${TS_DIR}
+WHEN_FINISH=${TS_DIR}/when-finish.timestamp
+WHEN_NOW=${TS_DIR}/when-now.timestamp
 
 delete_ts_files() {
-  rm -f $WHEN_FINISH
-  rm -f $WHEN_NOW
+  rm -f "${WHEN_FINISH}"
+  rm -f "${WHEN_NOW}"
   echo "uaa-post-start - cleaned up timestamp files"
 }
 
-touch -d "10 minutes" $WHEN_FINISH
-touch $WHEN_NOW
-EXPIRATION=`ls -la --full-time $WHEN_FINISH |awk '{print $6 " " $7}'`
-echo "uaa-post-start - performing post start healthcheck until $EXPIRATION"
+touch -d "10 minutes" "${WHEN_FINISH}" # this creates a file with a timestamp 10 minutes in the future
+touch "${WHEN_NOW}"
+EXPIRATION=$(ls -la --full-time "${WHEN_FINISH}" | awk '{print $6 " " $7}')
+echo "uaa-post-start - performing post start healthcheck until ${EXPIRATION}"
 
-while [ $WHEN_NOW -ot $WHEN_FINISH ]; do
+# This is a timeout:
+# "-ot" is "older than"
+while [ "${WHEN_NOW}" -ot "${WHEN_FINISH}" ]; do
     /var/vcap/jobs/uaa/bin/health_check
     check=$?
     if [ "$check" -eq "0" ]
     then
-        echo "uaa-post-start - post start health check successful at `date`"
+        echo "uaa-post-start - post start health check successful at $(date)"
         delete_ts_files
         exit 0
     elif  [ "$check" == "2" ]
     then
-        echo "uaa-post-start - post start failed - server failed to start successfully at `date`"
+        echo "uaa-post-start - post start failed - server failed to start successfully at $(date)"
         echo "check uaa.log to find out why the server failed to start"
         delete_ts_files
         exit 1
     fi
     sleep 1
-    touch $WHEN_NOW
+    touch "${WHEN_NOW}"
 done
-echo "uaa-post-start - post start health check failed - timeout at `date`"
+echo "uaa-post-start - post start health check failed - timeout at $(date)"
 delete_ts_files
 exit 1

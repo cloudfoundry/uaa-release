@@ -200,7 +200,6 @@ scim:
       - internal_group3
       - internal_group4
       - internal_group5
-require_https: false
 ldap:
   override: false
   ldapdebug: Ldap configured through UAA

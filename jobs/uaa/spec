@@ -124,8 +124,8 @@ properties:
   uaa.catalina_opts:
     description: "The options used to configure Tomcat"
     default: -Xmx768m -XX:MaxMetaspaceSize=256m
-  uaa.port:
-    description: "Port that uaa will accept connections on"
+  uaa.localhost_http_port:
+    description: "HTTP is available on this port for the /healthz endpoint only."
     default: 8080
   uaa.shutdown.sleep:
     description: |
@@ -219,9 +219,6 @@ properties:
   login.protocol:
     description: "Scheme to use for HTTP communication (http/https)"
     default: https
-  uaa.require_https:
-    description: "Request came in on a secure connection. Expect the load balancer/proxy to set the proper headers (x-forwarded-for, x-forwarded-proto)"
-    default: true
   uaa.ssl.port:
     description: If this property is set, Tomcat will listen to this port and expect https traffic. If set to -1, Tomcat will not listen for https traffic.
     default: 8443

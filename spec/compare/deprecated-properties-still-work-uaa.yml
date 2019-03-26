@@ -115,7 +115,6 @@ scim:
   userids_enabled: true
   user:
     override: true
-require_https: true
 assetBaseUrl: "/resources/oss"
 logout:
   redirect:

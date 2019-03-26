@@ -33,30 +33,20 @@
     %>
 
     <%
-      if p("uaa.port") == -1 && p("uaa.ssl.port") == -1
-        raise ArgumentError, 'You have to set either an http port or an https port.'
-      end
-
-      if p("uaa.port") < -1
-        raise ArgumentError, 'An invalid http port has been specified.'
-      end
-
-      if p("uaa.ssl.port") < -1
+       if p("uaa.ssl.port") < -1
         raise ArgumentError, 'An invalid https port has been specified.'
-      end
+       end
     %>
 
-    <% if p("uaa.port") != -1 %>
     <Connector class="org.apache.coyote.http11.Http11NioProtocol"
                protocol="HTTP/1.1"
                connectionTimeout="20000"
-               port="<%= p('uaa.port') %>"
+               address="127.0.0.1"
+               port="<%= p('uaa.localhost_http_port') %>"
                bindOnInit="true"
                maxHttpHeaderSize="14336"
     />
-    <% end %>
 
-    <% if p("uaa.ssl.port") != -1  %>
     <Connector class="org.apache.coyote.http11.Http11NioProtocol" protocol="HTTP/1.1" connectionTimeout="20000"
                scheme="https"
                port="<%= p('uaa.ssl.port') %>"
@@ -73,7 +63,6 @@
                bindOnInit="false"
                maxHttpHeaderSize="14336"
     />
-    <% end %>
 
     <Engine name="Catalina" defaultHost="localhost">
 

@@ -1,12 +1,6 @@
 <%
-    active_uaa_port='-1'
-    if p('uaa.port') != -1
-        active_uaa_port = p('uaa.port')
-    elsif p('uaa.ssl.port') != -1
-        active_uaa_port = p('uaa.ssl.port')
-    end
+    active_uaa_port = p('uaa.localhost_http_port')
 %>
-
 
 <% if p("bpm.enabled") %>
 check process uaa

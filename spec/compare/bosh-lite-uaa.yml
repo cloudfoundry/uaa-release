@@ -207,8 +207,6 @@ zones:
     hostnames:
       - uaa.service.cf.internal
 
-require_https: false
-
 uaa:
   url: https://uaa.bosh-lite.com
   limitedFunctionality:

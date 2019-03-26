@@ -198,33 +198,37 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  context 'health_check' do
+    let(:input) {'spec/input/bosh-lite.yml'}
+    let!(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, false)}
+    let(:output_health_check) {'spec/compare/health-check'}
+    let(:erb_template) {'../jobs/uaa/templates/bin/health_check.erb'}
+
+    before(:each) do
+      generated_cf_manifest['properties']['uaa']['ssl']['port'] = 9090
+    end
+
+    it 'it correctly generates dns health check with https port' do
+      str_compare output_health_check, parsed_yaml.to_s
+    end
+  end
+
   context 'dns_health_check' do
     let(:input) {'spec/input/bosh-lite.yml'}
     let!(:generated_cf_manifest) {generate_cf_manifest(input)}
     let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, false)}
     let(:output_dns_health_check) {'spec/compare/dns-health-check'}
 
-    context 'for a bosh-lite.yml' do
-      let(:as_yml) {false}
-      let(:erb_template) {'../jobs/uaa/templates/bin/dns_health_check.erb'}
-      context 'when dns-health-check has a http port' do
-        it 'it uses the http port' do
-          str_compare output_dns_health_check, parsed_yaml.to_s
-        end
-      end
+    let(:erb_template) {'../jobs/uaa/templates/bin/dns_health_check.erb'}
+    let(:output_dns_health_check) {'spec/compare/dns-health-check-https'}
 
-      context 'when http port is -1 and https is enabled' do
-        let(:output_dns_health_check) {'spec/compare/dns-health-check-https'}
+    before(:each) do
+      generated_cf_manifest['properties']['uaa']['ssl']['port'] = 9090
+    end
 
-        before(:each) do
-          generated_cf_manifest['properties']['uaa']['port'] = -1
-          generated_cf_manifest['properties']['uaa']['ssl']['port'] = 9090
-        end
-
-        it 'it correctly generates dns health check with https port' do
-          str_compare output_dns_health_check, parsed_yaml.to_s
-        end
-      end
+    it 'it correctly generates dns health check with https port' do
+      str_compare output_dns_health_check, parsed_yaml.to_s
     end
   end
 

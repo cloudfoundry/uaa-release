@@ -189,7 +189,6 @@ properties:
         spULZVNRxq7veq/fzwIDAQAB
         -----END PUBLIC KEY-----
     port: 8080
-    require_https: false
     scim:
       userids_enabled: true
       users:

@@ -10,6 +10,7 @@
 .final_builds/packages/**/*.tgz
 .gitreview
 .idea
+.ruby-version
 blobs
 config/dev.yml
 config/private.yml

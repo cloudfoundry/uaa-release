@@ -214,24 +214,6 @@ describe 'uaa-release erb generation' do
     end
   end
 
-  context 'dns_health_check' do
-    let(:input) {'spec/input/bosh-lite.yml'}
-    let!(:generated_cf_manifest) {generate_cf_manifest(input)}
-    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, false)}
-    let(:output_dns_health_check) {'spec/compare/dns-health-check'}
-
-    let(:erb_template) {'../jobs/uaa/templates/bin/dns_health_check.erb'}
-    let(:output_dns_health_check) {'spec/compare/dns-health-check-https'}
-
-    before(:each) do
-      generated_cf_manifest['properties']['uaa']['ssl']['port'] = 9090
-    end
-
-    it 'it correctly generates dns health check with https port' do
-      str_compare output_dns_health_check, parsed_yaml.to_s
-    end
-  end
-
   context 'when invalid properties are specified' do
     let!(:generated_cf_manifest) {generate_cf_manifest(input)}
     let(:as_yml) {true}

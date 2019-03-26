@@ -201,7 +201,6 @@ var portTests = func(bpmOpsFile string) {
 			It(fmt.Sprintf("upgrading to https only should be healthy on the https port %s", bpmOpsFile), func() {
 				deployUAA(bpmOpsFile, "./opsfiles/enable-https.yml", "./opsfiles/disable-http.yml")
 				assertUAAIsHealthy("/var/vcap/jobs/uaa/bin/health_check")
-				assertUAAIsHealthy("/var/vcap/jobs/uaa/bin/dns_health_check")
 			})
 		})
 
@@ -212,7 +211,6 @@ var portTests = func(bpmOpsFile string) {
 
 			It("health_check should check the health on the correct port", func() {
 				assertUAAIsHealthy("/var/vcap/jobs/uaa/bin/health_check")
-				assertUAAIsHealthy("/var/vcap/jobs/uaa/bin/dns_health_check")
 			})
 		})
 
@@ -223,7 +221,6 @@ var portTests = func(bpmOpsFile string) {
 
 			It("health_check should check the health on the correct port", func() {
 				assertUAAIsHealthy("/var/vcap/jobs/uaa/bin/health_check")
-				assertUAAIsHealthy("/var/vcap/jobs/uaa/bin/dns_health_check")
 			})
 		})
 	})

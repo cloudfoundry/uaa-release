@@ -219,7 +219,7 @@ properties:
     description: "Scheme to use for HTTP communication (http/https)"
     default: https
   uaa.ssl.port:
-    description: If this property is set, Tomcat will listen to this port and expect https traffic. If set to -1, Tomcat will not listen for https traffic.
+    description: Required. The port on which UAA will accept HTTPS traffic.
     default: 8443
   uaa.ssl.protocol_header:
     description: The header to look for to determine if ssl termination was performed by a front end load balancer.

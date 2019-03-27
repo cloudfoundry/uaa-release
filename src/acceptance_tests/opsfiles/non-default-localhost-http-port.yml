@@ -1,0 +1,4 @@
+# TODO: This property no longer exists
+- type: replace
+  path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaa/localhost_http_port?
+  value: 9000

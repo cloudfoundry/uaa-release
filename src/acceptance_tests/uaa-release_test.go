@@ -193,34 +193,36 @@ var portTests = func(bpmOpsFile string) {
 			deployUAA(opsFiles...)
 		})
 
-		Context(fmt.Sprintf("when deploying a http only uaa %s", bpmOpsFile), func() {
+		Context("with custom http and https port", func() {
 			BeforeEach(func() {
-				opsFiles = append(opsFiles, "./opsfiles/enable-http.yml", "./opsfiles/disable-https.yml")
-			})
-
-			It(fmt.Sprintf("upgrading to https only should be healthy on the https port %s", bpmOpsFile), func() {
-				deployUAA(bpmOpsFile, "./opsfiles/enable-https.yml", "./opsfiles/disable-http.yml")
-				assertUAAIsHealthy("/var/vcap/jobs/uaa/bin/health_check")
-			})
-		})
-
-		Context("with http only on a custom port", func() {
-			BeforeEach(func() {
-				opsFiles = append(opsFiles, "./opsfiles/non-default-uaa-port.yml")
+				opsFiles = append(opsFiles, "./opsfiles/non-default-localhost-http-port.yml", "./opsfiles/non-default-ssl-port.yml")
 			})
 
 			It("health_check should check the health on the correct port", func() {
 				assertUAAIsHealthy("/var/vcap/jobs/uaa/bin/health_check")
-			})
-		})
 
-		Context("with https only", func() {
-			BeforeEach(func() {
-				opsFiles = append(opsFiles, "./opsfiles/enable-ssl.yml")
-			})
+				transCfg := &http.Transport{
+					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+				}
+				client := &http.Client{Transport: transCfg}
 
-			It("health_check should check the health on the correct port", func() {
-				assertUAAIsHealthy("/var/vcap/jobs/uaa/bin/health_check")
+				uaaDomainName := "uaa.localhost"
+				uaaHealthzEndpoint := fmt.Sprintf("https://%s:9443/healthz", uaaDomainName)
+				By(fmt.Sprintf("calling /healthz endpoint %s should return health", uaaHealthzEndpoint), func() {
+					healthzResp, err := client.Get(uaaHealthzEndpoint)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(healthzResp.StatusCode).To(Equal(http.StatusOK))
+					Eventually(gbytes.BufferReader(healthzResp.Body)).Should(gbytes.Say("ok"))
+				})
+
+				uaaHealthzEndpoint = fmt.Sprintf("http://%s:9443/healthz", uaaDomainName)
+				By(fmt.Sprintf("calling /healthz endpoint %s should fail", uaaHealthzEndpoint), func() {
+					healthzResp, err := client.Get(uaaHealthzEndpoint)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(healthzResp.StatusCode).To(Equal(http.StatusBadRequest))
+					Eventually(gbytes.BufferReader(healthzResp.Body)).Should(gbytes.Say(`Bad Request
+					This combination of host and port requires TLS.`))
+				})
 			})
 		})
 	})

@@ -33,8 +33,8 @@
     %>
 
     <%
-       if p("uaa.ssl.port") < -1
-        raise ArgumentError, 'An invalid https port has been specified.'
+       if p("uaa.ssl.port") < 1024
+        raise ArgumentError, 'Invalid value for uaa.ssl.port, please specify a valid port number [1024-65535]'
        end
     %>
 

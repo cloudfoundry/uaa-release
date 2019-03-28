@@ -8,16 +8,16 @@ describe 'tomcat.server.xml' do
   def read_file(relative_path)
     File.read(File.join(File.dirname(__FILE__), relative_path))
   end
-  
+
   def compile_erb(erb_template_location, manifest)
     erb_content = read_file(erb_template_location)
     binding = Bosh::Template::EvaluationContext.new(manifest, nil).get_binding
     ERB.new(erb_content).result(binding)
   end
 
-  let(:compiled_xml) { compile_erb(template, manifest) }
-  let(:template) { '../jobs/uaa/templates/config/tomcat/tomcat.server.xml.erb' }
-  let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
+  let(:compiled_xml) {compile_erb(template, manifest)}
+  let(:template) {'../jobs/uaa/templates/config/tomcat/tomcat.server.xml.erb'}
+  let(:manifest) {generate_cf_manifest('spec/input/all-properties-set.yml')}
 
   it 'matches the expected result' do
     expect(compiled_xml.gsub(/\s/, '')).to eq(read_file('compare/all-properties-tomcat-server.xml').gsub(/\s/, ''))
@@ -36,20 +36,6 @@ describe 'tomcat.server.xml' do
     expect(connectors.length).to eq(2)
   end
 
-  context 'when http port set to -1' do
-    before(:each) do
-      manifest['properties']['uaa']['port'] = -1
-    end
-
-    it 'has two connector elements' do
-      expect(connectors.length).to eq(2)
-    end
-
-    it 'has an http connector with http port value of 8080' do
-      expect(http_connector["port"]).to eq("8080")
-    end
-  end
-
   context 'when localhost_http_port is set' do
     before(:each) do
       manifest['properties']['uaa']['localhost_http_port'] = 12345
@@ -60,26 +46,16 @@ describe 'tomcat.server.xml' do
     end
   end
 
-  context 'when https port is disabled' do
-    before(:each) do
-      manifest['properties']['uaa']['ssl']['port'] = -1
-    end
-
-    it 'has two connector elements' do
-      expect(connectors.length).to eq(2)
-    end
-  end
-
   context 'when https port is invalid' do
     before(:each) do
-      manifest['properties']['uaa']['ssl']['port'] = -2
+      manifest['properties']['uaa']['ssl']['port'] = -1
 
     end
 
     it 'returns an error' do
       expect {
         compiled_xml
-      }.to raise_error(ArgumentError, /An invalid https port has been specified./)
+      }.to raise_error(ArgumentError, 'Invalid value for uaa.ssl.port, please specify a valid port number [1024-65535]')
     end
   end
 
@@ -133,7 +109,7 @@ describe 'tomcat.server.xml' do
         manifest['properties']['uaa']['proxy']['servers'] = []
       end
 
-      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml', links) }
+      let(:manifest) {generate_cf_manifest('spec/input/all-properties-set.yml', links)}
 
       context 'when a bosh-link is available' do
         let(:links) {{

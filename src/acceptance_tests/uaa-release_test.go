@@ -224,8 +224,7 @@ var portTests = func(bpmOpsFile string) {
 					healthzResp, err := client.Get(uaaHealthzEndpoint)
 					Expect(err).NotTo(HaveOccurred())
 					Expect(healthzResp.StatusCode).To(Equal(http.StatusBadRequest))
-					Eventually(gbytes.BufferReader(healthzResp.Body)).Should(gbytes.Say(`Bad Request
-					This combination of host and port requires TLS.`))
+					Eventually(gbytes.BufferReader(healthzResp.Body)).Should(gbytes.Say(`Bad Request(\s)*This combination of host and port requires TLS.`))
 				})
 			})
 		})

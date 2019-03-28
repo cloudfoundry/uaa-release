@@ -207,6 +207,10 @@ var portTests = func(bpmOpsFile string) {
 				client := &http.Client{Transport: transCfg}
 
 				uaaDomainName := "uaa.localhost"
+				By("setting a local domain name: uaa.localhost to point to localhost", func() {
+					addLocalDNS(uaaDomainName)
+				})
+
 				uaaHealthzEndpoint := fmt.Sprintf("https://%s:9443/healthz", uaaDomainName)
 				By(fmt.Sprintf("calling /healthz endpoint %s should return health", uaaHealthzEndpoint), func() {
 					healthzResp, err := client.Get(uaaHealthzEndpoint)

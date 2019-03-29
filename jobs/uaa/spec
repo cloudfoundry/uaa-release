@@ -124,7 +124,11 @@ properties:
     description: "The options used to configure Tomcat"
     default: -Xmx768m -XX:MaxMetaspaceSize=256m
   uaa.localhost_http_port:
-    description: "HTTP is available on this port for the /healthz endpoint only."
+    description: |
+      The port on which UAA will accept HTTP traffic from the localhost machine only.
+      Only used by monit to call the /healthz endpoint.
+      Either use default or set to another value in range [1024-65535].
+      This port must not conflict with other ports configured on this VM, such as uaa.ssl.port.
     default: 8080
   uaa.shutdown.sleep:
     description: |
@@ -219,7 +223,10 @@ properties:
     description: "Scheme to use for HTTP communication (http/https)"
     default: https
   uaa.ssl.port:
-    description: Required. The port on which UAA will accept HTTPS traffic.
+    description: |
+      The port on which UAA will accept HTTPS traffic.
+      Either use default or set to another value in range [1024-65535].
+      This port must not conflict with other ports configured on this VM, such as uaa.localhost_http_port.
     default: 8443
   uaa.ssl.protocol_header:
     description: The header to look for to determine if ssl termination was performed by a front end load balancer.

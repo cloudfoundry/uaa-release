@@ -11,14 +11,14 @@
                protocol="HTTP/1.1"
                connectionTimeout="20000"
                address="127.0.0.1"
-               port="8080"
+               port="55555"
                bindOnInit="true"
                maxHttpHeaderSize="14336"
     />
 
     <Connector class="org.apache.coyote.http11.Http11NioProtocol" protocol="HTTP/1.1" connectionTimeout="20000"
                scheme="https"
-               port="8843"
+               port="33333"
                SSLEnabled="true"
                sslEnabledProtocols="TLSv1.2"
                ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"

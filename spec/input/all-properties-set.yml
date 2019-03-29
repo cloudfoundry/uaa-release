@@ -389,6 +389,7 @@ properties:
         lockoutAfterFailures: 5
         lockoutPeriodSeconds: 300
     catalina_opts: -Xmx1g -Xms512m
+    localhost_http_port: 55555
     limitedFunctionality:
       statusFile: /var/vcap/data/uaa/test_bbr_limited_mode.lock
       whitelist:
@@ -566,7 +567,6 @@ properties:
         requireLowerCaseCharacter: 0
         requireSpecialCharacter: 0
         requireUpperCaseCharacter: 0
-    port: 8888
     proxy:
       servers:
       - 127.1.0.1
@@ -621,7 +621,7 @@ properties:
         path: /
         secure: true
     ssl:
-      port: 8843
+      port: 33333
       procotol_header: x-custom-forwarded-proto
     sslCertificate: |
       -----BEGIN CERTIFICATE-----

@@ -33,8 +33,20 @@
     %>
 
     <%
-       if p("uaa.ssl.port") < 1024
-        raise ArgumentError, 'Invalid value for uaa.ssl.port, please specify a valid port number [1024-65535]'
+       if p("uaa.localhost_http_port") < 1024 || p("uaa.localhost_http_port") > 65535
+        raise ArgumentError, "Invalid value (#{p("uaa.localhost_http_port")}) specified for uaa.localhost_http_port, please specify a valid port number in this range [1024-65535]"
+       end
+    %>
+
+    <%
+       if p("uaa.ssl.port") < 1024 || p("uaa.ssl.port") > 65535
+        raise ArgumentError, "Invalid value (#{p("uaa.ssl.port")}) specified for uaa.ssl.port, please specify a valid port number in this range [1024-65535]"
+       end
+    %>
+
+    <%
+       if p("uaa.ssl.port") == p("uaa.localhost_http_port")
+        raise ArgumentError, 'Please specify different values for uaa.ssl.port and uaa.localhost_http_port'
        end
     %>
 

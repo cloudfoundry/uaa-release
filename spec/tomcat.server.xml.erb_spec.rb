@@ -23,7 +23,7 @@ describe 'tomcat.server.xml' do
     expect(compiled_xml.gsub(/\s/, '')).to eq(read_file('compare/all-properties-tomcat-server.xml').gsub(/\s/, ''))
   end
 
-  let (:connectors) do
+  let(:connectors) do
     config = Nokogiri::XML.parse(compiled_xml)
     config.xpath('//Connector')
   end
@@ -32,30 +32,102 @@ describe 'tomcat.server.xml' do
     connectors[0]
   end
 
+  let(:https_connector) do
+    connectors[1]
+  end
+
   it 'has two connector elements' do
     expect(connectors.length).to eq(2)
   end
 
-  context 'when localhost_http_port is set' do
+  context 'when uaa.localhost_http_port is valid' do
     before(:each) do
-      manifest['properties']['uaa']['localhost_http_port'] = 12345
+      manifest['properties']['uaa']['localhost_http_port'] = 2000
     end
 
-    it 'has an http connector with http port value of 12345' do
-      expect(http_connector["port"]).to eq("12345")
+    it 'has an http connector with value of uaa.localhost_http_port' do
+      expect(http_connector["port"]).to eq("2000")
     end
   end
 
-  context 'when https port is invalid' do
+  context 'when uaa.localhost_http_port is invalid (-1)' do
     before(:each) do
-      manifest['properties']['uaa']['ssl']['port'] = -1
-
+      manifest['properties']['uaa']['localhost_http_port'] = -1
     end
 
     it 'returns an error' do
-      expect {
-        compiled_xml
-      }.to raise_error(ArgumentError, 'Invalid value for uaa.ssl.port, please specify a valid port number [1024-65535]')
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (-1) specified for uaa.localhost_http_port, please specify a valid port number in this range [1024-65535]')
+    end
+  end
+
+  context 'when uaa.localhost_http_port is invalid (1023)' do
+    before(:each) do
+      manifest['properties']['uaa']['localhost_http_port'] = 1023
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (1023) specified for uaa.localhost_http_port, please specify a valid port number in this range [1024-65535]')
+    end
+  end
+
+  context 'when uaa.localhost_http_port is invalid (65536)' do
+    before(:each) do
+      manifest['properties']['uaa']['localhost_http_port'] = 65536
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (65536) specified for uaa.localhost_http_port, please specify a valid port number in this range [1024-65535]')
+    end
+  end
+
+  context 'when uaa.ssl.port is valid' do
+    before(:each) do
+      manifest['properties']['uaa']['ssl']['port'] = 3333
+    end
+
+    it 'has an http connector with value of uaa.localhost_http_port' do
+      expect(https_connector["port"]).to eq("3333")
+    end
+  end
+
+  context 'when uaa.ssl.port is invalid (-1)' do
+    before(:each) do
+      manifest['properties']['uaa']['ssl']['port'] = -1
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (-1) specified for uaa.ssl.port, please specify a valid port number in this range [1024-65535]')
+    end
+  end
+
+  context 'when uaa.ssl.port is invalid (1023)' do
+    before(:each) do
+      manifest['properties']['uaa']['ssl']['port'] = 1023
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (1023) specified for uaa.ssl.port, please specify a valid port number in this range [1024-65535]')
+    end
+  end
+
+  context 'when uaa.ssl.port is invalid (65536)' do
+    before(:each) do
+      manifest['properties']['uaa']['ssl']['port'] = 65536
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (65536) specified for uaa.ssl.port, please specify a valid port number in this range [1024-65535]')
+    end
+  end
+
+  context 'when uaa.localhost_http_port is the same as uaa.ssl.port' do
+    before(:each) do
+      manifest['properties']['uaa']['ssl']['port'] = 9090
+      manifest['properties']['uaa']['localhost_http_port'] = 9090
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Please specify different values for uaa.ssl.port and uaa.localhost_http_port')
     end
   end
 

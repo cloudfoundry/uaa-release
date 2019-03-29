@@ -85,8 +85,9 @@ func setBoshEnvironmentVariables() {
 
 	info, err := director.Info()
 	Expect(err).NotTo(HaveOccurred())
-	Expect(info.Name).To(Equal("docker"))
-	Expect(info.User).To(Equal("admin"))
+	fmt.Printf("%#v\n", info)
+	Expect(info.Name).To(Equal("bosh-lite"))
+	Expect(info.User).To(Equal(""))
 }
 
 func ensureUAAHasBeenDeployedAndRunning() {

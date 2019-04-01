@@ -91,7 +91,7 @@ properties:
       - name: uaa
         tag: uaa
   uaadb.db_scheme:
-    description: "Database scheme for UAA DB"
+    description: "Database scheme for UAA DB. Supported schemes: postgres, mysql"
   uaadb.port:
     description: "The UAA database Port"
   uaadb.tls_enabled:
@@ -107,7 +107,7 @@ properties:
       The default is null, the database driver will pick the protocol to use.
       The values can be comma separated.
       This option only takes into effect when using `mysql` as `uaadb.db_scheme`.
-      PostgreSQL and SQLServer default to TLSv1.2 through the JDBC driver.
+      PostgreSQL defaults to TLSv1.2 through the JDBC driver.
     example: TLSv1.2,TLSv1.1
   uaadb.roles:
     description: |

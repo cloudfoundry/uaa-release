@@ -11,7 +11,7 @@ properties:
     - citext: true
       name: uaa
       tag: uaa
-    db_scheme: sqlserver
+    db_scheme: placeholderText
     port: 1433
     roles:
     - name: root

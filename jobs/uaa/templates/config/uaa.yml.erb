@@ -222,10 +222,6 @@
   params['delete'] = p('uaa.delete') if p_opt('uaa.delete')
 
 
-  if uaa_db_scheme == 'sqlserver' then
-    params['database']['url'] = "jdbc:#{uaa_db_scheme}://#{uaa_db_address}:#{p('uaadb.port')};databaseName=#{uaa_db['name']};"
-  end
-
   if uaa_db_tls_enabled
     if uaa_db_scheme == 'postgresql'
       params['database']['url'] += '?ssl=true'
@@ -238,8 +234,6 @@
       if_p('uaadb.tls_protocols') do |dbTlsProtocol|
         params['database']['url'] += '&enabledSslProtocolSuites=' + dbTlsProtocol
       end
-    elsif uaa_db_scheme == 'sqlserver'
-      params['database']['url'] += 'encrypt=true;' + "trustServerCertificate=#{p('uaadb.skip_ssl_validation')};"
     end
   end
 

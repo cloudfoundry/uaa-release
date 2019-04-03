@@ -64,6 +64,7 @@ instance_groups:
         sslPrivateKey: "((uaa_ssl.private_key))"
         url: https://uaa.((system_domain))
       uaadb:
+        tls: disabled
         address: 127.0.0.1
         databases:
         - name: uaadb

@@ -94,19 +94,22 @@ properties:
     description: "Database scheme for UAA DB. Supported schemes: postgres, mysql"
   uaadb.port:
     description: "The UAA database Port"
-  uaadb.tls_enabled:
-    description: "Use TLS connection for UAA database"
-    default: false
-  uaadb.skip_ssl_validation:
-    description: "Skip TLS verification for database server certificate"
-    default: false
+  uaadb.tls:
+    description: |
+      Use TLS connection for UAA database.
+      Valid options are:
+      enabled (use TLS with full certificate validation),
+      enabled_skip_hostname_validation (use TLS but skip validation of common and alt names in the host certificate),
+      enabled_skip_all_validation (use TLS but do not validate anything about the host certificate),
+      disabled (do not use TLS)
+    default: enabled
   uaadb.tls_protocols:
     description: |
-      if `tls_enabled` is set to true, this property can be used to narrow down the protocols used
+      If using TLS, this property can be used to narrow down the protocols used
       by the UAA database driver.
+      This option only takes effect when using `mysql` as `uaadb.db_scheme`.
       The default is null, the database driver will pick the protocol to use.
       The values can be comma separated.
-      This option only takes into effect when using `mysql` as `uaadb.db_scheme`.
       PostgreSQL defaults to TLSv1.2 through the JDBC driver.
     example: TLSv1.2,TLSv1.1
   uaadb.roles:

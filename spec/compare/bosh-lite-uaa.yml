@@ -8,7 +8,7 @@ encryption:
     passphrase: my-passphrase
 
 database:
-  url: jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true
+  url: jdbc:postgresql://10.244.0.30:5524/uaadb?sslmode=verify-full
   username: uaaadmin
   password: "admin"
   maxactive: 100

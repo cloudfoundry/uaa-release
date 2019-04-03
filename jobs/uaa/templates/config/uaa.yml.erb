@@ -135,8 +135,8 @@
   protocol = p('login.protocol')
   uaa_db_scheme = p('uaadb.db_scheme')
   uaa_db_scheme = uaa_db_scheme == 'postgres' ? 'postgresql' : uaa_db_scheme
+  raise ArgumentError, 'Please select either mysql or postgres for uaadb.db_scheme' unless uaa_db_scheme == 'postgresql' || uaa_db_scheme == 'mysql'
   issuer_uri = p('uaa.issuer', p('uaa.url'))
-  uaa_db_tls_enabled = p('uaadb.tls_enabled')
   uaa_db_address = nil
   if_p('uaadb.address') do |address|
     uaa_db_address = address
@@ -221,19 +221,44 @@
   }
   params['delete'] = p('uaa.delete') if p_opt('uaa.delete')
 
+  unless ['enabled', 'enabled_skip_hostname_validation', 'enabled_skip_all_validation', 'disabled'].include?(p('uaadb.tls'))
+    raise ArgumentError, 'Invalid value for uaadb.tls. Valid options are enabled, enabled_skip_hostname_validation, enabled_skip_all_validation, disabled.'
+  end
 
-  if uaa_db_tls_enabled
-    if uaa_db_scheme == 'postgresql'
-      params['database']['url'] += '?ssl=true'
+  if_p('uaadb.tls_enabled') do
+    raise ArgumentError, 'uaadb.tls_enabled is no longer supported. Please use uaadb.tls instead.'
+  end
+  if_p('uaadb.skip_ssl_validation') do
+    raise ArgumentError, 'uaadb.skip_ssl_validation is no longer supported. Please use uaadb.tls instead.'
+  end
 
-      if_p('uaadb.skip_ssl_validation') do |db_skip_ssl_validation|
-          params['database']['url'] += '&sslfactory=org.postgresql.ssl.NonValidatingFactory' if db_skip_ssl_validation
-      end
-    elsif uaa_db_scheme == 'mysql'
-      params['database']['url'] += '?useSSL=true' +  "&trustServerCertificate=#{p('uaadb.skip_ssl_validation')}"
+  if uaa_db_scheme == 'mysql'
+    params['database']['url'] += case p('uaadb.tls')
+      when 'enabled'
+        '?useSSL=true'
+      when 'enabled_skip_hostname_validation'
+        '?useSSL=true&disableSslHostnameVerification=true'
+      when 'enabled_skip_all_validation'
+        '?useSSL=true&trustServerCertificate=true'
+      when 'disabled'
+        '?useSSL=false'
+    end
+    unless p('uaadb.tls') == 'disabled'
       if_p('uaadb.tls_protocols') do |dbTlsProtocol|
         params['database']['url'] += '&enabledSslProtocolSuites=' + dbTlsProtocol
       end
+    end
+
+  elsif uaa_db_scheme == 'postgresql'
+    params['database']['url'] += case p('uaadb.tls')
+      when 'enabled'
+        '?sslmode=verify-full'
+      when 'enabled_skip_hostname_validation'
+        '?sslmode=verify-ca'
+      when 'enabled_skip_all_validation'
+        '?sslmode=require'
+      when 'disabled'
+        '?sslmode=disable'
     end
   end
 

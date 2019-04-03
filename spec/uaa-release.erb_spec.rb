@@ -76,7 +76,7 @@ describe 'uaa-release erb generation' do
 
       it 'takes precedence over bosh-linked address' do
         expect(parsed_yaml['database']['url']).not_to include('linkedaddress')
-        expect(parsed_yaml['database']['url']).to eq 'jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true'
+        expect(parsed_yaml['database']['url']).to eq 'jdbc:postgresql://10.244.0.30:5524/uaadb?sslmode=verify-full'
       end
     end
 
@@ -92,8 +92,8 @@ describe 'uaa-release erb generation' do
 
       before(:each) {generated_cf_manifest['properties']['uaadb']['address'] = nil}
 
-      it 'it uses the bosh-linked address' do
-        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://linkedaddress:5524/uaadb?ssl=true')
+      it 'uses the bosh-linked address' do
+        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://linkedaddress:5524/uaadb?sslmode=verify-full')
       end
     end
 
@@ -122,7 +122,7 @@ describe 'uaa-release erb generation' do
       context 'when uaa.yml.erb is provided' do
         let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
-        it 'it matches' do
+        it 'matches' do
           yml_compare(output_uaa, parsed_yaml.to_yaml)
         end
       end
@@ -131,7 +131,7 @@ describe 'uaa-release erb generation' do
         let(:erb_template) {'../jobs/uaa/templates/config/log4j2.properties.erb'}
         let(:as_yml) {false}
 
-        it 'it matches' do
+        it 'matches' do
           str_compare output_log4j2, parsed_yaml.to_s
         end
       end
@@ -145,7 +145,7 @@ describe 'uaa-release erb generation' do
       context 'when uaa.yml.erb is provided' do
         let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
-        it 'it matches' do
+        it 'matches' do
           yml_compare(output_uaa, parsed_yaml.to_yaml)
         end
       end
@@ -154,7 +154,7 @@ describe 'uaa-release erb generation' do
         let(:erb_template) {'../jobs/uaa/templates/config/log4j2.properties.erb'}
         let(:as_yml) {false}
 
-        it 'it matches' do
+        it 'matches' do
           str_compare output_log4j2, parsed_yaml.to_s
         end
       end
@@ -168,7 +168,7 @@ describe 'uaa-release erb generation' do
       context 'when uaa.yml.erb is provided' do
         let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
-        it 'it matches' do
+        it 'matches' do
           yml_compare output_uaa, parsed_yaml.to_yaml
         end
       end
@@ -177,7 +177,7 @@ describe 'uaa-release erb generation' do
         let(:erb_template) {'../jobs/uaa/templates/config/log4j2.properties.erb'}
         let(:as_yml) {false}
 
-        it 'it matches' do
+        it 'matches' do
           str_compare output_log4j2, parsed_yaml.to_s
         end
       end
@@ -190,7 +190,7 @@ describe 'uaa-release erb generation' do
       context 'when uaa.yml.erb is provided' do
         let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
-        it 'it matches' do
+        it 'matches' do
           yml_compare output_uaa, parsed_yaml.to_yaml
         end
       end
@@ -209,7 +209,7 @@ describe 'uaa-release erb generation' do
       generated_cf_manifest['properties']['uaa']['ssl']['port'] = 9090
     end
 
-    it 'it correctly generates dns health check with https port' do
+    it 'correctly generates dns health check with https port' do
       str_compare output_health_check, parsed_yaml.to_s
     end
   end
@@ -504,49 +504,236 @@ describe 'uaa-release erb generation' do
 
   end
 
-  context 'when uaadb tls_enabled is set for mysql' do
+  describe 'uaadb.db_scheme' do
     let(:generated_cf_manifest) {generate_cf_manifest(input)}
     let(:input) {'spec/input/test-defaults.yml'}
-    let(:output_uaa) {'spec/compare/test-defaults-uaa.yml'}
     let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
     let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
-    before(:each) {
-      generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'mysql'
-      generated_cf_manifest['properties']['uaadb']['port'] = '5524'
-    }
 
-    it 'it adds encrypt in the URL' do
-      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
-      expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:5524/uaadb?useSSL=true&trustServerCertificate=false')
+    before do
+      generated_cf_manifest['properties']['uaadb']['port'] = '7676'
+      generated_cf_manifest['properties']['uaadb']['address'] = 'my-hostname'
     end
 
-    it 'can skip ssl validation' do
-      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
-      generated_cf_manifest['properties']['uaadb']['skip_ssl_validation'] = true
-      expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:5524/uaadb?useSSL=true&trustServerCertificate=true')
+    context 'when mysql' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'mysql'
+      end
+
+      it 'should correctly render a mysql JDBC connection string' do
+        expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://my-hostname:7676/uaadb?useSSL=true')
+      end
+    end
+
+    context 'when postgres' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'postgres'
+      end
+
+      it 'should correctly render a postgresql JDBC connection string' do
+        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://my-hostname:7676/uaadb?sslmode=verify-full')
+      end
+    end
+
+    context 'when postgresql' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'postgresql'
+      end
+
+      it 'should correctly render a postgresql JDBC connection string' do
+        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://my-hostname:7676/uaadb?sslmode=verify-full')
+      end
+    end
+
+    context 'when unsupported db_scheme' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'foobardb'
+      end
+
+      it 'should tell the operator that only mysql and postgres are supported' do
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, 'Please select either mysql or postgres for uaadb.db_scheme')
+      end
     end
   end
 
-  context 'when uaadb tls_enabled is set for postgres' do
+  describe 'uaadb.tls' do
     let(:generated_cf_manifest) {generate_cf_manifest(input)}
     let(:input) {'spec/input/test-defaults.yml'}
-    let(:output_uaa) {'spec/compare/test-defaults-uaa.yml'}
     let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
     let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
-    before(:each) {
-      generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'postgres'
-      generated_cf_manifest['properties']['uaadb']['port'] = '5524'
-    }
 
-    it 'it adds encrypt in the URL' do
-      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
-      expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true')
+    context 'when set to an invalid value' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['tls'] = 'foobar is invalid'
+      end
+
+      it 'raises an error' do
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, 'Invalid value for uaadb.tls. Valid options are enabled, enabled_skip_hostname_validation, enabled_skip_all_validation, disabled.')
+      end
     end
 
-    it 'can skip ssl validation' do
-      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
-      generated_cf_manifest['properties']['uaadb']['skip_ssl_validation'] = true
-      expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory')
+    context 'for mysql' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'mysql'
+        generated_cf_manifest['properties']['uaadb']['port'] = '9999'
+      end
+
+      context 'with tls enabled' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled'
+        end
+
+        it 'adds useSSL=true to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true')
+        end
+
+        context 'with uaadb.tls_protocols' do
+          before do
+            generated_cf_manifest['properties']['uaadb']['tls_protocols'] = 'someProtocol'
+          end
+
+          it 'adds the protocol to the URL' do
+            expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&enabledSslProtocolSuites=someProtocol')
+          end
+        end
+      end
+
+      context 'with tls disabled' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'disabled'
+        end
+
+        it 'adds useSSL=false to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=false')
+        end
+
+        context 'with uaadb.tls_protocols' do
+          before do
+            generated_cf_manifest['properties']['uaadb']['tls_protocols'] = 'someProtocol'
+          end
+
+          it 'does not change the URL' do
+            expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=false')
+          end
+        end
+      end
+
+      context 'with tls enabled_skip_all_validation' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled_skip_all_validation'
+        end
+
+        it 'adds useSSL=false and trustServerCertificate=true to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&trustServerCertificate=true')
+        end
+
+        context 'with uaadb.tls_protocols' do
+          before do
+            generated_cf_manifest['properties']['uaadb']['tls_protocols'] = 'someProtocol'
+          end
+
+          it 'adds the protocol to the URL' do
+            expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&trustServerCertificate=true&enabledSslProtocolSuites=someProtocol')
+          end
+        end
+      end
+
+      context 'with tls enabled_skip_hostname_validation' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled_skip_hostname_validation'
+        end
+
+        it 'adds useSSL=true and disableSslHostnameVerification=true to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&disableSslHostnameVerification=true')
+        end
+
+        context 'with uaadb.tls_protocols' do
+          before do
+            generated_cf_manifest['properties']['uaadb']['tls_protocols'] = 'someProtocol'
+          end
+
+          it 'adds the protocol to the URL' do
+            expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&disableSslHostnameVerification=true&enabledSslProtocolSuites=someProtocol')
+          end
+        end
+      end
+    end
+
+    context 'for postgres' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'postgres'
+        generated_cf_manifest['properties']['uaadb']['port'] = '7777'
+      end
+
+      context 'with tls enabled' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled'
+        end
+
+        it 'adds sslmode=verify-full	to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:7777/uaadb?sslmode=verify-full')
+        end
+      end
+
+      context 'with tls disabled' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'disabled'
+        end
+
+        it 'adds sslmode=disable to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:7777/uaadb?sslmode=disable')
+        end
+      end
+
+      context 'with tls enabled_skip_all_validation' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled_skip_all_validation'
+        end
+
+        it 'adds sslmode=require to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:7777/uaadb?sslmode=require')
+        end
+      end
+
+      context 'with tls enabled_skip_hostname_validation' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled_skip_hostname_validation'
+        end
+
+        it 'adds sslmode=verify-ca to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:7777/uaadb?sslmode=verify-ca')
+        end
+      end
+    end
+
+    describe 'the removed uaadb.tls_enabled and uaadb.skip_ssl_validation properties' do
+      context 'when uaadb.tls_enabled is set' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls_enabled'] = false
+        end
+
+        it 'raises an error to prevent an upgrade from accidentally changing the deployment from non-TLS to TLS' do
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, 'uaadb.tls_enabled is no longer supported. Please use uaadb.tls instead.')
+        end
+      end
+
+      context 'when uaadb.skip_ssl_validation is set' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['skip_ssl_validation'] = true
+        end
+
+        it 'raises an error to prevent an upgrade from accidentally changing from skipping validation to not skipping' do
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, 'uaadb.skip_ssl_validation is no longer supported. Please use uaadb.tls instead.')
+        end
+      end
     end
   end
 
@@ -914,7 +1101,7 @@ describe 'uaa-release erb generation' do
         end
       end
       context 'active JWT key ID is missing' do
-        it 'it works because we accept legacy keys' do
+        it 'works because we accept legacy keys' do
           generated_cf_manifest['properties']['uaa']['jwt']['policy'].delete('active_key_id')
           expect {
             parsed_yaml
@@ -922,7 +1109,7 @@ describe 'uaa-release erb generation' do
         end
       end
       context 'legacy key is missing' do
-        it 'it works because we have active key' do
+        it 'works because we have active key' do
           generated_cf_manifest['properties']['uaa']['jwt'].delete('signing_key')
           expect {
             parsed_yaml
@@ -942,7 +1129,6 @@ describe 'uaa-release erb generation' do
     end
   end
 
-
   describe 'uaa.yml for DB TLS tests' do
     let!(:generated_cf_manifest) {generate_cf_manifest(input)}
     let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
@@ -951,8 +1137,7 @@ describe 'uaa-release erb generation' do
     let(:tempDir) {'/tmp/uaa-release-tests/'}
 
     before(:each) {
-      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
-      generated_cf_manifest['properties']['uaadb']['skip_ssl_validation'] = true
+      generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled'
     }
 
     context 'is generated for MySQL' do

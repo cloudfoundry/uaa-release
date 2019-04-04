@@ -76,7 +76,7 @@ describe 'uaa-release erb generation' do
 
       it 'takes precedence over bosh-linked address' do
         expect(parsed_yaml['database']['url']).not_to include('linkedaddress')
-        expect(parsed_yaml['database']['url']).to eq 'jdbc:postgresql://10.244.0.30:5524/uaadb?sslmode=verify-full'
+        expect(parsed_yaml['database']['url']).to eq 'jdbc:postgresql://10.244.0.30:5524/uaadb?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory'
       end
     end
 
@@ -93,7 +93,7 @@ describe 'uaa-release erb generation' do
       before(:each) {generated_cf_manifest['properties']['uaadb']['address'] = nil}
 
       it 'uses the bosh-linked address' do
-        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://linkedaddress:5524/uaadb?sslmode=verify-full')
+        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://linkedaddress:5524/uaadb?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory')
       end
     end
 
@@ -531,7 +531,7 @@ describe 'uaa-release erb generation' do
       end
 
       it 'should correctly render a postgresql JDBC connection string' do
-        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://my-hostname:7676/uaadb?sslmode=verify-full')
+        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://my-hostname:7676/uaadb?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory')
       end
     end
 
@@ -541,7 +541,7 @@ describe 'uaa-release erb generation' do
       end
 
       it 'should correctly render a postgresql JDBC connection string' do
-        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://my-hostname:7676/uaadb?sslmode=verify-full')
+        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://my-hostname:7676/uaadb?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory')
       end
     end
 
@@ -674,8 +674,8 @@ describe 'uaa-release erb generation' do
           generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled'
         end
 
-        it 'adds sslmode=verify-full	to the URL' do
-          expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:7777/uaadb?sslmode=verify-full')
+        it 'adds sslmode=verify-full to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:7777/uaadb?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory')
         end
       end
 
@@ -705,7 +705,7 @@ describe 'uaa-release erb generation' do
         end
 
         it 'adds sslmode=verify-ca to the URL' do
-          expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:7777/uaadb?sslmode=verify-ca')
+          expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:7777/uaadb?sslmode=verify-ca&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory')
         end
       end
     end

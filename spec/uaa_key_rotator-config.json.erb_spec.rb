@@ -44,6 +44,20 @@ describe 'config.json.erb' do
     ERB.new(File.read(erb_file)).result(binding)
   }
 
+  context 'when uaadb.tls is missing, even though it has a default value, due to a bug in bosh links' do
+    before do
+      expect(properties['links']['uaa_db']['properties']['uaadb']).to_not have_key('tls')
+    end
+
+    it 'includes databaseTlsEnabled with value true' do
+      expect(JSON.parse(rendered_erb)['databaseTlsEnabled']).to eq(true)
+    end
+
+    it 'includes databaseSkipSSLValidation with value false' do
+      expect(JSON.parse(rendered_erb)['databaseSkipSSLValidation']).to eq(false)
+    end
+  end
+
   context 'when uaadb.tls is set to enabled' do
     before do
       properties['links']['uaa_db']['properties']['uaadb']['tls'] = 'enabled'

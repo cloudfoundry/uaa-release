@@ -2,8 +2,8 @@
   uaa_db = link('uaa_db').p('uaadb.databases').find { |db| db['tag'] == 'uaa' }
   uaa_role = link('uaa_db').p('uaadb.roles').find { |role| role['tag'] == 'admin' }
 
- uaa_db_address = nil
- link('uaa_db').if_p('uaadb.address') do |address|
+  uaa_db_address = nil
+  link('uaa_db').if_p('uaadb.address') do |address|
     uaa_db_address = address
   end.else do
     if_link('database') do |db_link|
@@ -13,7 +13,12 @@
     end
   end
 
-  case link('uaa_db').p('uaadb.tls')
+  uaa_tls = 'enabled';
+  link('uaa_db').if_p('uaadb.tls') do |linked_tls|
+    uaa_tls = linked_tls
+  end
+
+  case uaa_tls
     when 'enabled'
       database_tls_enabled = true
       skip_ssl_validation = false

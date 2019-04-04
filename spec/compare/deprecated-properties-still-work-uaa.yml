@@ -121,6 +121,9 @@ logout:
     url: "/login"
     parameter:
       disable: false
+
+require_https: true
+
 uaa:
   url: http://test.uaa.url
   limitedFunctionality:

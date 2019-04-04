@@ -247,6 +247,9 @@ logout:
     url: "/"
     parameter:
       disable: false
+
+require_https: true
+
 uaa:
   url: http://all-properties-set:8888/uaa
   limitedFunctionality:

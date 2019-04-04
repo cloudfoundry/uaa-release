@@ -610,6 +610,7 @@
   login_url = p('login.url', login_entityBaseUrl)
 
   params = params.merge({
+    'require_https' => true,
     'assetBaseUrl' => p('login.asset_base_url'),
     'logout' => {
       'redirect' => {

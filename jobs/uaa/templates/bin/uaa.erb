@@ -71,14 +71,10 @@ else
 fi
 
 echo "`date` [uaa-start] Calling Tomcat start up command"
-<% if p("bpm.enabled") %>
-  /var/vcap/packages/uaa/tomcat/bin/catalina.sh run &
-  CATALINA_PID=$!
-  echo "`date` [uaa-start] uaa/tomcat started in background. Waiting for signals"
-  wait "${CATALINA_PID}"
-  EXIT_STATUS=$?
-  echo "`date` [uaa-start] uaa/tomcat job exiting."
-  exit $EXIT_STATUS
-<% else %>
-  exec chpst -u vcap:vcap /var/vcap/data/uaa/tomcat/bin/catalina.sh run
-<% end %>
+/var/vcap/packages/uaa/tomcat/bin/catalina.sh run &
+CATALINA_PID=$!
+echo "`date` [uaa-start] uaa/tomcat started in background. Waiting for signals"
+wait "${CATALINA_PID}"
+EXIT_STATUS=$?
+echo "`date` [uaa-start] uaa/tomcat job exiting."
+exit $EXIT_STATUS

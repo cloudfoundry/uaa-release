@@ -73,11 +73,6 @@ properties:
     default: false
     description: "Set to true to include UAA database in backup and restore operations"
 
-  #bpm
-  bpm.enabled:
-    description: "Experimental feature flag, do not use yet: Enable Bosh Process Manager"
-    default: false
-
   #uaa database host configuration
   uaadb.address:
     description: |

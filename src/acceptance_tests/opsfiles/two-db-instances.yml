@@ -119,6 +119,7 @@
             tag: uaa
           db_scheme: mysql
           port: 3306
+          tls: disabled
           roles:
           - name: uaaadmin
             password: admin

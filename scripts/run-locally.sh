@@ -13,7 +13,7 @@ if ! docker-machine ls --format "{{.Name}}" | egrep --quiet "^${DOCKER_HOST_VM_N
     # create if it does not already exist, otherwise just use it
     docker-machine create -d virtualbox \
         --virtualbox-cpu-count 2 --virtualbox-memory 4096 \
-        --virtualbox-disk-size="50000" ${DOCKER_HOST_VM_NAME}
+        --virtualbox-disk-size="90000" ${DOCKER_HOST_VM_NAME}
 fi
 
 eval $(docker-machine env ${DOCKER_HOST_VM_NAME})
@@ -29,13 +29,19 @@ docker run \
     bosh/main-bosh-docker \
     /root/uaa-release/scripts/start-bosh.sh
 
+set +x
+
 function test_query() {
     docker logs container-running-dockerd | grep 'start-bosh has finished starting...'
 }
 
+docker logs container-running-dockerd -f &
+
 until test_query; do
-    sleep 1
+    sleep 2
 done
+
+set -x
 
 set +e
     docker run \

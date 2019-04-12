@@ -24,3 +24,6 @@ bosh-lite/manifests/*
 bosh-lite/tmp/*
 pkg
 tmp
+bin/
+src/github.com/hpcloud/
+src/github.com/onsi/

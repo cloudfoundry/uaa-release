@@ -1,4 +1,3 @@
-<% if p("bpm.enabled") %>
 check process uaa
   with pidfile /var/vcap/sys/run/bpm/uaa/uaa.pid
   start program "/var/vcap/jobs/bpm/bin/bpm start uaa"
@@ -8,14 +7,3 @@ check process uaa
     request "/healthz"
     with timeout 60 seconds for 64 cycles
   then restart
-<% else %>
-check process uaa
-  with pidfile /var/vcap/sys/run/uaa/uaa.pid
-  start program "/var/vcap/jobs/uaa/bin/uaa_ctl start"
-  stop program "/var/vcap/jobs/uaa/bin/uaa_ctl stop"
-  group vcap
-  if failed port <%= p('uaa.localhost_http_port') %> protocol http
-    request "/healthz"
-    with timeout 60 seconds for 64 cycles
-  then restart
-<% end %>

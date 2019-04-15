@@ -1,11 +1,13 @@
 ---
 name: uaa
+
 update:
   canaries: 2
   canary_watch_time: 30000-1200000
   max_in_flight: 1
   serial: true
   update_watch_time: 5000-1200000
+
 instance_groups:
 - name: uaa
   azs:
@@ -106,6 +108,8 @@ instance_groups:
           tls: ((dns_api_server_tls))
         client:
           tls: ((dns_api_client_tls))
+  - name: bpm
+    release: bpm
 
 variables:
 - name: uaa_ca
@@ -172,14 +176,17 @@ variables:
 
 releases:
 - name: uaa
-  version: "latest"
-- name: "bosh-dns"
-  version: "1.10.0"
-  url: "https://bosh.io/d/github.com/cloudfoundry/bosh-dns-release?v=1.10.0"
-  sha1: "d1aadbda5d60c44dec4a429cda872cf64f6d8d0b"
+  version: latest
+- name: bosh-dns
+  version: 1.10.0
+  url: https://bosh.io/d/github.com/cloudfoundry/bosh-dns-release?v=1.10.0
+  sha1: d1aadbda5d60c44dec4a429cda872cf64f6d8d0b
+- name: bpm
+  version: 1.0.4
+  url: https://bosh.io/d/github.com/cloudfoundry-incubator/bpm-release?v=1.0.4
+  sha1: 41df19697d6a69d2552bc2c132928157fa91abe0
 
 stemcells:
 - alias: default
   os: ubuntu-xenial
-  version: "latest"
-
+  version: latest

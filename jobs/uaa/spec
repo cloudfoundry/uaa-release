@@ -5,7 +5,6 @@ description: "The UAA is the identity management service for Cloud Foundry. It's
 
 templates:
   bin/uaa.erb: bin/uaa
-  bin/uaa_ctl.erb: bin/uaa_ctl
   bin/configure_proxy.erb: bin/configure_proxy
   bin/configure_newrelic.erb: bin/configure_newrelic
   bin/install_crt: bin/install_crt
@@ -72,11 +71,6 @@ properties:
   release_level_backup:
     default: false
     description: "Set to true to include UAA database in backup and restore operations"
-
-  #bpm
-  bpm.enabled:
-    description: "Experimental feature flag, do not use yet: Enable Bosh Process Manager"
-    default: false
 
   #uaa database host configuration
   uaadb.address:

@@ -43,6 +43,7 @@ var _ = Describe("UaaRelease", func() {
 	})
 
 	DescribeTable("uaa truststore", func(addedOSConfCertificates int, optFiles ...string) {
+		deployUAA()
 		numCertificatesBeforeDeploy := getNumOfOSCertificates()
 		deployUAA(optFiles...)
 		numCertificatesAfterDeploy := getNumOfOSCertificates()
@@ -62,7 +63,7 @@ var _ = Describe("UaaRelease", func() {
 
 	},
 		Entry("with os-conf not adding certs", 0, "./opsfiles/os-conf-0-certificate.yml"),
-		Entry("with and with os-conf + ca_cert property adding certificates", 11, "./opsfiles/os-conf-1-certificate.yml", "./opsfiles/load-more-ca-certs.yml"),
+		Entry("with os-conf + ca_cert property adding certificates", 11, "./opsfiles/os-conf-1-certificate.yml", "./opsfiles/load-more-ca-certs.yml"),
 	)
 
 	Context("UAA consuming the `database` link", func() {
@@ -179,41 +180,41 @@ var _ = Describe("uaa-rotator-errand", func() {
 })
 
 var _ = Describe("setting a custom UAA port", func() {
-    BeforeEach(func() {
-        deployUAA("./opsfiles/non-default-localhost-http-port.yml", "./opsfiles/non-default-ssl-port.yml")
-    })
+	BeforeEach(func() {
+		deployUAA("./opsfiles/non-default-localhost-http-port.yml", "./opsfiles/non-default-ssl-port.yml")
+	})
 
-    Context("with custom http and https port", func() {
-        It("health_check should check the health on the correct port", func() {
-            assertUAAIsHealthy("/var/vcap/jobs/uaa/bin/health_check")
+	Context("with custom http and https port", func() {
+		It("health_check should check the health on the correct port", func() {
+			assertUAAIsHealthy("/var/vcap/jobs/uaa/bin/health_check")
 
-            transCfg := &http.Transport{
-                TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-            }
-            client := &http.Client{Transport: transCfg}
+			transCfg := &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			}
+			client := &http.Client{Transport: transCfg}
 
-            uaaDomainName := "uaa.localhost"
-            By("setting a local domain name: uaa.localhost to point to localhost", func() {
-                addLocalDNS(uaaDomainName)
-            })
+			uaaDomainName := "uaa.localhost"
+			By("setting a local domain name: uaa.localhost to point to localhost", func() {
+				addLocalDNS(uaaDomainName)
+			})
 
-            uaaHealthzEndpoint := fmt.Sprintf("https://%s:9443/healthz", uaaDomainName)
-            By(fmt.Sprintf("calling /healthz endpoint %s should return health", uaaHealthzEndpoint), func() {
-                healthzResp, err := client.Get(uaaHealthzEndpoint)
-                Expect(err).NotTo(HaveOccurred())
-                Expect(healthzResp.StatusCode).To(Equal(http.StatusOK))
-                Eventually(gbytes.BufferReader(healthzResp.Body)).Should(gbytes.Say("ok"))
-            })
+			uaaHealthzEndpoint := fmt.Sprintf("https://%s:9443/healthz", uaaDomainName)
+			By(fmt.Sprintf("calling /healthz endpoint %s should return health", uaaHealthzEndpoint), func() {
+				healthzResp, err := client.Get(uaaHealthzEndpoint)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(healthzResp.StatusCode).To(Equal(http.StatusOK))
+				Eventually(gbytes.BufferReader(healthzResp.Body)).Should(gbytes.Say("ok"))
+			})
 
-            uaaHealthzEndpoint = fmt.Sprintf("http://%s:9443/healthz", uaaDomainName)
-            By(fmt.Sprintf("calling /healthz endpoint %s should fail", uaaHealthzEndpoint), func() {
-                healthzResp, err := client.Get(uaaHealthzEndpoint)
-                Expect(err).NotTo(HaveOccurred())
-                Expect(healthzResp.StatusCode).To(Equal(http.StatusBadRequest))
-                Eventually(gbytes.BufferReader(healthzResp.Body)).Should(gbytes.Say(`Bad Request(\s)*This combination of host and port requires TLS.`))
-            })
-        })
-    })
+			uaaHealthzEndpoint = fmt.Sprintf("http://%s:9443/healthz", uaaDomainName)
+			By(fmt.Sprintf("calling /healthz endpoint %s should fail", uaaHealthzEndpoint), func() {
+				healthzResp, err := client.Get(uaaHealthzEndpoint)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(healthzResp.StatusCode).To(Equal(http.StatusBadRequest))
+				Eventually(gbytes.BufferReader(healthzResp.Body)).Should(gbytes.Say(`Bad Request(\s)*This combination of host and port requires TLS.`))
+			})
+		})
+	})
 })
 
 func assertUAAIsHealthy(healthCheckPath string) {

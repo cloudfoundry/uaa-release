@@ -39,8 +39,9 @@ cd /root/uaa-release
 set +x
 
 echo
-echo "Run 'ginkgo -v -keepGoing -r .' to run acceptance tests"
-echo "Run 'refresh' to redeploy uaa to restore to a good deployment"
+echo "Run 'ginkgo -v --progress --trace -r .' to run acceptance tests"
+echo "    - Optionally add '-keepGoing' to keep going after a failure"
+echo "Run 'refresh' to delete/deploy uaa to restore to a good deployment"
 echo "Run 'exit' when you are finished"
 
 bash

@@ -51,10 +51,6 @@ var _ = BeforeSuite(func() {
 	})
 })
 
-var _ = BeforeEach(func() {
-	deployUAA()
-})
-
 func setBoshEnvironmentVariables() {
 	var envFound bool
 
@@ -157,7 +153,6 @@ func getInstanceInfos(boshBinary string) []instanceInfo {
 
 	return out
 }
-
 
 func getUaaIP() (string, bool) {
 	instanceInfos := getInstanceInfos(boshBinaryPath)

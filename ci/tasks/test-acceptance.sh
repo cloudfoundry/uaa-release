@@ -37,5 +37,5 @@ bosh deploy /tmp/uaa-deployment.yml \
     --var=system_domain="$(hostname --fqdn)"
 
 pushd "$GOPATH/src/acceptance_tests"
-   ginkgo -v -keepGoing -randomizeAllSpecs -randomizeSuites -race -r .
+   ginkgo -v --progress --trace -keepGoing -randomizeAllSpecs -randomizeSuites -race -r .
 popd

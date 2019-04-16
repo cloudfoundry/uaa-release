@@ -25,8 +25,11 @@ export PATH="${GOPATH}/bin:$PATH"
 go get github.com/onsi/ginkgo/ginkgo
 go install github.com/onsi/ginkgo/ginkgo
 
-bosh -n deploy -d uaa /tmp/uaa-deployment.yml -o "/root/uaa-release/src/acceptance_tests/opsfiles/enable-local-uaa.yml" \
---vars-store=/tmp/uaa-store.json -v system_domain=`hostname --fqdn`
+set +e # continue if the bosh deploy fails, to allow debugging
+bosh -n deploy -d uaa /tmp/uaa-deployment.yml \
+  -o "/root/uaa-release/src/acceptance_tests/opsfiles/enable-local-uaa.yml" \
+  --vars-store=/tmp/uaa-store.json -v system_domain=`hostname --fqdn`
+set -e
 
 export BOSH_GW_PRIVATE_KEY="/tmp/jumpbox_ssh_key.pem"
 export BOSH_GW_USER="jumpbox"

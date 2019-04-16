@@ -46,7 +46,12 @@ function process_certs {
 
 echo "`date` [uaa] UAA Preparing Certs"
 CERT_FILE="/tmp/ca-certificates.crt"
-cp /etc/ssl/certs/ca-certificates.crt "$CERT_FILE"
+if [[ ! -f /etc/ssl/certs/uaa-ca-certificates.crt ]]; then
+  echo "/etc/ssl/certs/uaa-ca-certificates.crt should have been created by the pre-start script, but is missing. Exiting."
+  exit 1
+fi
+
+cp /etc/ssl/certs/uaa-ca-certificates.crt "$CERT_FILE"
 
 CONF_DIR="/var/vcap/jobs/uaa/config"
 CACHE_DIR="/var/vcap/data/uaa/cert-cache"

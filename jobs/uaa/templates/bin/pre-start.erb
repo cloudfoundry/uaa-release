@@ -3,7 +3,8 @@ set -e
 
 echo "uaa-pre-start - starting at `date`"
 
-CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+UAA_CERT_BUNDLE=uaa-ca-certificates.crt
+CERT_FILE=/etc/ssl/certs/${UAA_CERT_BUNDLE}
 
 function update_ca_certificate() {
   updated_certs=1
@@ -13,7 +14,9 @@ function update_ca_certificate() {
   set +e
   until [ $updated_certs -eq 0 ] || [ $retry_count -ge $max_retry_count ]; do
     echo "trying to run update-ca-certificates..."
-    timeout --signal=KILL 60s /usr/sbin/update-ca-certificates -f -v
+    # --certbundle is an undocumented flag in the update-ca-certificates script
+    # https://salsa.debian.org/debian/ca-certificates/blob/master/sbin/update-ca-certificates#L53
+    timeout --signal=KILL 60s /usr/sbin/update-ca-certificates -f -v --certbundle "${UAA_CERT_BUNDLE}"
     updated_certs=$?
     retry_count=$((retry_count + 1))
   done

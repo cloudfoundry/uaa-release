@@ -14,7 +14,7 @@ else
 fi
 
 cp /root/uaa-release/src/acceptance_tests/uaa-docker-deployment.yml /tmp/uaa-deployment.yml
-cp /root/uaa-release/scripts/refresh-uaa-deployment.sh /usr/local/bin/refresh
+cp /root/uaa-release/scripts/refresh-uaa-deployment.sh /usr/local/bin/redeploy
 
 pushd "/root/uaa-release"
     bosh upload-release tmp/uaa-dev-release.tgz
@@ -26,7 +26,7 @@ go get github.com/onsi/ginkgo/ginkgo
 go install github.com/onsi/ginkgo/ginkgo
 
 set +e # continue if the bosh deploy fails, to allow debugging
-bosh -n deploy -d uaa /tmp/uaa-deployment.yml \
+bosh -n deploy --no-redact -d uaa /tmp/uaa-deployment.yml \
   -o "/root/uaa-release/src/acceptance_tests/opsfiles/enable-local-uaa.yml" \
   --vars-store=/tmp/uaa-store.json -v system_domain=`hostname --fqdn`
 set -e
@@ -44,7 +44,7 @@ set +x
 echo
 echo "Run 'ginkgo -v --progress --trace -r .' to run acceptance tests"
 echo "    - Optionally add '-keepGoing' to keep going after a failure"
-echo "Run 'refresh' to delete/deploy uaa to restore to a good deployment"
+echo "Run 'redeploy' to delete and redeploy uaa to restore to a clean deployment"
 echo "Run 'exit' when you are finished"
 
 bash

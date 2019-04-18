@@ -19,43 +19,44 @@ mkdir -p $CACHE_DIR
 CERT_CACHE_FILE=$CACHE_DIR/cacerts-cache.txt
 TRUST_STORE_FILE=$CACHE_DIR/cacerts
 
-CERTS=$(grep 'END CERTIFICATE' $CERT_FILE| wc -l)
-
-function process_certs {
-  echo "Processing certificates for Java cacerts file"
-  rm -f $CERT_CACHE_FILE
-  rm -f $TRUST_STORE_FILE
-  COUNTER=0
-  # Load the cert into the Java keystore
-  TEMP_CA_CERTS=$(mktemp -d)
-
-  # add certs from manifest to OS certs
-  rm -f $TEMP_CA_CERTS/uaa_*
-  <% p('uaa.ca_certs', []).each_with_index do |cert, i| %>
-      echo "Adding certificate from manifest to OS certs $TEMP_CA_CERTS/uaa_<%= i %>.crt"
-      echo -n '<%= cert %>' >> "$TEMP_CA_CERTS/uaa_<%= i %>.crt"
-  <% end %>
-
-  cat $CERT_FILE |
-  awk "split_after==1{n++;split_after=0} /-----END CERTIFICATE-----/ {split_after=1} {print > (\"$TEMP_CA_CERTS/cert\" n \".pem\")}"
-
-  for cert in $TEMP_CA_CERTS/*; do
-    cat $cert | /var/vcap/packages/uaa/jdk/bin/keytool -noprompt \
+function insert_cert {
+    echo "${1}" | /var/vcap/packages/uaa/jdk/bin/keytool -noprompt \
     -import \
     -trustcacerts \
-    -alias $(basename $cert) \
+    -alias "${2}" \
     -keystore $TRUST_STORE_FILE \
     -storepass changeit
+}
 
-    let COUNTER=COUNTER+1
-    echo "[uaa-ctl]   Processed certificate $COUNTER of $CERTS"
-  done
+function process_certs {
+    echo "Processing certificates for Java keystore..."
+    rm -f $CERT_CACHE_FILE
+    rm -f $TRUST_STORE_FILE
 
-  if [ "$COUNTER" -eq "$CERTS" ]; then
-    echo "[uaa-ctl] Java keystore creation completed."
+    # add certs from manifest to Java keystore
+    <% p('uaa.ca_certs', []).each_with_index do |cert, i| %>
+        insert_cert "$(echo -n '<%= cert %>')" "uaa_<%= i %>.crt"
+    <% end %>
+    echo "Processed <%= p('uaa.ca_certs', []).length %> certificates from uaa.ca_certs"
+
+    # add certs from operating system to Java keystore
+    TEMP_CA_CERTS=$(mktemp -d)
+    cat $CERT_FILE |
+        awk "split_after==1{n++;split_after=0} /-----END CERTIFICATE-----/ {split_after=1} {print > (\"$TEMP_CA_CERTS/cert\" n \".pem\")}"
+
+    for cert in $TEMP_CA_CERTS/*; do
+        insert_cert "$(cat $cert)" "$(basename $cert)"
+    done
+
+    NUMBER_OF_OS_CERTS=$(ls -l $TEMP_CA_CERTS | wc -l)
+    echo "Processed ${NUMBER_OF_OS_CERTS} certificates from operating system"
+
+    echo "Java keystore creation completed."
+
+    # cache cert bundle
     cp $CERT_FILE $CERT_CACHE_FILE
-  fi
-  rm -rf $TEMP_CA_CERTS
+
+    rm -rf $TEMP_CA_CERTS
 }
 
 function setup_directories {

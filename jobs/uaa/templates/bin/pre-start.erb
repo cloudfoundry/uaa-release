@@ -25,11 +25,6 @@ function update_ca_certificate() {
 
 update_ca_certificate
 
-# os-conf will write to CERT_FILE in its pre-start, using a copy to prevent race conditions
-INTERNAL_CERT_FILE=/tmp/internal_ca_certificates.crt
-
-cp -f $CERT_FILE $INTERNAL_CERT_FILE
-
 CONF_DIR=/var/vcap/jobs/uaa/config
 CACHE_DIR=/var/vcap/data/uaa/cert-cache
 
@@ -38,7 +33,7 @@ mkdir -p $CACHE_DIR
 CERT_CACHE_FILE=$CACHE_DIR/cacerts-cache.txt
 TRUST_STORE_FILE=$CACHE_DIR/cacerts
 
-CERTS=$(grep 'END CERTIFICATE' $INTERNAL_CERT_FILE| wc -l)
+CERTS=$(grep 'END CERTIFICATE' $CERT_FILE| wc -l)
 
 function process_certs {
   echo "Processing certificates for Java cacerts file"
@@ -55,7 +50,7 @@ function process_certs {
       echo -n '<%= cert %>' >> "$TEMP_CA_CERTS/uaa_<%= i %>.crt"
   <% end %>
 
-  cat $INTERNAL_CERT_FILE |
+  cat $CERT_FILE |
   awk "split_after==1{n++;split_after=0} /-----END CERTIFICATE-----/ {split_after=1} {print > (\"$TEMP_CA_CERTS/cert\" n \".pem\")}"
 
   for cert in $TEMP_CA_CERTS/*; do
@@ -72,9 +67,8 @@ function process_certs {
 
   if [ "$COUNTER" -eq "$CERTS" ]; then
     echo "[uaa-ctl] Java keystore creation completed."
-    cp $INTERNAL_CERT_FILE $CERT_CACHE_FILE
+    cp $CERT_FILE $CERT_CACHE_FILE
   fi
-  rm -f $INTERNAL_CERT_FILE
   rm -rf $TEMP_CA_CERTS
 }
 

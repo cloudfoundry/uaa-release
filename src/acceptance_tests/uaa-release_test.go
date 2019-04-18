@@ -40,13 +40,14 @@ var _ = Describe("UaaRelease", func() {
 	It("populates the uaa truststore", func() {
 		deployUAA("./opsfiles/os-conf-0-certificate.yml")
 
+		numberOfCertsInUaaDockerDeploymentYml := 2
 		caCertificatesPemEncodedMap := buildCACertificatesPemEncodedMap()
 
 		var trustStoreMap map[string]interface{}
 		Eventually(func() map[string]interface{} {
 			trustStoreMap = buildTruststoreMap()
 			return trustStoreMap
-		}, 5*time.Minute, 10*time.Second).Should(HaveLen(len(caCertificatesPemEncodedMap)))
+		}, 5*time.Minute, 10*time.Second).Should(HaveLen(len(caCertificatesPemEncodedMap) + numberOfCertsInUaaDockerDeploymentYml))
 
 		for key := range caCertificatesPemEncodedMap {
 			Expect(trustStoreMap).To(HaveKey(key))

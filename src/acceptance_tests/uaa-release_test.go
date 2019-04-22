@@ -19,26 +19,13 @@ import (
 	"github.com/pavel-v-chernykh/keystore-go"
 )
 
-type row struct {
-	Stdout   string `json:"stdout"`
-	ExitCode string `json:"exit_code"`
-}
-
-type table struct {
-	Rows []row
-}
-
-type sshResult struct {
-	Tables []table
-}
-
 var _ = Describe("UaaRelease", func() {
 	AfterEach(func() {
 		deleteUAA()
 	})
 
 	It("populates the uaa truststore", func() {
-		deployUAA("./opsfiles/os-conf-0-certificate.yml")
+		deployUAA()
 
 		numberOfCertsInUaaDockerDeploymentYml := 2
 		caCertificatesPemEncodedMap := buildCACertificatesPemEncodedMap()

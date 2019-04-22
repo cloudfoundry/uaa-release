@@ -17,7 +17,6 @@ import (
 	boshdir "github.com/cloudfoundry/bosh-cli/director"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/onsi/gomega/gbytes"
-	"github.com/onsi/gomega/gstruct"
 )
 
 func TestAcceptanceTests(t *testing.T) {
@@ -42,7 +41,6 @@ var (
 var _ = BeforeSuite(func() {
 	setBoshEnvironmentVariables()
 
-	ensureUAAHasBeenDeployedAndRunning()
 	By("disabling bosh resurrection", func() {
 		disableResurrectionCmd := exec.Command(boshBinaryPath, "-d", "uaa", "update-resurrection", "-n", "off")
 		session, err := gexec.Start(disableResurrectionCmd, GinkgoWriter, GinkgoWriter)
@@ -83,21 +81,6 @@ func setBoshEnvironmentVariables() {
 	Expect(err).NotTo(HaveOccurred())
 	Expect(info.Name).To(Equal("docker"))
 	Expect(info.User).To(Equal("admin"))
-}
-
-func ensureUAAHasBeenDeployedAndRunning() {
-	By("checking uaa is deployed and running", func() {
-		Eventually(func() []instanceInfo {
-			return getInstanceInfos(boshBinaryPath)
-		}, 1*time.Minute).ShouldNot(BeEmpty())
-
-		Eventually(func() []instanceInfo {
-			return getInstanceInfos(boshBinaryPath)
-		}, 1*time.Minute).Should(ContainElement(gstruct.MatchFields(gstruct.IgnoreExtras, gstruct.Fields{
-			"InstanceGroup": Equal("uaa"),
-			"ProcessState":  Equal("running"),
-		})))
-	})
 }
 
 type instanceInfo struct {

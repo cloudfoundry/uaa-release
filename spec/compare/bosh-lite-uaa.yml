@@ -208,6 +208,7 @@ zones:
       - uaa.service.cf.internal
 
 require_https: true
+https_port: 8443
 
 uaa:
   url: https://uaa.bosh-lite.com

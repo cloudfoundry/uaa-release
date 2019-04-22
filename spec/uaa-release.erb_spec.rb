@@ -558,6 +558,23 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  describe 'uaa.ssl.port' do
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
+
+    context 'when set' do
+      before do
+        generated_cf_manifest['properties']['uaa']['ssl']['port'] = '9897'
+      end
+
+      it 'renders the port into uaa.yml' do
+        expect(parsed_yaml['https_port']).to eq('9897')
+      end
+    end
+  end
+
   describe 'uaadb.tls' do
     let(:generated_cf_manifest) {generate_cf_manifest(input)}
     let(:input) {'spec/input/test-defaults.yml'}

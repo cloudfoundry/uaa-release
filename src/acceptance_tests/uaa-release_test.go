@@ -188,6 +188,12 @@ var _ = Describe("setting a custom UAA port", func() {
 		It("health_check should check the health on the correct port", func() {
 			assertUAAIsHealthy("/var/vcap/jobs/uaa/bin/health_check")
 
+			By("GET / from within the VM should redirect to https using the configured https port", func() {
+				curlResult := runCommandOnUaaViaSsh("curl -v localhost:9000")
+				Expect(curlResult).To(ContainSubstring("HTTP/1.1 301"))
+				Expect(curlResult).To(ContainSubstring("Location: https://localhost:9443/"))
+			})
+
 			transCfg := &http.Transport{
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			}
@@ -217,11 +223,23 @@ var _ = Describe("setting a custom UAA port", func() {
 	})
 })
 
-func assertUAAIsHealthy(healthCheckPath string) {
-	healthCheckCmd := exec.Command(boshBinaryPath, []string{"--json", "ssh", "--results", "uaa", "-c", healthCheckPath}...)
-	session, err := gexec.Start(healthCheckCmd, GinkgoWriter, GinkgoWriter)
+func runCommandOnUaaViaSsh(command string) string {
+	sshCommand := exec.Command(boshBinaryPath, []string{"ssh", "uaa", "--json", "--results", "-c", command}...)
+	session, err := gexec.Start(sshCommand, GinkgoWriter, GinkgoWriter)
 	Expect(err).NotTo(HaveOccurred())
 	Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
+
+	var result = &sshResult{}
+	err = json.Unmarshal(session.Out.Contents(), result)
+	Expect(err).NotTo(HaveOccurred())
+	Expect(result.Tables).To(HaveLen(1))
+	Expect(result.Tables[0].Rows).To(HaveLen(1))
+
+	return string(result.Tables[0].Rows[0].Stdout)
+}
+
+func assertUAAIsHealthy(healthCheckPath string) {
+	runCommandOnUaaViaSsh(healthCheckPath)
 }
 
 func buildTruststoreMap() map[string]interface{} {

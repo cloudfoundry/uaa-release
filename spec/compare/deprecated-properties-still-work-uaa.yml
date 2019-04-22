@@ -123,6 +123,7 @@ logout:
       disable: false
 
 require_https: true
+https_port: 8443
 
 uaa:
   url: http://test.uaa.url

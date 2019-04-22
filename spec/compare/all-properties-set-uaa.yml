@@ -249,6 +249,7 @@ logout:
       disable: false
 
 require_https: true
+https_port: 33333
 
 uaa:
   url: http://all-properties-set:8888/uaa

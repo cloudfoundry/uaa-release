@@ -611,6 +611,7 @@
 
   params = params.merge({
     'require_https' => true,
+    'https_port' => p('uaa.ssl.port'),
     'assetBaseUrl' => p('login.asset_base_url'),
     'logout' => {
       'redirect' => {

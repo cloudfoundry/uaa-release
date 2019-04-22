@@ -42,8 +42,9 @@ cd /root/uaa-release
 set +x
 
 echo
-echo "Run 'ginkgo -v --progress --trace -r .' to run acceptance tests"
+echo "Run 'DB_SCHEME=postgres ginkgo -v --progress --trace -r .' to run acceptance tests"
 echo "    - Optionally add '-keepGoing' to keep going after a failure"
+echo "    - Optionally add '--focus \"test name\"' to focus a Describe, Context, or It"
 echo "Run 'redeploy' to delete and redeploy uaa to restore to a clean deployment"
 echo "Run 'exit' when you are finished"
 

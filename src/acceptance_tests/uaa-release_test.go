@@ -35,10 +35,6 @@ type sshResult struct {
 }
 
 var _ = Describe("UaaRelease", func() {
-	AfterEach(func() {
-		deleteUAA()
-	})
-
 	It("populates the uaa truststore", func() {
 		deployUAA()
 

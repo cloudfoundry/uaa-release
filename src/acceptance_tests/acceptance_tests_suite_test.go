@@ -148,18 +148,6 @@ func getUaaIP() (string, bool) {
 	return "", false
 }
 
-func deleteUAA() {
-	By(fmt.Sprintf("delete uaa: %v", deleteCmd), func() {
-		Expect(os.Remove("/tmp/uaa-store.json")).To(Succeed())
-		cmd := exec.Command(boshBinaryPath, deleteCmd...)
-		session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
-		Expect(err).NotTo(HaveOccurred())
-		Eventually(session, 10*time.Minute).Should(gexec.Exit(0))
-
-		Eventually(session).Should(gbytes.Say("Removing deployment"))
-	})
-}
-
 func deployUAA(opsFiles ...string) {
 	session := boshDeploy(opsFiles...)
 	Eventually(session, 20*time.Minute).Should(gexec.Exit(0))

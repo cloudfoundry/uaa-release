@@ -148,6 +148,8 @@
     end
   end
 
+  raise ArgumentError, 'Invalid value for uaa.client.redirect_uri.allow_unsafe_matching. Valid options are true or false.' unless [true, false].include?(p('uaa.client.redirect_uri.allow_unsafe_matching'))
+
   spring_profiles = uaa_db_scheme
   if p_opt('uaa.ldap.enabled')
     spring_profiles = spring_profiles + ',ldap'
@@ -385,10 +387,9 @@
 
   oauth['user']['authorities'] = p('uaa.user.authorities')
 
-  if p_opt('uaa.client')
-      oauth['client'] = {}
-  end
   if p_opt('uaa.client.secret.policy')
+    oauth['client'] ||= {}
+
     oauth['client']['secret'] = {
       'policy' => {
         'minLength' => p('uaa.client.secret.policy.minLength', 0),
@@ -631,6 +632,11 @@
         'whitelist' => {
           'endpoints' => p('uaa.limitedFunctionality.whitelist.endpoints'),
           'methods' => p('uaa.limitedFunctionality.whitelist.methods')
+        }
+      },
+      'oauth' => {
+        'redirect_uri' => {
+          'allow_unsafe_matching' => p('uaa.client.redirect_uri.allow_unsafe_matching')
         }
       }
     },

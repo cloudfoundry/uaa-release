@@ -224,6 +224,9 @@ uaa:
       - HEAD
   shutdown:
     sleep: 5000
+  oauth:
+    redirect_uri:
+      allow_unsafe_matching: true
 
 links:
   global:

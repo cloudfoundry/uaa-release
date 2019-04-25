@@ -575,6 +575,51 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  describe 'uaa.client.redirect_uri.allow_unsafe_matching' do
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
+
+    context 'when set to true' do
+      before do
+        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['allow_unsafe_matching'] = true
+      end
+
+      it 'renders into uaa.yml' do
+        expect(parsed_yaml['uaa']['oauth']['redirect_uri']['allow_unsafe_matching']).to eq(true)
+      end
+    end
+
+    context 'when set to false' do
+      before do
+        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['allow_unsafe_matching'] = false
+      end
+
+      it 'renders into uaa.yml' do
+        expect(parsed_yaml['uaa']['oauth']['redirect_uri']['allow_unsafe_matching']).to eq(false)
+      end
+    end
+
+    context 'when set to anything other than true or false' do
+      before do
+        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['allow_unsafe_matching'] = 'foo'
+      end
+
+      it 'raises an error' do
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, 'Invalid value for uaa.client.redirect_uri.allow_unsafe_matching. Valid options are true or false.')
+      end
+    end
+
+    context 'when not set by the user' do
+      it 'defaults to true' do
+        expect(parsed_yaml['uaa']['oauth']['redirect_uri']['allow_unsafe_matching']).to eq(true)
+      end
+    end
+  end
+
   describe 'uaadb.tls' do
     let(:generated_cf_manifest) {generate_cf_manifest(input)}
     let(:input) {'spec/input/test-defaults.yml'}

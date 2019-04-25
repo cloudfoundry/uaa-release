@@ -11,7 +11,6 @@ echo "trying to run update-ca-certificates..."
 # https://salsa.debian.org/debian/ca-certificates/blob/master/sbin/update-ca-certificates#L53
 timeout --signal=KILL 180s /usr/sbin/update-ca-certificates -f -v --certbundle "${UAA_CERT_BUNDLE}"
 
-CONF_DIR=/var/vcap/jobs/uaa/config
 CACHE_DIR=/var/vcap/data/uaa/cert-cache
 
 mkdir -p $CACHE_DIR
@@ -101,7 +100,6 @@ fi
 <% end %>
 
 chmod g+xw "$TRUST_STORE_FILE"
-ln -fs "$TRUST_STORE_FILE" "$CONF_DIR/cacerts"
 
 setup_directories
 

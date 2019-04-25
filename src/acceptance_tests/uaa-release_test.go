@@ -2,6 +2,7 @@ package acceptance_tests_test
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"encoding/pem"
 	"fmt"
 	"io/ioutil"
@@ -9,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -18,6 +20,19 @@ import (
 	"github.com/onsi/gomega/gexec"
 	"github.com/pavel-v-chernykh/keystore-go"
 )
+
+type row struct {
+	Stdout   string `json:"stdout"`
+	ExitCode string `json:"exit_code"`
+}
+
+type table struct {
+	Rows []row
+}
+
+type sshResult struct {
+	Tables []table
+}
 
 var _ = Describe("UaaRelease", func() {
 	AfterEach(func() {
@@ -31,14 +46,21 @@ var _ = Describe("UaaRelease", func() {
 		caCertificatesPemEncodedMap := buildCACertificatesPemEncodedMap()
 
 		var trustStoreMap map[string]interface{}
+		expectedNumberOfCerts := len(caCertificatesPemEncodedMap) + numberOfCertsInUaaDockerDeploymentYml
+
+		// Assert the file we use as our keystore has all the right certs
 		Eventually(func() map[string]interface{} {
 			trustStoreMap = buildTruststoreMap()
 			return trustStoreMap
-		}, 5*time.Minute, 10*time.Second).Should(HaveLen(len(caCertificatesPemEncodedMap) + numberOfCertsInUaaDockerDeploymentYml))
-
+		}, 5*time.Minute, 1*time.Minute).Should(HaveLen(expectedNumberOfCerts))
 		for key := range caCertificatesPemEncodedMap {
 			Expect(trustStoreMap).To(HaveKey(key))
 		}
+
+		// Verify that said file is actually making it to the jvm as a truststore
+		Eventually(verifyTomcatIsUsingCorrectTruststore(),
+			5*time.Minute,
+			10*time.Second).Should(BeTrue())
 	})
 
 	Context("UAA consuming the `database` link", func() {
@@ -217,6 +239,11 @@ func assertUAAIsHealthy(healthCheckPath string) {
 	runCommandOnUaaViaSsh(healthCheckPath)
 }
 
+func verifyTomcatIsUsingCorrectTruststore() bool {
+	tomcatProcessCmdOutput := runCommandOnUaaViaSsh("ps aux | grep tomcat")
+	return strings.Contains(tomcatProcessCmdOutput, "-Djavax.net.ssl.trustStore=/var/vcap/data/uaa/cert-cache/cacerts")
+}
+
 func buildTruststoreMap() map[string]interface{} {
 	By("downloading the truststore")
 	localKeyStorePath := scpTruststore()
@@ -225,18 +252,18 @@ func buildTruststoreMap() map[string]interface{} {
 	keyStoreDecoded, err := keystore.Decode(localKeyStoreFile, []byte("changeit"))
 	Expect(err).NotTo(HaveOccurred())
 
-	trustStoreCertMap := map[string]interface{}{}
+	truststoreCertMap := map[string]interface{}{}
 	for _, cert := range keyStoreDecoded {
 		if trustedCertEntry, isCorrectType := cert.(*keystore.TrustedCertificateEntry); isCorrectType {
 			block := &pem.Block{
 				Type:  "CERTIFICATE",
 				Bytes: trustedCertEntry.Certificate.Content,
 			}
-			trustStoreCertMap[string(pem.EncodeToMemory(block))] = nil
+			truststoreCertMap[string(pem.EncodeToMemory(block))] = nil
 		}
 	}
 
-	return trustStoreCertMap
+	return truststoreCertMap
 }
 
 func buildCACertificatesPemEncodedMap() map[string]interface{} {

@@ -6,8 +6,8 @@ source "/var/vcap/jobs/uaa/bin/configure_proxy"
 source "/var/vcap/jobs/uaa/bin/configure_newrelic"
 
 
-if [[ -f /var/vcap/jobs/uaa/config/cacerts ]]; then
-  KEYSTORE="/var/vcap/jobs/uaa/config/cacerts"
+if [[ -f /var/vcap/data/uaa/cert-cache/cacerts ]]; then
+  KEYSTORE="/var/vcap/data/uaa/cert-cache/cacerts"
 else
   KEYSTORE="/var/vcap/packages/uaa/jdk/jre/lib/security/cacerts"
 fi

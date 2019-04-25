@@ -34,7 +34,7 @@ function process_certs {
 
     # add certs from manifest to Java keystore
     <% p('uaa.ca_certs', []).each_with_index do |cert, i| %>
-        insert_cert "$(echo -n '<%= cert %>')" "uaa_<%= i %>.crt"
+        insert_cert "$(echo -n '<%= cert %>')" "uaa-bosh-property-cert-<%= i %>"
     <% end %>
     echo "Processed <%= p('uaa.ca_certs', []).length %> certificates from uaa.ca_certs"
 

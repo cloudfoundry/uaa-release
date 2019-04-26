@@ -148,7 +148,7 @@
     end
   end
 
-  raise ArgumentError, 'Invalid value for uaa.client.redirect_uri.allow_unsafe_matching. Valid options are true or false.' unless [true, false].include?(p('uaa.client.redirect_uri.allow_unsafe_matching'))
+  raise ArgumentError, 'Invalid value for uaa.client.redirect_uri.matching_mode. Valid options are legacy or exact.' unless ['legacy', 'exact'].include?(p('uaa.client.redirect_uri.matching_mode'))
 
   spring_profiles = uaa_db_scheme
   if p_opt('uaa.ldap.enabled')
@@ -636,7 +636,7 @@
       },
       'oauth' => {
         'redirect_uri' => {
-          'allow_unsafe_matching' => p('uaa.client.redirect_uri.allow_unsafe_matching')
+          'allow_unsafe_matching' => p('uaa.client.redirect_uri.matching_mode') == 'legacy'
         }
       }
     },

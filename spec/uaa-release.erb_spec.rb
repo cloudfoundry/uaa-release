@@ -575,15 +575,15 @@ describe 'uaa-release erb generation' do
     end
   end
 
-  describe 'uaa.client.redirect_uri.allow_unsafe_matching' do
+  describe 'uaa.client.redirect_uri.matching_mode' do
     let(:generated_cf_manifest) {generate_cf_manifest(input)}
     let(:input) {'spec/input/test-defaults.yml'}
     let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
     let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
 
-    context 'when set to true' do
+    context 'when set to legacy' do
       before do
-        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['allow_unsafe_matching'] = true
+        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['matching_mode'] = 'legacy'
       end
 
       it 'renders into uaa.yml' do
@@ -591,9 +591,9 @@ describe 'uaa-release erb generation' do
       end
     end
 
-    context 'when set to false' do
+    context 'when set to exact' do
       before do
-        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['allow_unsafe_matching'] = false
+        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['matching_mode'] = 'exact'
       end
 
       it 'renders into uaa.yml' do
@@ -601,15 +601,15 @@ describe 'uaa-release erb generation' do
       end
     end
 
-    context 'when set to anything other than true or false' do
+    context 'when set to anything other than legacy or exact' do
       before do
-        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['allow_unsafe_matching'] = 'foo'
+        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['matching_mode'] = 'foo'
       end
 
       it 'raises an error' do
         expect {
           parsed_yaml
-        }.to raise_error(ArgumentError, 'Invalid value for uaa.client.redirect_uri.allow_unsafe_matching. Valid options are true or false.')
+        }.to raise_error(ArgumentError, 'Invalid value for uaa.client.redirect_uri.matching_mode. Valid options are legacy or exact.')
       end
     end
 

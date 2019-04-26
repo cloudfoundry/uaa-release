@@ -499,12 +499,12 @@ properties:
     description: "Minimum number of special characters required for secret to be considered valid (defaults to 0)."
 
   # Global client redirect URI configuration
-  uaa.client.redirect_uri.allow_unsafe_matching:
+  uaa.client.redirect_uri.matching_mode:
     description: |
-      When true, will allow unsafe matching of redirect URIs.
+      When set to `legacy`, allow unsafe matching of redirect URIs.
       For example, https://example.com would also match all subdomains and all paths of https://example.com.
-      When false, will provide OAuth2 spec (RFC6749) compliant redirect URI matching.
-    default: true
+      When set to `exact`, will provide OAuth2 spec-compliant (RFC6749) exact redirect URI matching.
+    default: legacy
 
   # Clients
   uaa.clients:

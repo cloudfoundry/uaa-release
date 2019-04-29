@@ -15,6 +15,7 @@ fi
 
 cp /root/uaa-release/src/acceptance_tests/uaa-docker-deployment.yml /tmp/uaa-deployment.yml
 cp /root/uaa-release/scripts/refresh-uaa-deployment.sh /usr/local/bin/redeploy
+cp /root/uaa-release/scripts/recreate-uaa-release.sh /usr/local/bin/recreate-release
 
 pushd "/root/uaa-release"
     bosh upload-release tmp/uaa-dev-release.tgz
@@ -39,13 +40,36 @@ export BOSH_DEPLOYMENT="uaa"
 
 cd /root/uaa-release
 
+export UAA_IP=$(bosh instances --column=ips | tail -1)
+echo "$UAA_IP uaa.$(hostname --fqdn)" >> /etc/hosts
+
+export UAA_ADMIN_USER_PASSWORD=$(bosh int <(bosh manifest -d uaa) \
+  --path /instance_groups/name=uaa/jobs/name=uaa/properties/uaa/scim/users/name=admin/password)
+export UAA_ADMIN_CLIENT_PASSWORD=$(bosh int <(bosh manifest -d uaa) \
+  --path /instance_groups/name=uaa/jobs/name=uaa/properties/uaa/clients/admin/secret)
+
 set +x
 
 echo
-echo "Run 'DB_SCHEME=postgres ginkgo -v --progress --trace -r .' to run acceptance tests"
+echo "Welcome."
+echo
+echo "Run 'redeploy' to delete and redeploy uaa to restore to a clean deployment."
+echo "    - Optionally edit the src/acceptance_tests/uaa-docker-deployment.yml manifest before redeploying"
+echo
+echo "Run 'recreate-release' to recompile the bosh release and upload it to the director."
+echo
+echo "Run 'DB_SCHEME=postgres ginkgo -v --progress --trace -r .' to run acceptance tests."
 echo "    - Optionally add '-keepGoing' to keep going after a failure"
 echo "    - Optionally add '--focus \"test name\"' to focus a Describe, Context, or It"
-echo "Run 'redeploy' to delete and redeploy uaa to restore to a clean deployment"
-echo "Run 'exit' when you are finished"
+echo
+echo "Run 'apt-get install -y vim' to install vim."
+echo
+echo "Run 'apt-get -y install build-essential ruby-dev && gem install cf-uaac -N' to install uaac."
+echo "    - Target: 'uaac target https://uaa.\$(hostname --fqdn):8443 --skip-ssl-validation'"
+echo "    - Admin:  'uaac token client get admin -s \$UAA_ADMIN_CLIENT_PASSWORD'"
+echo
+echo "Run 'exit' when you are finished."
+echo "    - Don't worry, running run-locally.sh again will use the same director and uaa deployment"
+echo
 
 bash

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xeu
+
 bosh -n deld --force -d uaa
 
 cp /root/uaa-release/src/acceptance_tests/uaa-docker-deployment.yml /tmp/uaa-deployment.yml

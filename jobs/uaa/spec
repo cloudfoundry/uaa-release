@@ -5,11 +5,9 @@ description: "The UAA is the identity management service for Cloud Foundry. It's
 
 templates:
   bin/uaa: bin/uaa
-  bin/configure_proxy.erb: bin/configure_proxy
   bin/configure_newrelic.erb: bin/configure_newrelic
-  bin/install_crt: bin/install_crt
+  bin/configure_proxy.erb: bin/configure_proxy
   bin/health_check.erb: bin/health_check
-  bin/install_uaa_crt: bin/install_uaa_crt
   bin/pre-start.erb: bin/pre-start
   bin/post-start: bin/post-start
 

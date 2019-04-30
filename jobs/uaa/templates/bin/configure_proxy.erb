@@ -3,7 +3,7 @@
 # Proxy configuration variable for the uaa
 HTTP_PROXY_JAVA_OPTIONS=""
 
-echo "[uaa-ctl] Default environment set up"
+log "Default environment set up"
 
 # Proxy configuration
 <% if_p('env.http_proxy') do |httpProxy| %>
@@ -42,6 +42,6 @@ echo "[uaa-ctl] Default environment set up"
   fi
 <% end %>
 
-echo "[uaa-ctl] UAA System Proxies set to:$HTTP_PROXY_JAVA_OPTIONS"
+log "UAA System Proxies set to:$HTTP_PROXY_JAVA_OPTIONS"
 
 export HTTP_PROXY_JAVA_OPTIONS

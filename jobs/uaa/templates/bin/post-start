@@ -3,7 +3,7 @@
 set -euo pipefail
 
 function log {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S').$(($(date +%N)/1000000))] uaa-post-start - $1"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S.%3N')] uaa-post-start - $1"
 }
 
 log "Starting"

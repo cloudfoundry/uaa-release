@@ -24,7 +24,8 @@ function insert_ldap_certs {
 }
 
 function build_new_cache_files {
-    rm -f $UAA_CA_CERTS_FILE
+    rm -f ${UAA_CA_CERTS_FILE}
+    touch ${UAA_CA_CERTS_FILE}
 
     <% p('uaa.ca_certs', []).each do |cert| %>
         echo '<%= cert.strip %>' >> $UAA_CA_CERTS_FILE
@@ -33,11 +34,13 @@ function build_new_cache_files {
     log "Trying to run update-ca-certificates..."
     # --certbundle is an undocumented flag in the update-ca-certificates script
     # https://salsa.debian.org/debian/ca-certificates/blob/master/sbin/update-ca-certificates#L53
-    timeout --signal=KILL 180s /usr/sbin/update-ca-certificates -f -v --certbundle $(basename "${OS_CERTS_FILE}")
+    timeout --signal=KILL 180s /usr/sbin/update-ca-certificates -f -v --certbundle "$(basename "${OS_CERTS_FILE}")"
 }
 
 function new_cache_files_are_identical {
-    touch $PERSISTENT_OS_CERTS_FILE $PERSISTENT_LDAP_CERTS_FILE $PERSISTENT_UAA_CA_CERTS_FILE
+    if [[ ! -f ${PERSISTENT_OS_CERTS_FILE} ]] || [[ ! -f ${PERSISTENT_LDAP_CERTS_FILE} ]] || [[ ! -f ${PERSISTENT_UAA_CA_CERTS_FILE} ]]; then
+      return 1
+    fi
 
     diff $OS_CERTS_FILE $PERSISTENT_OS_CERTS_FILE > /dev/null && \
         diff $LDAP_CERTS_FILE $PERSISTENT_LDAP_CERTS_FILE > /dev/null && \
@@ -117,6 +120,13 @@ process_certs
 <% end %>
 
 rm -rf $TMP_DIR
+
+# We want to keep packages pristine, since tomcat is modified in place we stage it elsewhere.
+rm -rf /var/vcap/data/uaa/tomcat
+mkdir -p /var/vcap/data/uaa/
+cp -a /var/vcap/packages/uaa/tomcat /var/vcap/data/uaa/
+cp -a /var/vcap/jobs/uaa/config/tomcat/* /var/vcap/data/uaa/tomcat/conf/
+chown -R vcap:vcap /var/vcap/data/uaa/
 
 log "Completed"
 

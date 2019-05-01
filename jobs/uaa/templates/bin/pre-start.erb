@@ -88,7 +88,30 @@ function process_certs {
     if ! new_cache_files_are_identical; then
         build_trust_store_file
     fi
+
+    insert_ssl_cert
+
     save_new_cache_files_to_persistent_disk
+}
+
+function insert_ssl_cert {
+    log "Installing Server SSL certificate"
+
+    openssl pkcs12 -export -name uaa_ssl_cert \
+        -in /var/vcap/jobs/uaa/config/uaa.crt \
+        -out /var/vcap/data/uaa/uaa_keystore.p12 \
+        -password pass:k0*l*s3cur1tyr0ck$
+
+    log "Installed Server SSL certificate"
+}
+
+function configure_tomcat {
+    # We want to keep packages pristine, since tomcat is modified in place we stage it elsewhere.
+    rm -rf /var/vcap/data/uaa/tomcat
+    mkdir -p /var/vcap/data/uaa/
+    cp -a /var/vcap/packages/uaa/tomcat /var/vcap/data/uaa/
+    cp -a /var/vcap/jobs/uaa/config/tomcat/* /var/vcap/data/uaa/tomcat/conf/
+    chown -R vcap:vcap /var/vcap/data/uaa/
 }
 
 log "Starting"
@@ -108,25 +131,9 @@ PERSISTENT_LDAP_CERTS_FILE=$PERSISTENT_CERTS_DIR/ldap-certs-cache.txt
 
 process_certs
 
-<% if p("uaa.ssl.port") != -1 %>
-    log "Installing Server SSL certificate"
-
-    openssl pkcs12 -export -name uaa_ssl_cert \
-        -in /var/vcap/jobs/uaa/config/uaa.crt \
-        -out /var/vcap/data/uaa/uaa_keystore.p12 \
-        -password pass:k0*l*s3cur1tyr0ck$
-
-    log "Installed Server SSL certificate"
-<% end %>
+configure_tomcat
 
 rm -rf $TMP_DIR
-
-# We want to keep packages pristine, since tomcat is modified in place we stage it elsewhere.
-rm -rf /var/vcap/data/uaa/tomcat
-mkdir -p /var/vcap/data/uaa/
-cp -a /var/vcap/packages/uaa/tomcat /var/vcap/data/uaa/
-cp -a /var/vcap/jobs/uaa/config/tomcat/* /var/vcap/data/uaa/tomcat/conf/
-chown -R vcap:vcap /var/vcap/data/uaa/
 
 log "Completed"
 

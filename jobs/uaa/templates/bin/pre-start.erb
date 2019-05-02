@@ -106,7 +106,9 @@ function insert_ssl_cert {
 }
 
 function configure_tomcat {
-    # We want to keep packages pristine, since tomcat is modified in place we stage it elsewhere.
+    # When run with bpm, the vcap user does not have permissions to read
+    # files in the jobs and packages directories. Consequently, we move
+    # our tomcat installation into a directory where we have full permissions.
     rm -rf /var/vcap/data/uaa/tomcat
     mkdir -p /var/vcap/data/uaa/
     cp -a /var/vcap/packages/uaa/tomcat /var/vcap/data/uaa/

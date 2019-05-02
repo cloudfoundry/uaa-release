@@ -2,7 +2,7 @@
 
 set -u
 
-HEALTH_RESPONSE=$(curl -k --max-time 5 --connect-timeout 2 https://127.0.0.1:<%= p('uaa.ssl.port') %>/healthz)
+HEALTH_RESPONSE=$(curl -ksS --max-time 5 --connect-timeout 2 https://127.0.0.1:<%= p('uaa.ssl.port') %>/healthz)
 
 if [[ "${HEALTH_RESPONSE}" == "ok" ]]; then
   exit 0

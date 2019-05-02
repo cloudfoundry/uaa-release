@@ -26,8 +26,12 @@ log "Performing post start healthcheck until $(stat $WHEN_FINISH -c '%y')"
 
 # "-ot" is "older than"
 while [ "${WHEN_NOW}" -ot "${WHEN_FINISH}" ]; do
+    log "Running health check"
+    set +e # allow the script to continue even when health_check fails
     /var/vcap/jobs/uaa/bin/health_check
     check=$?
+    set -e
+
     if [ "$check" -eq "0" ]
     then
         log "Health check successful"
@@ -39,7 +43,9 @@ while [ "${WHEN_NOW}" -ot "${WHEN_FINISH}" ]; do
         delete_ts_files
         exit 1
     fi
+
     sleep 1
+
     touch "${WHEN_NOW}"
 done
 

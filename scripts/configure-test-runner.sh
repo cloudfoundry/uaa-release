@@ -58,7 +58,7 @@ echo "    - Optionally edit the src/acceptance_tests/uaa-docker-deployment.yml m
 echo
 echo "Run 'recreate-release' to recompile the bosh release and upload it to the director."
 echo
-echo "Run 'DB_SCHEME=postgres ginkgo -v --progress --trace -r .' to run acceptance tests."
+echo "Run 'DB_SCHEME=postgres ginkgo -v --progress --trace -randomizeAllSpecs -randomizeSuites -race -r src/acceptance_tests/' to run acceptance tests."
 echo "    - Optionally add '-keepGoing' to keep going after a failure"
 echo "    - Optionally add '--focus \"test name\"' to focus a Describe, Context, or It"
 echo

@@ -1,7 +1,7 @@
-openjdk/openjdk-1.8.0_202-x86_64-trusty.tar.gz:
-  size: 103343856
-  object_id: 3dd729c1-c064-45c3-40c9-26f6450d2519
-  sha: 8ae76b80ffd1be54f43cf3490e6e1a871fc88e8e
+openjdk/openjdk-1.8.0_212-x86_64-trusty.tar.gz:
+  size: 103369989
+  object_id: 523490a0-34c0-4ceb-5920-584ab9e9fd1d
+  sha: cc2ded18b5bf61cae5796e3367c498ffcc5d6a3b
 postgres/postgresql-11.1.tar.gz:
   size: 28078799
   object_id: b1461def-d2af-43b4-69ee-e9b7c7a5f26c

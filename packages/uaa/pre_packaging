@@ -7,20 +7,15 @@ cd ${BUILD_DIR}
 # Make sure we can see uname
 export PATH=$PATH:/bin:/usr/bin
 
-#unpack Java - we support Mac OS 64bit and Linux 64bit otherwise we require JAVA_HOME to point to JDK
-if [ `uname` = "Darwin" ]; then
-  mkdir java
-  cd java
-  tar zxvf ../openjdk/openjdk-1.8.0_*-x86_64-mountainlion.tar.gz --exclude="._*"
-  export JAVA_HOME=${BUILD_DIR}/java
-elif [ `uname` = "Linux" ]; then
+# Unpack Java - we support Linux 64bit otherwise we require JAVA_HOME to point to JDK
+if [ `uname` = "Linux" ]; then
   mkdir java
   cd java
   tar zxvf ../openjdk/openjdk-1.8.0_*-x86_64-trusty.tar.gz
   export JAVA_HOME=${BUILD_DIR}/java
 else
   if [ ! -d $JAVA_HOME ]; then
-    echo "JAVA_HOME properly set is required for non Linux/Darwin builds."
+    echo "JAVA_HOME properly set is required for non Linux builds."
     exit 1
   fi
 fi
@@ -38,7 +33,6 @@ cp statsd/build/libs/cloudfoundry-identity-statsd-*.war ${BUILD_DIR}/uaa/cloudfo
 ./gradlew clean
 cd ${BUILD_DIR}
 rm -rf java
-rm -rf openjdk/openjdk-1.8.0_*-x86_64-mountainlion.tar.gz
 rm -rf ${BUILD_DIR}/uaa/.git
 rm -f ${BUILD_DIR}/uaa/.gitignore
 rm -f ${BUILD_DIR}/uaa/.gitreview

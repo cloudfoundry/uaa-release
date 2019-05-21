@@ -1,7 +1,3 @@
-openjdk/openjdk-1.8.0_202-x86_64-mountainlion.tar.gz:
-  size: 101468874
-  object_id: 75e918ce-effa-44b0-7771-76cae4c235e7
-  sha: 8b1c4f973ea4d4b5876431a3b58728ea6b3dea6e
 openjdk/openjdk-1.8.0_202-x86_64-trusty.tar.gz:
   size: 103343856
   object_id: 3dd729c1-c064-45c3-40c9-26f6450d2519

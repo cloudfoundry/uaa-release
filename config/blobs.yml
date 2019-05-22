@@ -8,8 +8,8 @@ postgres/postgresql-11.1.tar.gz:
   sha: 5f3e45d5ad5ec3372474eda83e6441ca885ab2cd
 uaa/apache-tomcat-9.0.20.tar.gz:
   size: 10851264
-  object_id: 924e6782-6d13-47c1-5baa-010718353107
-  sha: sha256:e9f18587eda41fefd7f749717dc903a4ddf70582ecd453ee47522e5189f57d19
+  object_id: 16eec068-ebfc-4606-70c8-c0017f8ae81f
+  sha: 7c3b509f7bb1c6593978836ac75fdb081c256ac4
 uaa/newrelic.jar:
   size: 10612298
   object_id: dcb04454-dc24-497b-4926-908456c10fc8

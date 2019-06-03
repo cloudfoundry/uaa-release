@@ -1,0 +1,13 @@
+{
+  "username": "ad2min",
+  "password": "exam2ple",
+  "host": "127.0.0.2",
+  "port": 2222,
+  "database": "database-name-from-properties",
+  "adapter": "postgres",
+  "tls": {
+    "cert": {
+      "ca": "---not a real cert---"
+    }
+  }
+}

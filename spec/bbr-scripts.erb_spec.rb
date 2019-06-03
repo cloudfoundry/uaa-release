@@ -37,7 +37,7 @@ describe 'bosh backup and restore script' do
               'address' => '127.0.0.2',
               'port' => 2222,
               'db_scheme' => 'postgres',
-              'databases' => [{'name' => 'uaa_db_2_name', 'tag' => 'uaa'}],
+              'databases' => [{'name' => 'database-name-from-properties', 'tag' => 'uaa'}],
               'roles' => [{'name' => 'ad2min', 'password' => 'exam2ple', 'tag' => 'admin'}],
               'ca_cert' => '---not a real cert---',
           }
@@ -104,17 +104,7 @@ describe 'bosh backup and restore script' do
         let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
 
         it 'it has all the expected lines' do
-          expect(generated_script).to include('"username": "admin"')
-          expect(generated_script).to include('"password": "example"')
-          expect(generated_script).to include('"host": "127.0.0.1"')
-          expect(generated_script).to include('"port": 5432')
-          expect(generated_script).to include('"database": "uaa_db_name"')
-          expect(generated_script).to include('"adapter": "postgres"')
-          expect(generated_script).to include(' "tls": {
-    "cert": {
-      "ca": "---not a real cert---"
-    }
-  }')
+          expect(generated_script).to eq(read_file('bbr-uaadb/expected-fixtures/using-links.config.json'))
         end
       end
 
@@ -126,17 +116,7 @@ describe 'bosh backup and restore script' do
         let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
 
         it 'it has all the expected lines' do
-          expect(generated_script).to include('"username": "ad2min"')
-          expect(generated_script).to include('"password": "exam2ple"')
-          expect(generated_script).to include('"host": "127.0.0.2"')
-          expect(generated_script).to include('"port": 2222')
-          expect(generated_script).to include('"database": "uaa_db_2_name"')
-          expect(generated_script).to include('"adapter": "postgres"')
-          expect(generated_script).to include('"tls": {
-    "cert": {
-      "ca": "---not a real cert---"
-    }
-  }')
+          expect(generated_script).to eq(read_file('bbr-uaadb/expected-fixtures/using-properties.config.json'))
         end
       end
 
@@ -229,17 +209,7 @@ describe 'bosh backup and restore script' do
       let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
 
       it 'it has all the expected lines' do
-        expect(generated_script).to include('"username": "admin"')
-        expect(generated_script).to include('"password": "example"')
-        expect(generated_script).to include('"host": "127.0.0.1"')
-        expect(generated_script).to include('"port": 5432')
-        expect(generated_script).to include('"database": "uaa_db_name"')
-        expect(generated_script).to include('"adapter": "postgres"')
-        expect(generated_script).to include('"tls": {
-    "cert": {
-      "ca": "---not a real cert---"
-    }
-  }')
+        expect(generated_script).to eq(read_file('bbr-uaadb/expected-fixtures/using-links.config.json'))
       end
     end
 

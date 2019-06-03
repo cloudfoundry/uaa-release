@@ -428,7 +428,7 @@ properties:
       Contains a map of actions, each with a list of IDs.
       Possible delete actions are 'identityProviders', 'users' and 'clients'.
       Identity providers are identified by their alias
-      These will be deleted in the database (default zone).
+      These will be deleted in the default (`uaa`) zone.
       Unrecognized map keys will be ignored.
       If the ID exists both in the delete and create sections
       the delete section takes preceden
@@ -508,7 +508,7 @@ properties:
   uaa.clients:
     description: |
       List of OAuth2 clients that the UAA will be bootstrapped with.
-      These will be created in the default zone.
+      These will be created in the default (`uaa`) zone.
     example:
       login:
         id: login
@@ -695,6 +695,7 @@ properties:
   uaa.scim.users:
     description: |
       A list of users to be bootstrapped with authorities.
+      These will be created in the default (`uaa`) zone.
       Each entry supports the following format:
         Short OpenStruct:
           - name: username

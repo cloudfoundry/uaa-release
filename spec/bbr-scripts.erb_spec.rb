@@ -37,6 +37,7 @@ describe 'bosh backup and restore script' do
       }
     }
   }
+
   let(:generated_script) {
     binding = Bosh::Template::EvaluationContext.new(properties, nil).get_binding
     generated_script = ERB.new(File.read(script)).result(binding)
@@ -48,10 +49,75 @@ describe 'bosh backup and restore script' do
       let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/backup.sh.erb" }
 
       it 'it has all the expected lines' do
-        expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
-        expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
-        expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
-        expect(generated_script).to include('"/var/vcap/jobs/database-backup-restorer/bin/backup" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
+        expect(generated_script).to eq(read_file('bbr-uaadb/expected-fixtures/release_level_backup_true.backup.sh'))
+      end
+    end
+
+    describe 'restore.sh.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/restore.sh.erb" }
+
+      it 'it has all the expected lines' do
+        expect(generated_script).to eq(read_file('bbr-uaadb/expected-fixtures/release_level_backup_true.restore.sh'))
+      end
+    end
+
+    context 'config.json.erb' do
+
+      describe 'when link is used' do
+        let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
+
+        it 'it has all the expected lines' do
+          expect(generated_script).to eq(read_file('bbr-uaadb/expected-fixtures/using-links.config.json'))
+        end
+      end
+
+      describe 'when properties are used instead of links' do
+        before(:each) do
+          properties['links'] = nil
+        end
+
+        let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
+
+        it 'it has all the expected lines' do
+          expect(generated_script).to eq(read_file('bbr-uaadb/expected-fixtures/using-properties.config.json'))
+        end
+      end
+
+      describe 'when ca_cert is not specified' do
+        before(:each) do
+          properties['properties']['uaadb']['ca_cert'] = nil
+        end
+
+        let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
+
+        it 'should not contain tls.cert.ca' do
+          expect(generated_script).not_to include('tls')
+          expect(generated_script).not_to include('cert')
+          expect(generated_script).not_to include('ca')
+        end
+      end
+    end
+  end
+
+  context 'release_level_backup is false' do
+
+    before(:each) do
+      properties['links']['uaa_db']['properties']['release_level_backup'] = false
+    end
+
+    describe 'backup.sh.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/backup.sh.erb" }
+
+      it 'does not have the backup command' do
+        expect(generated_script).to eq(read_file('bbr-uaadb/expected-fixtures/release_level_backup_false.backup.sh'))
+      end
+    end
+
+    describe 'restore.sh.erb' do
+      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/restore.sh.erb" }
+
+      it 'does not have the restore command' do
+        expect(generated_script).to eq(read_file('bbr-uaadb/expected-fixtures/release_level_backup_false.restore.sh'))
       end
     end
 
@@ -92,54 +158,6 @@ describe 'bosh backup and restore script' do
       end
     end
 
-    describe 'restore.sh.erb' do
-      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/restore.sh.erb" }
-
-      it 'it has all the expected lines' do
-        expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
-        expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
-        expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
-        expect(generated_script).to include('"/var/vcap/jobs/database-backup-restorer/bin/restore" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
-      end
-    end
-  end
-
-
-  context 'release_level_backup is false' do
-
-    before(:each) do
-      properties['links']['uaa_db']['properties']['release_level_backup'] = false
-    end
-
-    describe 'backup.sh.erb' do
-      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/backup.sh.erb" }
-
-      it 'does not have the backup command' do
-        expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
-        expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
-        expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
-        expect(generated_script).not_to include('"/var/vcap/jobs/database-backup-restorer/bin/backup" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
-      end
-    end
-
-    describe 'config.json.erb' do
-      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/config.json.erb" }
-
-      it 'it has all the expected lines' do
-        expect(generated_script).to eq(read_file('bbr-uaadb/expected-fixtures/using-links.config.json'))
-      end
-    end
-
-    describe 'restore.sh.erb' do
-      let(:script) { "#{__dir__}/../jobs/bbr-uaadb/templates/restore.sh.erb" }
-
-      it 'does not have the restore command' do
-        expect(generated_script).to include('JOB_PATH="/var/vcap/jobs/bbr-uaadb"')
-        expect(generated_script).to include('BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"')
-        expect(generated_script).to include('CONFIG_PATH="${JOB_PATH}/config/config.json"')
-        expect(generated_script).not_to include('"/var/vcap/jobs/database-backup-restorer/bin/restore" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"')
-      end
-    end
   end
 
 end

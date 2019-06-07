@@ -9,3 +9,5 @@ BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"
 CONFIG_PATH="${JOB_PATH}/config/config.json"
 
 
+echo "script deactivated due to release_level_backup being set to FALSE\n"
+

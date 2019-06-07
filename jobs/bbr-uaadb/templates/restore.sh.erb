@@ -8,6 +8,8 @@ JOB_PATH="/var/vcap/jobs/bbr-uaadb"
 BBR_ARTIFACT_FILE_PATH="${BBR_ARTIFACT_DIRECTORY}/uaadb-artifact-file"
 CONFIG_PATH="${JOB_PATH}/config/config.json"
 
-<% if link('uaa_db').p('release_level_backup') %>
+<% if p('release_level_backup') %>
 "/var/vcap/jobs/database-backup-restorer/bin/restore" --config "${CONFIG_PATH}" --artifact-file "${BBR_ARTIFACT_FILE_PATH}"
+<% else %>
+echo "script deactivated due to release_level_backup being set to FALSE\n"
 <% end %>

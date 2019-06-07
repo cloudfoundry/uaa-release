@@ -23,8 +23,6 @@ function give_route_registrar_enough_time() {
 }
 
 # start the UAA
-
-  /var/vcap/bosh/bin/monit start uaa
-  /var/vcap/jobs/uaa/bin/post-start
-  give_route_registrar_enough_time
-
+/var/vcap/bosh/bin/monit start uaa
+/var/vcap/jobs/uaa/bin/post-start
+give_route_registrar_enough_time

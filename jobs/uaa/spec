@@ -32,7 +32,6 @@ provides:
   type: uaa_db
   properties:
   - uaadb
-  - release_level_backup
 
 - name: uaa_keys
   type: uaa_keys
@@ -67,8 +66,7 @@ properties:
 
   #backup properties
   release_level_backup:
-    default: false
-    description: "Set to true to include UAA database in backup and restore operations"
+    description: "DEPRECATED: Do not use this property. Use the corresponding property in bbr-uaadb."
 
   #uaa database host configuration
   uaadb.address:

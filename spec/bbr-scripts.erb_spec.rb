@@ -14,7 +14,6 @@ describe 'bosh backup and restore script' do
         'uaa_db' => {
           'instances' => [],
           'properties' => {
-            'release_level_backup' => true,
             'uaadb' => {
               'address' => '127.0.0.1',
               'port' => 5432,
@@ -26,6 +25,7 @@ describe 'bosh backup and restore script' do
         }
       },
       'properties' => {
+          'release_level_backup' => true,
           'uaadb' => {
               'address' => '127.0.0.2',
               'port' => 2222,
@@ -102,7 +102,7 @@ describe 'bosh backup and restore script' do
   context 'release_level_backup is false' do
 
     before(:each) do
-      properties['links']['uaa_db']['properties']['release_level_backup'] = false
+      properties['properties']['release_level_backup'] = false
     end
 
     describe 'backup.sh.erb' do

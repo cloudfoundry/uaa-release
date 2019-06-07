@@ -230,6 +230,17 @@ describe 'uaa-release erb generation' do
         }.to raise_error(ArgumentError, /uaa.jwt.refresh.format invalidformat must be one of/)
       end
     end
+
+    context 'release_level_backup' do
+      let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+
+      it 'raises an error if set' do
+        generated_cf_manifest['properties']['release_level_backup'] = true
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /DEPRECATED: release_level_backup in the uaa job should no longer be used. Please set the corresponding release_level_backup property in the bbr-uaadb job instead/)
+      end
+    end
   end
 
   context 'when branding consent is specified for default zone' do

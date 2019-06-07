@@ -1,11 +1,9 @@
 #!/bin/bash
 
-<% if p('release_level_backup') %>
 function enable_limited_functionality() {
   touch '<%= p('uaa.limitedFunctionality.statusFile', '/tmp/uaa-non-existent') %>'
 }
 
-  enable_limited_functionality
-  #uaa checks the file system every 5 seconds
-  sleep 6
-<% end %>
+enable_limited_functionality
+#uaa checks the file system every 5 seconds
+sleep 6

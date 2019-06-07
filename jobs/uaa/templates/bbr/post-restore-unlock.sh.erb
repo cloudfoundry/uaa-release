@@ -23,8 +23,6 @@ function give_route_registrar_enough_time() {
 }
 
 # start the UAA
-<% if p('release_level_backup') %>
-  /var/vcap/bosh/bin/monit start uaa
-  /var/vcap/jobs/uaa/bin/post-start
-  give_route_registrar_enough_time
-<% end %>
+/var/vcap/bosh/bin/monit start uaa
+/var/vcap/jobs/uaa/bin/post-start
+give_route_registrar_enough_time

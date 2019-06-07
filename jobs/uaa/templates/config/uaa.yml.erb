@@ -127,8 +127,11 @@
     end
 
   end
-
   raise ArgumentError, "The required length of the encryption passphrases for #{keys_with_invalid_passphrases} need to be at least 8 characters long." unless keys_with_invalid_passphrases.length == 0
+
+ if_p('release_level_backup') do
+    raise ArgumentError, "DEPRECATED: release_level_backup in the uaa job should no longer be used. Please set the corresponding release_level_backup property in the bbr-uaadb job instead."
+ end
 
   uaa_db = p_arr('uaadb.databases').find { |db| db['tag'] == 'uaa' }
   uaa_role = p_arr('uaadb.roles').find { |role| role['tag'] == 'admin' }

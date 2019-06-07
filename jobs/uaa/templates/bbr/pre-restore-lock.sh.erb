@@ -1,7 +1,5 @@
 #!/bin/bash
 
-<% if p('release_level_backup') %>
-  /var/vcap/bosh/bin/monit stop uaa
-  #give monit and route registrar enough time
-  sleep 15
-<% end %>
+/var/vcap/bosh/bin/monit stop uaa
+#give monit and route registrar enough time
+sleep 15

@@ -11,18 +11,19 @@ describe 'bosh backup and restore script' do
   let(:properties) {
     {
       'properties' => {
-          'uaa' => {
-              'limitedFunctionality' => {
-                  'statusFile' => '/var/vcap/data/uaa/bbr_limited_mode.lock'
-              },
-              'url' => 'http://uaa.test.uaa.url'
+        'uaa' => {
+          'limitedFunctionality' => {
+            'statusFile' => '/var/vcap/data/uaa/bbr_limited_mode.lock'
           },
+          'url' => 'http://uaa.test.uaa.url'
+        },
       }
     }
   }
+
   let(:generated_script) {
     binding = Bosh::Template::EvaluationContext.new(properties, nil).get_binding
-    generated_script = ERB.new(File.read(script)).result(binding)
+    ERB.new(File.read(script)).result(binding)
   }
 
   describe 'pre-backup-lock.erb' do

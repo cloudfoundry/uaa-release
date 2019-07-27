@@ -100,6 +100,7 @@ oauth:
     - cloud_controller.write
     - cloud_controller_service_permissions.read
     - password.write
+    - network.write
     - uaa.user
     - approvals.me
     - oauth.approvals

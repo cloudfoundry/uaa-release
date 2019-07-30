@@ -26,11 +26,12 @@
   revision = "7dc373669fa10ddf827c37c595dee30a2f001be9"
 
 [[projects]]
-  digest = "1:dd375e376046ed022d314a93eb1a1047786133253123f7c011e339d99b9a556c"
+  digest = "1:26f2a28a9077d5b11df8af4cee2bcff1e1dd414a1b3f1fac99aa7d23439e4bf1"
   name = "github.com/cheggaaa/pb"
   packages = ["."]
   pruneopts = "UT"
-  revision = "c1f48d5ce4f292dfb775ef52aaedd15be323510d"
+  revision = "40231cf7fa00b7c9098939b6a9e6f54f4b3ce020"
+  version = "v3.0.1"
 
 [[projects]]
   digest = "1:56b41e09c790d5503dfa2192ecf8e477acb84702174f31a75d5873f97602a389"
@@ -130,6 +131,14 @@
   pruneopts = "UT"
   revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
   version = "v0.0.3"
+
+[[projects]]
+  digest = "1:0356f3312c9bd1cbeda81505b7fd437501d8e778ab66998ef69f00d7f9b3a0d7"
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3ee7d812e62a0804a7d0a324e0249ca2db3476d3"
+  version = "v0.0.4"
 
 [[projects]]
   branch = "master"

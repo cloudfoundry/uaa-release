@@ -122,10 +122,10 @@ instance_groups:
         - name: uaaadmin
           password: admin
           tag: admin
-  - name: uaa_postgres
-    release: uaa
+  - name: postgres
+    release: postgres
     properties:
-      postgres:
+      databases:
         port: 5524
         roles:
           - tag: admin
@@ -228,6 +228,10 @@ releases:
   version: 1.0.4
   url: https://bosh.io/d/github.com/cloudfoundry-incubator/bpm-release?v=1.0.4
   sha1: 41df19697d6a69d2552bc2c132928157fa91abe0
+- name: postgres
+  version: 38
+  url: https://bosh.io/d/github.com/cloudfoundry/postgres-release?v=38
+  sha1: 23620deb20c34cefadff74c0e5bfdffaaea1a807
 
 stemcells:
 - alias: default

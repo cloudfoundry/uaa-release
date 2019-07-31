@@ -79,32 +79,6 @@ Add the following properties to your manifest:
    [submit a pull request](https://help.github.com/articles/creating-a-pull-request)
    selecting `develop` as the target branch
 
-## Deploying to a bosh-lite environment
-
-   We have provided [a sample manifest](docs/bosh-lite-uaa-release.yml)
-   for a bosh-lite uaa-release deployment. 
-   Make sure you modify the director uuid in the manifest to match yours 
-
-
-       bosh upload-stemcell <stemcell-url> # use latest stemcell from here: https://bosh.io/stemcells/bosh-warden-boshlite-ubuntu-xenial-go_agent
-       bosh create-release
-       bosh upload-release
-       bosh -n -e vbox -d uaa deploy \
-         templates/uaa-deployment.yml \
-         --vars-store creds.yml \
-         -v system_domain=uaa-standalone.com
-
-    
-   After that you can get the IP address and add the hostname to your `/etc/hosts` file
-  
-   You may want to setup an entry in your `/etc/hosts`
-      
-       10.244.0.118    uaa.uaa-standalone.com
-   
-   And you access it using
-
-       https://uaa.uaa-standalone.com:8443/
-
 ## Java Runtime Environments
 
    Java Runtime Environments are gracefully supplied by the Cloud Foundry Java Buildpack Team

@@ -48,7 +48,6 @@ consumes:
   optional: true
 
 packages:
-  - uaa_utils
   - uaa
 
 properties:

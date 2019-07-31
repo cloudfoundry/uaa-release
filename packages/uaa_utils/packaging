@@ -1,3 +1,0 @@
-set -e -x
-
-cp -a uaa_utils/* ${BOSH_INSTALL_TARGET}

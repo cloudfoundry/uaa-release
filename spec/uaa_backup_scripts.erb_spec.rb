@@ -41,15 +41,7 @@ describe 'bosh backup and restore script' do
 
     it 'it has all the expected lines' do
       expect(generated_script).to include('/var/vcap/bosh/bin/monit stop uaa')
-      expect(generated_script).to include('sleep 15')
-    end
-  end
-
-  describe 'post-restore-unlock.erb' do
-    let(:script) { "#{__dir__}/../jobs/uaa/templates/bbr/post-restore-unlock.sh.erb" }
-
-    it 'it has all the expected lines' do
-      expect(generated_script).to eq(read_file('compare/post-restore-unlock.sh'))
+      expect(generated_script).to include('wait_for_uaa_to_stop')
     end
   end
 

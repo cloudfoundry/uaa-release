@@ -25,7 +25,7 @@ templates:
   bbr/pre-backup-lock.sh.erb: bin/bbr/pre-backup-lock
   bbr/pre-restore-lock.sh.erb: bin/bbr/pre-restore-lock
   bbr/post-backup-unlock.sh.erb: bin/bbr/post-backup-unlock
-  bbr/post-restore-unlock.sh.erb: bin/bbr/post-restore-unlock
+  bbr/post-restore-unlock.sh: bin/bbr/post-restore-unlock
 
 provides:
 - name: uaa_db

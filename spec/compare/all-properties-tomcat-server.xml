@@ -5,6 +5,7 @@
   <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener"/>
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener"/>
   <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener"/>
+  <Listener className="org.cloudfoundry.identity.uaa.web.tomcat.UaaStartupFailureListener" />
 
   <Service name="Catalina">
     <Connector class="org.apache.coyote.http11.Http11NioProtocol"

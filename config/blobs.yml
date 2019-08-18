@@ -2,10 +2,10 @@ openjdk/openjdk-1.8.0_222-x86_64-trusty.tar.gz:
   size: 103486305
   object_id: aefe2bbb-97f7-4936-6e21-e1e81e4d8e1a
   sha: fd1636412f4320e2efcfc242f7e87d3771bb0d8b
-uaa/apache-tomcat-9.0.22.tar.gz:
-  size: 10929702
-  object_id: da62c62d-08b1-4a94-5be8-88d1abba7e48
-  sha: 14552f6cfb7d297f60ac90116b5ee44a8c3b45fc
+uaa/apache-tomcat-9.0.24.tar.gz:
+  size: 10914435
+  object_id: de2e4d6f-72ed-4406-6a77-f8ecddbfeae8
+  sha: f18703beb5994cd5e500d72d397a12f2d203588b
 uaa/newrelic.jar:
   size: 10612298
   object_id: dcb04454-dc24-497b-4926-908456c10fc8

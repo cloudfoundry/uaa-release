@@ -37,11 +37,6 @@ while [ "${WHEN_NOW}" -ot "${WHEN_FINISH}" ]; do
         log "Health check successful"
         delete_ts_files
         exit 0
-    elif  [ "$check" == "2" ]
-    then
-        log "FAILED: Server failed to start successfully. Check uaa.log to find out why the server failed to start."
-        delete_ts_files
-        exit 1
     fi
 
     sleep 1

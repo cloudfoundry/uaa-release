@@ -3,7 +3,3 @@ check process uaa
   start program "/var/vcap/jobs/bpm/bin/bpm start uaa"
   stop program "/var/vcap/jobs/bpm/bin/bpm stop uaa"
   group vcap
-  if failed port <%= p('uaa.localhost_http_port') %> protocol http
-    request "/healthz"
-    with timeout 60 seconds for 64 cycles
-  then restart

@@ -6,8 +6,6 @@ HEALTH_RESPONSE=$(curl -ksS --max-time 5 --connect-timeout 2 https://127.0.0.1:<
 
 if [[ "${HEALTH_RESPONSE}" == "ok" ]]; then
   exit 0
-elif [[ "${HEALTH_RESPONSE}" == "FAILURE" ]]; then
-  exit 2
 else
   exit 1
 fi

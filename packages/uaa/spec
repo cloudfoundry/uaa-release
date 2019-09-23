@@ -3,4 +3,4 @@ name: uaa
 dependencies:
 files:
 - uaa/**/*
-- openjdk/openjdk-1.8.0_*-x86_64-trusty.tar.gz
+- openjdk/openjdk-*-x86_64-trusty.tar.gz

@@ -11,7 +11,7 @@ export PATH=$PATH:/bin:/usr/bin
 if [ `uname` = "Linux" ]; then
   mkdir java
   cd java
-  tar zxvf ../openjdk/openjdk-1.8.0_*-x86_64-trusty.tar.gz
+  tar zxvf ../openjdk/openjdk-*-x86_64-trusty.tar.gz
   export JAVA_HOME=${BUILD_DIR}/java
 else
   if [ ! -d $JAVA_HOME ]; then

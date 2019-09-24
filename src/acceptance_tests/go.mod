@@ -1,0 +1,22 @@
+module acceptance_tests
+
+go 1.13
+
+require (
+	github.com/bmatcuk/doublestar v1.1.5 // indirect
+	github.com/charlievieth/fs v0.0.0-20170613215519-7dc373669fa1 // indirect
+	github.com/cloudfoundry/bosh-cli v6.1.0+incompatible
+	github.com/cloudfoundry/bosh-utils v0.0.0-20190921100139-64e3370c6fb0
+	github.com/cloudfoundry/go-socks5 v0.0.0-20180221174514-54f73bdb8a8e // indirect
+	github.com/cloudfoundry/socks5-proxy v0.2.0 // indirect
+	github.com/cppforlife/go-semi-semantic v0.0.0-20160921010311-576b6af77ae4 // indirect
+	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
+	github.com/onsi/ginkgo v1.10.1
+	github.com/onsi/gomega v1.7.0
+	github.com/pavel-v-chernykh/keystore-go v2.1.0+incompatible
+	github.com/pivotal-cf/paraphernalia v0.0.0-20180203224945-a64ae2051c20 // indirect
+	golang.org/x/crypto v0.0.0-20190923035154-9ee001bba392 // indirect
+	golang.org/x/net v0.0.0-20190923162816-aa69164e4478 // indirect
+	golang.org/x/sys v0.0.0-20190924154521-2837fb4f24fe // indirect
+	gopkg.in/yaml.v2 v2.2.2 // indirect
+)

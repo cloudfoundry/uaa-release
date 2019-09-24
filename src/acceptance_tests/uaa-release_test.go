@@ -44,11 +44,13 @@ var _ = Describe("UaaRelease", func() {
 		var trustStoreMap map[string]interface{}
 		expectedNumberOfCerts := len(caCertificatesPemEncodedMap) + numberOfCertsInUaaDockerDeploymentYml
 
+		keytoolResult := runCommandOnUaaViaSsh("/var/vcap/packages/uaa/jdk/bin/keytool -list -storepass 'changeit' -keystore /var/vcap/data/uaa/cert-cache/cacerts")
+		Expect(keytoolResult).To(ContainSubstring("Your keystore contains " + string(expectedNumberOfCerts) +" entries"))
 		// Assert the file we use as our keystore has all the right certs
-		Eventually(func() map[string]interface{} {
-			trustStoreMap = buildTruststoreMap()
-			return trustStoreMap
-		}, 5*time.Minute, 1*time.Minute).Should(HaveLen(expectedNumberOfCerts))
+		//Eventually(func() map[string]interface{} {
+		//	trustStoreMap = buildTruststoreMap()
+		//	return trustStoreMap
+		//}, 5*time.Minute, 1*time.Minute).Should(HaveLen(expectedNumberOfCerts))
 		for key := range caCertificatesPemEncodedMap {
 			Expect(trustStoreMap).To(HaveKey(key))
 		}
@@ -252,8 +254,8 @@ func buildTruststoreMap() map[string]interface{} {
 }
 
 func buildCACertificatesPemEncodedMap() map[string]interface{} {
-	By("downloading the os ssl ca certificates")
-	caCertificatesPath := scpOSSSLCertFile()
+	By("downloading the operating system ssl ca certificates")
+	caCertificatesPath := scpSystemSSLCertFile()
 	caCertificatesContent, err := ioutil.ReadFile(caCertificatesPath)
 	Expect(err).NotTo(HaveOccurred())
 
@@ -275,7 +277,7 @@ func buildCACertificatesPemEncodedMap() map[string]interface{} {
 	return caCertificates
 }
 
-func scpOSSSLCertFile() string {
+func scpSystemSSLCertFile() string {
 	caCertificatesPath := filepath.Join(os.TempDir(), "uaa-ca-certificates.crt")
 	cmd := exec.Command(boshBinaryPath, "scp", "uaa:/etc/ssl/certs/uaa-ca-certificates.crt", caCertificatesPath)
 	session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)

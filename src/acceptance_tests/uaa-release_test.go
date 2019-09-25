@@ -1,7 +1,9 @@
 package acceptance_tests_test
 
 import (
+	"crypto/sha256"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
@@ -10,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -18,7 +21,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
 	"github.com/onsi/gomega/gexec"
-	"github.com/pavel-v-chernykh/keystore-go"
 )
 
 type row struct {
@@ -41,16 +43,17 @@ var _ = Describe("UaaRelease", func() {
 		numberOfCertsInUaaDockerDeploymentYml := 2
 		caCertificatesPemEncodedMap := buildCACertificatesPemEncodedMap()
 
-		var trustStoreMap map[string]interface{}
 		expectedNumberOfCerts := len(caCertificatesPemEncodedMap) + numberOfCertsInUaaDockerDeploymentYml
 
-		// Assert the file we use as our keystore has all the right certs
-		Eventually(func() map[string]interface{} {
-			trustStoreMap = buildTruststoreMap()
-			return trustStoreMap
-		}, 5*time.Minute, 1*time.Minute).Should(HaveLen(expectedNumberOfCerts))
-		for key := range caCertificatesPemEncodedMap {
-			Expect(trustStoreMap).To(HaveKey(key))
+		countNumberOfCerts := runCommandOnUaaViaSsh("/var/vcap/packages/uaa/jdk/bin/keytool -list -storepass 'changeit' -keystore /var/vcap/data/uaa/cert-cache/cacerts")
+		Expect(countNumberOfCerts).To(ContainSubstring("Your keystore contains " + strconv.Itoa(expectedNumberOfCerts) + " entries"))
+
+		uaaTrustStoreFingerprints := runCommandOnUaaViaSsh("/var/vcap/packages/uaa/jdk/bin/keytool  -keystore /var/vcap/data/uaa/cert-cache/cacerts -storepass 'changeit' -list  | grep 'Certificate fingerprint'| cut -d ' ' -f 4 ")
+
+		for certificate := range caCertificatesPemEncodedMap {
+			fingerprint, err := getFingerPrint([]byte(certificate))
+			Expect(err).NotTo(HaveOccurred())
+			Expect(uaaTrustStoreFingerprints).To(ContainSubstring(fingerprint))
 		}
 
 		// Verify that said file is actually making it to the jvm as a truststore
@@ -229,31 +232,9 @@ func verifyTomcatIsUsingCorrectTruststore() bool {
 	return strings.Contains(tomcatProcessCmdOutput, "-Djavax.net.ssl.trustStore=/var/vcap/data/uaa/cert-cache/cacerts")
 }
 
-func buildTruststoreMap() map[string]interface{} {
-	By("downloading the truststore")
-	localKeyStorePath := scpTruststore()
-	localKeyStoreFile, err := os.Open(localKeyStorePath)
-	Expect(err).NotTo(HaveOccurred())
-	keyStoreDecoded, err := keystore.Decode(localKeyStoreFile, []byte("changeit"))
-	Expect(err).NotTo(HaveOccurred())
-
-	truststoreCertMap := map[string]interface{}{}
-	for _, cert := range keyStoreDecoded {
-		if trustedCertEntry, isCorrectType := cert.(*keystore.TrustedCertificateEntry); isCorrectType {
-			block := &pem.Block{
-				Type:  "CERTIFICATE",
-				Bytes: trustedCertEntry.Certificate.Content,
-			}
-			truststoreCertMap[string(pem.EncodeToMemory(block))] = nil
-		}
-	}
-
-	return truststoreCertMap
-}
-
 func buildCACertificatesPemEncodedMap() map[string]interface{} {
-	By("downloading the os ssl ca certificates")
-	caCertificatesPath := scpOSSSLCertFile()
+	By("downloading the operating system ssl ca certificates")
+	caCertificatesPath := scpSystemSSLCertFile()
 	caCertificatesContent, err := ioutil.ReadFile(caCertificatesPath)
 	Expect(err).NotTo(HaveOccurred())
 
@@ -275,7 +256,7 @@ func buildCACertificatesPemEncodedMap() map[string]interface{} {
 	return caCertificates
 }
 
-func scpOSSSLCertFile() string {
+func scpSystemSSLCertFile() string {
 	caCertificatesPath := filepath.Join(os.TempDir(), "uaa-ca-certificates.crt")
 	cmd := exec.Command(boshBinaryPath, "scp", "uaa:/etc/ssl/certs/uaa-ca-certificates.crt", caCertificatesPath)
 	session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
@@ -283,15 +264,6 @@ func scpOSSSLCertFile() string {
 	Eventually(session, 10*time.Second).Should(gexec.Exit(0))
 
 	return caCertificatesPath
-}
-
-func scpTruststore() string {
-	localKeyStorePath := filepath.Join(os.TempDir(), "cacerts")
-	cmd := exec.Command(boshBinaryPath, "scp", "uaa:/var/vcap/data/uaa/cert-cache/cacerts", localKeyStorePath)
-	session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
-	Expect(err).NotTo(HaveOccurred())
-	Eventually(session, 10*time.Second).Should(gexec.Exit(0))
-	return localKeyStorePath
 }
 
 func scpUAALog() string {
@@ -310,4 +282,22 @@ func scpUaaAuditLog() string {
 	Expect(err).NotTo(HaveOccurred())
 	Eventually(session, 10*time.Second).Should(gexec.Exit(0))
 	return localUAALogPath
+}
+
+func getFingerPrint(certdata []byte) (string, error) {
+	var block *pem.Block
+	block, _ = pem.Decode(certdata)
+
+	cert, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return "", err
+	}
+	fingerprint := sha256.Sum256(cert.Raw)
+	var hexfingerprint []string
+	for _, b := range fingerprint {
+		hexVal := strings.ToUpper(fmt.Sprintf("%02s", strconv.FormatUint(uint64(b), 16)))
+		hexfingerprint = append(hexfingerprint, hexVal)
+	}
+	return strings.Join(hexfingerprint, ":"), nil
+
 }

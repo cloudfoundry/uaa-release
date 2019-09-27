@@ -565,20 +565,12 @@
     end
   end
 
-
-
-
-  servlet = {
-    'idle-timeout' => p('uaa.servlet.idle-timeout')
+  params['servlet'] = {
+    'idle-timeout' => p('uaa.servlet.idle-timeout'),
+    'session-cookie' => {
+      'max-age' => p('uaa.servlet.session-cookie.max-age')
+    }
   }
-  params['servlet'] = servlet
-
-  if_p('uaa.servlet.session-cookie') do |sessioncookie|
-    params['servlet']['session-cookie'] = {}
-    sessioncookie.each do |cookiename, cookievalue|
-      params['servlet']['session-cookie'][cookiename] = cookievalue
-    end
-  end
 
   #validate that we have all required parameters
   if is_missing params, 'jwt', 'token', 'signing-key'

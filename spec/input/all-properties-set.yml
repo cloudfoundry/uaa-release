@@ -613,13 +613,7 @@ properties:
     servlet:
       idle-timeout: 300
       session-cookie:
-        comment: null
-        domain: super.test.domain
-        http-only: true
         max-age: 1800
-        name: JSESSIONID
-        path: /
-        secure: true
     ssl:
       port: 33333
       procotol_header: x-custom-forwarded-proto

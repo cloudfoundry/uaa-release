@@ -359,6 +359,7 @@ login:
     url: https://uaa.bosh-lite.com/oauth/authorize
 
 servlet:
+  session-store: memory
   idle-timeout: 1800
   session-cookie:
     max-age: -1

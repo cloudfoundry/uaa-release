@@ -1242,6 +1242,38 @@ describe 'uaa-release erb generation' do
   end
 
 
+  describe 'uaa.servlet.session-store' do
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
+
+    context 'by default' do
+      it 'renders the session-store into uaa.yml' do
+        expect(parsed_yaml['servlet']['session-store']).to eq('memory')
+      end
+    end
+
+    context 'when set to database' do
+      before do
+        generated_cf_manifest['properties']['uaa']['servlet']['session-store'] = 'database'
+      end
+
+      it 'renders the session-store into uaa.yml' do
+        expect(parsed_yaml['servlet']['session-store']).to eq('database')
+      end
+    end
+
+    context 'when set to an invalid value' do
+      it 'raises an error' do
+        generated_cf_manifest['properties']['uaa']['servlet']['session-store'] = 'foo'
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /uaa.servlet.session-store invalid. Must be one of /)
+      end
+    end
+  end
+
   def self.perform_compare(input)
     generated_cf_manifest = generate_cf_manifest(input)
     parsed_uaa_yaml = read_and_parse_string_template '../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true

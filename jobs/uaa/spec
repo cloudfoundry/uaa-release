@@ -1206,6 +1206,13 @@ properties:
       The UAA uses this as a base domain for internal hostnames so that subdomain can be detected
       This defaults to the uaa.url property, and if not set, to login.<domain>
     default: ~
+  uaa.servlet.session-store:
+    description: |
+        Select the backend where user sessions will be stored
+        Valid options are:
+          memory (use an in memory map structure),
+          database (use the configured database as a session store)
+    default: memory
   uaa.servlet.idle-timeout:
     description: "UAA session idle timeout in seconds."
     default: 1800

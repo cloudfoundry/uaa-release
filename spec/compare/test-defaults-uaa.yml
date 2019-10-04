@@ -249,6 +249,7 @@ smtp:
   starttls: false
 
 servlet:
+  session-store: memory
   idle-timeout: 1800
   session-cookie:
     max-age: -1

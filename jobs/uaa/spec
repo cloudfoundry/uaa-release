@@ -536,6 +536,10 @@ properties:
   uaa.admin.client_secret:
     description: "Secret of the admin client - a client named admin with uaa.admin as an authority"
 
+  uaa.authentication.enable_uri_encoding_compatibility_mode:
+    description: "When enabled basic auth credentials will only be URI decoded when the `X-CF-ENCODED-CREDENTIALS` header is set to `true`"
+    default: false
+
   # Security policies (for the UAA zone)
   uaa.authentication.policy.lockoutAfterFailures:
     description: "Number of allowed failures before account is locked"

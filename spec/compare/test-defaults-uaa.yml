@@ -23,6 +23,7 @@ database:
   logabandoned: true
   abandonedtimeout: 300
 authentication:
+  enableUriEncodingCompatibilityMode: false
   policy:
     lockoutAfterFailures: 5
     countFailuresWithinSeconds: 1200

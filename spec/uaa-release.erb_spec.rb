@@ -1274,6 +1274,29 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  describe 'uaa.authentication.enable_uri_encoding_compatibility_mode' do
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
+
+    context 'by default' do
+      it 'is false in uaa.yml' do
+        expect(parsed_yaml['authentication']['enableUriEncodingCompatibilityMode']).to eq(false)
+      end
+    end
+
+    context 'when configured to true' do
+      before do
+        generated_cf_manifest['properties']['uaa']['authentication']['enable_uri_encoding_compatibility_mode'] = true
+      end
+
+      it 'is false in uaa.yml' do
+        expect(parsed_yaml['authentication']['enableUriEncodingCompatibilityMode']).to eq(true)
+      end
+    end
+  end
+
   def self.perform_compare(input)
     generated_cf_manifest = generate_cf_manifest(input)
     parsed_uaa_yaml = read_and_parse_string_template '../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true

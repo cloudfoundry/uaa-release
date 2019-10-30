@@ -28,11 +28,12 @@ log "Default environment set up"
 
     OIFS=$IFS
     IFS=','
+    java_no_proxies=""
     for host in $proxy_conf; do
       if [[ $host == .* ]]; then
         host="*"$host
       fi
-      java_no_proxies=$java_no_proxies"|"$host
+      java_no_proxies=${java_no_proxies}"|"${host}
     done
     IFS=$OIFS
 

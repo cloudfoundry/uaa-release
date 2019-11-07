@@ -90,7 +90,7 @@
                internalProxies="<%= internal_proxies %>"
         />
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="/var/vcap/sys/log/uaa"
-               prefix="localhost_access" suffix=".log" rotatable="false" pattern="%h %l %u %t &quot;%r&quot; %s %b"/>
+               prefix="localhost_access" suffix=".log" rotatable="false" pattern="%h %l %u %t &quot;%m %U %H&quot; %s %b"/>
         <Valve className="org.apache.catalina.valves.ErrorReportValve"
                showReport="false"
                showServerInfo="false"/>

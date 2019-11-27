@@ -231,6 +231,8 @@ builds:
     version: "13.18"
   a353bdf4-7d30-46c5-7b0d-521b242e1d8e:
     version: 74.5.2
+  a3b935a3-1cc0-438e-5609-ceda67a41a55:
+    version: 74.5.4
   a424be4f-41b9-463b-9d69-28e3cb2f6b23:
     version: "24.10"
   a5521a64-832f-49b5-ad26-dc7f52106174:

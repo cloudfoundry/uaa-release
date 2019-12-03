@@ -37,6 +37,8 @@ builds:
     version: "11.3"
   1e1622c0-9b89-4ee6-8e67-607fc059492a:
     version: "24.2"
+  1f1d7ee3-5a33-4184-605c-359a5be0bdb6:
+    version: 74.12.0
   1f3a0285-e514-4ff6-8ec3-2e3a5f6617e2:
     version: "30.4"
   221f62f9-c8b4-4520-9a2e-67c943719e84:

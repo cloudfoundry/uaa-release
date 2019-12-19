@@ -224,6 +224,9 @@ properties:
   uaa.ssl.protocol_header:
     description: The header to look for to determine if ssl termination was performed by a front end load balancer.
     default: x-forwarded-proto
+  uaa.ssl.port_header:
+    description: The header to look for to determine the port where ssl termination was performed by a front end load balancer.
+    default: X-Forwarded-Port
   uaa.sslCertificate:
     description: "The server's ssl certificate. The default is a self-signed certificate and should always be replaced for production deployments"
     default: ''

@@ -1,7 +1,7 @@
-openjdk/openjdk-11.0.4_11-x86_64-trusty.tar.gz:
-  size: 195187242
+openjdk/openjdk-11.0.6_10-x86_64-bionic.tar.gz:
+  size: 196497777
   object_id: 818deb54-a1fd-4e95-76c7-e32449d8b739
-  sha: 3e51fc95c556aad87a1b136ca23cb2dea617482a
+  sha: 404b5858f50a98811ccf2f39c0bedfa0d7753c76
 uaa/apache-tomcat-9.0.30.tar.gz:
   size: 11026056
   object_id: 0556fdf6-9a6a-4d4f-4967-c6787df4452c

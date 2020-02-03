@@ -19,7 +19,7 @@ KEYSTORE_OPTS="-Djavax.net.ssl.trustStore=$KEYSTORE -Djavax.net.ssl.trustStoreTy
 log "Keystore configured to: $KEYSTORE"
 
 export PATH="/var/vcap/packages/uaa/jdk/bin:$PATH"
-export JAVA_OPTS="-DPID=$$ -Dnetworkaddress.cache.ttl=0 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS"
+export JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom -DPID=$$ -Dnetworkaddress.cache.ttl=0 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS"
 
 log "Calling Tomcat start up command"
 /var/vcap/packages/uaa/tomcat/bin/catalina.sh run &

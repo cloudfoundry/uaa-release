@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 gem 'rspec'
 gem 'rake'
-gem 'nokogiri', '1.10.7'
+gem 'nokogiri', '1.10.8'
 gem 'activesupport'
 gem 'bosh-template'
 

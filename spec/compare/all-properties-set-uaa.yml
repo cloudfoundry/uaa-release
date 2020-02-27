@@ -209,7 +209,6 @@ ldap:
   ssl:
     tls: simple
     skipverification: true
-    sslCertificate: ldap-ssl-cert
   base:
     url: ldap://192.168.50.4:389/
     mailAttributeName: mail

@@ -815,7 +815,7 @@ properties:
     description: "Used with search-and-compare only. The encoder used to properly encode user password to match the one in the LDAP directory."
     default: "org.cloudfoundry.identity.uaa.ldap.DynamicPasswordComparator"
   uaa.ldap.sslCertificate:
-    description: "Used with ldaps:// URLs. The certificate, if self signed, to be trusted by this connection."
+    description: "Deprecated. Use uaa.ca_certs."
   uaa.ldap.ssl.skipverification:
     description: "Set to true, and LDAPS connection will not validate the server certificate."
     default: false

@@ -504,9 +504,6 @@
       },
       'addShadowUserOnLogin' => p('uaa.ldap.add_shadow_user_on_login')
     }
-    unless p_opt('uaa.ldap.sslCertificate').nil?
-      ldap['ssl']['sslCertificate'] = p_opt('uaa.ldap.sslCertificate')
-    end
     if p_opt('uaa.ldap.profile_type') == 'simple-bind'
       ldap['base']['userDnPattern'] = p_opt('uaa.ldap.userDNPattern')
       ldap['base']['userDnPatternDelimiter'] = p_opt('uaa.ldap.userDNPatternDelimiter')

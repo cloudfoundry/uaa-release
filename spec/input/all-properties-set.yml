@@ -537,7 +537,6 @@ properties:
       ssl:
         skipverification: true
         tls: simple
-      sslCertificate: ldap-ssl-cert
       storeCustomAttributes: false
       url: ldap://192.168.50.4:389/
       userDN: cn=admin,dc=test,dc=com

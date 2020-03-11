@@ -279,6 +279,8 @@ builds:
     version: "52.6"
   c7dad4ee-fe78-484b-5bed-346ee9db384a:
     version: 74.0.0
+  c8bf95c7-bfba-4af7-64ce-49460afb3855:
+    version: 74.5.11
   c9cf4d74-115e-48cd-4ad0-161a121b94b2:
     version: "45.10"
   c9feacd7-7782-4a39-9025-fbb6a7a89d8a:

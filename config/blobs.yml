@@ -2,10 +2,10 @@ openjdk/openjdk-11.0.6_10.tar.gz:
   size: 197198464
   object_id: 2d6fba2b-c8c7-475c-4116-1a344ea31183
   sha: sha256:330d19a2eaa07ed02757d7a785a77bab49f5ee710ea03b4ee2fa220ddd0feffc
-uaa/apache-tomcat-9.0.31.tar.gz:
-  size: 11042076
-  object_id: c937b77a-258e-402c-50d8-f858c0dabf1a
-  sha: 1fd59c31852adf59e3e9e55ac1aeec4a7e78cb00
+uaa/apache-tomcat-9.0.33.tar.gz:
+  size: 11027411
+  object_id: e8af2dcb-123e-455a-7681-2c6774b0923e
+  sha: 1a35cd54a73a451a6e68b5de9ceb9876a51945c7
 uaa/newrelic.jar:
   size: 11001894
   object_id: 226d8e1a-11c0-416f-6ffc-f199887e283c

@@ -250,9 +250,7 @@
         '?useSSL=false'
     end
     unless p('uaadb.tls') == 'disabled'
-      if_p('uaadb.tls_protocols') do |dbTlsProtocol|
-        params['database']['url'] += '&enabledSslProtocolSuites=' + dbTlsProtocol
-      end
+      params['database']['url'] += '&enabledSslProtocolSuites=' + p('uaadb.tls_protocols', 'TLSv1,TLSv1.1,TLSv1.2')
     end
 
   elsif uaa_db_scheme == 'postgresql'

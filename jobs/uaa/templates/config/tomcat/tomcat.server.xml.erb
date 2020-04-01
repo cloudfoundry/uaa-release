@@ -84,17 +84,27 @@
             unpackWARs="true"
             autoDeploy="false"
             failCtxIfServletStartFails="true">
+
         <Valve className="org.apache.catalina.valves.RemoteIpValve"
                remoteIpHeader="x-forwarded-for"
                protocolHeader="<%= p('uaa.ssl.protocol_header') %>"
                internalProxies="<%= internal_proxies %>"
                portHeader="<%= p('uaa.ssl.port_header') %>"
         />
-        <Valve className="org.apache.catalina.valves.AccessLogValve" directory="/var/vcap/sys/log/uaa"
-               prefix="localhost_access" suffix=".log" rotatable="false" pattern="%h %l %u %t &quot;%m %U %H&quot; %s %{Content-Length}i %b &quot;X-Vcap-Request-Id: %{X-Vcap-Request-Id}i&quot; %I"/>
+
+        <Valve className="org.apache.catalina.valves.AccessLogValve"
+               directory="/var/vcap/sys/log/uaa"
+               prefix="localhost_access"
+               suffix=".log"
+               rotatable="false"
+               pattern="%h %l %u %t &quot;%m %U %H&quot; %s %{Content-Length}i %b &quot;X-Vcap-Request-Id: %{X-Vcap-Request-Id}i&quot; %I"
+        />
+
         <Valve className="org.apache.catalina.valves.ErrorReportValve"
                showReport="false"
-               showServerInfo="false"/>
+               showServerInfo="false"
+        />
+
       </Host>
     </Engine>
   </Service>

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+<%
+  uaa_db_scheme = p('uaadb.db_scheme')
+
+  active_spring_profiles = uaa_db_scheme == 'postgres' ? 'postgresql' : uaa_db_scheme
+  if p_opt('uaa.ldap.enabled')
+    active_spring_profiles = active_spring_profiles + ',ldap'
+  end
+%>
+
 set -euo pipefail
 
 function log {
@@ -24,10 +33,15 @@ KEYSTORE_OPTS="${keystore_opts_arr[@]}"
 log "Keystore configured to: $KEYSTORE"
 
 export PATH="/var/vcap/packages/uaa/jdk/bin:$PATH"
+
+local active_spring_profiles
+active_spring_profiles=<%= active_spring_profiles %>
+
 java_opts_arr=(
   "-Djava.security.egd=file:/dev/./urandom"
   "-DPID=$$"
   "-Dnetworkaddress.cache.ttl=0"
+  "-Dspring.profiles.active=${active_spring_profiles}"
   "$HTTP_PROXY_JAVA_OPTIONS"
   "$NEWRELIC_OPTS"
   "$KEYSTORE_OPTS"

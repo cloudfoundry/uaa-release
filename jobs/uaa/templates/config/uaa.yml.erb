@@ -153,11 +153,6 @@
 
   raise ArgumentError, 'Invalid value for uaa.client.redirect_uri.matching_mode. Valid options are legacy or exact.' unless ['legacy', 'exact'].include?(p('uaa.client.redirect_uri.matching_mode'))
 
-  spring_profiles = uaa_db_scheme
-  if p_opt('uaa.ldap.enabled')
-    spring_profiles = spring_profiles + ',ldap'
-  end
-
   #simple properties
   params = {
     'name' => 'uaa',
@@ -170,7 +165,6 @@
     'issuer' => {
       'uri' => issuer_uri
     },
-    'spring_profiles' => spring_profiles,
     'logging' => {
       'config' => '/var/vcap/jobs/uaa/config/log4j2.properties'
     },

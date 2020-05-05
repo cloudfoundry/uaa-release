@@ -589,6 +589,9 @@ properties:
           - internal_group3
           - internal_group4
           - internal_group5
+        ldap:
+          "cn=admin\\, test,ou=scopes,dc=test,dc=com":
+          - ldap.test
       groups:
         another-group: Another group description
         my-test-group: My test group description

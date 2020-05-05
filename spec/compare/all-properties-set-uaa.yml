@@ -201,6 +201,9 @@ scim:
       - internal_group3
       - internal_group4
       - internal_group5
+    ldap:
+      "cn=admin\\, test,ou=scopes,dc=test,dc=com":
+      - ldap.test
 ldap:
   override: false
   ldapdebug: Ldap configured through UAA

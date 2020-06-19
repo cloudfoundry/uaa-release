@@ -42,6 +42,9 @@ function build_new_cache_files {
 
       *suse|sles*)
         timeout --signal=KILL 180s /usr/sbin/update-ca-certificates -f -v
+        # Note that per an upstream comment the move below may cause
+        # trouble should UAA be co-located with other jobs of the
+        # system. No details are currently available.
         mv /var/lib/ca-certificates/ca-bundle.pem /etc/ssl/certs/"$(basename "${OS_CERTS_FILE}")"
       ;;
 

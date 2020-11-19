@@ -673,6 +673,12 @@
     add_value(params, login_defaultIdentityProvider, 'login', 'defaultIdentityProvider')
   end
 
+  if_p('uaa.rest.template') do |rest_template|
+    rest_template.each do |key,val|
+      add_value(params, val, 'rest','template', key)
+    end
+  end
+
   if_p('login.links') do |login_links|
     login_links.each do |key,val|
       add_value(params, val, 'links', key)

@@ -574,6 +574,12 @@ properties:
       - 127.1.0.3
     proxy_ips_regex: 10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}
     require_https: false
+    rest:
+      template:
+        timeout: 10000
+        maxTotal: 20
+        maxPerRoute: 2
+        maxKeepAlive: 0
     scim:
       external_groups:
         origin1:

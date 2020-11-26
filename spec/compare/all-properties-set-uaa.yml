@@ -630,3 +630,10 @@ notifications:
 analytics:
   code: code
   domain: domain
+
+rest:
+  template:
+    timeout: 10000
+    maxTotal: 20
+    maxPerRoute: 2
+    maxKeepAlive: 0

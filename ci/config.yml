@@ -1,0 +1,6 @@
+---
+github_username: gk-concourse-ninja
+
+git_user_name: Gstack Concourse Ninja
+
+traefik_release_git_uri: git@github.com:gstackio/traefik-boshrelease.git

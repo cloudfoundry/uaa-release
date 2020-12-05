@@ -1,0 +1,105 @@
+---
+meta:
+  name:     uaa
+  target:   gk-plat-devs
+  url:      https://ci.gstack.io
+  team:     gk-plat-devs
+  pipeline: (( concat "gk-" meta.name "-boshrelease" ))
+
+  test-errands: ~
+
+  initial_version: 74.29.1
+
+  manifest:
+    directory: manifests
+
+  git:
+    email:  ((git-commit-email))
+    name:   ((git-commit-name))
+
+  image:
+    name: gstack/gk-ops
+  ruby-image:
+    name: ruby
+    tag:  2.3.7-slim
+
+  aws:
+    bucket:      (( grab meta.pipeline ))
+    region_name: eu-west-3
+    access_key:  ((aws-access-key))
+    secret_key:  ((aws-secret-key))
+
+  github:
+    owner:  gstackio
+    repo:   (( grab meta.pipeline ))
+    branch: feature/github-oauth2
+
+    private_key:  ((github-private-key))
+    access_token: ((github-access-token))
+
+  bosh:
+    stemcell:
+      cpi: "warden-boshlite"
+
+  slack:
+    webhook:       ((slack-webhook))
+    username:      ((slack-username))
+    icon:          ((slack-icon-url))
+    channel:       gstack-engineering
+    blob_success:  '(( concat ": New version of  was detected, and updated in master. <" meta.url "/teams//pipelines/| Cut a new release?>" ))'
+    blob_failure:  '(( concat ": :airplane_arriving: <" meta.url "/teams//pipelines//jobs//builds/| Failed to update the blob for >" ))'
+
+
+
+groups:
+  - name: (( grab meta.pipeline ))
+    jobs:
+      - (( prepend ))
+      - pre-flight
+
+jobs:
+  - name: pre-flight
+    public: true
+    serial: true
+    plan:
+    - name: main
+      do:
+      - { get: git, trigger: true }
+      - { get: ruby-image }
+      - name: pre-flight
+        task: pre-flight
+        image: ruby-image
+        config:
+          platform: linux
+          inputs:
+            - { name: git }
+          run:
+            path: bash
+            args:
+              - -c
+              - |
+                set -ueo pipefail
+                pushd "git" > /dev/null
+                bundle install
+                rake
+      on_failure:
+        put: notify
+        params:
+          channel:  (( grab meta.slack.channel ))
+          username: (( grab meta.slack.username ))
+          icon_url: (( grab meta.slack.icon ))
+          text:    '(( concat meta.slack.fail_url " " meta.pipeline ": testflight job failed" ))'
+
+  - name: testflight
+    plan:
+    - name: main
+      do:
+      - (( inline ))
+      - { get: git, trigger: true, passed: [ pre-flight ] }
+
+resources:
+  - name: ruby-image
+    type: docker-image
+    source:
+      repository: (( grab meta.ruby-image.name ))
+      tag:        (( grab meta.ruby-image.tag ))

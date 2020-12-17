@@ -211,6 +211,23 @@ properties:
       - HEAD
       - OPTIONS
 
+  uaa.rest.template.timeout:
+    description: "Timeout for the RestTemplates used by the UAA in ms"
+    example: 10000
+    default: 10000
+  uaa.rest.template.maxTotal:
+    description: "Size of the connection pool used by the RestTemplates in the UAA"
+    example: 20
+    default: 20
+  uaa.rest.template.maxPerRoute:
+    description: "Maximum number of connections to the same route that is used by the RestTemplates in the UAA"
+    example: 5
+    default: 5
+  uaa.rest.template.maxKeepAlive:
+    description: "Maximum time in ms that the connections of the RestTemplates are kept alive in the UAA"
+    example: 0
+    default: 0
+
   # SSL
   login.protocol:
     description: "Scheme to use for HTTP communication (http/https)"

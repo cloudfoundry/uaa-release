@@ -42,7 +42,7 @@ GEM
     rspec-support (3.9.3)
     semi_semantic (1.2.0)
     thread_safe (0.3.6)
-    tzinfo (1.2.7)
+    tzinfo (1.2.9)
       thread_safe (~> 0.1)
     zeitwerk (2.4.0)
 

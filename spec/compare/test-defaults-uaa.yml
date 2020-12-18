@@ -254,3 +254,10 @@ servlet:
   idle-timeout: 1800
   session-cookie:
     max-age: -1
+
+rest:
+  template:
+    timeout: 10000
+    maxTotal: 20
+    maxPerRoute: 5
+    maxKeepAlive: 0

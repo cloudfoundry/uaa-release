@@ -4,7 +4,7 @@ set -xeu
 
 pushd ~/workspace/uaa-release
     mkdir -p tmp
-    bosh create-release --force --tarball=tmp/uaa-dev-release.tgz
+    UAA_VERSION=0.0.0 bosh create-release --force --tarball=tmp/uaa-dev-release.tgz
 popd
 
 DOCKER_HOST_VM_NAME=uaareleaseacceptancetests

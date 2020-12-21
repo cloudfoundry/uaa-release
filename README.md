@@ -74,14 +74,15 @@ Add the following properties to your manifest:
    git checkout -b my_branch
    ```
 3. Make changes on your branch
-4. Deploy your version of uaa-release to test the changes
-5. Push to your fork (`git push origin my_branch`) and
+4. Run the tests (requires ruby) `bundle install && bundle exec rake`
+5. Deploy your version of uaa-release to test the changes
+6. Push to your fork (`git push origin my_branch`) and
    [submit a pull request](https://help.github.com/articles/creating-a-pull-request)
    selecting `develop` as the target branch
 
 ## Java Runtime Environments
 
-   Java Runtime Environments are gracefully supplied by the Cloud Foundry Java Buildpack Team
+   Java Runtime Environments are graciously supplied by the Cloud Foundry Java Buildpack Team
 
    JDK - https://java-buildpack.cloudfoundry.org/openjdk-jdk/trusty/x86_64/index.yml
    JRE - https://java-buildpack.cloudfoundry.org/openjdk/trusty/x86_64/index.yml

@@ -32,9 +32,27 @@ function build_new_cache_files {
     <% end %>
 
     log "Trying to run update-ca-certificates..."
-    # --certbundle is an undocumented flag in the update-ca-certificates script
-    # https://salsa.debian.org/debian/ca-certificates/blob/master/sbin/update-ca-certificates#L53
-    timeout --signal=KILL 180s /usr/sbin/update-ca-certificates -f -v --certbundle "$(basename "${OS_CERTS_FILE}")"
+    source /etc/os-release
+    case "${ID}" in
+      *ubuntu*)
+        # --certbundle is an undocumented flag in the update-ca-certificates script
+        # https://salsa.debian.org/debian/ca-certificates/blob/master/sbin/update-ca-certificates#L53
+        timeout --signal=KILL 180s /usr/sbin/update-ca-certificates -f -v --certbundle "$(basename "${OS_CERTS_FILE}")"
+      ;;
+
+      *suse|sles*)
+        timeout --signal=KILL 180s /usr/sbin/update-ca-certificates -f -v
+        # Note that per an upstream comment the move below may cause
+        # trouble should UAA be co-located with other jobs of the
+        # system. No details are currently available.
+        mv /var/lib/ca-certificates/ca-bundle.pem /etc/ssl/certs/"$(basename "${OS_CERTS_FILE}")"
+      ;;
+
+      *)
+        echo "Unsupported operating system: ${PRETTY_NAME}"
+        exit 42
+      ;;
+    esac
 }
 
 function new_cache_files_are_identical {

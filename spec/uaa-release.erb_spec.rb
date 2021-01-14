@@ -1291,10 +1291,125 @@ describe 'uaa-release erb generation' do
         generated_cf_manifest['properties']['uaa']['authentication']['enable_uri_encoding_compatibility_mode'] = true
       end
 
-      it 'is false in uaa.yml' do
+      it 'is true in uaa.yml' do
         expect(parsed_yaml['authentication']['enableUriEncodingCompatibilityMode']).to eq(true)
       end
     end
+  end
+
+  describe 'logging formats' do
+    let(:input) {'spec/input/test-defaults.yml'}
+
+    let(:erb_template) {'../jobs/uaa/templates/config/log4j2.properties.erb'}
+    let(:log4j2_template_path) {'spec/compare/default-log4j2-template.properties'}
+    let(:as_yml) {false}
+
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml)}
+
+    context 'when neither of uaa.logging_use_rfc3339 and uaa.logging.format.timestamp is configured' do
+        it 'sets log_pattern to legacy log format that is not rfc3339-compliant' do
+            log4j2_template = File.read(log4j2_template_path)
+            expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd HH:mm:ss.SSS}"
+            expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+        end
+    end
+
+    context 'when both of uaa.logging_use_rfc3339 and uaa.logging.format.timestamp are configured' do
+        before do
+          generated_cf_manifest['properties']['uaa']['logging_use_rfc3339'] = false
+          generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'cf-rfc030'}}
+        end
+
+        it 'raises an error' do
+          expect {parsed_yaml}.to raise_error(ArgumentError, /\"uaa.logging.format.timestamp\" and \"uaa.logging_use_rfc3339\" are incompatible configurations, please set only one of them. \"uaa.logging_use_rfc3339\" is deprecated so please use \"uaa.logging.format.timestamp\" if possible./)
+        end
+    end
+
+    context 'when only uaa.logging_use_rfc3339 is configured to' do
+        context 'true' do
+          before do
+            generated_cf_manifest['properties']['uaa']['logging_use_rfc3339'] = true
+          end
+
+          it 'sets log_pattern to conform to rfc3339 with milliseconds' do
+              log4j2_template = File.read(log4j2_template_path)
+              expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}"
+              expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+          end
+        end
+
+        context 'false' do
+          before do
+            generated_cf_manifest['properties']['uaa']['logging_use_rfc3339'] = false
+          end
+
+          it 'sets log_pattern to legacy log format that is not rfc3339-compliant' do
+              log4j2_template = File.read(log4j2_template_path)
+              expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd HH:mm:ss.SSS}"
+              expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+          end
+        end
+
+        context 'an invalid value' do
+          before do
+            generated_cf_manifest['properties']['uaa']['logging_use_rfc3339'] = 'some-invalid-value'
+          end
+
+          it 'raises an error' do
+            expect {parsed_yaml}.to raise_error(ArgumentError, /Invalid value for uaa.logging_use_rfc3339./)
+          end
+        end
+    end
+
+    context 'when only uaa.logging.format.timestamp is configured to' do
+        context 'cf-rfc030' do
+          before do
+            generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'cf-rfc030'}}
+          end
+
+          it 'sets log_pattern to conform to cf-rfc030 with microsecond and UTC timezone' do
+              log4j2_template = File.read(log4j2_template_path)
+              expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.nnnnnn}{GMT+0}Z"
+              expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+          end
+        end
+
+        context 'deprecated-rfc3339' do
+          before do
+            generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'deprecated-rfc3339'}}
+          end
+
+          it 'sets log_pattern to conform to original rfc3339 format (millisecond precision) for compatibility' do
+            log4j2_template = File.read(log4j2_template_path)
+            expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}"
+            expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+          end
+        end
+
+        context 'deprecated-non-rfc3339' do
+          before do
+            generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'deprecated-non-rfc3339'}}
+          end
+
+          it 'sets log_pattern to deprecated format with irregular timestamps' do
+            log4j2_template = File.read(log4j2_template_path)
+            expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd HH:mm:ss.SSS}"
+            expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+          end
+        end
+
+        context 'an invalid value' do
+          before do
+            generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'some-invalid-value'}}
+          end
+
+          it 'raises an error' do
+            expect {parsed_yaml}.to raise_error(ArgumentError, /Invalid value for uaa.logging.format.timestamp./)
+          end
+        end
+    end
+
   end
 
   def self.perform_compare(input)

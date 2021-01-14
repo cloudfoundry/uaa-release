@@ -181,8 +181,9 @@ properties:
     description: Set UAA logging level.  (e.g. TRACE, DEBUG, INFO)
     default: DEBUG
   uaa.logging_use_rfc3339:
-    description: "Sets the time format for log messages to be yyyy-MM-dd'T'HH:mm:ss.SSSXXX instead of yyyy-MM-dd HH:mm:ss.SSS"
-    default: false
+    description: "Deprecated. Please use uaa.logging.format.timestamp instead. Note that these two properties cannot both be set. Sets the time format for log messages to be yyyy-MM-dd'T'HH:mm:ss.SSSXXX instead of yyyy-MM-dd HH:mm:ss.SSS"
+  uaa.logging.format.timestamp:
+    description: "Format for timestamp in component logs. Valid values are 'cf-rfc030' (default), 'deprecated-rfc3339', and 'deprecated-non-rfc3339'. 'cf-rfc030' sets the format to be {yyyy-MM-dd'T'HH:mm:ss.nnnnnn}{GMT+0}Z which is rfc3339 compliant but additionally has microsecond precision and is set to UTC timezone. 'deprecated-rfc3339' sets the time format to be yyyy-MM-dd'T'HH:mm:ss.SSSXXX. 'deprecated-non-rfc3339' sets the time format to be yyyy-MM-dd HH:mm:ss.SSS."
   uaa.limitedFunctionality.statusFile:
     description: |
       The UAA checks for the presence of this file. If this file exists, the UAA will continue to function

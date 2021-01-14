@@ -543,7 +543,9 @@ properties:
       userDN: cn=admin,dc=test,dc=com
       userPassword: password
     logging_level: TRACE
-    logging_use_rfc3339: true
+    logging:
+      format:
+        timestamp: cf-rfc030
     login:
       client_secret: loginsecret
     newrelic:

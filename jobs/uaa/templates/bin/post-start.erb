@@ -2,11 +2,12 @@
 
 set -euo pipefail
 
-if [ <%= p("uaa.logging.format.timestamp") %> == "cf-rfc030" ]; then
-  TIMESTAMP_FORMAT = '+%Y-%m-%dT%H:%M:%S.%NZ'
-else
-  TIMESTAMP_FORMAT = '+%Y-%m-%d %H:%M:%S.%3N'
-fi
+TIMESTAMP_FORMAT = '+%Y-%m-%d %H:%M:%S.%3N'
+<% if_p("uaa.logging.format.timestamp") do |timestamp| %>
+  if [ timestamp == "cf-rfc030" ]; then
+    TIMESTAMP_FORMAT = '+%Y-%m-%dT%H:%M:%S.%NZ'
+  fi
+<% end %>
 
 function log {
     echo "[$(date ${TIMESTAMP_FORMAT})] uaa-post-start - $1"

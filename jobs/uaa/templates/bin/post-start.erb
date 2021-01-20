@@ -10,7 +10,7 @@ TIMESTAMP_FORMAT="+%Y-%m-%d %H:%M:%S.%3N"
 <% end %>
 
 function log {
-    echo "[$(date ${TIMESTAMP_FORMAT})] uaa-post-start - $1"
+    echo "[$(date "${TIMESTAMP_FORMAT}")] uaa-post-start - $1"
 }
 
 log "Starting"

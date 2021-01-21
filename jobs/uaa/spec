@@ -669,6 +669,44 @@ properties:
     description: "The format for the refresh token. Allowed values are `jwt`, `opaque`"
     default: jwt
 
+  # cors settings
+  uaa.cors.default.allowed.headers:
+    description: "whitelist for allowed headers for non-xhr cors requests"
+    default: ~
+  uaa.cors.default.allowed.origin:
+    description: "whitelist for allowed origins for non-xhr cors requests"
+    default: ~
+  uaa.cors.default.allowed.uris:
+    description: "whitelist for allowed uris for non-xhr cors requests"
+    default: ~
+  uaa.cors.default.allowed.methods:
+    description: "whitelist for allowed methods for non-xhr cors requests"
+    default: ~
+  uaa.cors.default.allowed.credentials:
+    description: "whether to allow credentials to be sent over non-xhr cors requests"
+    default: ~
+  uaa.cors.default.max_age:
+    description: "how long the results of a preflight request is cached"
+    default: ~
+  uaa.cors.xhr.allowed.headers:
+    description: "whitelist for allowed headers for xhr cors requests"
+    default: ~
+  uaa.cors.xhr.allowed.origin:
+    description: "whitelist for allowed origins for xhr cors requests"
+    default: ~
+  uaa.cors.xhr.allowed.uris:
+    description: "whitelist for allowed uris for xhr cors requests"
+    default: ~
+  uaa.cors.xhr.allowed.methods:
+    description: "whitelist for allowed methods for xhr cors requests"
+    default: ~
+  uaa.cors.xhr.allowed.credentials:
+    description: "whether to allow credentials to be sent over xhr cors requests"
+    default: ~
+  uaa.cors.xhr.max_age:
+    description: "how long the results of a preflight request is cached"
+    default: ~
+
   # Global security policies (for all zones)
   uaa.authentication.policy.global.lockoutAfterFailures:
     description: "Number of allowed failures before account is locked"

@@ -113,6 +113,46 @@ jwt:
       restrict_grant: true
       unique: true
       format: opaque
+cors:
+  default:
+    allowed:
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type
+        - X-Requested-With
+      origin:
+        - ^localhost$
+        - ^.*\.localhost$
+      uris:
+        - ^/uaa/userinfo$
+        - ^/uaa/logout\.do$
+      methods:
+        - GET
+        - PUT
+        - POST
+        - DELETE
+        - OPTIONS
+      credentials: true
+    max_age: 10
+  xhr:
+    allowed:
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type
+        - X-Requested-With
+      origin:
+        - ^localhost$
+        - ^.*\.localhost$
+      uris:
+        - ^/uaa/userinfo$
+        - ^/uaa/logout\.do$
+      methods:
+        - GET
+        - OPTIONS
+      credentials: true
+    max_age: 10
 
 oauth:
   client:

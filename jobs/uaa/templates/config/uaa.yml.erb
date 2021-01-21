@@ -818,6 +818,21 @@
     add_value(params, domain, 'analytics', 'domain')
   end
 
+  # cors settings
+  add_value(params, p('uaa.cors.default.allowed.headers'), 'cors', 'default', 'allowed', 'headers') if p_opt('uaa.cors.default.allowed.headers')
+  add_value(params, p('uaa.cors.default.allowed.origin'), 'cors', 'default', 'allowed', 'origin') if p_opt('uaa.cors.default.allowed.origin')
+  add_value(params, p('uaa.cors.default.allowed.uris'), 'cors', 'default', 'allowed', 'uris') if p_opt('uaa.cors.default.allowed.uris')
+  add_value(params, p('uaa.cors.default.allowed.methods'), 'cors', 'default', 'allowed', 'methods') if p_opt('uaa.cors.default.allowed.methods')
+  add_value(params, p('uaa.cors.default.allowed.credentials'), 'cors', 'default', 'allowed', 'credentials') if p_opt('uaa.cors.default.allowed.credentials')
+  add_value(params, p('uaa.cors.default.max_age'), 'cors', 'default', 'max_age') if p_opt('uaa.cors.default.max_age')
+
+  add_value(params, p('uaa.cors.xhr.allowed.headers'), 'cors', 'xhr', 'allowed', 'headers') if p_opt('uaa.cors.xhr.allowed.headers')
+  add_value(params, p('uaa.cors.xhr.allowed.origin'), 'cors', 'xhr', 'allowed', 'origin') if p_opt('uaa.cors.xhr.allowed.origin')
+  add_value(params, p('uaa.cors.xhr.allowed.uris'), 'cors', 'xhr', 'allowed', 'uris') if p_opt('uaa.cors.xhr.allowed.uris')
+  add_value(params, p('uaa.cors.xhr.allowed.methods'), 'cors', 'xhr', 'allowed', 'methods') if p_opt('uaa.cors.xhr.allowed.methods')
+  add_value(params, p('uaa.cors.xhr.allowed.credentials'), 'cors', 'xhr', 'allowed', 'credentials') if p_opt('uaa.cors.xhr.allowed.credentials')
+  add_value(params, p('uaa.cors.xhr.max_age'), 'cors', 'xhr', 'max_age') if p_opt('uaa.cors.xhr.max_age')
+
   if_p('uaa.ca_certs') do |ca_certs|
     add_value(params, ca_certs, 'uaa', 'ca_certs')
   end

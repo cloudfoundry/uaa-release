@@ -503,6 +503,46 @@ properties:
       verification_key: |
         verification-key with some
         line feeds in it
+    cors:
+      default:
+        allowed:
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+            - X-Requested-With
+          origin:
+            - ^localhost$
+            - ^.*\.localhost$
+          uris:
+            - ^/uaa/userinfo$
+            - ^/uaa/logout\.do$
+          methods:
+            - GET
+            - PUT
+            - POST
+            - DELETE
+            - OPTIONS
+          credentials: true
+        max_age: 10
+      xhr:
+        allowed:
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+            - X-Requested-With
+          origin:
+            - ^localhost$
+            - ^.*\.localhost$
+          uris:
+            - ^/uaa/userinfo$
+            - ^/uaa/logout\.do$
+          methods:
+            - GET
+            - OPTIONS
+          credentials: true
+        max_age: 10
     ldap:
       override: false
       add_shadow_user_on_login: false

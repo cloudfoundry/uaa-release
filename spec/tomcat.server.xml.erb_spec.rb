@@ -2,69 +2,142 @@ require 'rspec'
 require 'nokogiri'
 require 'bosh/template/evaluation_context'
 require 'spec_helper'
+require 'yaml'
 
 describe 'tomcat.server.xml' do
+  def read_file(relative_path)
+    File.read(File.join(File.dirname(__FILE__), relative_path))
+  end
+
   def compile_erb(erb_template_location, manifest)
-    erb_content = File.read(File.join(File.dirname(__FILE__), erb_template_location))
+    erb_content = read_file(erb_template_location)
     binding = Bosh::Template::EvaluationContext.new(manifest, nil).get_binding
     ERB.new(erb_content).result(binding)
   end
 
+  let(:compiled_xml) {compile_erb(template, manifest)}
+  let(:template) {'../jobs/uaa/templates/config/tomcat/tomcat.server.xml.erb'}
+  let(:manifest) {generate_cf_manifest('spec/input/all-properties-set.yml')}
+
+  it 'matches the expected result' do
+    expect(compiled_xml.gsub(/\s/, '')).to eq(read_file('compare/all-properties-tomcat-server.xml').gsub(/\s/, ''))
+  end
+
+  let(:connectors) do
+    config = Nokogiri::XML.parse(compiled_xml)
+    config.xpath('//Connector')
+  end
+
+  let(:http_connector) do
+    connectors[0]
+  end
+
+  let(:https_connector) do
+    connectors[1]
+  end
+
+  it 'has two connector elements' do
+    expect(connectors.length).to eq(2)
+  end
+
+  context 'when uaa.localhost_http_port is valid' do
+    before(:each) do
+      manifest['properties']['uaa']['localhost_http_port'] = 2000
+    end
+
+    it 'has an http connector with value of uaa.localhost_http_port' do
+      expect(http_connector["port"]).to eq("2000")
+    end
+  end
+
+  context 'when uaa.localhost_http_port is invalid (-1)' do
+    before(:each) do
+      manifest['properties']['uaa']['localhost_http_port'] = -1
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (-1) specified for uaa.localhost_http_port, please specify a valid port number in this range [1024-65535]')
+    end
+  end
+
+  context 'when uaa.localhost_http_port is invalid (1023)' do
+    before(:each) do
+      manifest['properties']['uaa']['localhost_http_port'] = 1023
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (1023) specified for uaa.localhost_http_port, please specify a valid port number in this range [1024-65535]')
+    end
+  end
+
+  context 'when uaa.localhost_http_port is invalid (65536)' do
+    before(:each) do
+      manifest['properties']['uaa']['localhost_http_port'] = 65536
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (65536) specified for uaa.localhost_http_port, please specify a valid port number in this range [1024-65535]')
+    end
+  end
+
+  context 'when uaa.ssl.port is valid' do
+    before(:each) do
+      manifest['properties']['uaa']['ssl']['port'] = 3333
+    end
+
+    it 'has an http connector with value of uaa.localhost_http_port' do
+      expect(https_connector["port"]).to eq("3333")
+    end
+  end
+
+  context 'when uaa.ssl.port is invalid (-1)' do
+    before(:each) do
+      manifest['properties']['uaa']['ssl']['port'] = -1
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (-1) specified for uaa.ssl.port, please specify a valid port number in this range [1024-65535]')
+    end
+  end
+
+  context 'when uaa.ssl.port is invalid (1023)' do
+    before(:each) do
+      manifest['properties']['uaa']['ssl']['port'] = 1023
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (1023) specified for uaa.ssl.port, please specify a valid port number in this range [1024-65535]')
+    end
+  end
+
+  context 'when uaa.ssl.port is invalid (65536)' do
+    before(:each) do
+      manifest['properties']['uaa']['ssl']['port'] = 65536
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (65536) specified for uaa.ssl.port, please specify a valid port number in this range [1024-65535]')
+    end
+  end
+
+  context 'when uaa.localhost_http_port is the same as uaa.ssl.port' do
+    before(:each) do
+      manifest['properties']['uaa']['ssl']['port'] = 9090
+      manifest['properties']['uaa']['localhost_http_port'] = 9090
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Please specify different values for uaa.ssl.port and uaa.localhost_http_port')
+    end
+  end
+
   context 'using bosh links' do
-    let(:compiled_xml) { compile_erb(template, manifest) }
-    let(:template) { '../jobs/uaa/templates/config/tomcat/tomcat.server.xml.erb' }
     let(:internal_proxies) do
       config = Nokogiri::XML.parse(compiled_xml)
       config.xpath('//Valve')[0].attributes['internalProxies'].value
     end
 
-    context 'when http port and https port are disabled' do
-      before(:each) do
-        manifest['properties']['uaa']['port'] = -1
-        manifest['properties']['uaa']['ssl']['port'] = -1
-
-      end
-      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
-
-      it 'returns an error' do
-        expect {
-          compiled_xml
-        }.to raise_error(ArgumentError, /You have to set either an http port or an https port./)
-      end
-    end
-
-    context 'when http port is invalid' do
-      before(:each) do
-        manifest['properties']['uaa']['port'] = -2
-
-      end
-      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
-
-      it 'returns an error' do
-        expect {
-          compiled_xml
-        }.to raise_error(ArgumentError, /An invalid http port has been specified./)
-      end
-    end
-
-
-    context 'when https port is invalid' do
-      before(:each) do
-        manifest['properties']['uaa']['ssl']['port'] = -2
-
-      end
-      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
-
-      it 'returns an error' do
-        expect {
-          compiled_xml
-        }.to raise_error(ArgumentError, /An invalid https port has been specified./)
-      end
-    end
-
     context 'when uaa.proxy_ips_regex is in the manifest' do
-      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml') }
-
       it 'includes the proxy_ips_regex when uaa.proxy.servers not set and bosh links not available' do
         manifest['properties']['uaa']['proxy']['servers'] = []
         manifest['properties']['uaa']['proxy_ips_regex'] = 'proxy_ips_regex'
@@ -108,7 +181,7 @@ describe 'tomcat.server.xml' do
         manifest['properties']['uaa']['proxy']['servers'] = []
       end
 
-      let(:manifest) { generate_cf_manifest('spec/input/all-properties-set.yml', links) }
+      let(:manifest) {generate_cf_manifest('spec/input/all-properties-set.yml', links)}
 
       context 'when a bosh-link is available' do
         let(:links) {{

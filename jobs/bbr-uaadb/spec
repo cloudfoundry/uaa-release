@@ -16,6 +16,11 @@ consumes:
   optional: true
 
 properties:
+
+  release_level_backup:
+    default: false
+    description: Set to true to enable backup/restore
+
   #uaa database host configuration, exact same as the `uaa` job
   uaadb.address:
     description: |
@@ -32,9 +37,10 @@ properties:
     description: "Database scheme for UAA DB"
   uaadb.port:
     description: "The UAA database Port"
-  uaadb.tls_enabled :
-    description: "Use TLS connection for UAA database"
-    default: false
+  uaadb.ca_cert:
+    description: |
+      Database CA certificate to pass into back-and-restore-sdk config.json.
+      Providing this will enable TLS.
   uaadb.roles:
     description: |
       The list of database Roles used in UAA database including tag/name/password

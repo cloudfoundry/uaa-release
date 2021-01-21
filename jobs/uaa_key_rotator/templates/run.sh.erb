@@ -1,9 +1,0 @@
-#!/bin/bash
-
-set -xu
-
-export UAA_ROTATOR=/var/vcap/packages/uaa_rotator
-export PATH=${UAA_ROTATOR}/bin:$PATH
-
-
-uaa-key-rotator --config /var/vcap/jobs/uaa_key_rotator/config/config.json

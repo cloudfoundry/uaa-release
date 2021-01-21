@@ -1,8 +1,22 @@
 - type: remove
-  path: /instance_groups/name=uaa
+  path: /instance_groups/name=uaa/jobs/name=postgres
 
 - type: replace
-  path: /instance_groups/-
+  path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaadb
+  value:
+    databases:
+      - name: uaa
+        tag: uaa
+    db_scheme: mysql
+    port: 3306
+    tls: disabled
+    roles:
+      - name: uaaadmin
+        password: admin
+        tag: admin
+
+- type: replace
+  path: /instance_groups/0:before
   value:
     name: database
     azs:
@@ -55,102 +69,16 @@
             tls: ((dns_api_client_tls))
 
 - type: replace
-  path: /instance_groups/-
-  value:
-    name: uaa
-    azs:
-    - z1
-    instances: 1
-    vm_type: default
-    stemcell: default
-    networks:
-    - name: default
-    jobs:
-    - name: uaa
-      release: uaa
-      properties:
-        encryption:
-          active_key_label: 'key-1'
-          encryption_keys:
-          - label: 'key-1'
-            passphrase: 'MY-PASSPHRASE'
-          - label: 'key-2'
-            passphrase: 'MY-PASSPHRASE-TWO'
-        login:
-          defaultIdentityProvider: 'uaa'
-          saml:
-            activeKeyId: key1
-            keys:
-              key1:
-                key: "((uaa_login_saml.private_key))"
-                passphrase: password
-                certificate: "((uaa_login_saml.certificate))"
-        uaa:
-          clients:
-            admin:
-              authorized-grant-types: client_credentials
-              scope: uaa.none
-              authorities: uaa.admin,clients.read,clients.write,clients.secret,scim.read,scim.write,clients.admin
-              secret: "((uaa_admin_client_secret))"
-          jwt:
-            policy:
-              active_key_id: key-1
-              keys:
-                key-1:
-                  signingKey: "((uaa_jwt_signing_key.private_key))"
-          scim:
-            user:
-              override: true
-            users:
-            - name: admin
-              password: "((cf_admin_password))"
-              groups:
-              - uaa.admin
-            - name: marissa
-              password: koala
-              groups:
-              - uaa.user
-          sslCertificate: "((uaa_ssl.certificate))"
-          sslPrivateKey: "((uaa_ssl.private_key))"
-          url: https://uaa.((system_domain))
-        uaadb:
-          databases:
-          - name: uaa
-            tag: uaa
-          db_scheme: mysql
-          port: 3306
-          roles:
-          - name: uaaadmin
-            password: admin
-            tag: admin
-    - name: bosh-dns
-      release: bosh-dns
-      properties:
-        cache:
-          enabled: true
-        health:
-          enabled: true
-          server:
-            tls: ((dns_healthcheck_server_tls))
-          client:
-            tls: ((dns_healthcheck_client_tls))
-        api:
-          server:
-            tls: ((dns_api_server_tls))
-          client:
-            tls: ((dns_api_client_tls))
-
-- type: replace
   path: /releases/-
   value:
     name: cf-mysql
-    sha1: 9101651c0e51e82399715912fbc42bcbcfa23eca
-    url: https://storage.googleapis.com/cf-deployment-compiled-releases/cf-mysql-36.15.0-ubuntu-xenial-97.18-20180925-180805-323206939.tgz
-    version: 36.15.0
+    sha1: 1918047d94df62167f26136353b40baa70549b9a
+    url: https://storage.googleapis.com/cf-deployment-compiled-releases/cf-mysql-36.16.0-ubuntu-xenial-170.9-20181119-232745-090612782.tgz
+    version: 36.16.0
 
 - type: replace
   path: /stemcells/-
   value:
     alias: db-stemcell
     os: ubuntu-xenial
-    version: "97.18"
+    version: "170.9"

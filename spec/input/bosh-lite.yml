@@ -189,7 +189,6 @@ properties:
         spULZVNRxq7veq/fzwIDAQAB
         -----END PUBLIC KEY-----
     port: 8080
-    require_https: false
     scim:
       userids_enabled: true
       users:
@@ -282,7 +281,6 @@ properties:
       tag: uaa
     db_scheme: postgres
     port: 5524
-    tls_enabled: true
     roles:
     - name: uaaadmin
       password: admin

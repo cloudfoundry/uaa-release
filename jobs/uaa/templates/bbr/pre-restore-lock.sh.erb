@@ -1,7 +1,22 @@
 #!/bin/bash
 
-<% if p('release_level_backup') %>
-  /var/vcap/bosh/bin/monit stop uaa
-  #give monit and route registrar enough time
-  sleep 15
-<% end %>
+set -e
+
+function wait_for_uaa_to_stop() {
+  local max_attempts=180
+  local successes=0
+  echo -n "Waiting for uaa to stop"
+  for attempt in $(seq "${max_attempts}"); do
+    local status=$(/var/vcap/jobs/bpm/bin/bpm list uaa | grep uaa)
+    if [[ "${status}" == *stopped* ]]; then
+      sleep 1
+      break
+    fi
+    echo -n "."
+    sleep 1
+  done
+  echo
+}
+
+/var/vcap/bosh/bin/monit stop uaa
+wait_for_uaa_to_stop

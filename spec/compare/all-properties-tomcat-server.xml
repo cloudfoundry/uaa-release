@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Server port="-1">
+  <Listener className="org.apache.catalina.startup.VersionLoggerListener"/>
+  <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on"/>
+  <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener"/>
+  <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener"/>
+  <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener"/>
+  <Listener className="org.cloudfoundry.identity.uaa.web.tomcat.UaaStartupFailureListener" />
+
+  <Service name="Catalina">
+    <Connector class="org.apache.coyote.http11.Http11NioProtocol"
+               protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               address="127.0.0.1"
+               port="55555"
+               bindOnInit="true"
+               maxHttpHeaderSize="14336"
+    />
+
+    <Connector class="org.apache.coyote.http11.Http11NioProtocol" protocol="HTTP/1.1" connectionTimeout="20000"
+               scheme="https"
+               port="33333"
+               SSLEnabled="true"
+               sslEnabledProtocols="TLSv1.2"
+               ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+               secure="true"
+               clientAuth="false"
+               sslProtocol="TLS"
+               keystoreFile="/var/vcap/data/uaa/uaa_keystore.p12"
+               keystoreType="PKCS12"
+               keyAlias="uaa_ssl_cert"
+               keystorePass="k0*l*s3cur1tyr0ck$"
+               bindOnInit="false"
+               maxHttpHeaderSize="14336"
+    />
+
+    <Engine name="Catalina" defaultHost="localhost">
+      <Host name="localhost"
+            appBase="webapps"
+            unpackWARs="true"
+            autoDeploy="false"
+            failCtxIfServletStartFails="true">
+
+        <Valve className="org.apache.catalina.valves.RemoteIpValve"
+               remoteIpHeader="x-forwarded-for"
+               protocolHeader="x-forwarded-proto"
+               internalProxies="127\.1\.0\.1|127\.1\.0\.2|127\.1\.0\.3|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+               portHeader="X-Forwarded-Port"
+        />
+
+        <Valve className="org.apache.catalina.valves.AccessLogValve"
+               directory="/var/vcap/sys/log/uaa"
+               prefix="localhost_access"
+               suffix=".log"
+               rotatable="false"
+               pattern="%h %l %u %t &quot;%m %U %H&quot; %s %{Content-Length}i %b &quot;X-Vcap-Request-Id: %{X-Vcap-Request-Id}i&quot; %I"
+        />
+
+        <Valve className="org.apache.catalina.valves.ErrorReportValve"
+               showReport="false"
+               showServerInfo="false"
+        />
+
+      </Host>
+    </Engine>
+  </Service>
+</Server>

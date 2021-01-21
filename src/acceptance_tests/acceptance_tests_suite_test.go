@@ -17,7 +17,6 @@ import (
 	boshdir "github.com/cloudfoundry/bosh-cli/director"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/onsi/gomega/gbytes"
-	"github.com/onsi/gomega/gstruct"
 )
 
 func TestAcceptanceTests(t *testing.T) {
@@ -42,17 +41,12 @@ var (
 var _ = BeforeSuite(func() {
 	setBoshEnvironmentVariables()
 
-	ensureUAAHasBeenDeployedAndRunning()
 	By("disabling bosh resurrection", func() {
 		disableResurrectionCmd := exec.Command(boshBinaryPath, "-d", "uaa", "update-resurrection", "-n", "off")
 		session, err := gexec.Start(disableResurrectionCmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 		Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
 	})
-})
-
-var _ = BeforeEach(func() {
-	deployUAA()
 })
 
 func setBoshEnvironmentVariables() {
@@ -87,21 +81,6 @@ func setBoshEnvironmentVariables() {
 	Expect(err).NotTo(HaveOccurred())
 	Expect(info.Name).To(Equal("docker"))
 	Expect(info.User).To(Equal("admin"))
-}
-
-func ensureUAAHasBeenDeployedAndRunning() {
-	By("checking uaa is deployed and running", func() {
-		Eventually(func() []instanceInfo {
-			return getInstanceInfos(boshBinaryPath)
-		}, 1*time.Minute).ShouldNot(BeEmpty())
-
-		Eventually(func() []instanceInfo {
-			return getInstanceInfos(boshBinaryPath)
-		}, 1*time.Minute).Should(ContainElement(gstruct.MatchFields(gstruct.IgnoreExtras, gstruct.Fields{
-			"InstanceGroup": Equal("uaa"),
-			"ProcessState":  Equal("running"),
-		})))
-	})
 }
 
 type instanceInfo struct {
@@ -158,7 +137,6 @@ func getInstanceInfos(boshBinary string) []instanceInfo {
 	return out
 }
 
-
 func getUaaIP() (string, bool) {
 	instanceInfos := getInstanceInfos(boshBinaryPath)
 	for _, instanceInfo := range instanceInfos {
@@ -168,18 +146,6 @@ func getUaaIP() (string, bool) {
 	}
 
 	return "", false
-}
-
-func deleteUAA() {
-	By(fmt.Sprintf("delete uaa: %v", deleteCmd), func() {
-		Expect(os.Remove("/tmp/uaa-store.json")).To(Succeed())
-		cmd := exec.Command(boshBinaryPath, deleteCmd...)
-		session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
-		Expect(err).NotTo(HaveOccurred())
-		Eventually(session, 10*time.Minute).Should(gexec.Exit(0))
-
-		Eventually(session).Should(gbytes.Say("Removing deployment"))
-	})
 }
 
 func deployUAA(opsFiles ...string) {

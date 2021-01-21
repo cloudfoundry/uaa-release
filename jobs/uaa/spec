@@ -4,23 +4,18 @@ name: uaa
 description: "The UAA is the identity management service for Cloud Foundry. It's primary role is as an OAuth2 provider, issuing tokens for client applications to use when they act on behalf of Cloud Foundry users. It can also authenticate users with their Cloud Foundry credentials, and can act as an SSO service using those credentials (or others). It has endpoints for managing user accounts and for registering OAuth2 clients, as well as various other management functions."
 
 templates:
-  bin/uaa.erb: bin/uaa
-  bin/uaa_ctl.erb: bin/uaa_ctl
-  bin/configure_proxy.erb: bin/configure_proxy
+  bin/uaa: bin/uaa
   bin/configure_newrelic.erb: bin/configure_newrelic
-  bin/install_crt: bin/install_crt
-  bin/dns_health_check.erb: bin/dns_health_check
+  bin/configure_proxy.erb: bin/configure_proxy
   bin/health_check.erb: bin/health_check
-  bin/install_uaa_crt: bin/install_uaa_crt
   bin/pre-start.erb: bin/pre-start
   bin/post-start: bin/post-start
+  bin/dns/healthy.erb: bin/dns/healthy
 
   config/uaa.yml.erb: config/uaa.yml
   config/bpm.yml.erb: config/bpm.yml
   config/newrelic.yml.erb: config/newrelic.yml
-  config/varz.yml: config/varz.yml
-  config/log4j.properties.erb: config/log4j.properties
-  config/varz.log4j.properties: config/varz.log4j.properties
+  config/log4j2.properties.erb: config/log4j2.properties
   config/ldap.crt.erb: config/ldap.crt
   config/messages.properties.erb: config/messages.properties
   config/uaa.crt.erb: config/uaa.crt
@@ -31,14 +26,13 @@ templates:
   bbr/pre-backup-lock.sh.erb: bin/bbr/pre-backup-lock
   bbr/pre-restore-lock.sh.erb: bin/bbr/pre-restore-lock
   bbr/post-backup-unlock.sh.erb: bin/bbr/post-backup-unlock
-  bbr/post-restore-unlock.sh.erb: bin/bbr/post-restore-unlock
+  bbr/post-restore-unlock.sh: bin/bbr/post-restore-unlock
 
 provides:
 - name: uaa_db
   type: uaa_db
   properties:
   - uaadb
-  - release_level_backup
 
 - name: uaa_keys
   type: uaa_keys
@@ -55,7 +49,6 @@ consumes:
   optional: true
 
 packages:
-  - uaa_utils
   - uaa
 
 properties:
@@ -73,13 +66,7 @@ properties:
 
   #backup properties
   release_level_backup:
-    default: false
-    description: "Set to true to include UAA database in backup and restore operations"
-
-  #bpm
-  bpm.enabled:
-    description: "Experimental feature flag, do not use yet: Enable Bosh Process Manager"
-    default: false
+    description: "DEPRECATED: Do not use this property. Use the corresponding property in bbr-uaadb."
 
   #uaa database host configuration
   uaadb.address:
@@ -94,23 +81,26 @@ properties:
       - name: uaa
         tag: uaa
   uaadb.db_scheme:
-    description: "Database scheme for UAA DB"
+    description: "Database scheme for UAA DB. Supported schemes: postgres, mysql"
   uaadb.port:
     description: "The UAA database Port"
-  uaadb.tls_enabled:
-    description: "Use TLS connection for UAA database"
-    default: false
-  uaadb.skip_ssl_validation:
-    description: "Skip TLS verification for database server certificate"
-    default: false
+  uaadb.tls:
+    description: |
+      Use TLS connection for UAA database.
+      Valid options are:
+      enabled (use TLS with full certificate validation),
+      enabled_skip_hostname_validation (use TLS but skip validation of common and alt names in the host certificate),
+      enabled_skip_all_validation (use TLS but do not validate anything about the host certificate),
+      disabled (do not use TLS)
+    default: enabled
   uaadb.tls_protocols:
     description: |
-      if `tls_enabled` is set to true, this property can be used to narrow down the protocols used
+      If using TLS, this property can be used to narrow down the protocols used
       by the UAA database driver.
+      This option only takes effect when using `mysql` as `uaadb.db_scheme`.
       The default is null, the database driver will pick the protocol to use.
       The values can be comma separated.
-      This option only takes into effect when using `mysql` as `uaadb.db_scheme`.
-      PostgreSQL and SQLServer default to TLSv1.2 through the JDBC driver.
+      PostgreSQL defaults to TLSv1.2 through the JDBC driver.
     example: TLSv1.2,TLSv1.1
   uaadb.roles:
     description: |
@@ -126,8 +116,12 @@ properties:
   uaa.catalina_opts:
     description: "The options used to configure Tomcat"
     default: -Xmx768m -XX:MaxMetaspaceSize=256m
-  uaa.port:
-    description: "Port that uaa will accept connections on"
+  uaa.localhost_http_port:
+    description: |
+      The port on which UAA will accept HTTP traffic from the localhost machine only.
+      Only used by monit to call the /healthz endpoint.
+      Either use default or set to another value in range [1024-65535].
+      This port must not conflict with other ports configured on this VM, such as uaa.ssl.port.
     default: 8080
   uaa.shutdown.sleep:
     description: |
@@ -217,19 +211,39 @@ properties:
       - HEAD
       - OPTIONS
 
+  uaa.rest.template.timeout:
+    description: "Timeout for the RestTemplates used by the UAA in ms"
+    example: 10000
+    default: 10000
+  uaa.rest.template.maxTotal:
+    description: "Size of the connection pool used by the RestTemplates in the UAA"
+    example: 20
+    default: 20
+  uaa.rest.template.maxPerRoute:
+    description: "Maximum number of connections to the same route that is used by the RestTemplates in the UAA"
+    example: 5
+    default: 5
+  uaa.rest.template.maxKeepAlive:
+    description: "Maximum time in ms that the connections of the RestTemplates are kept alive in the UAA"
+    example: 0
+    default: 0
+
   # SSL
   login.protocol:
     description: "Scheme to use for HTTP communication (http/https)"
     default: https
-  uaa.require_https:
-    description: "Request came in on a secure connection. Expect the load balancer/proxy to set the proper headers (x-forwarded-for, x-forwarded-proto)"
-    default: true
   uaa.ssl.port:
-    description: If this property is set, Tomcat will listen to this port and expect https traffic. If set to -1, Tomcat will not listen for https traffic.
+    description: |
+      The port on which UAA will accept HTTPS traffic.
+      Either use default or set to another value in range [1024-65535].
+      This port must not conflict with other ports configured on this VM, such as uaa.localhost_http_port.
     default: 8443
   uaa.ssl.protocol_header:
     description: The header to look for to determine if ssl termination was performed by a front end load balancer.
     default: x-forwarded-proto
+  uaa.ssl.port_header:
+    description: The header to look for to determine the port where ssl termination was performed by a front end load balancer.
+    default: X-Forwarded-Port
   uaa.sslCertificate:
     description: "The server's ssl certificate. The default is a self-signed certificate and should always be replaced for production deployments"
     default: ''
@@ -432,7 +446,7 @@ properties:
       Contains a map of actions, each with a list of IDs.
       Possible delete actions are 'identityProviders', 'users' and 'clients'.
       Identity providers are identified by their alias
-      These will be deleted in the database (default zone).
+      These will be deleted in the default (`uaa`) zone.
       Unrecognized map keys will be ignored.
       If the ID exists both in the delete and create sections
       the delete section takes preceden
@@ -500,9 +514,19 @@ properties:
   uaa.client.secret.policy.global.requireSpecialCharacter:
     description: "Minimum number of special characters required for secret to be considered valid (defaults to 0)."
 
+  # Global client redirect URI configuration
+  uaa.client.redirect_uri.matching_mode:
+    description: |
+      When set to `legacy`, allow unsafe matching of redirect URIs.
+      For example, https://example.com would also match all subdomains and all paths of https://example.com.
+      When set to `exact`, will provide OAuth2 spec-compliant (RFC6749) exact redirect URI matching.
+    default: legacy
+
   # Clients
   uaa.clients:
-    description: "List of OAuth2 clients that the UAA will be bootstrapped with"
+    description: |
+      List of OAuth2 clients that the UAA will be bootstrapped with.
+      These will be created in the default (`uaa`) zone.
     example:
       login:
         id: login
@@ -532,6 +556,10 @@ properties:
         app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
   uaa.admin.client_secret:
     description: "Secret of the admin client - a client named admin with uaa.admin as an authority"
+
+  uaa.authentication.enable_uri_encoding_compatibility_mode:
+    description: "When enabled basic auth credentials will only be URI decoded when the `X-CF-ENCODED-CREDENTIALS` header is set to `true`"
+    default: false
 
   # Security policies (for the UAA zone)
   uaa.authentication.policy.lockoutAfterFailures:
@@ -727,6 +755,7 @@ properties:
   uaa.scim.users:
     description: |
       A list of users to be bootstrapped with authorities.
+      These will be created in the default (`uaa`) zone.
       Each entry supports the following format:
         Short OpenStruct:
           - name: username
@@ -1240,20 +1269,18 @@ properties:
       The UAA uses this as a base domain for internal hostnames so that subdomain can be detected
       This defaults to the uaa.url property, and if not set, to login.<domain>
     default: ~
+  uaa.servlet.session-store:
+    description: |
+        Select the backend where user sessions will be stored
+        Valid options are:
+          memory (use an in memory map structure),
+          database (use the configured database as a session store)
+    default: memory
   uaa.servlet.idle-timeout:
-    description: |
-      Optional configuration of the UAA session idle timeout.
-      - default to 1800 seconds
+    description: "UAA session idle timeout in seconds."
     default: 1800
-  uaa.servlet.session-cookie:
+  uaa.servlet.session-cookie.max-age:
     description: |
-      Optional configuration of the UAA session cookie.
-      Defaults are the following key value pairs:
-        secure: <(boolean)this value if set, otherwise require_https>
-        http-only: <(boolean) - default to true. set HttpOnly flag on cookie.
-        max-age: <(int) lifetime in seconds of cookie - default to 30 minutes)
-        name: <(String) name of cookie, default is JSESSIONID>
-        comment: <(String) optional comment in cookie>
-        path: <(String) path for cookie, default is />
-        domain: <(String) domain for cookie, default is incoming request domain>
-    default: ~
+      Lifetime of the UAA session cookie in seconds.
+      If -1, will use 'Session' lifetime.
+    default: -1

@@ -1,11 +1,13 @@
 ---
 name: uaa
+
 update:
   canaries: 2
   canary_watch_time: 30000-1200000
   max_in_flight: 1
   serial: true
   update_watch_time: 5000-1200000
+
 instance_groups:
 - name: uaa
   azs:
@@ -36,6 +38,51 @@ instance_groups:
               passphrase: password
               certificate: "((uaa_login_saml.certificate))"
       uaa:
+        ca_certs:
+          - |
+            -----BEGIN CERTIFICATE-----
+            MIIDAjCCAmugAwIBAgIJAJtrcBsKNfWDMA0GCSqGSIb3DQEBCwUAMIGZMQswCQYD
+            VQQGEwJVUzETMBEGA1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5j
+            aXNjbzEQMA4GA1UECgwHUGl2b3RhbDERMA8GA1UECwwISWRlbnRpdHkxFjAUBgNV
+            BAMMDU1hcmlzc2EgS29hbGExIDAeBgkqhkiG9w0BCQEWEW1rb2FsYUBwaXZvdGFs
+            LmlvMB4XDTE1MDczMDE5Mzk0NVoXDTI1MDcyOTE5Mzk0NVowgZkxCzAJBgNVBAYT
+            AlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2Nv
+            MRAwDgYDVQQKDAdQaXZvdGFsMREwDwYDVQQLDAhJZGVudGl0eTEWMBQGA1UEAwwN
+            TWFyaXNzYSBLb2FsYTEgMB4GCSqGSIb3DQEJARYRbWtvYWxhQHBpdm90YWwuaW8w
+            gZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAPVOIGvG8MFbkqi+ytdBHVbEGde4
+            jaCphmvGm89/4Ks0r+041VsS55XNYnHsxXTlh1FiB2KcbrDb33pgvuAIYpcAO2I0
+            gqGeRoS2hNsxzcFdkgSZn1umDAeoE4bCATrquN93KMcw/coY5jacUfb9P2CQztkS
+            e2o+QWtIaWYAvI3bAgMBAAGjUDBOMB0GA1UdDgQWBBTkEjA4CEjevAGfnPBciyXC
+            3v4zMzAfBgNVHSMEGDAWgBTkEjA4CEjevAGfnPBciyXC3v4zMzAMBgNVHRMEBTAD
+            AQH/MA0GCSqGSIb3DQEBCwUAA4GBAIEd8U32tkcvwG9qCOfe5raBENHM4ltTuhju
+            zZWIM5Ik1bFf6+rA71HVDD1Z5fRozidhMOl6mrrGShfu6VUjtqzctJeSjaOPIJL+
+            wvrXXcAkCYZ9QKf0sqlUWcIRy90nqrD5sL/rHAjNjxQ3lqIOj7yWOgty4LUzFQNr
+            FHiyd3T6
+            -----END CERTIFICATE-----
+          - |
+            -----BEGIN CERTIFICATE-----
+            MIID0DCCArgCCQDBRxU0ucjw6DANBgkqhkiG9w0BAQsFADCBqTELMAkGA1UEBhMC
+            VVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMR8wHQYDVQQK
+            ExZDbG91ZCBGb3VuZHJ5IElkZW50aXR5MQ4wDAYDVQQLEwVLZXkgMTEiMCAGA1UE
+            AxMZbG9naW4uaWRlbnRpdHkuY2YtYXBwLmNvbTEgMB4GCSqGSIb3DQEJARYRZmhh
+            bmlrQHBpdm90YWwuaW8wHhcNMTcwNDEwMTkxMTIyWhcNMTgwNDEwMTkxMTIyWjCB
+            qTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1TYW4gRnJhbmNp
+            c2NvMR8wHQYDVQQKExZDbG91ZCBGb3VuZHJ5IElkZW50aXR5MQ4wDAYDVQQLEwVL
+            ZXkgMTEiMCAGA1UEAxMZbG9naW4uaWRlbnRpdHkuY2YtYXBwLmNvbTEgMB4GCSqG
+            SIb3DQEJARYRZmhhbmlrQHBpdm90YWwuaW8wggEiMA0GCSqGSIb3DQEBAQUAA4IB
+            DwAwggEKAoIBAQCtGS+R10tSg3K6+7SS2RwsvQLIYbwOuH2g+xpU4tUcmoHURuug
+            0xM9tjQc+O4PlYENlOLd+00unWY+f3AXLoWExO8hh5CZOyQfyb+TJVF5cb/N9apr
+            j5XpRbieZRy98Xdg2se83lU9NZMmtzYoHOx5ZDvQ5oE18GLrPhdt04Xjl0N9yTah
+            GdqyKdS/6sb49SXvHw6OB1XLJ6fqp4JDrG3xb18eD/83J2V/Bvf8v6zI+gG6N24d
+            qLsagtTOb/Oo4z12GVHmaO4QndBS+eYYqsYOh4cWiDQIyAsL4LRnhkA0HoZuOUxu
+            xBzOxpjEcyoAw6c57rEhdSs86hzutyXBl4cxAgMBAAEwDQYJKoZIhvcNAQELBQAD
+            ggEBAB72QKF9Iri+UdCGAIok/qIeKw5AwZ0wtiONa+DF4B80/yAA1ObpuO3eeeka
+            t0s4wtCRflE08zLrwqHlvKQAGKmJkfRLfEqfKStIUOTHQxE6wOaBtfW41M9ZF1hX
+            NHpnkfmSQjaHVNTRbABiFH6eTq8J6CuO12PyDf7lW3EofvcTU3ulsDhuMAz02ypJ
+            BgcOufnl+qP/m/BhVQsRD5mtJ56uJpHvri1VR2kj8N59V8f6KPO2m5Q6MulEhWml
+            TsxyxUl03oyICDP1cbpYtDk2VddVNWipHHPH/mBVW41EBVv0VDV03LH3RfS9dXiK
+            ynuP3shhqhFvaaiUTZP4l5yF/GQ=
+            -----END CERTIFICATE-----
         clients:
           admin:
             authorized-grant-types: client_credentials
@@ -64,6 +111,7 @@ instance_groups:
         sslPrivateKey: "((uaa_ssl.private_key))"
         url: https://uaa.((system_domain))
       uaadb:
+        tls: disabled
         address: 127.0.0.1
         databases:
         - name: uaadb
@@ -74,10 +122,10 @@ instance_groups:
         - name: uaaadmin
           password: admin
           tag: admin
-  - name: uaa_postgres
-    release: uaa
+  - name: postgres
+    release: postgres
     properties:
-      postgres:
+      databases:
         port: 5524
         roles:
           - tag: admin
@@ -87,8 +135,6 @@ instance_groups:
           - tag: uaa
             name: uaadb
             citext: true
-  - name: uaa_key_rotator
-    release: uaa
   - name: bosh-dns
     release: bosh-dns
     properties:
@@ -105,6 +151,8 @@ instance_groups:
           tls: ((dns_api_server_tls))
         client:
           tls: ((dns_api_client_tls))
+  - name: bpm
+    release: bpm
 
 variables:
 - name: uaa_ca
@@ -171,14 +219,21 @@ variables:
 
 releases:
 - name: uaa
-  version: "latest"
-- name: "bosh-dns"
-  version: "1.10.0"
-  url: "https://bosh.io/d/github.com/cloudfoundry/bosh-dns-release?v=1.10.0"
-  sha1: "d1aadbda5d60c44dec4a429cda872cf64f6d8d0b"
+  version: latest
+- name: bosh-dns
+  version: 1.10.0
+  url: https://bosh.io/d/github.com/cloudfoundry/bosh-dns-release?v=1.10.0
+  sha1: d1aadbda5d60c44dec4a429cda872cf64f6d8d0b
+- name: bpm
+  version: 1.0.4
+  url: https://bosh.io/d/github.com/cloudfoundry-incubator/bpm-release?v=1.0.4
+  sha1: 41df19697d6a69d2552bc2c132928157fa91abe0
+- name: postgres
+  version: 38
+  url: https://bosh.io/d/github.com/cloudfoundry/postgres-release?v=38
+  sha1: 23620deb20c34cefadff74c0e5bfdffaaea1a807
 
 stemcells:
 - alias: default
   os: ubuntu-xenial
-  version: "latest"
-
+  version: latest

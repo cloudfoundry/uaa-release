@@ -1,7 +1,0 @@
----
-- type: replace
-  path: /releases/name=uaa?
-  value:
-    name: uaa
-    version: create
-    url: /Users/pivotal/workspace/uaa-release

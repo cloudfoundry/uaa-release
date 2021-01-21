@@ -3,16 +3,7 @@
 # Proxy configuration variable for the uaa
 HTTP_PROXY_JAVA_OPTIONS=""
 
-echo "[uaa-ctl] Default environment set up"
-
-if [[ -f /var/vcap/jobs/uaa/config/cacerts ]]; then
-  KEYSTORE="/var/vcap/jobs/uaa/config/cacerts"
-else
-  KEYSTORE="/var/vcap/packages/uaa/jdk/jre/lib/security/cacerts"
-fi
-
-KEYSTORE_OPTS="-Djavax.net.ssl.trustStore=$KEYSTORE -Djavax.net.ssl.trustStoreType=JKS"
-echo "[uaa-ctl] Keystore configured to: $KEYSTORE"
+log "Default environment set up"
 
 # Proxy configuration
 <% if_p('env.http_proxy') do |httpProxy| %>
@@ -37,11 +28,12 @@ echo "[uaa-ctl] Keystore configured to: $KEYSTORE"
 
     OIFS=$IFS
     IFS=','
+    java_no_proxies=""
     for host in $proxy_conf; do
       if [[ $host == .* ]]; then
         host="*"$host
       fi
-      java_no_proxies=$java_no_proxies"|"$host
+      java_no_proxies=${java_no_proxies}"|"${host}
     done
     IFS=$OIFS
 
@@ -51,8 +43,6 @@ echo "[uaa-ctl] Keystore configured to: $KEYSTORE"
   fi
 <% end %>
 
-echo "[uaa-ctl] UAA System Proxies set to:$HTTP_PROXY_JAVA_OPTIONS"
+log "UAA System Proxies set to:$HTTP_PROXY_JAVA_OPTIONS"
 
 export HTTP_PROXY_JAVA_OPTIONS
-export KEYSTORE
-export KEYSTORE_OPTS

@@ -57,12 +57,12 @@ describe 'uaa-release erb generation' do
   end
 
   context 'using bosh links' do
-    let(:generated_cf_manifest) { generate_cf_manifest(input, links) }
-    let(:input) { 'spec/input/bosh-lite.yml' }
-    let(:output_uaa) { 'spec/compare/bosh-lite-uaa.yml' }
-    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+    let(:generated_cf_manifest) {generate_cf_manifest(input, links)}
+    let(:input) {'spec/input/bosh-lite.yml'}
+    let(:output_uaa) {'spec/compare/bosh-lite-uaa.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
-    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
 
     context 'when uaadb.address is specified' do
       let(:links) do
@@ -76,7 +76,7 @@ describe 'uaa-release erb generation' do
 
       it 'takes precedence over bosh-linked address' do
         expect(parsed_yaml['database']['url']).not_to include('linkedaddress')
-        expect(parsed_yaml['database']['url']).to eq 'jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true'
+        expect(parsed_yaml['database']['url']).to eq 'jdbc:postgresql://10.244.0.30:5524/uaadb?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory'
       end
     end
 
@@ -90,16 +90,16 @@ describe 'uaa-release erb generation' do
         }
       end
 
-      before(:each) { generated_cf_manifest['properties']['uaadb']['address'] = nil }
+      before(:each) {generated_cf_manifest['properties']['uaadb']['address'] = nil}
 
-      it 'it uses the bosh-linked address' do
-        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://linkedaddress:5524/uaadb?ssl=true')
+      it 'uses the bosh-linked address' do
+        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://linkedaddress:5524/uaadb?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory')
       end
     end
 
     context 'when neither uaadb.address nor a bosh link are available' do
       let(:links) {{}}
-      before(:each) { generated_cf_manifest['properties']['uaadb']['address'] = nil }
+      before(:each) {generated_cf_manifest['properties']['uaadb']['address'] = nil}
 
       it 'throws an error about the missing database configuration' do
         expect {
@@ -110,87 +110,87 @@ describe 'uaa-release erb generation' do
   end
 
   context 'when yml files and stubs are provided' do
-    let(:generated_cf_manifest) { generate_cf_manifest(input) }
-    let(:as_yml) { true }
-    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:as_yml) {true}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml)}
 
     context 'for a bosh-lite.yml' do
-      let(:input) { 'spec/input/bosh-lite.yml' }
-      let(:output_uaa) { 'spec/compare/bosh-lite-uaa.yml' }
-      let(:output_log4j) { 'spec/compare/default-log4j.properties' }
+      let(:input) {'spec/input/bosh-lite.yml'}
+      let(:output_uaa) {'spec/compare/bosh-lite-uaa.yml'}
+      let(:output_log4j2) {'spec/compare/default-log4j2.properties'}
 
       context 'when uaa.yml.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
-        it 'it matches' do
+        it 'matches' do
           yml_compare(output_uaa, parsed_yaml.to_yaml)
         end
       end
 
-      context 'when log4j.properties.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/config/log4j.properties.erb' }
-        let(:as_yml) { false }
+      context 'when log4j2.properties.erb is provided' do
+        let(:erb_template) {'../jobs/uaa/templates/config/log4j2.properties.erb'}
+        let(:as_yml) {false}
 
-        it 'it matches' do
-          str_compare output_log4j, parsed_yaml.to_s
+        it 'matches' do
+          str_compare output_log4j2, parsed_yaml.to_s
         end
       end
     end
 
     context 'for a all-properties-set.yml' do
-      let(:input) { 'spec/input/all-properties-set.yml' }
-      let(:output_uaa) { 'spec/compare/all-properties-set-uaa.yml' }
-      let(:output_log4j) { 'spec/compare/all-properties-set-log4j.properties' }
+      let(:input) {'spec/input/all-properties-set.yml'}
+      let(:output_uaa) {'spec/compare/all-properties-set-uaa.yml'}
+      let(:output_log4j2) {'spec/compare/all-properties-set-log4j2.properties'}
 
       context 'when uaa.yml.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
-        it 'it matches' do
+        it 'matches' do
           yml_compare(output_uaa, parsed_yaml.to_yaml)
         end
       end
 
-      context 'when log4j.properties.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/config/log4j.properties.erb' }
-        let(:as_yml) { false }
+      context 'when log4j2.properties.erb is provided' do
+        let(:erb_template) {'../jobs/uaa/templates/config/log4j2.properties.erb'}
+        let(:as_yml) {false}
 
-        it 'it matches' do
-          str_compare output_log4j, parsed_yaml.to_s
+        it 'matches' do
+          str_compare output_log4j2, parsed_yaml.to_s
         end
       end
     end
 
     context 'for test-defaults.yml' do
-      let(:input) { 'spec/input/test-defaults.yml' }
-      let(:output_uaa) { 'spec/compare/test-defaults-uaa.yml' }
-      let(:output_log4j) { 'spec/compare/default-log4j.properties' }
+      let(:input) {'spec/input/test-defaults.yml'}
+      let(:output_uaa) {'spec/compare/test-defaults-uaa.yml'}
+      let(:output_log4j2) {'spec/compare/default-log4j2.properties'}
 
       context 'when uaa.yml.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
-        it 'it matches' do
+        it 'matches' do
           yml_compare output_uaa, parsed_yaml.to_yaml
         end
       end
 
-      context 'when log4j.properties.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/config/log4j.properties.erb' }
-        let(:as_yml) { false }
+      context 'when log4j2.properties.erb is provided' do
+        let(:erb_template) {'../jobs/uaa/templates/config/log4j2.properties.erb'}
+        let(:as_yml) {false}
 
-        it 'it matches' do
-          str_compare output_log4j, parsed_yaml.to_s
+        it 'matches' do
+          str_compare output_log4j2, parsed_yaml.to_s
         end
       end
     end
 
     context 'for deprecated-properties-still-work.yml' do
-      let(:input) { 'spec/input/deprecated-properties-still-work.yml' }
-      let(:output_uaa) { 'spec/compare/deprecated-properties-still-work-uaa.yml' }
+      let(:input) {'spec/input/deprecated-properties-still-work.yml'}
+      let(:output_uaa) {'spec/compare/deprecated-properties-still-work-uaa.yml'}
 
       context 'when uaa.yml.erb is provided' do
-        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
-        it 'it matches' do
+        it 'matches' do
           yml_compare output_uaa, parsed_yaml.to_yaml
         end
       end
@@ -198,44 +198,30 @@ describe 'uaa-release erb generation' do
     end
   end
 
-  context 'dns_health_check' do
+  context 'health_check' do
     let(:input) {'spec/input/bosh-lite.yml'}
     let!(:generated_cf_manifest) {generate_cf_manifest(input)}
     let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, false)}
-    let(:output_dns_health_check) {'spec/compare/dns-health-check'}
+    let(:output_health_check) {'spec/compare/health-check'}
+    let(:erb_template) {'../jobs/uaa/templates/bin/health_check.erb'}
 
-    context 'for a bosh-lite.yml' do
-      let(:as_yml) {false}
-      let(:erb_template) {'../jobs/uaa/templates/bin/dns_health_check.erb'}
-      context 'when dns-health-check has a http port' do
-        it 'it uses the http port' do
-          str_compare output_dns_health_check, parsed_yaml.to_s
-        end
-      end
+    before(:each) do
+      generated_cf_manifest['properties']['uaa']['ssl']['port'] = 9090
+    end
 
-      context 'when http port is -1 and https is enabled' do
-        let(:output_dns_health_check) {'spec/compare/dns-health-check-https'}
-
-        before(:each) do
-          generated_cf_manifest['properties']['uaa']['port'] = -1
-          generated_cf_manifest['properties']['uaa']['ssl']['port'] = 9090
-        end
-
-        it 'it correctly generates dns health check with https port' do
-          str_compare output_dns_health_check, parsed_yaml.to_s
-        end
-      end
+    it 'correctly generates dns health check with https port' do
+      str_compare output_health_check, parsed_yaml.to_s
     end
   end
 
   context 'when invalid properties are specified' do
-    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
-    let(:as_yml) { true }
-    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
-    let(:input) { 'spec/input/all-properties-set.yml' }
+    let!(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:as_yml) {true}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml)}
+    let(:input) {'spec/input/all-properties-set.yml'}
 
     context 'and token format is invalid' do
-      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+      let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
       it 'raises an error' do
         generated_cf_manifest['properties']['uaa']['jwt']['refresh']['format'] = 'invalidformat';
@@ -244,14 +230,25 @@ describe 'uaa-release erb generation' do
         }.to raise_error(ArgumentError, /uaa.jwt.refresh.format invalidformat must be one of/)
       end
     end
+
+    context 'release_level_backup' do
+      let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+
+      it 'raises an error if set' do
+        generated_cf_manifest['properties']['release_level_backup'] = true
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /DEPRECATED: release_level_backup in the uaa job should no longer be used. Please set the corresponding release_level_backup property in the bbr-uaadb job instead/)
+      end
+    end
   end
 
   context 'when branding consent is specified for default zone' do
-    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
-    let(:as_yml) { true }
-    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
-    let(:input) { 'spec/input/all-properties-set.yml' }
-    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+    let!(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:as_yml) {true}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml)}
+    let(:input) {'spec/input/all-properties-set.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
     context 'and only consent text is provided' do
       it 'does not raise an error' do
@@ -271,23 +268,23 @@ describe 'uaa-release erb generation' do
 
     context 'and consent link is a valid URI' do
       valid_uris = ['https://example.com',
-        'https://example.com/',
-        'http://example.com/',
-        'ftp://example.com/',
-        'https://example.com?',
-        'https://example.com?a=b',
-        'https://example.com?a=b&c=d',
-        'https://example.com/?a=b',
-        'https://example.com/some/path',
-        'https://example.com#fragment',
-        'https://example.io',
-        'https://example.longtld',
-        'https://subdomain.example.com',
-        'https://subdomain.example.com',
-        'https://example.co.uk',
-        'https://example',
-        'http://127.0.0.1',
-        'http://224.1.1.1 '
+                    'https://example.com/',
+                    'http://example.com/',
+                    'ftp://example.com/',
+                    'https://example.com?',
+                    'https://example.com?a=b',
+                    'https://example.com?a=b&c=d',
+                    'https://example.com/?a=b',
+                    'https://example.com/some/path',
+                    'https://example.com#fragment',
+                    'https://example.io',
+                    'https://example.longtld',
+                    'https://subdomain.example.com',
+                    'https://subdomain.example.com',
+                    'https://example.co.uk',
+                    'https://example',
+                    'http://127.0.0.1',
+                    'http://224.1.1.1 '
       ]
 
       valid_uris.each do |url|
@@ -300,18 +297,18 @@ describe 'uaa-release erb generation' do
 
     context 'and consent link is not a valid URI' do
       invalid_uris = ['www.example.com',
-        'gabr://example.com',
-        'example',
-        'example.com',
-        'example.com:666',
-        '// ',
-        '//a',
-        '///a ',
-        '///',
-        'rdar://1234',
-        'h://test ',
-        ':// should fail',
-        'ftps://foo.bar/',
+                      'gabr://example.com',
+                      'example',
+                      'example.com',
+                      'example.com:666',
+                      '// ',
+                      '//a',
+                      '///a ',
+                      '///',
+                      'rdar://1234',
+                      'h://test ',
+                      ':// should fail',
+                      'ftps://foo.bar/',
       ]
 
       invalid_uris.each do |url|
@@ -326,11 +323,11 @@ describe 'uaa-release erb generation' do
   end
 
   context 'when login banner is specified' do
-    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
-    let(:as_yml) { true }
-    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
-    let(:input) { 'spec/input/all-properties-set.yml' }
-    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+    let!(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:as_yml) {true}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml)}
+    let(:input) {'spec/input/all-properties-set.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
     context 'and text color is in hex format' do
       it 'does not raise an error' do
@@ -421,16 +418,16 @@ describe 'uaa-release erb generation' do
   end
 
   context 'when clients have invalid properties' do
-    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
-    let(:as_yml) { true }
-    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml) }
-    let(:input) { 'spec/input/all-properties-set.yml' }
+    let!(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:as_yml) {true}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml)}
+    let(:input) {'spec/input/all-properties-set.yml'}
 
     context 'and redirect_uri or redirect_url are set' do
-      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+      let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
       rejected_parameters = ['redirect_uri', 'redirect_url']
-      rejected_parameters .each do |property|
+      rejected_parameters.each do |property|
         it "raises an error for property #{property}" do
           generated_cf_manifest['properties']['uaa']['clients']['app'][property] = 'http://some.redirect.url';
           expect {
@@ -441,10 +438,10 @@ describe 'uaa-release erb generation' do
     end
 
     context 'and invalid integer values are set' do
-      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+      let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
       invalid_integers = ['access-token-validity', 'refresh-token-validity']
-      invalid_integers .each do |property|
+      invalid_integers.each do |property|
         it "raises an error for property #{property}" do
           generated_cf_manifest['properties']['uaa']['clients']['app'][property] = 'not a number';
           expect {
@@ -455,10 +452,10 @@ describe 'uaa-release erb generation' do
     end
 
     context 'and boolean integer values are set' do
-      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+      let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
       invalid_integers = ['override', 'show-on-homepage']
-      invalid_integers .each do |property|
+      invalid_integers.each do |property|
         it "raises an error for property #{property}" do
           generated_cf_manifest['properties']['uaa']['clients']['app'][property] = 'not a boolean';
           expect {
@@ -469,7 +466,7 @@ describe 'uaa-release erb generation' do
     end
 
     context 'and client_credentials is missing authorities' do
-      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+      let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
       it 'raises an error for client_credentials' do
         generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = 'client_credentials';
@@ -481,7 +478,7 @@ describe 'uaa-release erb generation' do
     end
 
     context 'and scopes are required on a client' do
-      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+      let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
       grant_types_requiring_secret = ['implicit',
                                       'authorization_code',
                                       'password',
@@ -503,10 +500,10 @@ describe 'uaa-release erb generation' do
   end
 
   context 'when ldap is not enabled' do
-    let(:generated_cf_manifest) { generate_cf_manifest(input)}
-    let(:input) { 'spec/input/all-properties-set.yml' }
-    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
-    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:input) {'spec/input/all-properties-set.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
 
     context 'ldap override flag present when ldap.enabled is false' do
       it 'places property ldap.override in uaa.yml' do
@@ -518,79 +515,309 @@ describe 'uaa-release erb generation' do
 
   end
 
-  context 'when uaadb tls_enabled is set for sqlserver' do
-    let(:generated_cf_manifest) { generate_cf_manifest(input)}
-    let(:input) { 'spec/input/test-defaults.yml' }
-    let(:output_uaa) { 'spec/compare/test-defaults-uaa.yml' }
-    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
-    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
+  describe 'uaadb.db_scheme' do
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
 
-    it 'it adds encrypt in the URL' do
-      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
-      expect(parsed_yaml['database']['url']).to eq('jdbc:sqlserver://10.244.0.30:1433;databaseName=uaadb;encrypt=true;trustServerCertificate=false;')
+    before do
+      generated_cf_manifest['properties']['uaadb']['port'] = '7676'
+      generated_cf_manifest['properties']['uaadb']['address'] = 'my-hostname'
     end
 
-    it 'can skip ssl validation' do
-      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
-      generated_cf_manifest['properties']['uaadb']['skip_ssl_validation'] = true
-      expect(parsed_yaml['database']['url']).to eq('jdbc:sqlserver://10.244.0.30:1433;databaseName=uaadb;encrypt=true;trustServerCertificate=true;')
+    context 'when mysql' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'mysql'
+      end
+
+      it 'should correctly render a mysql JDBC connection string' do
+        expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://my-hostname:7676/uaadb?useSSL=true')
+      end
+    end
+
+    context 'when postgres' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'postgres'
+      end
+
+      it 'should correctly render a postgresql JDBC connection string' do
+        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://my-hostname:7676/uaadb?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory')
+      end
+    end
+
+    context 'when postgresql' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'postgresql'
+      end
+
+      it 'should correctly render a postgresql JDBC connection string' do
+        expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://my-hostname:7676/uaadb?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory')
+      end
+    end
+
+    context 'when unsupported db_scheme' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'foobardb'
+      end
+
+      it 'should tell the operator that only mysql and postgres are supported' do
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, 'Please select either mysql or postgres for uaadb.db_scheme')
+      end
     end
   end
 
-  context 'when uaadb tls_enabled is set for mysql' do
-    let(:generated_cf_manifest) { generate_cf_manifest(input)}
-    let(:input) { 'spec/input/test-defaults.yml' }
-    let(:output_uaa) { 'spec/compare/test-defaults-uaa.yml' }
-    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
-    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
-    before(:each) {
-      generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'mysql'
-      generated_cf_manifest['properties']['uaadb']['port'] = '5524'
-    }
+  describe 'uaa.ssl.port' do
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
 
-    it 'it adds encrypt in the URL' do
-      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
-      expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:5524/uaadb?useSSL=true&trustServerCertificate=false')
-    end
+    context 'when set' do
+      before do
+        generated_cf_manifest['properties']['uaa']['ssl']['port'] = '9897'
+      end
 
-    it 'can skip ssl validation' do
-      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
-      generated_cf_manifest['properties']['uaadb']['skip_ssl_validation'] = true
-      expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:5524/uaadb?useSSL=true&trustServerCertificate=true')
+      it 'renders the port into uaa.yml' do
+        expect(parsed_yaml['https_port']).to eq('9897')
+      end
     end
   end
 
-  context 'when uaadb tls_enabled is set for postgres' do
-    let(:generated_cf_manifest) { generate_cf_manifest(input)}
-    let(:input) { 'spec/input/test-defaults.yml' }
-    let(:output_uaa) { 'spec/compare/test-defaults-uaa.yml' }
-    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
-    let(:parsed_yaml) { read_and_parse_string_template(erb_template, generated_cf_manifest, true) }
-    before(:each) {
-      generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'postgres'
-      generated_cf_manifest['properties']['uaadb']['port'] = '5524'
-    }
+  describe 'uaa.client.redirect_uri.matching_mode' do
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
 
-    it 'it adds encrypt in the URL' do
-      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
-      expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true')
+    context 'when set to legacy' do
+      before do
+        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['matching_mode'] = 'legacy'
+      end
+
+      it 'renders into uaa.yml' do
+        expect(parsed_yaml['uaa']['oauth']['redirect_uri']['allow_unsafe_matching']).to eq(true)
+      end
     end
 
-    it 'can skip ssl validation' do
-      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
-      generated_cf_manifest['properties']['uaadb']['skip_ssl_validation'] = true
-      expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory')
+    context 'when set to exact' do
+      before do
+        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['matching_mode'] = 'exact'
+      end
+
+      it 'renders into uaa.yml' do
+        expect(parsed_yaml['uaa']['oauth']['redirect_uri']['allow_unsafe_matching']).to eq(false)
+      end
+    end
+
+    context 'when set to anything other than legacy or exact' do
+      before do
+        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['matching_mode'] = 'foo'
+      end
+
+      it 'raises an error' do
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, 'Invalid value for uaa.client.redirect_uri.matching_mode. Valid options are legacy or exact.')
+      end
+    end
+
+    context 'when not set by the user' do
+      it 'defaults to true' do
+        expect(parsed_yaml['uaa']['oauth']['redirect_uri']['allow_unsafe_matching']).to eq(true)
+      end
+    end
+  end
+
+  describe 'uaadb.tls' do
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
+
+    context 'when set to an invalid value' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['tls'] = 'foobar is invalid'
+      end
+
+      it 'raises an error' do
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, 'Invalid value for uaadb.tls. Valid options are enabled, enabled_skip_hostname_validation, enabled_skip_all_validation, disabled.')
+      end
+    end
+
+    context 'for mysql' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'mysql'
+        generated_cf_manifest['properties']['uaadb']['port'] = '9999'
+      end
+
+      context 'with tls enabled' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled'
+        end
+
+        it 'adds useSSL=true to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true')
+        end
+
+        context 'with uaadb.tls_protocols' do
+          before do
+            generated_cf_manifest['properties']['uaadb']['tls_protocols'] = 'someProtocol'
+          end
+
+          it 'adds the protocol to the URL' do
+            expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&enabledSslProtocolSuites=someProtocol')
+          end
+        end
+      end
+
+      context 'with tls disabled' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'disabled'
+        end
+
+        it 'adds useSSL=false to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=false')
+        end
+
+        context 'with uaadb.tls_protocols' do
+          before do
+            generated_cf_manifest['properties']['uaadb']['tls_protocols'] = 'someProtocol'
+          end
+
+          it 'does not change the URL' do
+            expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=false')
+          end
+        end
+      end
+
+      context 'with tls enabled_skip_all_validation' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled_skip_all_validation'
+        end
+
+        it 'adds useSSL=false and trustServerCertificate=true to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&trustServerCertificate=true')
+        end
+
+        context 'with uaadb.tls_protocols' do
+          before do
+            generated_cf_manifest['properties']['uaadb']['tls_protocols'] = 'someProtocol'
+          end
+
+          it 'adds the protocol to the URL' do
+            expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&trustServerCertificate=true&enabledSslProtocolSuites=someProtocol')
+          end
+        end
+      end
+
+      context 'with tls enabled_skip_hostname_validation' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled_skip_hostname_validation'
+        end
+
+        it 'adds useSSL=true and disableSslHostnameVerification=true to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&disableSslHostnameVerification=true')
+        end
+
+        context 'with uaadb.tls_protocols' do
+          before do
+            generated_cf_manifest['properties']['uaadb']['tls_protocols'] = 'someProtocol'
+          end
+
+          it 'adds the protocol to the URL' do
+            expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&disableSslHostnameVerification=true&enabledSslProtocolSuites=someProtocol')
+          end
+        end
+      end
+    end
+
+    context 'for postgres' do
+      before do
+        generated_cf_manifest['properties']['uaadb']['db_scheme'] = 'postgres'
+        generated_cf_manifest['properties']['uaadb']['port'] = '7777'
+      end
+
+      context 'with tls enabled' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled'
+        end
+
+        it 'adds sslmode=verify-full to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:7777/uaadb?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory')
+        end
+      end
+
+      context 'with tls disabled' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'disabled'
+        end
+
+        it 'adds sslmode=disable to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:7777/uaadb?sslmode=disable')
+        end
+      end
+
+      context 'with tls enabled_skip_all_validation' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled_skip_all_validation'
+        end
+
+        it 'adds sslmode=require to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:7777/uaadb?sslmode=require')
+        end
+      end
+
+      context 'with tls enabled_skip_hostname_validation' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled_skip_hostname_validation'
+        end
+
+        it 'adds sslmode=verify-ca to the URL' do
+          expect(parsed_yaml['database']['url']).to eq('jdbc:postgresql://10.244.0.30:7777/uaadb?sslmode=verify-ca&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory')
+        end
+      end
+    end
+
+    describe 'the removed uaadb.tls_enabled and uaadb.skip_ssl_validation properties' do
+      context 'when uaadb.tls_enabled is set' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['tls_enabled'] = false
+        end
+
+        it 'raises an error to prevent an upgrade from accidentally changing the deployment from non-TLS to TLS' do
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, 'uaadb.tls_enabled is no longer supported. Please use uaadb.tls instead.')
+        end
+      end
+
+      context 'when uaadb.skip_ssl_validation is set' do
+        before do
+          generated_cf_manifest['properties']['uaadb']['skip_ssl_validation'] = true
+        end
+
+        it 'raises an error to prevent an upgrade from accidentally changing from skipping validation to not skipping' do
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, 'uaadb.skip_ssl_validation is no longer supported. Please use uaadb.tls instead.')
+        end
+      end
     end
   end
 
   context 'when required properties are missing in the stub' do
-    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
-    let(:as_yml) { true }
-    let(:parsed_yaml) { read_and_parse_string_template erb_template, generated_cf_manifest, as_yml }
-    let(:input) { 'spec/input/all-properties-set.yml' }
+    let!(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:as_yml) {true}
+    let(:parsed_yaml) {read_and_parse_string_template erb_template, generated_cf_manifest, as_yml}
+    let(:input) {'spec/input/all-properties-set.yml'}
 
     context 'the uaa.yml.erb' do
-      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+      let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
       context 'legacy saml keys are sufficient' do
         it 'does not throw an error' do
           generated_cf_manifest['properties']['login']['saml'].delete('keys')
@@ -843,7 +1070,7 @@ describe 'uaa-release erb generation' do
       end
 
       context 'authorized grant types is missing' do
-        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
 
         it 'raises an error' do
           generated_cf_manifest['properties']['uaa']['clients']['app'].delete('authorized-grant-types');
@@ -854,7 +1081,7 @@ describe 'uaa-release erb generation' do
       end
 
       context 'client secret is missing from non implicit clients' do
-        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
         grant_types_requiring_secret = ['client_credentials',
                                         'authorization_code',
                                         'password',
@@ -874,7 +1101,7 @@ describe 'uaa-release erb generation' do
       end
 
       context 'redirect-uri is missing from required grant types' do
-        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
         grant_types_requiring_secret = ['authorization_code', 'implicit']
         grant_types_requiring_secret.each do |grant_type|
           it "raises an error for type:#{grant_type}" do
@@ -893,37 +1120,41 @@ describe 'uaa-release erb generation' do
           www.*.invalid.com/*/with/path** http://username:password@*.com http://username:password@*.com/path)
 
       context 'redirect-uri is invalid' do
-        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
         grant_types_requiring_secret = ['authorization_code', 'implicit']
-        invalid_redirect_uris.each do |uri| grant_types_requiring_secret.each do |grant_type|
-          it "raises an error for type:#{grant_type}" do
-            generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type
-            generated_cf_manifest['properties']['uaa']['clients']['app']['redirect-uri'] = uri
-            expect {
-              parsed_yaml
-            }.to raise_error(ArgumentError, /Client redirect-uri is invalid: uaa\.clients\.app\.redirect-uri/)
-          end end
+        invalid_redirect_uris.each do |uri|
+          grant_types_requiring_secret.each do |grant_type|
+            it "raises an error for type:#{grant_type}" do
+              generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type
+              generated_cf_manifest['properties']['uaa']['clients']['app']['redirect-uri'] = uri
+              expect {
+                parsed_yaml
+              }.to raise_error(ArgumentError, /Client redirect-uri is invalid: uaa\.clients\.app\.redirect-uri/)
+            end
+          end
         end
       end
 
       context 'redirect-uri is invalid' do
-        let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
         grant_types_requiring_secret = ['authorization_code', 'implicit']
-        invalid_redirect_uris.each do |uri| grant_types_requiring_secret.each do |grant_type|
-          it "raises an error for type:#{grant_type}" do
-            generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type
-            generated_cf_manifest['properties']['uaa']['clients']['app']['redirect-uri'] = "http://first.com/,#{uri},https://second.com/path"
-            expect {
-              parsed_yaml
-            }.to raise_error(ArgumentError, /Client redirect-uri is invalid: uaa\.clients\.app\.redirect-uri/)
-          end end
+        invalid_redirect_uris.each do |uri|
+          grant_types_requiring_secret.each do |grant_type|
+            it "raises an error for type:#{grant_type}" do
+              generated_cf_manifest['properties']['uaa']['clients']['app']['authorized-grant-types'] = grant_type
+              generated_cf_manifest['properties']['uaa']['clients']['app']['redirect-uri'] = "http://first.com/,#{uri},https://second.com/path"
+              expect {
+                parsed_yaml
+              }.to raise_error(ArgumentError, /Client redirect-uri is invalid: uaa\.clients\.app\.redirect-uri/)
+            end
+          end
         end
       end
 
     end
 
     context 'the uaa.yml.erb' do
-      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+      let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
       context 'critical JWT key properties are missing' do
         it 'throws an error' do
           generated_cf_manifest['properties']['uaa']['jwt'].delete('signing_key')
@@ -943,7 +1174,7 @@ describe 'uaa-release erb generation' do
         end
       end
       context 'active JWT key ID is missing' do
-        it 'it works because we accept legacy keys' do
+        it 'works because we accept legacy keys' do
           generated_cf_manifest['properties']['uaa']['jwt']['policy'].delete('active_key_id')
           expect {
             parsed_yaml
@@ -951,7 +1182,7 @@ describe 'uaa-release erb generation' do
         end
       end
       context 'legacy key is missing' do
-        it 'it works because we have active key' do
+        it 'works because we have active key' do
           generated_cf_manifest['properties']['uaa']['jwt'].delete('signing_key')
           expect {
             parsed_yaml
@@ -971,17 +1202,15 @@ describe 'uaa-release erb generation' do
     end
   end
 
-
   describe 'uaa.yml for DB TLS tests' do
-    let!(:generated_cf_manifest) { generate_cf_manifest(input) }
-    let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
-    let(:parsed_yaml) { read_and_parse_string_template erb_template, generated_cf_manifest, true }
-    let(:input) { 'spec/input/database-tls-tests.yml' }
+    let!(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:parsed_yaml) {read_and_parse_string_template erb_template, generated_cf_manifest, true}
+    let(:input) {'spec/input/database-tls-tests.yml'}
     let(:tempDir) {'/tmp/uaa-release-tests/'}
 
     before(:each) {
-      generated_cf_manifest['properties']['uaadb']['tls_enabled'] = true
-      generated_cf_manifest['properties']['uaadb']['skip_ssl_validation'] = true
+      generated_cf_manifest['properties']['uaadb']['tls'] = 'enabled'
     }
 
     context 'is generated for MySQL' do
@@ -992,7 +1221,7 @@ describe 'uaa-release erb generation' do
         generated_cf_manifest['properties']['uaadb']['roles'][0]['password'] = 'changeme'
 
         FileUtils.mkdir_p tempDir
-        open(tempDir + '/'+filename+'.yml', 'w') { |f|
+        open(tempDir + '/' + filename + '.yml', 'w') {|f|
           f.puts parsed_yaml.to_yaml(:Indent => 2, :UseHeader => true, :UseVersion => true)
         }
       end
@@ -1005,17 +1234,7 @@ describe 'uaa-release erb generation' do
         generated_cf_manifest['properties']['uaadb']['port'] = '5432'
         generated_cf_manifest['properties']['uaadb']['roles'][0]['password'] = 'changeme'
         FileUtils.mkdir_p tempDir
-        open(tempDir + '/'+filename+'.yml', 'w') { |f|
-          f.puts parsed_yaml.to_yaml(:Indent => 2, :UseHeader => true, :UseVersion => true)
-        }
-      end
-    end
-
-    context 'is generated for SQL Server' do
-      let(:filename) {'sqlserver'}
-      it 'and writes the file' do
-        FileUtils.mkdir_p tempDir
-        open(tempDir + '/'+filename+'.yml', 'w') { |f|
+        open(tempDir + '/' + filename + '.yml', 'w') {|f|
           f.puts parsed_yaml.to_yaml(:Indent => 2, :UseHeader => true, :UseVersion => true)
         }
       end
@@ -1023,12 +1242,67 @@ describe 'uaa-release erb generation' do
   end
 
 
+  describe 'uaa.servlet.session-store' do
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
+
+    context 'by default' do
+      it 'renders the session-store into uaa.yml' do
+        expect(parsed_yaml['servlet']['session-store']).to eq('memory')
+      end
+    end
+
+    context 'when set to database' do
+      before do
+        generated_cf_manifest['properties']['uaa']['servlet']['session-store'] = 'database'
+      end
+
+      it 'renders the session-store into uaa.yml' do
+        expect(parsed_yaml['servlet']['session-store']).to eq('database')
+      end
+    end
+
+    context 'when set to an invalid value' do
+      it 'raises an error' do
+        generated_cf_manifest['properties']['uaa']['servlet']['session-store'] = 'foo'
+        expect {
+          parsed_yaml
+        }.to raise_error(ArgumentError, /uaa.servlet.session-store invalid. Must be one of /)
+      end
+    end
+  end
+
+  describe 'uaa.authentication.enable_uri_encoding_compatibility_mode' do
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
+
+    context 'by default' do
+      it 'is false in uaa.yml' do
+        expect(parsed_yaml['authentication']['enableUriEncodingCompatibilityMode']).to eq(false)
+      end
+    end
+
+    context 'when configured to true' do
+      before do
+        generated_cf_manifest['properties']['uaa']['authentication']['enable_uri_encoding_compatibility_mode'] = true
+      end
+
+      it 'is false in uaa.yml' do
+        expect(parsed_yaml['authentication']['enableUriEncodingCompatibilityMode']).to eq(true)
+      end
+    end
+  end
+
   def self.perform_compare(input)
     generated_cf_manifest = generate_cf_manifest(input)
     parsed_uaa_yaml = read_and_parse_string_template '../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true
-    tempDir = '/tmp/uaa-release-tests/'+input
+    tempDir = '/tmp/uaa-release-tests/' + input
     FileUtils.mkdir_p tempDir
-    open(tempDir + '/uaa.yml', 'w') { |f|
+    open(tempDir + '/uaa.yml', 'w') {|f|
       f.puts parsed_uaa_yaml.to_yaml(:Indent => 2, :UseHeader => true, :UseVersion => true)
     }
   end
@@ -1037,9 +1311,9 @@ describe 'uaa-release erb generation' do
     generated_cf_manifest = generate_cf_manifest(input)
 
     login_yaml_required_properties = [
-      'properties.login.saml.serviceProviderKey',
-      'properties.login.saml.serviceProviderKeyPassword',
-      'properties.login.saml.serviceProviderCertificate'
+        'properties.login.saml.serviceProviderKey',
+        'properties.login.saml.serviceProviderKeyPassword',
+        'properties.login.saml.serviceProviderCertificate'
     ]
 
     for addProperty in login_yaml_required_properties
@@ -1047,7 +1321,7 @@ describe 'uaa-release erb generation' do
         read_and_parse_string_template '../jobs/uaa/templates/config/login.yml.erb', generated_cf_manifest, true
         raise 'This line should not be reached'
       rescue ArgumentError
-          # expected
+        # expected
       end
       add_param_to_hash addProperty, 'value', generated_cf_manifest
     end

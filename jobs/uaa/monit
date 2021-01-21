@@ -1,31 +1,5 @@
-<%
-    active_uaa_port='-1'
-    if p('uaa.port') != -1
-        active_uaa_port = p('uaa.port')
-    elsif p('uaa.ssl.port') != -1
-        active_uaa_port = p('uaa.ssl.port')
-    end
-%>
-
-
-<% if p("bpm.enabled") %>
 check process uaa
   with pidfile /var/vcap/sys/run/bpm/uaa/uaa.pid
   start program "/var/vcap/jobs/bpm/bin/bpm start uaa"
   stop program "/var/vcap/jobs/bpm/bin/bpm stop uaa"
   group vcap
-  if failed port <%= active_uaa_port %> protocol http
-    request "/healthz"
-    with timeout 60 seconds for 64 cycles
-  then restart
-<% else %>
-check process uaa
-  with pidfile /var/vcap/sys/run/uaa/uaa.pid
-  start program "/var/vcap/jobs/uaa/bin/uaa_ctl start"
-  stop program "/var/vcap/jobs/uaa/bin/uaa_ctl stop"
-  group vcap
-  if failed port <%= active_uaa_port %> protocol http
-    request "/healthz"
-    with timeout 60 seconds for 64 cycles
-  then restart
-<% end %>

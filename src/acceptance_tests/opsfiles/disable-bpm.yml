@@ -1,3 +1,0 @@
-- type: replace
-  path: /instance_groups/name=uaa/jobs/name=uaa/properties/bpm?/enabled?
-  value: false

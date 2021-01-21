@@ -74,49 +74,18 @@ Add the following properties to your manifest:
    git checkout -b my_branch
    ```
 3. Make changes on your branch
-4. Deploy your version of uaa-release to test the changes
-5. Push to your fork (`git push origin my_branch`) and
+4. Run the tests (requires ruby) `bundle install && bundle exec rake`
+5. Deploy your version of uaa-release to test the changes
+6. Push to your fork (`git push origin my_branch`) and
    [submit a pull request](https://help.github.com/articles/creating-a-pull-request)
    selecting `develop` as the target branch
 
-## Deploying to a bosh-lite environment
-
-   We have provided [a sample manifest](docs/bosh-lite-uaa-release.yml)
-   for a bosh-lite uaa-release deployment. 
-   Make sure you modify the director uuid in the manifest to match yours 
-
-
-       bosh upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent --skip-if-exists
-       bosh create-release
-       bosh upload-release
-       bosh -n -e vbox -d uaa  deploy \
-         templates/uaa-deployment.yml \
-         --vars-store creds.yml \
-         -v system_domain=uaa-standalone.com
-
-    
-   After that you can get the IP address and add the hostname to your `/etc/hosts` file
-  
-   You may want to setup an entry in your `/etc/hosts`
-      
-       10.244.0.118    uaa.uaa-standalone.com
-   
-   And you access it using
-
-       https://uaa.uaa-standalone.com:8443/
-
 ## Java Runtime Environments
 
-   Java Runtime Environments are gracefully supplied by the Cloud Foundry
-   Java Buildpack Team
+   Java Runtime Environments are graciously supplied by the Cloud Foundry Java Buildpack Team
 
    JDK - https://java-buildpack.cloudfoundry.org/openjdk-jdk/trusty/x86_64/index.yml
-   
    JRE - https://java-buildpack.cloudfoundry.org/openjdk/trusty/x86_64/index.yml
-   
-   Mac JDK - https://java-buildpack.cloudfoundry.org/openjdk-jdk/mountainlion/x86_64/index.yml
-   
-   Mac JRE - https://java-buildpack.cloudfoundry.org/openjdk/mountainlion/x86_64/index.yml
 
 ## Acknowledgements
 

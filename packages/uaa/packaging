@@ -2,10 +2,9 @@
 
 set -e -x
 
-TOMCAT_VERSION=8.5.34
-
 cd ${BOSH_INSTALL_TARGET}
-mkdir jdk && tar zxvf ${BOSH_COMPILE_TARGET}/openjdk/openjdk-1.8.0_192-x86_64-trusty.tar.gz -C jdk
+mkdir jdk
+tar zxvf ${BOSH_COMPILE_TARGET}/bellsoft-*.tar.gz -C jdk --strip 1
 if [[ $? != 0 ]] ; then
   echo "Cannot unpack JDK"
   exit 1
@@ -16,18 +15,21 @@ chmod -R a+r jdk
 
 cd ${BOSH_INSTALL_TARGET}
 
-tar zxvf ${BOSH_COMPILE_TARGET}/uaa/apache-tomcat-${TOMCAT_VERSION}.tar.gz
+TOMCAT_PATH=$(ls ${BOSH_COMPILE_TARGET}/uaa/apache-tomcat-*.tar.gz | sort --version-sort| tail -n1)
+
+tar zxvf $TOMCAT_PATH
 if [[ $? != 0 ]] ; then
   echo "Cannot unpack Tomcat"
   exit 1
 fi
 
-mv apache-tomcat-${TOMCAT_VERSION} tomcat
+mv $(basename "$TOMCAT_PATH" .tar.gz) tomcat
 
 cd tomcat
 rm -rf webapps/*
 cp -a ${BOSH_COMPILE_TARGET}/uaa/cloudfoundry-identity-uaa.war webapps/ROOT.war
 cp -a ${BOSH_COMPILE_TARGET}/uaa/cloudfoundry-identity-statsd.war webapps/statsd.war
+cp -a ${BOSH_COMPILE_TARGET}/uaa/tomcat-listener.jar lib/tomcat-listener.jar
 cp -a ${BOSH_COMPILE_TARGET}/uaa/newrelic.jar bin/newrelic.jar
 
 chmod 0755 bin/

@@ -1,0 +1,13 @@
+{
+  "username": "admin",
+  "password": "example",
+  "host": "127.0.0.1",
+  "port": 5432,
+  "database": "uaa_db_name",
+  "adapter": "postgres",
+  "tls": {
+    "cert": {
+      "ca": "---not a real cert---"
+    }
+  }
+}

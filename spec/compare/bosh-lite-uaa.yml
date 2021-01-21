@@ -19,7 +19,6 @@ database:
   abandonedtimeout: 300
 
 
-spring_profiles: postgresql
 
 logging:
   config: /var/vcap/jobs/uaa/config/log4j2.properties

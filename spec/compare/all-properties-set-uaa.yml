@@ -9,7 +9,6 @@ disableInternalAuth: true
 disableInternalUserManagement: true
 issuer:
   uri: http://all-properties-set:8888/uaa
-spring_profiles: mysql,ldap
 logging:
   config: "/var/vcap/jobs/uaa/config/log4j2.properties"
 database:

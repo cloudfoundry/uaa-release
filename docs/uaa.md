@@ -53,7 +53,6 @@ properties:
       key: SSL_CERTIFICATE_KEY
       cert: SSL_CERTIFICATE
   domain: example.com
-  spring_profiles: mysql,default
   login:
     url: LOGIN_SERVER_URL
     entityBaseURL: LOGIN_SERVER_URL
@@ -124,4 +123,3 @@ properties:
 Currently UAA will be using symmetric key encryption if jwt:token:signing-key and jwt:token:verification-key are the same. Specifying cc:token_secret will render jwt token keys with the same value.
 * See UAA logs in `/var/vcap/sys/log/uaa.log` in case of any issues.
 * Make sure there is only one UAA service running if there are no logs.
-* `spring_profiles` should specify database type that is used by UAA.

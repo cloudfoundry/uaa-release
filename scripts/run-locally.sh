@@ -2,7 +2,7 @@
 
 set -xeu
 
-pushd ~/workspace/uaa-release
+pushd ~/workspace/lts-uaa-release
     mkdir -p tmp
     bosh create-release --force --tarball=tmp/uaa-dev-release.tgz
 popd
@@ -25,10 +25,10 @@ if [[ ! $(docker ps --filter name=container-running-dockerd -q) ]]; then
     docker run \
         --name=container-running-dockerd \
         -d -t --privileged \
-        -v ~/workspace/uaa-release/:/root/uaa-release \
+        -v ~/workspace/lts-uaa-release/:/root/lts-uaa-release \
         -v container-running-dockerd-tmp:/tmp/ \
         bosh/main-bosh-docker \
-        /root/uaa-release/scripts/start-bosh.sh
+        /root/lts-uaa-release/scripts/start-bosh.sh
 
     set +x
 
@@ -51,9 +51,9 @@ set +e
 docker run \
     --link container-running-dockerd \
     -it \
-    -v ~/workspace/uaa-release/:/root/uaa-release \
+    -v ~/workspace/lts-uaa-release/:/root/lts-uaa-release \
     -v container-running-dockerd-tmp:/tmp/ bosh/main-bosh-docker \
-    /root/uaa-release/scripts/test-runner.sh
+    /root/lts-uaa-release/scripts/test-runner.sh
 set -e
 
 echo "Want to run again with the same BOSH Director? Just run this script (run-locally.sh) again."

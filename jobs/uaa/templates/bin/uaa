@@ -2,8 +2,16 @@
 
 set -euo pipefail
 
+TIMESTAMP_FORMAT="+%Y-%m-%d %H:%M:%S.%3N"
+<% if_p("uaa.logging.format.timestamp") do |timestampConfig| %>
+timestamp_config="<%= timestampConfig %>"
+if [ ${timestamp_config} == "cf-rfc030" ]; then
+  TIMESTAMP_FORMAT="+%Y-%m-%dT%H:%M:%S.%NZ"
+fi
+<% end %>
+
 function log {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S.%3N')] uaa-start - $1"
+    echo "[$(date "${TIMESTAMP_FORMAT}")] uaa-start - $1"
 }
 
 source "/var/vcap/jobs/uaa/bin/configure_proxy"

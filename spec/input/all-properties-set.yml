@@ -585,7 +585,7 @@ properties:
     logging_level: TRACE
     logging:
       format:
-        timestamp: cf-rfc030
+        timestamp: rfc3339
     login:
       client_secret: loginsecret
     newrelic:

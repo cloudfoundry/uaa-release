@@ -163,7 +163,7 @@ var _ = Describe("UaaRelease", func() {
 			"./opsfiles/use-rfc3339-log-format.yml"),
 		Entry("when UAA logs are configured to honor CF RFC 030",
 			`^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{6})Z\] uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`,
-			"./opsfiles/configure-to-cf-rfc030-log-format.yml"),
+			"./opsfiles/configure-to-rfc3339-log-format.yml"),
 	)
 })
 

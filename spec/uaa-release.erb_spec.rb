@@ -1318,7 +1318,7 @@ describe 'uaa-release erb generation' do
     context 'when both of uaa.logging_use_rfc3339 and uaa.logging.format.timestamp are configured' do
         before do
           generated_cf_manifest['properties']['uaa']['logging_use_rfc3339'] = false
-          generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'cf-rfc030'}}
+          generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'rfc3339'}}
         end
 
         it 'raises an error' do
@@ -1363,21 +1363,21 @@ describe 'uaa-release erb generation' do
     end
 
     context 'when only uaa.logging.format.timestamp is configured to' do
-        context 'cf-rfc030' do
+        context 'rfc3339' do
           before do
-            generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'cf-rfc030'}}
+            generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'rfc3339'}}
           end
 
-          it 'sets log_pattern to conform to cf-rfc030 with microsecond and UTC timezone' do
+          it 'sets log_pattern to conform to rfc3339 with microsecond and UTC timezone' do
               log4j2_template = File.read(log4j2_template_path)
               expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.nnnnnn}{GMT+0}Z"
               expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
           end
         end
 
-        context 'deprecated-rfc3339' do
+        context 'rfc3339-legacy' do
           before do
-            generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'deprecated-rfc3339'}}
+            generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'rfc3339-legacy'}}
           end
 
           it 'sets log_pattern to conform to original rfc3339 format (millisecond precision) for compatibility' do
@@ -1387,9 +1387,9 @@ describe 'uaa-release erb generation' do
           end
         end
 
-        context 'deprecated-non-rfc3339' do
+        context 'deprecated' do
           before do
-            generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'deprecated-non-rfc3339'}}
+            generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'deprecated'}}
           end
 
           it 'sets log_pattern to deprecated format with irregular timestamps' do

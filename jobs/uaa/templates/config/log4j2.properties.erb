@@ -21,11 +21,11 @@ name = UaaLog
     if_p("uaa.logging.format.timestamp") do
         logging_format_timestamp_value = p("uaa.logging.format.timestamp")
         case logging_format_timestamp_value
-        when "cf-rfc030" then
+        when "rfc3339" then
              timestamp_format = "%d{yyyy-MM-dd'T'HH:mm:ss.nnnnnn}{GMT+0}Z"
-        when "deprecated-rfc3339" then
+        when "rfc3339-legacy" then
              timestamp_format = "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}"
-        when "deprecated-non-rfc3339" then
+        when "deprecated" then
              timestamp_format = "%d{yyyy-MM-dd HH:mm:ss.SSS}"
         else
             raise ArgumentError.new("Invalid value for uaa.logging.format.timestamp.")

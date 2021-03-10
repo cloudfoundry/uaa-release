@@ -75,7 +75,9 @@
                keystorePass="k0*l*s3cur1tyr0ck$"
                bindOnInit="false"
                maxHttpHeaderSize="14336"
-    />
+      >
+      <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol"/>
+    </Connector>
 
     <Engine name="Catalina" defaultHost="localhost">
 

@@ -17,6 +17,7 @@ database:
   removeabandoned: false
   logabandoned: true
   abandonedtimeout: 300
+  testwhileidle: false
 
 
 spring_profiles: postgresql

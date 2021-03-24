@@ -447,6 +447,7 @@ properties:
       max_idle_connections: 11
       min_idle_connections: 1
       remove_abandoned: true
+      test_while_idle: true
     delete:
       clients:
         - client-to-be-deleted-1

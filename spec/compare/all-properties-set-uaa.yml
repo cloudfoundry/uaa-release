@@ -23,6 +23,7 @@ database:
   logabandoned: false
   abandonedtimeout: 301
   caseinsensitive: true
+  testwhileidle: true
 
 delete:
   clients:

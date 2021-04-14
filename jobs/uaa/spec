@@ -750,7 +750,7 @@ properties:
 
   # Scim properties
   uaa.scim.user.override:
-    description: "If true override users defined in uaa.scim.users found in the database."
+    description: "If true, override users defined in uaa.scim.users found in the database."
     default: true
   uaa.scim.userids_enabled:
     description: "Enables the endpoint `/ids/Users` that allows consumers to translate user ids to name"
@@ -833,7 +833,7 @@ properties:
   uaa.database.case_insensitive:
     description: "Set to true if you don't want to be using LOWER() SQL functions in search queries/filters, because you know that your DB is case insensitive. If this property is null, then it will be set to true if the UAA DB is MySQL and false otherwise, but even on MySQL you can override it by setting it explicitly to false"
   uaa.database.test_while_idle:
-    description: "If true connections will be validated by the idle connection evictor (if any). If the validation fails, the connection is destroyed and removed from the pool."
+    description: "If true, connections will be validated by the idle connection evictor (if any). If the validation fails, the connection is destroyed and removed from the pool."
     default: false
 
   # LDAP

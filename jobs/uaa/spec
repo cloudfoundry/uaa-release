@@ -7,7 +7,6 @@ templates:
   bin/uaa: bin/uaa
   bin/configure_newrelic.erb: bin/configure_newrelic
   bin/configure_proxy.erb: bin/configure_proxy
-  bin/health_check.erb: bin/health_check
   bin/pre-start.erb: bin/pre-start
   bin/post-start: bin/post-start
   bin/dns/healthy.erb: bin/dns/healthy

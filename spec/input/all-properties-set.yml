@@ -49,6 +49,7 @@ properties:
         link: http://www.example.com
     defaultIdentityProvider: uaa
     idpDiscoveryEnabled: true
+    accountChooserEnabled: true
     links:
       global:
         passwd: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/forgot_password"

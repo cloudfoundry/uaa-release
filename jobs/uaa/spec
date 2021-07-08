@@ -414,6 +414,9 @@ properties:
   login.idpDiscoveryEnabled:
     description: "IDP Discovery should be set to true if you have configured more than one identity provider for UAA. The discovery relies on email domain being set for each additional provider. This property will also enable a list of selectable accounts that have signed in via the browser."
     default: false
+  login.accountChooserEnabled:
+    description: "This flag enables the account choosing functionality. If idpDiscoveryEnabled is set to true in the config the IDP is chosen by discovery. Otherwise, the user can enter the IDP by providing the origin."
+    default: false
   login.defaultIdentityProvider:
     description: "This value can be set to the origin key of an identity provider. If set, the user will be directed to this identity provider automatically if no other identity provider is discovered or selected via login_hint. When not set, legacy chained authentication (where uaa is attempted first followed by ldap) is used."
     example: uaa

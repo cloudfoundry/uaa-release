@@ -171,9 +171,6 @@
       'uri' => issuer_uri
     },
     'spring_profiles' => spring_profiles,
-    'logging' => {
-      'config' => '/var/vcap/jobs/uaa/config/log4j2.properties'
-    },
     'database' => {
       'url' =>  "jdbc:#{uaa_db_scheme}://#{uaa_db_address}:#{p('uaadb.port')}/#{uaa_db['name']}",
       'username' => uaa_role['name'],

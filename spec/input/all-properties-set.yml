@@ -377,6 +377,7 @@ properties:
       port: 25
       starttls: true
       user: smtp_user
+      sslprotocols: TLSv1.2
   uaa:
     admin:
       client_secret: adminsecret

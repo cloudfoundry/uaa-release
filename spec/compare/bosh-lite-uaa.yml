@@ -247,6 +247,7 @@ smtp:
   from_address:
   auth: false
   starttls: false
+  sslprotocols: TLSv1.2
 
 assetBaseUrl: /resources/oss
 

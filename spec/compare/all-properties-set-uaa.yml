@@ -666,6 +666,7 @@ smtp:
   user: smtp_user
   password: smtp_password
   from_address: from@from.com
+  sslprotocols: TLSv1.2
 notifications:
   url: http://notifications
 analytics:

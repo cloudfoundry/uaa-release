@@ -445,6 +445,9 @@ properties:
   login.smtp.starttls:
     description: "If true, send STARTTLS command before login to server. https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html"
     default: false
+  login.smtp.sslprotocols:
+    description: "If set, specifies the SSL protocols that will be enabled for SSL connections. The property value is a whitespace separated list of tokens. https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html"
+    default: TLSv1.2
 
   # Delete actions
   uaa.delete:

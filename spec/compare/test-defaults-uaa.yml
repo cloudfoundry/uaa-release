@@ -249,6 +249,7 @@ smtp:
   port: 2525
   auth: false
   starttls: false
+  sslprotocols: TLSv1.2
 
 servlet:
   session-store: memory

@@ -841,6 +841,11 @@ properties:
   uaa.database.test_while_idle:
     description: "If true, connections will be validated by the idle connection evictor (if any). If the validation fails, the connection is destroyed and removed from the pool."
     default: false
+  uaa.database.additionalParameters:
+    description: "Addtional parameters that should be added to the url that is used to connect to the database. Boolean values need to be passed as String."
+    example:
+      tcpKeepAlive: "true"
+      usePipelineAuth: "false"
 
   # LDAP
   uaa.ldap.enabled:

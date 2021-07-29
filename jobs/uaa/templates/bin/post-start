@@ -1,40 +1,57 @@
 #!/bin/bash
 
-echo "uaa-post-start - starting at `date`"
+set -euo pipefail
 
-TS_DIR=/var/vcap/data/uaa/post-start
-mkdir -p $TS_DIR
-WHEN_FINISH=$TS_DIR/when-finish.timestamp
-WHEN_NOW=$TS_DIR/when-now.timestamp
+TIMESTAMP_FORMAT="+%Y-%m-%d %H:%M:%S.%3N"
+<% if_p("uaa.logging.format.timestamp") do |timestampConfig| %>
+timestamp_config="<%= timestampConfig %>"
+if [ ${timestamp_config} == "rfc3339" ]; then
+  TIMESTAMP_FORMAT="+%Y-%m-%dT%H:%M:%S.%NZ"
+fi
+<% end %>
 
-delete_ts_files() {
-  rm -f $WHEN_FINISH
-  rm -f $WHEN_NOW
-  echo "uaa-post-start - cleaned up timestamp files"
+function log {
+    echo "[$(date "${TIMESTAMP_FORMAT}")] uaa-post-start - $1"
 }
 
-touch -d "10 minutes" $WHEN_FINISH
-touch $WHEN_NOW
-EXPIRATION=`ls -la --full-time $WHEN_FINISH |awk '{print $6 " " $7}'`
-echo "uaa-post-start - performing post start healthcheck until $EXPIRATION"
+log "Starting"
 
-while [ $WHEN_NOW -ot $WHEN_FINISH ]; do
+TS_DIR=/var/vcap/data/uaa/post-start
+mkdir -p ${TS_DIR}
+WHEN_FINISH=${TS_DIR}/when-finish.timestamp
+WHEN_NOW=${TS_DIR}/when-now.timestamp
+
+delete_ts_files() {
+    rm -f "${WHEN_FINISH}"
+    rm -f "${WHEN_NOW}"
+    log "Cleaned up timestamp files"
+}
+
+touch -d "10 minutes" "${WHEN_FINISH}" # this creates a file with a timestamp 10 minutes in the future
+touch "${WHEN_NOW}"
+
+log "Performing post start healthcheck until $(stat $WHEN_FINISH -c '%y')"
+
+# "-ot" is "older than"
+while [ "${WHEN_NOW}" -ot "${WHEN_FINISH}" ]; do
+    log "Running health check"
+    set +e # allow the script to continue even when health_check fails
     /var/vcap/jobs/uaa/bin/health_check
     check=$?
+    set -e
+
     if [ "$check" -eq "0" ]
     then
-        echo "uaa-post-start - post start health check successful at `date`"
+        log "Health check successful"
         delete_ts_files
         exit 0
-    elif  [ "$check" == "2" ]
-    then
-        echo "uaa-post-start - post start failed - server failed to start successfully at `date`"
-        delete_ts_files
-        exit 1
     fi
+
     sleep 1
-    touch $WHEN_NOW
+
+    touch "${WHEN_NOW}"
 done
-echo "uaa-post-start - post start health check failed - timeout at `date`"
+
+log "FAILED: Health check failed. Timed out. Check uaa.log to find out why the server failed to start."
 delete_ts_files
 exit 1

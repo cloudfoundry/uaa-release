@@ -1,0 +1,52 @@
+name: uaa
+version: "65.0"
+commit_hash: 13a66a8
+uncommitted_changes: false
+jobs:
+- name: bbr-uaadb
+  version: 3a3b455d3de6d7f3e5196f5fe8efe63f1b18b160
+  fingerprint: 3a3b455d3de6d7f3e5196f5fe8efe63f1b18b160
+  sha1: d41b9d10da857484c264f94fd373c5dab28d4029
+- name: uaa
+  version: 2590c68e0b957e34b86fe47794c8514cbc7950e5
+  fingerprint: 2590c68e0b957e34b86fe47794c8514cbc7950e5
+  sha1: 1c87934105a3e7333e4ed4eb0a71392530431351
+- name: uaa_key_rotator
+  version: 9f01e290f1086570487a3664a14ca86040d55141
+  fingerprint: 9f01e290f1086570487a3664a14ca86040d55141
+  sha1: 271367693e84103d1dbca989ebf3ea23bb3ba7c2
+- name: uaa_postgres
+  version: 79fe0a96f112f08932b265cabc43f473c77e607c
+  fingerprint: 79fe0a96f112f08932b265cabc43f473c77e607c
+  sha1: 9a1c568e14d1d32995f12c50c76370e4bae3698e
+packages:
+- name: golang-1.10-linux
+  version: 1baefde79e99ed3d1df72084315333032a294e59
+  fingerprint: 1baefde79e99ed3d1df72084315333032a294e59
+  sha1: 212148ae3c30da937bea9403c857069c4530c4e3
+  dependencies: []
+- name: uaa
+  version: 6e13a5edd2a3cceb79d181bcac64771ea95fcccd
+  fingerprint: 6e13a5edd2a3cceb79d181bcac64771ea95fcccd
+  sha1: 5abbc685c74d54600b48ed300b71f96d6ee6f594
+  dependencies: []
+- name: uaa_postgres
+  version: 42df2bc21212094a1b61e3db697ab1c61260cb59
+  fingerprint: 42df2bc21212094a1b61e3db697ab1c61260cb59
+  sha1: 5f8106a0de854291aecfbb157a55e5ddf71bfe32
+  dependencies: []
+- name: uaa_rotator
+  version: ea93fb4e077cc3886a5dbfb402e6480f94321af1
+  fingerprint: ea93fb4e077cc3886a5dbfb402e6480f94321af1
+  sha1: e04ec7a1daf684a4e6f2457803011eb90193312a
+  dependencies:
+  - golang-1.10-linux
+- name: uaa_utils
+  version: 90097ea98715a560867052a2ff0916ec3460aabb
+  fingerprint: 90097ea98715a560867052a2ff0916ec3460aabb
+  sha1: 9b7d3235eede336c7aa305ffb5847d44c6800a2d
+  dependencies: []
+license:
+  version: 43aff6a01f4ba508f9cb013dcec9c612287e6c57
+  fingerprint: 43aff6a01f4ba508f9cb013dcec9c612287e6c57
+  sha1: 18461c918f686ee6cf8a3f777a2bbc2837e5fa96

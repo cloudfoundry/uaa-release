@@ -9,21 +9,21 @@
 
     if_link('uaa_db') do |dblink|
       db = dblink.p('uaadb.databases').find { |db| db['tag'] == 'uaa' }
-      db_role = link('uaa_db').p('uaadb.roles').find { |role| role['tag'] == 'admin' }
-      link('uaa_db').if_p('uaadb.address') do |host|
+      db_role = dblink.p('uaadb.roles').find { |role| role['tag'] == 'admin' }
+      dblink.if_p('uaadb.address') do |host|
         db_address = host
       end.else do
         db_address = link('database').instances[0].address
       end
-      db_port = link('uaa_db').p('uaadb.port')
-      db_adapter = link('uaa_db').p('uaadb.db_scheme')
+      db_port = dblink.p('uaadb.port')
+      db_adapter = dblink.p('uaadb.db_scheme')
     end
 
     if (db.nil?)
-      db_port = p("uaadb.port")
       db = p('uaadb.databases').find { |db| db['tag'] == 'uaa' }
       db_role = p('uaadb.roles').find { |role| role['tag'] == 'admin' }
       db_address = p('uaadb.address')
+      db_port = p("uaadb.port")
       db_adapter = p('uaadb.db_scheme')
     end
 
@@ -31,13 +31,18 @@
       db_adapter = 'postgres'
     end
 
+    bbr_config = {
+        'username' => db_role['name'],
+        'password' => db_role['password'],
+        'host' => db_address,
+        'port' => db_port,
+        'database' => db['name'],
+        'adapter' => db_adapter,
+    }
 
-    JSON.pretty_generate(
-      'username' => db_role['name'],
-      'password' => db_role['password'],
-      'host' => db_address,
-      'port' => db_port,
-      'database' => db['name'],
-      'adapter' => db_adapter,
-    )
+    if_p('uaadb.ca_cert') do |ca_cert|
+        bbr_config['tls'] = { 'cert' => { 'ca' => ca_cert } }
+    end
+
+    JSON.pretty_generate(bbr_config)
 %>

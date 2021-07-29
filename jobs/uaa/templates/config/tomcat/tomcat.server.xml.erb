@@ -5,6 +5,7 @@
   <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
   <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
+  <Listener className="org.cloudfoundry.identity.uaa.web.tomcat.UaaStartupFailureListener" />
 
   <Service name="Catalina">
     <%
@@ -33,29 +34,32 @@
     %>
 
     <%
-      if p("uaa.port") == -1 && p("uaa.ssl.port") == -1
-        raise ArgumentError, 'You have to set either an http port or an https port.'
-      end
-
-      if p("uaa.port") < -1
-        raise ArgumentError, 'An invalid http port has been specified.'
-      end
-
-      if p("uaa.ssl.port") < -1
-        raise ArgumentError, 'An invalid https port has been specified.'
-      end
+       if p("uaa.localhost_http_port") < 1024 || p("uaa.localhost_http_port") > 65535
+        raise ArgumentError, "Invalid value (#{p("uaa.localhost_http_port")}) specified for uaa.localhost_http_port, please specify a valid port number in this range [1024-65535]"
+       end
     %>
 
-    <% if p("uaa.port") != -1 %>
+    <%
+       if p("uaa.ssl.port") < 1024 || p("uaa.ssl.port") > 65535
+        raise ArgumentError, "Invalid value (#{p("uaa.ssl.port")}) specified for uaa.ssl.port, please specify a valid port number in this range [1024-65535]"
+       end
+    %>
+
+    <%
+       if p("uaa.ssl.port") == p("uaa.localhost_http_port")
+        raise ArgumentError, 'Please specify different values for uaa.ssl.port and uaa.localhost_http_port'
+       end
+    %>
+
     <Connector class="org.apache.coyote.http11.Http11NioProtocol"
                protocol="HTTP/1.1"
                connectionTimeout="20000"
-               port="<%= p('uaa.port') %>"
+               address="127.0.0.1"
+               port="<%= p('uaa.localhost_http_port') %>"
                bindOnInit="true"
+               maxHttpHeaderSize="14336"
     />
-    <% end %>
 
-    <% if p("uaa.ssl.port") != -1  %>
     <Connector class="org.apache.coyote.http11.Http11NioProtocol" protocol="HTTP/1.1" connectionTimeout="20000"
                scheme="https"
                port="<%= p('uaa.ssl.port') %>"
@@ -70,8 +74,8 @@
                keyAlias="uaa_ssl_cert"
                keystorePass="k0*l*s3cur1tyr0ck$"
                bindOnInit="false"
+               maxHttpHeaderSize="14336"
     />
-    <% end %>
 
     <Engine name="Catalina" defaultHost="localhost">
 
@@ -80,13 +84,26 @@
             unpackWARs="true"
             autoDeploy="false"
             failCtxIfServletStartFails="true">
+
         <Valve className="org.apache.catalina.valves.RemoteIpValve"
                remoteIpHeader="x-forwarded-for"
                protocolHeader="<%= p('uaa.ssl.protocol_header') %>"
                internalProxies="<%= internal_proxies %>"
+               portHeader="<%= p('uaa.ssl.port_header') %>"
         />
-        <Valve className="org.apache.catalina.valves.AccessLogValve" directory="/var/vcap/sys/log/uaa"
-               prefix="localhost_access" suffix=".log" rotatable="false" pattern="%h %l %u %t &quot;%r&quot; %s %b"/>
+
+        <Valve className="org.apache.catalina.valves.AccessLogValve"
+               directory="/var/vcap/sys/log/uaa"
+               prefix="localhost_access"
+               suffix=".log"
+               rotatable="false"
+               pattern="%h %l %u %t &quot;%m %U %H&quot; %s %{Content-Length}i %b &quot;X-Vcap-Request-Id: %{X-Vcap-Request-Id}i&quot; %I"
+        />
+
+        <Valve className="org.apache.catalina.valves.ErrorReportValve"
+               showReport="false"
+               showServerInfo="false"
+        />
 
       </Host>
     </Engine>

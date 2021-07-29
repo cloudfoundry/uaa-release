@@ -11,13 +11,14 @@ properties:
     - citext: true
       name: uaadb
       tag: uaa
-    db_scheme: sqlserver
+    db_scheme: mysql
     port: 1433
     roles:
     - name: uaaadmin
       password: admin
       tag: admin
   login:
+    defaultIdentityProvider: uaa
     home_redirect: http://deprecated.home.redirect
     saml:
       serviceProviderKey: |

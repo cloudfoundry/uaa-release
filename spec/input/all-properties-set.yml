@@ -47,8 +47,9 @@ properties:
       consent:
         text: Terms and Conditions
         link: http://www.example.com
-
+    defaultIdentityProvider: uaa
     idpDiscoveryEnabled: true
+    accountChooserEnabled: true
     links:
       global:
         passwd: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/forgot_password"
@@ -376,6 +377,7 @@ properties:
       port: 25
       starttls: true
       user: smtp_user
+      sslprotocols: TLSv1.2
   uaa:
     admin:
       client_secret: adminsecret
@@ -389,6 +391,7 @@ properties:
         lockoutAfterFailures: 5
         lockoutPeriodSeconds: 300
     catalina_opts: -Xmx1g -Xms512m
+    localhost_http_port: 55555
     limitedFunctionality:
       statusFile: /var/vcap/data/uaa/test_bbr_limited_mode.lock
       whitelist:
@@ -446,6 +449,7 @@ properties:
       max_idle_connections: 11
       min_idle_connections: 1
       remove_abandoned: true
+      test_while_idle: true
     delete:
       clients:
         - client-to-be-deleted-1
@@ -502,6 +506,46 @@ properties:
       verification_key: |
         verification-key with some
         line feeds in it
+    cors:
+      default:
+        allowed:
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+            - X-Requested-With
+          origin:
+            - ^localhost$
+            - ^.*\.localhost$
+          uris:
+            - ^/uaa/userinfo$
+            - ^/uaa/logout\.do$
+          methods:
+            - GET
+            - PUT
+            - POST
+            - DELETE
+            - OPTIONS
+          credentials: true
+        max_age: 10
+      xhr:
+        allowed:
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+            - X-Requested-With
+          origin:
+            - ^localhost$
+            - ^.*\.localhost$
+          uris:
+            - ^/uaa/userinfo$
+            - ^/uaa/logout\.do$
+          methods:
+            - GET
+            - OPTIONS
+          credentials: true
+        max_age: 10
     ldap:
       override: false
       add_shadow_user_on_login: false
@@ -542,7 +586,9 @@ properties:
       userDN: cn=admin,dc=test,dc=com
       userPassword: password
     logging_level: TRACE
-    logging_use_rfc3339: true
+    logging:
+      format:
+        timestamp: rfc3339
     login:
       client_secret: loginsecret
     newrelic:
@@ -566,7 +612,6 @@ properties:
         requireLowerCaseCharacter: 0
         requireSpecialCharacter: 0
         requireUpperCaseCharacter: 0
-    port: 8888
     proxy:
       servers:
       - 127.1.0.1
@@ -574,6 +619,12 @@ properties:
       - 127.1.0.3
     proxy_ips_regex: 10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}
     require_https: false
+    rest:
+      template:
+        timeout: 10000
+        maxTotal: 20
+        maxPerRoute: 2
+        maxKeepAlive: 0
     scim:
       external_groups:
         origin1:
@@ -589,6 +640,9 @@ properties:
           - internal_group3
           - internal_group4
           - internal_group5
+        ldap:
+          "cn=admin\\, test,ou=scopes,dc=test,dc=com":
+          - ldap.test
       groups:
         another-group: Another group description
         my-test-group: My test group description
@@ -613,15 +667,9 @@ properties:
     servlet:
       idle-timeout: 300
       session-cookie:
-        comment: null
-        domain: super.test.domain
-        http-only: true
         max-age: 1800
-        name: JSESSIONID
-        path: /
-        secure: true
     ssl:
-      port: 8843
+      port: 33333
       procotol_header: x-custom-forwarded-proto
     sslCertificate: |
       -----BEGIN CERTIFICATE-----
@@ -690,7 +738,6 @@ properties:
       tag: uaa
     db_scheme: mysql
     port: 5524
-    tls_enabled: true
     tls_protocols: TLSv1.2
     roles:
     - name: uaaadmin

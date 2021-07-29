@@ -127,26 +127,31 @@
     end
 
   end
-
   raise ArgumentError, "The required length of the encryption passphrases for #{keys_with_invalid_passphrases} need to be at least 8 characters long." unless keys_with_invalid_passphrases.length == 0
+
+ if_p('release_level_backup') do
+    raise ArgumentError, "DEPRECATED: release_level_backup in the uaa job should no longer be used. Please set the corresponding release_level_backup property in the bbr-uaadb job instead."
+ end
 
   uaa_db = p_arr('uaadb.databases').find { |db| db['tag'] == 'uaa' }
   uaa_role = p_arr('uaadb.roles').find { |role| role['tag'] == 'admin' }
   protocol = p('login.protocol')
   uaa_db_scheme = p('uaadb.db_scheme')
   uaa_db_scheme = uaa_db_scheme == 'postgres' ? 'postgresql' : uaa_db_scheme
+  raise ArgumentError, 'Please select either mysql or postgres for uaadb.db_scheme' unless uaa_db_scheme == 'postgresql' || uaa_db_scheme == 'mysql'
   issuer_uri = p('uaa.issuer', p('uaa.url'))
-  uaa_db_tls_enabled = p('uaadb.tls_enabled')
   uaa_db_address = nil
   if_p('uaadb.address') do |address|
     uaa_db_address = address
   end.else do
     if_link('database') do |db_link|
-      uaa_db_address = db_link.instances[0].address
+      uaa_db_address = db_link.address
     end.else do
       raise ArgumentError, 'Required uaadb address configuration not specified. Please specify uaadb.address or check your bosh linked database configuration.'
     end
   end
+
+  raise ArgumentError, 'Invalid value for uaa.client.redirect_uri.matching_mode. Valid options are legacy or exact.' unless ['legacy', 'exact'].include?(p('uaa.client.redirect_uri.matching_mode'))
 
   spring_profiles = uaa_db_scheme
   if p_opt('uaa.ldap.enabled')
@@ -167,7 +172,7 @@
     },
     'spring_profiles' => spring_profiles,
     'logging' => {
-      'config' => '/var/vcap/jobs/uaa/config/log4j.properties'
+      'config' => '/var/vcap/jobs/uaa/config/log4j2.properties'
     },
     'database' => {
       'url' =>  "jdbc:#{uaa_db_scheme}://#{uaa_db_address}:#{p('uaadb.port')}/#{uaa_db['name']}",
@@ -178,9 +183,11 @@
       'minidle' => p('uaa.database.min_idle_connections'),
       'removeabandoned' => p('uaa.database.remove_abandoned'),
       'logabandoned' =>  p('uaa.database.log_abandoned'),
-      'abandonedtimeout' => p('uaa.database.abandoned_timeout')
+      'abandonedtimeout' => p('uaa.database.abandoned_timeout'),
+      'testwhileidle' => p('uaa.database.test_while_idle')
     },
     'authentication' => {
+      'enableUriEncodingCompatibilityMode' => p('uaa.authentication.enable_uri_encoding_compatibility_mode'),
       'policy' => {
         'lockoutAfterFailures' => p('uaa.authentication.policy.lockoutAfterFailures'),
         'countFailuresWithinSeconds' => p('uaa.authentication.policy.countFailuresWithinSeconds'),
@@ -221,25 +228,44 @@
   }
   params['delete'] = p('uaa.delete') if p_opt('uaa.delete')
 
-
-  if uaa_db_scheme == 'sqlserver' then
-    params['database']['url'] = "jdbc:#{uaa_db_scheme}://#{uaa_db_address}:#{p('uaadb.port')};databaseName=#{uaa_db['name']};"
+  unless ['enabled', 'enabled_skip_hostname_validation', 'enabled_skip_all_validation', 'disabled'].include?(p('uaadb.tls'))
+    raise ArgumentError, 'Invalid value for uaadb.tls. Valid options are enabled, enabled_skip_hostname_validation, enabled_skip_all_validation, disabled.'
   end
 
-  if uaa_db_tls_enabled
-    if uaa_db_scheme == 'postgresql'
-      params['database']['url'] += '?ssl=true'
+  if_p('uaadb.tls_enabled') do
+    raise ArgumentError, 'uaadb.tls_enabled is no longer supported. Please use uaadb.tls instead.'
+  end
+  if_p('uaadb.skip_ssl_validation') do
+    raise ArgumentError, 'uaadb.skip_ssl_validation is no longer supported. Please use uaadb.tls instead.'
+  end
 
-      if_p('uaadb.skip_ssl_validation') do |db_skip_ssl_validation|
-          params['database']['url'] += '&sslfactory=org.postgresql.ssl.NonValidatingFactory' if db_skip_ssl_validation
-      end
-    elsif uaa_db_scheme == 'mysql'
-      params['database']['url'] += '?useSSL=true' +  "&trustServerCertificate=#{p('uaadb.skip_ssl_validation')}"
+  if uaa_db_scheme == 'mysql'
+    params['database']['url'] += case p('uaadb.tls')
+      when 'enabled'
+        '?useSSL=true'
+      when 'enabled_skip_hostname_validation'
+        '?useSSL=true&disableSslHostnameVerification=true'
+      when 'enabled_skip_all_validation'
+        '?useSSL=true&trustServerCertificate=true'
+      when 'disabled'
+        '?useSSL=false'
+    end
+    unless p('uaadb.tls') == 'disabled'
       if_p('uaadb.tls_protocols') do |dbTlsProtocol|
         params['database']['url'] += '&enabledSslProtocolSuites=' + dbTlsProtocol
       end
-    elsif uaa_db_scheme == 'sqlserver'
-      params['database']['url'] += 'encrypt=true;' + "trustServerCertificate=#{p('uaadb.skip_ssl_validation')};"
+    end
+
+  elsif uaa_db_scheme == 'postgresql'
+    params['database']['url'] += case p('uaadb.tls')
+      when 'enabled'
+        '?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory'
+      when 'enabled_skip_hostname_validation'
+        '?sslmode=verify-ca&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory'
+      when 'enabled_skip_all_validation'
+        '?sslmode=require'
+      when 'disabled'
+        '?sslmode=disable'
     end
   end
 
@@ -366,10 +392,9 @@
 
   oauth['user']['authorities'] = p('uaa.user.authorities')
 
-  if p_opt('uaa.client')
-      oauth['client'] = {}
-  end
   if p_opt('uaa.client.secret.policy')
+    oauth['client'] ||= {}
+
     oauth['client']['secret'] = {
       'policy' => {
         'minLength' => p('uaa.client.secret.policy.minLength', 0),
@@ -542,19 +567,18 @@
     end
   end
 
-
-
-
-  servlet = {
-    'idle-timeout' => p('uaa.servlet.idle-timeout')
-  }
-  params['servlet'] = servlet
-
-  if_p('uaa.servlet.session-cookie') do |sessioncookie|
-    params['servlet']['session-cookie'] = {}
-    sessioncookie.each do |cookiename, cookievalue|
-      params['servlet']['session-cookie'][cookiename] = cookievalue
-    end
+  valid_session_stores = ['memory', 'database']
+  session_store = p('uaa.servlet.session-store')
+  if valid_session_stores.include?(session_store)
+    params['servlet'] = {
+      'session-store' => session_store,
+      'idle-timeout' => p('uaa.servlet.idle-timeout'),
+      'session-cookie' => {
+        'max-age' => p('uaa.servlet.session-cookie.max-age')
+      }
+    }
+  else
+    message = message + "\nuaa.servlet.session-store invalid. Must be one of #{valid_session_stores.join(', ')}"
   end
 
   #validate that we have all required parameters
@@ -591,7 +615,8 @@
   login_url = p('login.url', login_entityBaseUrl)
 
   params = params.merge({
-    'require_https' => p('uaa.require_https'),
+    'require_https' => true,
+    'https_port' => p('uaa.ssl.port'),
     'assetBaseUrl' => p('login.asset_base_url'),
     'logout' => {
       'redirect' => {
@@ -612,12 +637,17 @@
           'endpoints' => p('uaa.limitedFunctionality.whitelist.endpoints'),
           'methods' => p('uaa.limitedFunctionality.whitelist.methods')
         }
+      },
+      'oauth' => {
+        'redirect_uri' => {
+          'allow_unsafe_matching' => p('uaa.client.redirect_uri.matching_mode') == 'legacy'
+        }
       }
     },
     'login' => {
       'url' => login_url,
       'idpDiscoveryEnabled' => p('login.idpDiscoveryEnabled'),
-      'accountChooserEnabled' => p('login.idpDiscoveryEnabled'),
+      'accountChooserEnabled' => p('login.accountChooserEnabled'),
       'entityBaseURL' => login_entityBaseUrl,
       'entityID' => login_entityId,
       'prompt' => {
@@ -639,6 +669,16 @@
       }
     }
   })
+
+  if_p('login.defaultIdentityProvider') do |login_defaultIdentityProvider|
+    add_value(params, login_defaultIdentityProvider, 'login', 'defaultIdentityProvider')
+  end
+
+  if_p('uaa.rest.template') do |rest_template|
+    rest_template.each do |key,val|
+      add_value(params, val, 'rest','template', key)
+    end
+  end
 
   if_p('login.links') do |login_links|
     login_links.each do |key,val|
@@ -778,6 +818,21 @@
     add_value(params, code, 'analytics', 'code')
     add_value(params, domain, 'analytics', 'domain')
   end
+
+  # cors settings
+  add_value(params, p('uaa.cors.default.allowed.headers'), 'cors', 'default', 'allowed', 'headers') if p_opt('uaa.cors.default.allowed.headers')
+  add_value(params, p('uaa.cors.default.allowed.origin'), 'cors', 'default', 'allowed', 'origin') if p_opt('uaa.cors.default.allowed.origin')
+  add_value(params, p('uaa.cors.default.allowed.uris'), 'cors', 'default', 'allowed', 'uris') if p_opt('uaa.cors.default.allowed.uris')
+  add_value(params, p('uaa.cors.default.allowed.methods'), 'cors', 'default', 'allowed', 'methods') if p_opt('uaa.cors.default.allowed.methods')
+  add_value(params, p('uaa.cors.default.allowed.credentials'), 'cors', 'default', 'allowed', 'credentials') if p_opt('uaa.cors.default.allowed.credentials')
+  add_value(params, p('uaa.cors.default.max_age'), 'cors', 'default', 'max_age') if p_opt('uaa.cors.default.max_age')
+
+  add_value(params, p('uaa.cors.xhr.allowed.headers'), 'cors', 'xhr', 'allowed', 'headers') if p_opt('uaa.cors.xhr.allowed.headers')
+  add_value(params, p('uaa.cors.xhr.allowed.origin'), 'cors', 'xhr', 'allowed', 'origin') if p_opt('uaa.cors.xhr.allowed.origin')
+  add_value(params, p('uaa.cors.xhr.allowed.uris'), 'cors', 'xhr', 'allowed', 'uris') if p_opt('uaa.cors.xhr.allowed.uris')
+  add_value(params, p('uaa.cors.xhr.allowed.methods'), 'cors', 'xhr', 'allowed', 'methods') if p_opt('uaa.cors.xhr.allowed.methods')
+  add_value(params, p('uaa.cors.xhr.allowed.credentials'), 'cors', 'xhr', 'allowed', 'credentials') if p_opt('uaa.cors.xhr.allowed.credentials')
+  add_value(params, p('uaa.cors.xhr.max_age'), 'cors', 'xhr', 'max_age') if p_opt('uaa.cors.xhr.max_age')
 
   if_p('uaa.ca_certs') do |ca_certs|
     add_value(params, ca_certs, 'uaa', 'ca_certs')

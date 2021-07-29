@@ -1,4 +1,0 @@
----
-name: uaa_postgres
-files:
-  - postgres/postgresql-*.tar.gz

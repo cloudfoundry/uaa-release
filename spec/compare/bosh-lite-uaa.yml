@@ -8,7 +8,7 @@ encryption:
     passphrase: my-passphrase
 
 database:
-  url: jdbc:postgresql://10.244.0.30:5524/uaadb?ssl=true
+  url: jdbc:postgresql://10.244.0.30:5524/uaadb?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory
   username: uaaadmin
   password: "admin"
   maxactive: 100
@@ -17,12 +17,13 @@ database:
   removeabandoned: false
   logabandoned: true
   abandonedtimeout: 300
+  testwhileidle: false
 
 
 spring_profiles: postgresql
 
 logging:
-  config: /var/vcap/jobs/uaa/config/log4j.properties
+  config: /var/vcap/jobs/uaa/config/log4j2.properties
 
 jwt:
   token:
@@ -64,6 +65,7 @@ jwt:
       format: jwt
 
 authentication:
+  enableUriEncodingCompatibilityMode: false
   policy:
     lockoutAfterFailures: 5
     countFailuresWithinSeconds: 1200
@@ -208,7 +210,8 @@ zones:
     hostnames:
       - uaa.service.cf.internal
 
-require_https: false
+require_https: true
+https_port: 8443
 
 uaa:
   url: https://uaa.bosh-lite.com
@@ -224,6 +227,9 @@ uaa:
       - HEAD
   shutdown:
     sleep: 5000
+  oauth:
+    redirect_uri:
+      allow_unsafe_matching: true
 
 links:
   global:
@@ -242,6 +248,7 @@ smtp:
   from_address:
   auth: false
   starttls: false
+  sslprotocols: TLSv1.2
 
 assetBaseUrl: /resources/oss
 
@@ -257,6 +264,7 @@ login:
     providerName: myExampleProvider
   url: https://login.bosh-lite.com
   selfServiceLinksEnabled: true
+  defaultIdentityProvider: uaa
   idpDiscoveryEnabled: false
   accountChooserEnabled: false
   entityBaseURL: https://login.bosh-lite.com
@@ -355,4 +363,14 @@ login:
     url: https://uaa.bosh-lite.com/oauth/authorize
 
 servlet:
+  session-store: memory
   idle-timeout: 1800
+  session-cookie:
+    max-age: -1
+
+rest:
+  template:
+    timeout: 10000
+    maxTotal: 20
+    maxPerRoute: 5
+    maxKeepAlive: 0

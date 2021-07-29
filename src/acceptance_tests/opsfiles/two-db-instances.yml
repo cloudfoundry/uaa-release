@@ -1,0 +1,84 @@
+- type: remove
+  path: /instance_groups/name=uaa/jobs/name=postgres
+
+- type: replace
+  path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaadb
+  value:
+    databases:
+      - name: uaa
+        tag: uaa
+    db_scheme: mysql
+    port: 3306
+    tls: disabled
+    roles:
+      - name: uaaadmin
+        password: admin
+        tag: admin
+
+- type: replace
+  path: /instance_groups/0:before
+  value:
+    name: database
+    azs:
+    - z1
+    instances: 2
+    vm_type: default
+    stemcell: db-stemcell
+    networks:
+    - name: default
+    jobs:
+    - name: mysql
+      release: cf-mysql
+      properties:
+        cf_mysql:
+          mysql:
+            admin_password: "admin"
+            port: 13306
+            binlog_enabled: false
+            cluster_health:
+              password: "admin"
+            galera_healthcheck:
+              db_password: "admin"
+              endpoint_username: galera_healthcheck
+              endpoint_password: "admin"
+            seeded_databases:
+            - name: uaa
+              username: uaaadmin
+              password: "admin"
+    - name: proxy
+      release: cf-mysql
+      properties:
+        cf_mysql:
+          proxy:
+            api_password: "admin"
+    - name: bosh-dns
+      release: bosh-dns
+      properties:
+        cache:
+          enabled: true
+        health:
+          enabled: true
+          server:
+            tls: ((dns_healthcheck_server_tls))
+          client:
+            tls: ((dns_healthcheck_client_tls))
+        api:
+          server:
+            tls: ((dns_api_server_tls))
+          client:
+            tls: ((dns_api_client_tls))
+
+- type: replace
+  path: /releases/-
+  value:
+    name: cf-mysql
+    sha1: 1918047d94df62167f26136353b40baa70549b9a
+    url: https://storage.googleapis.com/cf-deployment-compiled-releases/cf-mysql-36.16.0-ubuntu-xenial-170.9-20181119-232745-090612782.tgz
+    version: 36.16.0
+
+- type: replace
+  path: /stemcells/-
+  value:
+    alias: db-stemcell
+    os: ubuntu-xenial
+    version: "170.9"

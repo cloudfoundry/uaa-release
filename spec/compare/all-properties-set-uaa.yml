@@ -11,9 +11,9 @@ issuer:
   uri: http://all-properties-set:8888/uaa
 spring_profiles: mysql,ldap
 logging:
-  config: "/var/vcap/jobs/uaa/config/log4j.properties"
+  config: "/var/vcap/jobs/uaa/config/log4j2.properties"
 database:
-  url: jdbc:mysql://10.244.0.30:5524/uaadb?useSSL=true&trustServerCertificate=false&enabledSslProtocolSuites=TLSv1.2
+  url: jdbc:mysql://10.244.0.30:5524/uaadb?useSSL=true&enabledSslProtocolSuites=TLSv1.2
   username: uaaadmin
   password: admin
   maxactive: 101
@@ -23,6 +23,7 @@ database:
   logabandoned: false
   abandonedtimeout: 301
   caseinsensitive: true
+  testwhileidle: true
 
 delete:
   clients:
@@ -36,6 +37,7 @@ delete:
     - octa
 
 authentication:
+  enableUriEncodingCompatibilityMode: false
   policy:
     lockoutAfterFailures: 5
     countFailuresWithinSeconds: 1200
@@ -112,6 +114,46 @@ jwt:
       restrict_grant: true
       unique: true
       format: opaque
+cors:
+  default:
+    allowed:
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type
+        - X-Requested-With
+      origin:
+        - ^localhost$
+        - ^.*\.localhost$
+      uris:
+        - ^/uaa/userinfo$
+        - ^/uaa/logout\.do$
+      methods:
+        - GET
+        - PUT
+        - POST
+        - DELETE
+        - OPTIONS
+      credentials: true
+    max_age: 10
+  xhr:
+    allowed:
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type
+        - X-Requested-With
+      origin:
+        - ^localhost$
+        - ^.*\.localhost$
+      uris:
+        - ^/uaa/userinfo$
+        - ^/uaa/logout\.do$
+      methods:
+        - GET
+        - OPTIONS
+      credentials: true
+    max_age: 10
 
 oauth:
   client:
@@ -200,7 +242,9 @@ scim:
       - internal_group3
       - internal_group4
       - internal_group5
-require_https: false
+    ldap:
+      "cn=admin\\, test,ou=scopes,dc=test,dc=com":
+      - ldap.test
 ldap:
   override: false
   ldapdebug: Ldap configured through UAA
@@ -248,6 +292,10 @@ logout:
     url: "/"
     parameter:
       disable: false
+
+require_https: true
+https_port: 33333
+
 uaa:
   url: http://all-properties-set:8888/uaa
   limitedFunctionality:
@@ -262,6 +310,9 @@ uaa:
       - HEAD
   shutdown:
     sleep: 10000
+  oauth:
+    redirect_uri:
+      allow_unsafe_matching: true
 
 links:
   global:
@@ -274,6 +325,7 @@ links:
   homeRedirect: http://custom.home.redirect
 login:
   url: http://all-properties-set:8888/uaa
+  defaultIdentityProvider: uaa
   idpDiscoveryEnabled: true
   accountChooserEnabled: true
   entityBaseURL: http://all-properties-set:8888/uaa
@@ -601,15 +653,10 @@ login:
           user.attribute.name-of-other-attribute-in-uaa-id-token: name-of-other-attribute-in-provider-token
 
 servlet:
+  session-store: memory
   idle-timeout: 300
   session-cookie:
-    secure: true
-    http-only: true
     max-age: 1800
-    name: JSESSIONID
-    comment: null
-    path: "/"
-    domain: super.test.domain
 
 smtp:
   host: smtp_host
@@ -619,8 +666,16 @@ smtp:
   user: smtp_user
   password: smtp_password
   from_address: from@from.com
+  sslprotocols: TLSv1.2
 notifications:
   url: http://notifications
 analytics:
   code: code
   domain: domain
+
+rest:
+  template:
+    timeout: 10000
+    maxTotal: 20
+    maxPerRoute: 2
+    maxKeepAlive: 0

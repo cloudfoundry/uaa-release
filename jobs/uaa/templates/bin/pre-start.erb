@@ -1,128 +1,166 @@
 #!/bin/bash
-set -e
 
-echo "uaa-pre-start - starting at `date`"
+set -euo pipefail
 
-CERT_FILE=/etc/ssl/certs/ca-certificates.crt
-
-function update_ca_certificate() {
-  updated_certs=1
-  retry_count=0
-  max_retry_count=3
-
-  set +e
-  until [ $updated_certs -eq 0 ] || [ $retry_count -ge $max_retry_count ]; do
-    echo "trying to run update-ca-certificates..."
-    timeout --signal=KILL 60s /usr/sbin/update-ca-certificates -f -v
-    updated_certs=$?
-    retry_count=$((retry_count + 1))
-  done
-  set -e
-}
-
-# add certs from manifest to OS certs
-rm -f /usr/local/share/ca-certificates/uaa_*
-<% p('uaa.ca_certs', []).each_with_index do |cert, i| %>
-    echo "Adding certificate from manifest to OS certs /usr/local/share/ca-certificates/uaa_<%= i %>.crt"
-    echo -n '<%= cert %>' >> "/usr/local/share/ca-certificates/uaa_<%= i %>.crt"
+TIMESTAMP_FORMAT="+%Y-%m-%d %H:%M:%S.%3N"
+<% if_p("uaa.logging.format.timestamp") do |timestampConfig| %>
+timestamp_config="<%= timestampConfig %>"
+if [ ${timestamp_config} == "rfc3339" ]; then
+  TIMESTAMP_FORMAT="+%Y-%m-%dT%H:%M:%S.%NZ"
+fi
 <% end %>
 
-update_ca_certificate
-
-# os-conf will write to CERT_FILE in its pre-start, using a copy to prevent race conditions
-INTERNAL_CERT_FILE=/tmp/internal_ca_certificates.crt
-
-cp -f $CERT_FILE $INTERNAL_CERT_FILE
-
-CONF_DIR=/var/vcap/jobs/uaa/config
-CACHE_DIR=/var/vcap/data/uaa/cert-cache
-
-mkdir -p $CACHE_DIR
-
-CERT_CACHE_FILE=$CACHE_DIR/cacerts-cache.txt
-TRUST_STORE_FILE=$CACHE_DIR/cacerts
-
-CERTS=$(grep 'END CERTIFICATE' $INTERNAL_CERT_FILE| wc -l)
-
-function process_certs {
-  echo "Processing certificates for Java cacerts file"
-  rm -f $CERT_CACHE_FILE
-  rm -f $TRUST_STORE_FILE
-  COUNTER=0
-  # Load the cert into the Java keystore
-  TEMP_CA_CERTS=$(mktemp -d)
-
-  cat $INTERNAL_CERT_FILE |
-  awk "split_after==1{n++;split_after=0} /-----END CERTIFICATE-----/ {split_after=1} {print > (\"$TEMP_CA_CERTS/cert\" n \".pem\")}"
-
-
-  for cert in $TEMP_CA_CERTS/*; do
-    cat $cert | /var/vcap/packages/uaa/jdk/bin/keytool -noprompt \
-    -import \
-    -trustcacerts \
-    -alias $(basename $cert) \
-    -keystore $TRUST_STORE_FILE \
-    -storepass changeit
-
-    let COUNTER=COUNTER+1
-    echo "[uaa-ctl]   Processed certificate $COUNTER of $CERTS"
-  done
-
-  if [ "$COUNTER" -eq "$CERTS" ]; then
-    echo "[uaa-ctl] Java keystore creation completed."
-    cp $INTERNAL_CERT_FILE $CERT_CACHE_FILE
-  fi
-  rm -f $INTERNAL_CERT_FILE
-  rm -rf $TEMP_CA_CERTS
+function log {
+    echo "[$(date "${TIMESTAMP_FORMAT}")] uaa-pre-start - $1"
 }
 
+function insert_cert {
+    echo "${1}" | /var/vcap/packages/uaa/jdk/bin/keytool -noprompt \
+        -import \
+        -trustcacerts \
+        -alias "${2}" \
+        -keystore $TRUST_STORE_FILE \
+        -storepass changeit
+}
 
-function setup_directories {
-    mkdir -p /var/vcap/sys/log/uaa
+function insert_ldap_certs {
+    /var/vcap/packages/uaa/jdk/bin/keytool -noprompt \
+        -importcert -file $LDAP_CERTS_FILE \
+        -alias ldapcert \
+        -keystore $TRUST_STORE_FILE \
+        -storepass changeit
+}
 
-    chown -R vcap:vcap /var/vcap/sys/log/uaa
+function build_new_cache_files {
+    rm -f ${UAA_CA_CERTS_FILE}
+    touch ${UAA_CA_CERTS_FILE}
 
-    # We want to keep packages pristine, since tomcat is modified in place we stage it elsewhere.
+    <% p('uaa.ca_certs', []).each do |cert| %>
+        echo '<%= cert.strip %>' >> $UAA_CA_CERTS_FILE
+    <% end %>
+
+    log "Trying to run update-ca-certificates..."
+    source /etc/os-release
+    case "${ID}" in
+      *ubuntu*)
+        # --certbundle is an undocumented flag in the update-ca-certificates script
+        # https://salsa.debian.org/debian/ca-certificates/blob/master/sbin/update-ca-certificates#L53
+        timeout --signal=KILL 180s /usr/sbin/update-ca-certificates -f -v --certbundle "$(basename "${OS_CERTS_FILE}")"
+      ;;
+
+      *suse|sles*)
+        timeout --signal=KILL 180s /usr/sbin/update-ca-certificates -f -v
+        # Note that per an upstream comment the move below may cause
+        # trouble should UAA be co-located with other jobs of the
+        # system. No details are currently available.
+        mv /var/lib/ca-certificates/ca-bundle.pem /etc/ssl/certs/"$(basename "${OS_CERTS_FILE}")"
+      ;;
+
+      *)
+        echo "Unsupported operating system: ${PRETTY_NAME}"
+        exit 42
+      ;;
+    esac
+}
+
+function new_cache_files_are_identical {
+    if [[ ! -f ${PERSISTENT_OS_CERTS_FILE} ]] || [[ ! -f ${PERSISTENT_LDAP_CERTS_FILE} ]] || [[ ! -f ${PERSISTENT_UAA_CA_CERTS_FILE} ]]; then
+      return 1
+    fi
+
+    diff $OS_CERTS_FILE $PERSISTENT_OS_CERTS_FILE > /dev/null && \
+        diff $LDAP_CERTS_FILE $PERSISTENT_LDAP_CERTS_FILE > /dev/null && \
+        diff $UAA_CA_CERTS_FILE $PERSISTENT_UAA_CA_CERTS_FILE > /dev/null
+
+    return
+}
+
+function build_trust_store_file {
+    log "Processing certificates for Java keystore..."
+
+    mkdir -p $PERSISTENT_CERTS_DIR
+    rm -f $TRUST_STORE_FILE
+    TEMP_CA_CERTS=$(mktemp -d)
+
+    cat $UAA_CA_CERTS_FILE $OS_CERTS_FILE |
+        awk "split_after==1{n++;split_after=0} /-----END CERTIFICATE-----/ {split_after=1} {print > (\"$TEMP_CA_CERTS/cert\" n \".pem\")}"
+
+    for cert in $TEMP_CA_CERTS/*; do
+        insert_cert "$(cat $cert)" "$(basename $cert)"
+    done
+
+    rm -rf $TEMP_CA_CERTS
+
+    # Only install LDAP certs if the file has non-whitespace contents
+    if grep -q '[^[:space:]]' $LDAP_CERTS_FILE; then
+      log "Installing LDAP certificate"
+      insert_ldap_certs
+      log "Installed LDAP certificate"
+    fi
+
+    chmod 0755 $TRUST_STORE_FILE
+
+    log "Java keystore creation completed"
+}
+
+function save_new_cache_files_to_persistent_disk {
+    cp $OS_CERTS_FILE $PERSISTENT_OS_CERTS_FILE
+    cp $UAA_CA_CERTS_FILE $PERSISTENT_UAA_CA_CERTS_FILE
+    cp $LDAP_CERTS_FILE $PERSISTENT_LDAP_CERTS_FILE
+}
+
+function process_certs {
+    build_new_cache_files
+    if ! new_cache_files_are_identical; then
+        build_trust_store_file
+    fi
+
+    insert_ssl_cert
+
+    save_new_cache_files_to_persistent_disk
+}
+
+function insert_ssl_cert {
+    log "Installing Server SSL certificate"
+
+    openssl pkcs12 -export -name uaa_ssl_cert \
+        -in /var/vcap/jobs/uaa/config/uaa.crt \
+        -out /var/vcap/data/uaa/uaa_keystore.p12 \
+        -password pass:k0*l*s3cur1tyr0ck$
+
+    log "Installed Server SSL certificate"
+}
+
+function configure_tomcat {
+    # When run with bpm, the vcap user does not have permissions to read
+    # files in the jobs and packages directories. Consequently, we move
+    # our tomcat installation into a directory where we have full permissions.
     rm -rf /var/vcap/data/uaa/tomcat
     mkdir -p /var/vcap/data/uaa/
     cp -a /var/vcap/packages/uaa/tomcat /var/vcap/data/uaa/
     cp -a /var/vcap/jobs/uaa/config/tomcat/* /var/vcap/data/uaa/tomcat/conf/
     chown -R vcap:vcap /var/vcap/data/uaa/
-
-    # We don't think this does anything since the variable is not set
-    # Keeping it currently to discuss whether to remove or whether this is a regression
-    rm -rf $KEY_STORE_FILE
 }
 
-if [ -a "$CERT_CACHE_FILE" ] && [ -a "$TRUST_STORE_FILE" ]; then
-    if  diff "$CERT_CACHE_FILE" "$CERT_FILE" >/dev/null; then
-      echo 'No changes to CA certificates. Will not build Java keystore file.'
-    else
-      echo 'Changes to CA certificates detected.'
-      process_certs
-    fi
-else
-    process_certs
-fi
+log "Starting"
 
-<% if p('uaa.ldap.sslCertificate', nil) || p('login.ldap.sslCertificate', nil) %>
-    echo "[uaa-pre-start] Installing LDAP certificate"
-    /var/vcap/jobs/uaa/bin/install_crt ldap.crt ldapcert $TRUST_STORE_FILE
-    echo "[uaa-pre-start] Installed LDAP certificate"
-<% end %>
+TMP_DIR="$(mktemp -d)"
+PERSISTENT_CERTS_DIR=/var/vcap/data/uaa/cert-cache
+TRUST_STORE_FILE=$PERSISTENT_CERTS_DIR/cacerts
 
-# Install the server's ssl certificate
-<% if p("uaa.ssl.port") != -1 %>
-    echo "[uaa-pre-start] Installing Server SSL certificate"
-    /var/vcap/jobs/uaa/bin/install_uaa_crt uaa.crt
-    echo "[uaa-pre-start] Installed Server SSL certificate"
-<% end %>
+OS_CERTS_FILE=/etc/ssl/certs/uaa-ca-certificates.crt
+PERSISTENT_OS_CERTS_FILE=$PERSISTENT_CERTS_DIR/os-certs-cache.txt
 
-chmod g+xw "$TRUST_STORE_FILE"
-ln -fs "$TRUST_STORE_FILE" "$CONF_DIR/cacerts"
+UAA_CA_CERTS_FILE=$TMP_DIR/uaa-ca-certs-cache.txt
+PERSISTENT_UAA_CA_CERTS_FILE=$PERSISTENT_CERTS_DIR/uaa-ca-certs-cache.txt
 
-setup_directories
+LDAP_CERTS_FILE=/var/vcap/jobs/uaa/config/ldap.crt
+PERSISTENT_LDAP_CERTS_FILE=$PERSISTENT_CERTS_DIR/ldap-certs-cache.txt
 
-echo "uaa-pre-start - completed at `date`"
+process_certs
 
-exit 0
+configure_tomcat
+
+rm -rf $TMP_DIR
+
+log "Completed"

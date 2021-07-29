@@ -1,9 +1,9 @@
 source 'https://rubygems.org'
 gem 'rspec'
 gem 'rake'
-gem 'bosh_cli'
-gem 'nokogiri', '1.8.1'
+gem 'nokogiri', '1.11.7'
 gem 'activesupport'
+gem 'bosh-template'
 
 group :test do
   gem 'pry-byebug'

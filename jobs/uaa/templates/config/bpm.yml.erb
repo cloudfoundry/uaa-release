@@ -4,12 +4,10 @@ processes:
   env:
     CATALINA_BASE: /var/vcap/data/uaa/tomcat
     CATALINA_HOME: /var/vcap/data/uaa/tomcat
-    CLOUD_FOUNDRY_CONFIG_PATH: /var/vcap/jobs/uaa/config
+    CLOUDFOUNDRY_CONFIG_PATH: /var/vcap/jobs/uaa/config
+    CLOUDFOUNDRY_LOG_PATH: /var/vcap/sys/log/uaa
     CATALINA_OPTS: "<%= p('uaa.catalina_opts') %>"
   args: []
   ephemeral_disk: true
   limits:
     open_files: 65536
-  additional_volumes:
-  - path: /var/vcap/data/uaa/cert-cache
-    writable: true

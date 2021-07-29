@@ -1,0 +1,39 @@
+#!/bin/bash
+
+set -euo pipefail
+
+TIMESTAMP_FORMAT="+%Y-%m-%d %H:%M:%S.%3N"
+<% if_p("uaa.logging.format.timestamp") do |timestampConfig| %>
+timestamp_config="<%= timestampConfig %>"
+if [ ${timestamp_config} == "rfc3339" ]; then
+  TIMESTAMP_FORMAT="+%Y-%m-%dT%H:%M:%S.%NZ"
+fi
+<% end %>
+
+function log {
+    echo "[$(date "${TIMESTAMP_FORMAT}")] uaa-start - $1"
+}
+
+source "/var/vcap/jobs/uaa/bin/configure_proxy"
+source "/var/vcap/jobs/uaa/bin/configure_newrelic"
+
+if [[ -f /var/vcap/data/uaa/cert-cache/cacerts ]]; then
+  KEYSTORE="/var/vcap/data/uaa/cert-cache/cacerts"
+else
+  KEYSTORE="/var/vcap/packages/uaa/jdk/lib/security/cacerts"
+fi
+
+KEYSTORE_OPTS="-Djavax.net.ssl.trustStore=$KEYSTORE -Djavax.net.ssl.trustStoreType=JKS -Djavax.net.ssl.trustStorePassword=changeit"
+log "Keystore configured to: $KEYSTORE"
+
+export PATH="/var/vcap/packages/uaa/jdk/bin:$PATH"
+export JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom -DPID=$$ -Dnetworkaddress.cache.ttl=0 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS -Dlog4j.configurationFile=/var/vcap/jobs/uaa/config/log4j2.properties"
+
+log "Calling Tomcat start up command"
+/var/vcap/packages/uaa/tomcat/bin/catalina.sh run &
+CATALINA_PID=$!
+log "uaa/tomcat started in background. Waiting for signals."
+wait "${CATALINA_PID}"
+EXIT_STATUS=$?
+log "uaa/tomcat job exiting"
+exit $EXIT_STATUS

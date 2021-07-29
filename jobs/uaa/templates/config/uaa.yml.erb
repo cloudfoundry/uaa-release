@@ -269,6 +269,16 @@
     end
   end
 
+ if_p('uaa.database.additionalParameters') do |dbParameters|
+   paramString = ''
+   dbParameters.each do |key, value|
+     next unless value
+     # ? for first parameter already included in ssl parameter
+     paramString += '&' + key + '=' + value
+   end
+   params['database']['url'] += paramString
+ end
+
   # should the DB not use lower() function in SCIM queries (if true)
   if_p('uaa.database.case_insensitive') do |case_insensitive|
     params['database']['caseinsensitive'] = case_insensitive

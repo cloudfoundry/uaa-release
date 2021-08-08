@@ -22,6 +22,7 @@ database:
   removeabandoned: false
   logabandoned: true
   abandonedtimeout: 300
+  testwhileidle: false
 authentication:
   enableUriEncodingCompatibilityMode: false
   policy:
@@ -248,9 +249,17 @@ smtp:
   port: 2525
   auth: false
   starttls: false
+  sslprotocols: TLSv1.2
 
 servlet:
   session-store: memory
   idle-timeout: 1800
   session-cookie:
     max-age: -1
+
+rest:
+  template:
+    timeout: 10000
+    maxTotal: 20
+    maxPerRoute: 5
+    maxKeepAlive: 0

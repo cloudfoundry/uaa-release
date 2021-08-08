@@ -1,0 +1,3 @@
+- type: replace
+  path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaa/logging?/format/timestamp
+  value: deprecated

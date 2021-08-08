@@ -1297,6 +1297,74 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  describe 'logging formats' do
+      let(:input) {'spec/input/test-defaults.yml'}
+
+      let(:erb_template) {'../jobs/uaa/templates/config/log4j2.properties.erb'}
+      let(:log4j2_template_path) {'spec/compare/default-log4j2-template.properties'}
+      let(:as_yml) {false}
+
+      let(:generated_cf_manifest) {generate_cf_manifest(input)}
+      let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml)}
+
+      context 'when uaa.logging.format.timestamp is not set' do
+          it 'uses default value of rfc3339 and sets log_pattern to conform to rfc3339 with microsecond and UTC timezone' do
+              log4j2_template = File.read(log4j2_template_path)
+              expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.nnnnnn}{GMT+0}Z"
+              expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+          end
+      end
+
+      context 'when uaa.logging.format.timestamp is configured to' do
+          context 'rfc3339' do
+            before do
+              generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'rfc3339'}}
+            end
+
+            it 'sets log_pattern to conform to rfc3339 with microsecond and UTC timezone' do
+                log4j2_template = File.read(log4j2_template_path)
+                expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.nnnnnn}{GMT+0}Z"
+                expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+            end
+          end
+
+          context 'rfc3339-legacy' do
+            before do
+              generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'rfc3339-legacy'}}
+            end
+
+            it 'sets log_pattern to conform to original rfc3339 format (millisecond precision) for compatibility' do
+              log4j2_template = File.read(log4j2_template_path)
+              expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}"
+              expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+            end
+          end
+
+          context 'deprecated' do
+            before do
+              generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'deprecated'}}
+            end
+
+            it 'sets log_pattern to deprecated format with irregular timestamps' do
+              log4j2_template = File.read(log4j2_template_path)
+              expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd HH:mm:ss.SSS}"
+              expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+            end
+          end
+
+          context 'an invalid value' do
+            before do
+              generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'some-invalid-value'}}
+            end
+
+            it 'raises an error' do
+              expect {parsed_yaml}.to raise_error(ArgumentError, /Invalid value for uaa.logging.format.timestamp./)
+            end
+          end
+      end
+
+  end
+
   def self.perform_compare(input)
     generated_cf_manifest = generate_cf_manifest(input)
     parsed_uaa_yaml = read_and_parse_string_template '../jobs/uaa/templates/config/uaa.yml.erb', generated_cf_manifest, true

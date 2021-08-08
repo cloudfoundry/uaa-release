@@ -1,12 +1,12 @@
-openjdk/openjdk-11.0.4_11-x86_64-trusty.tar.gz:
-  size: 195187242
-  object_id: 818deb54-a1fd-4e95-76c7-e32449d8b739
-  sha: 3e51fc95c556aad87a1b136ca23cb2dea617482a
-uaa/apache-tomcat-9.0.29.tar.gz:
-  size: 11007394
-  object_id: ea287ac9-118e-4b51-5973-d44e552cec69
-  sha: 98fc1b3624d4504a490430de2ada83dd797b0656
+bellsoft-11.0.12+7.tar.gz:
+  size: 207346392
+  object_id: c4df91c0-3fca-4136-68be-2d3f0020a425
+  sha: sha256:7c38cbdd9f723ea3c4d1d99b5ad12ef84c7c4716898ed58e5b8a201d91c7fd97
+uaa/apache-tomcat-9.0.52.tar.gz:
+  size: 11524133
+  object_id: 60d6dd17-dd40-4e89-6e52-795b57026960
+  sha: sha256:29909c659fda7a2e06be17684a1fadbbae9ed4cdecf8077c4ede1c34e4d4a631
 uaa/newrelic.jar:
-  size: 12064449
-  object_id: d0189e53-bad5-430b-5c87-b0e8a6d546f5
-  sha: sha256:f5fb2185c6efc44e9b1fb1db0df37c096a68af591222a661c2c30f2699a62599
+  size: 20490624
+  object_id: e65e9686-8cd9-437e-51b5-fb2b023c3984
+  sha: sha256:e1facc3c2e101b65b49f57ca1f3bb95c6280160b37736095f4c1937a3bc7aab2

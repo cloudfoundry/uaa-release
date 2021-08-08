@@ -183,7 +183,8 @@
       'minidle' => p('uaa.database.min_idle_connections'),
       'removeabandoned' => p('uaa.database.remove_abandoned'),
       'logabandoned' =>  p('uaa.database.log_abandoned'),
-      'abandonedtimeout' => p('uaa.database.abandoned_timeout')
+      'abandonedtimeout' => p('uaa.database.abandoned_timeout'),
+      'testwhileidle' => p('uaa.database.test_while_idle')
     },
     'authentication' => {
       'enableUriEncodingCompatibilityMode' => p('uaa.authentication.enable_uri_encoding_compatibility_mode'),
@@ -267,6 +268,16 @@
         '?sslmode=disable'
     end
   end
+
+ if_p('uaa.database.additionalParameters') do |dbParameters|
+   paramString = ''
+   dbParameters.each do |key, value|
+     next unless value
+     # ? for first parameter already included in ssl parameter
+     paramString += '&' + key + '=' + value
+   end
+   params['database']['url'] += paramString
+ end
 
   # should the DB not use lower() function in SCIM queries (if true)
   if_p('uaa.database.case_insensitive') do |case_insensitive|
@@ -646,7 +657,7 @@
     'login' => {
       'url' => login_url,
       'idpDiscoveryEnabled' => p('login.idpDiscoveryEnabled'),
-      'accountChooserEnabled' => p('login.idpDiscoveryEnabled'),
+      'accountChooserEnabled' => p('login.accountChooserEnabled'),
       'entityBaseURL' => login_entityBaseUrl,
       'entityID' => login_entityId,
       'prompt' => {
@@ -671,6 +682,12 @@
 
   if_p('login.defaultIdentityProvider') do |login_defaultIdentityProvider|
     add_value(params, login_defaultIdentityProvider, 'login', 'defaultIdentityProvider')
+  end
+
+  if_p('uaa.rest.template') do |rest_template|
+    rest_template.each do |key,val|
+      add_value(params, val, 'rest','template', key)
+    end
   end
 
   if_p('login.links') do |login_links|
@@ -811,6 +828,21 @@
     add_value(params, code, 'analytics', 'code')
     add_value(params, domain, 'analytics', 'domain')
   end
+
+  # cors settings
+  add_value(params, p('uaa.cors.default.allowed.headers'), 'cors', 'default', 'allowed', 'headers') if p_opt('uaa.cors.default.allowed.headers')
+  add_value(params, p('uaa.cors.default.allowed.origin'), 'cors', 'default', 'allowed', 'origin') if p_opt('uaa.cors.default.allowed.origin')
+  add_value(params, p('uaa.cors.default.allowed.uris'), 'cors', 'default', 'allowed', 'uris') if p_opt('uaa.cors.default.allowed.uris')
+  add_value(params, p('uaa.cors.default.allowed.methods'), 'cors', 'default', 'allowed', 'methods') if p_opt('uaa.cors.default.allowed.methods')
+  add_value(params, p('uaa.cors.default.allowed.credentials'), 'cors', 'default', 'allowed', 'credentials') if p_opt('uaa.cors.default.allowed.credentials')
+  add_value(params, p('uaa.cors.default.max_age'), 'cors', 'default', 'max_age') if p_opt('uaa.cors.default.max_age')
+
+  add_value(params, p('uaa.cors.xhr.allowed.headers'), 'cors', 'xhr', 'allowed', 'headers') if p_opt('uaa.cors.xhr.allowed.headers')
+  add_value(params, p('uaa.cors.xhr.allowed.origin'), 'cors', 'xhr', 'allowed', 'origin') if p_opt('uaa.cors.xhr.allowed.origin')
+  add_value(params, p('uaa.cors.xhr.allowed.uris'), 'cors', 'xhr', 'allowed', 'uris') if p_opt('uaa.cors.xhr.allowed.uris')
+  add_value(params, p('uaa.cors.xhr.allowed.methods'), 'cors', 'xhr', 'allowed', 'methods') if p_opt('uaa.cors.xhr.allowed.methods')
+  add_value(params, p('uaa.cors.xhr.allowed.credentials'), 'cors', 'xhr', 'allowed', 'credentials') if p_opt('uaa.cors.xhr.allowed.credentials')
+  add_value(params, p('uaa.cors.xhr.max_age'), 'cors', 'xhr', 'max_age') if p_opt('uaa.cors.xhr.max_age')
 
   if_p('uaa.ca_certs') do |ca_certs|
     add_value(params, ca_certs, 'uaa', 'ca_certs')

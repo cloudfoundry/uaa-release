@@ -156,11 +156,17 @@ var _ = Describe("UaaRelease", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(string(session.Wait().Out.Contents())).To(MatchRegexp(uaaLogFormat))
 	},
-		Entry("when UAA logs are configured to *NOT* honor RFC 3339",
-			`^\[(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}\.\d{3})\] uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`),
-		Entry("when UAA logs are configured to honor RFC 3339",
-			`^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{3})Z\] uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`,
-			"./opsfiles/use-rfc3339-log-format.yml"),
+		Entry("when UAA log format is not set and default value is used",
+            `^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{6})Z\] uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`),
+        Entry("when UAA logs are configured to rfc3339",
+            `^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{6})Z\] uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`,
+            "./opsfiles/configure-to-rfc3339-log-format.yml"),
+		Entry("when UAA logs are configured to rfc3339-legacy",
+            `^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{3})Z\] uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`,
+            "./opsfiles/configure-to-rfc3339-legacy-log-format.yml"),
+		Entry("when UAA logs are configured to deprecated",
+			`^\[(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}\.\d{3})\] uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`,
+			"./opsfiles/configure-to-deprecated-log-format.yml"),
 	)
 })
 

@@ -322,6 +322,37 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  context 'login.saml boolean properties' do
+    let!(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:as_yml) {true}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml)}
+    let(:input) {'spec/input/all-properties-set.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+
+    props = ['signMetaData', 'signRequest']
+
+    context 'when the properties are true' do
+      it 'adds the properties' do
+        props.each { |p| generated_cf_manifest['properties']['login']['saml'][p] = true }
+        props.each { |p| expect(parsed_yaml['login']['saml'][p]).to eq(true) }
+      end
+    end
+
+    context 'when the properties are false' do
+      it 'adds the properties' do
+        props.each { |p| generated_cf_manifest['properties']['login']['saml'][p] = false }
+        props.each { |p| expect(parsed_yaml['login']['saml'][p]).to eq(false) }
+      end
+    end
+
+    context 'when the properties do not exist' do
+      it 'does not add the properties' do
+        props.each { |p| generated_cf_manifest['properties']['login']['saml'].delete(p) }
+        props.each { |p| expect(parsed_yaml['login']['saml'][p]).to eq(nil) }
+      end
+    end
+  end
+
   context 'when login banner is specified' do
     let!(:generated_cf_manifest) {generate_cf_manifest(input)}
     let(:as_yml) {true}

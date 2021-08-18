@@ -803,8 +803,8 @@
     end
   end
 
-  add_value(params, p('login.saml.signMetaData'), 'login', 'saml', 'signMetaData') if p_opt('login.saml.signMetaData')
-  add_value(params, p('login.saml.signRequest'), 'login', 'saml', 'signRequest') if p_opt('login.saml.signRequest')
+  add_value(params, p('login.saml.signMetaData'), 'login', 'saml', 'signMetaData') unless p_opt('login.saml.signMetaData').nil?
+  add_value(params, p('login.saml.signRequest'), 'login', 'saml', 'signRequest') unless p_opt('login.saml.signRequest').nil?
   add_value(params, p('login.saml.wantAssertionSigned'), 'login', 'saml', 'wantAssertionSigned')
   add_value(params, p('login.saml.disableInResponseToCheck'), 'login', 'saml', 'disableInResponseToCheck')
   if_p('login.saml.signatureAlgorithm') { |alg| add_value(params, alg, 'login', 'saml', 'signatureAlgorithm') }

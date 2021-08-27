@@ -10,6 +10,7 @@
 .final_builds/packages/**/*.tgz
 .gitreview
 .idea
+.vscode
 .ruby-version
 .DS_Store
 **/.DS_Store

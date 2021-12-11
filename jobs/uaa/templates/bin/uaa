@@ -27,7 +27,7 @@ KEYSTORE_OPTS="-Djavax.net.ssl.trustStore=$KEYSTORE -Djavax.net.ssl.trustStoreTy
 log "Keystore configured to: $KEYSTORE"
 
 export PATH="/var/vcap/packages/uaa/jdk/bin:$PATH"
-export JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom -DPID=$$ -Dnetworkaddress.cache.ttl=0 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS -Dlog4j.configurationFile=/var/vcap/jobs/uaa/config/log4j2.properties"
+export JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom -DPID=$$ -Dnetworkaddress.cache.ttl=0 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS -Dlog4j.configurationFile=/var/vcap/jobs/uaa/config/log4j2.properties -Dlog4j2.formatMsgNoLookups=true"
 
 log "Calling Tomcat start up command"
 /var/vcap/packages/uaa/tomcat/bin/catalina.sh run &

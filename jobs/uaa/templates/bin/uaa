@@ -31,6 +31,7 @@ PATH="/var/vcap/packages/uaa/jdk/bin:$PATH"
 JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom -DPID=$$"
 JAVA_OPTS="$JAVA_OPTS -Dnetworkaddress.cache.ttl=0 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS"
 JAVA_OPTS="$JAVA_OPTS -Dlog4j.configurationFile=/var/vcap/jobs/uaa/config/log4j2.properties"
+JAVA_OPTS="$JAVA_OPTS -Dlog4j2.formatMsgNoLookups=true"
 JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
 JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=${uaa_log_dir}"
 export PATH

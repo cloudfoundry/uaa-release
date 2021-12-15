@@ -243,6 +243,8 @@ builds:
     version: "24.7"
   97ff4cfa-9622-4414-9b94-68a5af594385:
     version: "13.3"
+  98909a8d-50b9-4493-5e0e-58862ef1a827:
+    version: 74.5.29
   99f508ca-aead-46ed-5f10-e8018fb1ed3b:
     version: 74.5.0
   9a12017a-5750-498e-b455-c66e4a68cef7:

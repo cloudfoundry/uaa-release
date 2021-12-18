@@ -92,6 +92,9 @@ properties:
       enabled_skip_hostname_validation (use TLS but skip validation of common and alt names in the host certificate),
       enabled_skip_all_validation (use TLS but do not validate anything about the host certificate),
       disabled (do not use TLS)
+
+      The database's CA certificate required when TLS is enabled
+      should be added to the uaa.ca_certs configuration field.
     default: enabled
   uaadb.tls_protocols:
     description: |
@@ -180,9 +183,9 @@ properties:
   uaa.logging_level:
     description: Set UAA logging level.  (e.g. TRACE, DEBUG, INFO)
     default: DEBUG
-  uaa.logging_use_rfc3339:
-    description: "Sets the time format for log messages to be yyyy-MM-dd'T'HH:mm:ss.SSSXXX instead of yyyy-MM-dd HH:mm:ss.SSS"
-    default: false
+  uaa.logging.format.timestamp:
+    description: "Format for timestamp in component logs. Valid values are 'rfc3339', 'rfc3339-legacy', and 'deprecated'. 'rfc3339' sets the format to be {yyyy-MM-dd'T'HH:mm:ss.nnnnnn}{GMT+0}Z which is rfc3339 compliant but additionally has microsecond precision and is set to UTC timezone. 'rfc3339-legacy' sets the time format to be yyyy-MM-dd'T'HH:mm:ss.SSSXXX. 'deprecated' sets the time format to be yyyy-MM-dd HH:mm:ss.SSS."
+    default: rfc3339
   uaa.limitedFunctionality.statusFile:
     description: |
       The UAA checks for the presence of this file. If this file exists, the UAA will continue to function
@@ -210,6 +213,23 @@ properties:
       - GET
       - HEAD
       - OPTIONS
+
+  uaa.rest.template.timeout:
+    description: "Timeout for the RestTemplates used by the UAA in ms"
+    example: 10000
+    default: 10000
+  uaa.rest.template.maxTotal:
+    description: "Size of the connection pool used by the RestTemplates in the UAA"
+    example: 20
+    default: 20
+  uaa.rest.template.maxPerRoute:
+    description: "Maximum number of connections to the same route that is used by the RestTemplates in the UAA"
+    example: 5
+    default: 5
+  uaa.rest.template.maxKeepAlive:
+    description: "Maximum time in ms that the connections of the RestTemplates are kept alive in the UAA"
+    example: 0
+    default: 0
 
   # SSL
   login.protocol:
@@ -394,6 +414,9 @@ properties:
   login.idpDiscoveryEnabled:
     description: "IDP Discovery should be set to true if you have configured more than one identity provider for UAA. The discovery relies on email domain being set for each additional provider. This property will also enable a list of selectable accounts that have signed in via the browser."
     default: false
+  login.accountChooserEnabled:
+    description: "This flag enables the account choosing functionality. If idpDiscoveryEnabled is set to true in the config the IDP is chosen by discovery. Otherwise, the user can enter the IDP by providing the origin."
+    default: false
   login.defaultIdentityProvider:
     description: "This value can be set to the origin key of an identity provider. If set, the user will be directed to this identity provider automatically if no other identity provider is discovered or selected via login_hint. When not set, legacy chained authentication (where uaa is attempted first followed by ldap) is used."
     example: uaa
@@ -422,6 +445,9 @@ properties:
   login.smtp.starttls:
     description: "If true, send STARTTLS command before login to server. https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html"
     default: false
+  login.smtp.sslprotocols:
+    description: "If set, specifies the SSL protocols that will be enabled for SSL connections. The property value is a whitespace separated list of tokens. https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html"
+    default: TLSv1.2
 
   # Delete actions
   uaa.delete:
@@ -652,6 +678,44 @@ properties:
     description: "The format for the refresh token. Allowed values are `jwt`, `opaque`"
     default: jwt
 
+  # cors settings
+  uaa.cors.default.allowed.headers:
+    description: "whitelist for allowed headers for non-xhr cors requests"
+    default: ~
+  uaa.cors.default.allowed.origin:
+    description: "whitelist for allowed origins for non-xhr cors requests"
+    default: ~
+  uaa.cors.default.allowed.uris:
+    description: "whitelist for allowed uris for non-xhr cors requests"
+    default: ~
+  uaa.cors.default.allowed.methods:
+    description: "whitelist for allowed methods for non-xhr cors requests"
+    default: ~
+  uaa.cors.default.allowed.credentials:
+    description: "whether to allow credentials to be sent over non-xhr cors requests"
+    default: ~
+  uaa.cors.default.max_age:
+    description: "how long the results of a preflight request is cached"
+    default: ~
+  uaa.cors.xhr.allowed.headers:
+    description: "whitelist for allowed headers for xhr cors requests"
+    default: ~
+  uaa.cors.xhr.allowed.origin:
+    description: "whitelist for allowed origins for xhr cors requests"
+    default: ~
+  uaa.cors.xhr.allowed.uris:
+    description: "whitelist for allowed uris for xhr cors requests"
+    default: ~
+  uaa.cors.xhr.allowed.methods:
+    description: "whitelist for allowed methods for xhr cors requests"
+    default: ~
+  uaa.cors.xhr.allowed.credentials:
+    description: "whether to allow credentials to be sent over xhr cors requests"
+    default: ~
+  uaa.cors.xhr.max_age:
+    description: "how long the results of a preflight request is cached"
+    default: ~
+
   # Global security policies (for all zones)
   uaa.authentication.policy.global.lockoutAfterFailures:
     description: "Number of allowed failures before account is locked"
@@ -692,7 +756,7 @@ properties:
 
   # Scim properties
   uaa.scim.user.override:
-    description: "If true override users defined in uaa.scim.users found in the database."
+    description: "If true, override users defined in uaa.scim.users found in the database."
     default: true
   uaa.scim.userids_enabled:
     description: "Enables the endpoint `/ids/Users` that allows consumers to translate user ids to name"
@@ -774,6 +838,14 @@ properties:
     default: true
   uaa.database.case_insensitive:
     description: "Set to true if you don't want to be using LOWER() SQL functions in search queries/filters, because you know that your DB is case insensitive. If this property is null, then it will be set to true if the UAA DB is MySQL and false otherwise, but even on MySQL you can override it by setting it explicitly to false"
+  uaa.database.test_while_idle:
+    description: "If true, connections will be validated by the idle connection evictor (if any). If the validation fails, the connection is destroyed and removed from the pool."
+    default: false
+  uaa.database.additionalParameters:
+    description: "Addtional parameters that should be added to the url that is used to connect to the database. Boolean values need to be passed as String."
+    example:
+      tcpKeepAlive: "true"
+      usePipelineAuth: "false"
 
   # LDAP
   uaa.ldap.enabled:

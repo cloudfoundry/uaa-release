@@ -2,8 +2,16 @@
 
 set -euo pipefail
 
+TIMESTAMP_FORMAT="+%Y-%m-%d %H:%M:%S.%3N"
+<% if_p("uaa.logging.format.timestamp") do |timestampConfig| %>
+timestamp_config="<%= timestampConfig %>"
+if [ ${timestamp_config} == "rfc3339" ]; then
+  TIMESTAMP_FORMAT="+%Y-%m-%dT%H:%M:%S.%NZ"
+fi
+<% end %>
+
 function log {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S.%3N')] uaa-start - $1"
+    echo "[$(date "${TIMESTAMP_FORMAT}")] uaa-start - $1"
 }
 
 source "/var/vcap/jobs/uaa/bin/configure_proxy"
@@ -19,7 +27,7 @@ KEYSTORE_OPTS="-Djavax.net.ssl.trustStore=$KEYSTORE -Djavax.net.ssl.trustStoreTy
 log "Keystore configured to: $KEYSTORE"
 
 export PATH="/var/vcap/packages/uaa/jdk/bin:$PATH"
-export JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom -DPID=$$ -Dnetworkaddress.cache.ttl=0 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS -Dlog4j.configurationFile=/var/vcap/jobs/uaa/config/log4j2.properties"
+export JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom -DPID=$$ -Dnetworkaddress.cache.ttl=0 $HTTP_PROXY_JAVA_OPTIONS $NEWRELIC_OPTS $KEYSTORE_OPTS -Dlog4j.configurationFile=/var/vcap/jobs/uaa/config/log4j2.properties -Dlog4j2.formatMsgNoLookups=true"
 
 log "Calling Tomcat start up command"
 /var/vcap/packages/uaa/tomcat/bin/catalina.sh run &

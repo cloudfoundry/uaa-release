@@ -17,6 +17,7 @@ database:
   removeabandoned: false
   logabandoned: true
   abandonedtimeout: 300
+  testwhileidle: false
 
 
 spring_profiles: postgresql
@@ -246,6 +247,7 @@ smtp:
   from_address:
   auth: false
   starttls: false
+  sslprotocols: TLSv1.2
 
 assetBaseUrl: /resources/oss
 
@@ -364,3 +366,10 @@ servlet:
   idle-timeout: 1800
   session-cookie:
     max-age: -1
+
+rest:
+  template:
+    timeout: 10000
+    maxTotal: 20
+    maxPerRoute: 5
+    maxKeepAlive: 0

@@ -7,6 +7,6 @@ uaa/apache-tomcat-9.0.56.tar.gz:
   object_id: 3adde89f-92c0-4ba8-7adf-8eabfa99cf5b
   sha: sha256:960ce89fa93099a412f7d1b828d6d97465d5e11500247e9c58a637fded523e0d
 uaa/newrelic.jar:
-  size: 21868947
-  object_id: 850a24b0-7b84-4193-7885-d2c1463c3ea4
-  sha: sha256:a0d72d83b87351ec54936b357bf3b86bc3ab3e05cf29f9cb126103f56d2241e8
+  size: 21868656
+  object_id: 45ee986e-e82b-4f20-52c5-da479a84a85f
+  sha: sha256:232eda66caa1bea248de8c6dbf22af5b0e070b4d3b61b66569fe3b5515698bfa

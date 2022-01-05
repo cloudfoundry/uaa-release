@@ -13,7 +13,7 @@ spring_profiles: mysql
 logging:
   config: "/var/vcap/jobs/uaa/config/log4j2.properties"
 database:
-  url: jdbc:mysql://10.244.0.30:1433/uaadb?useSSL=true&enabledSslProtocolSuites=TLSv1,TLSv1.1,TLSv1.2
+  url: jdbc:mysql://10.244.0.30:1433/uaadb?useSSL=true
   username: uaaadmin
   password: admin
   maxactive: 100

@@ -563,7 +563,7 @@ describe 'uaa-release erb generation' do
       end
 
       it 'should correctly render a mysql JDBC connection string' do
-        expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://my-hostname:7676/uaadb?useSSL=true&enabledSslProtocolSuites=TLSv1,TLSv1.1,TLSv1.2')
+        expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://my-hostname:7676/uaadb?useSSL=true')
       end
     end
 
@@ -692,7 +692,7 @@ describe 'uaa-release erb generation' do
         end
 
         it 'adds useSSL=true to the URL' do
-          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&enabledSslProtocolSuites=TLSv1,TLSv1.1,TLSv1.2')
+          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true')
         end
 
         context 'with uaadb.tls_protocols' do
@@ -732,7 +732,7 @@ describe 'uaa-release erb generation' do
         end
 
         it 'adds useSSL=false and trustServerCertificate=true to the URL' do
-          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&trustServerCertificate=true&enabledSslProtocolSuites=TLSv1,TLSv1.1,TLSv1.2')
+          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&trustServerCertificate=true')
         end
 
         context 'with uaadb.tls_protocols' do
@@ -752,7 +752,7 @@ describe 'uaa-release erb generation' do
         end
 
         it 'adds useSSL=true and disableSslHostnameVerification=true to the URL' do
-          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&disableSslHostnameVerification=true&enabledSslProtocolSuites=TLSv1,TLSv1.1,TLSv1.2')
+          expect(parsed_yaml['database']['url']).to eq('jdbc:mysql://10.244.0.30:9999/uaadb?useSSL=true&disableSslHostnameVerification=true')
         end
 
         context 'with uaadb.tls_protocols' do

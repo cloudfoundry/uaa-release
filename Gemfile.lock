@@ -16,10 +16,10 @@ GEM
     i18n (1.8.11)
       concurrent-ruby (~> 1.0)
     method_source (1.0.0)
-    mini_portile2 (2.6.1)
+    mini_portile2 (2.7.1)
     minitest (5.15.0)
-    nokogiri (1.12.5)
-      mini_portile2 (~> 2.6.1)
+    nokogiri (1.13.0)
+      mini_portile2 (~> 2.7.0)
       racc (~> 1.4)
     pry (0.13.1)
       coderay (~> 1.1)
@@ -53,7 +53,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   bosh-template
-  nokogiri (= 1.12.5)
+  nokogiri (= 1.13.0)
   pry-byebug
   rake
   rspec

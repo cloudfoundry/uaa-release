@@ -62,7 +62,7 @@ var _ = Describe("UaaRelease", func() {
 			10*time.Second).Should(BeTrue())
 	})
 
-	Context("UAA consuming the `database` link", func() {
+	XContext("UAA consuming the `database` link", func() {
 		var originalEtcHostsContents []byte
 
 		BeforeEach(func() {

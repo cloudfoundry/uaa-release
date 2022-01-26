@@ -81,6 +81,8 @@ builds:
     version: "24.9"
   398f7801-5e59-417c-6676-b5e46fe9e783:
     version: "60"
+  39b1cf08-ecaa-455e-5f52-6984c100eec9:
+    version: 74.5.32
   39c3f712-0c78-4093-6a39-63a67e0ed26d:
     version: 73.1.0
   39fab434-4fcc-4e49-973b-75603ebf6dbd:

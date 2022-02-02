@@ -382,7 +382,7 @@
           message = message + "\nClient redirect-uri is invalid: uaa.clients.#{id}.redirect-uri"
         end
         message = message + "\nMissing property: uaa.clients.#{id}.authorities" if (client_data['authorities'].nil?) && (client_data['authorized-grant-types'] =~ /client_credentials/)
-        message = message + "\nMissing property: uaa.clients.#{id}.scope" if (client_data['scope'].nil?) && (client_data['authorized-grant-types'] != 'client_credentials')
+        message = message + "\nMissing property: uaa.clients.#{id}.scope or uaa.clients.#{id}.scopes" if (client_data['scope'].nil?) && (client_data['authorized-grant-types'] != 'client_credentials')
       end
 
       ['refresh-token-validity', 'access-token-validity'].each do |numberProperty|

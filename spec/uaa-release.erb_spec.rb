@@ -522,7 +522,7 @@ describe 'uaa-release erb generation' do
           generated_cf_manifest['properties']['uaa']['clients']['app'].delete('scope');
           expect {
             parsed_yaml
-          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.scope/)
+          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.scope or uaa.clients.app.scopes/)
         end
       end
     end
@@ -541,7 +541,7 @@ describe 'uaa-release erb generation' do
           generated_cf_manifest['properties']['uaa']['clients']['app-with-yaml-scopes'].delete('scopes');
           expect {
             parsed_yaml
-          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app-with-yaml-scopes.scope/)
+          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app-with-yaml-scopes.scope or uaa.clients.app-with-yaml-scopes.scopes/)
         end
       end
     end

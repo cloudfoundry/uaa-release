@@ -555,7 +555,9 @@ properties:
         secret: app-secret
         authorized-grant-types: authorization_code,client_credentials,refresh_token
         authorities: test_resource.test_action
-        scope: test_resource.test_action,test_resource.other_action
+        scopes: # overrides anything present in 'scope' property
+          - test_resource.test_action
+          - test_resource.other_action
         redirect-uri: http://login.example.com
         autoapprove:
         - test_resource.test_action

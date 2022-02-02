@@ -364,6 +364,12 @@
       client.each do |key,value|
         client_data[key] = value
       end
+      if !client['scopes'].nil?
+        client_data.delete('scopes')
+        if client['scopes'].is_a? Array
+          client_data['scope'] = client['scopes'].join(',')
+        end
+      end
       add_value(oauth, client_data, 'clients', id)
       add_value(oauth, id, 'clients', id, 'id')
       if is_missing(client_data, 'authorized-grant-types')

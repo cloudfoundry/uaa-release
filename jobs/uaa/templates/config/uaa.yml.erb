@@ -74,25 +74,25 @@
     if (is_missing(currentMap, 'login', 'serviceProviderKey') &&
         is_missing(currentMap, 'login', 'serviceProviderKeyPassword') &&
         is_missing(currentMap, 'login', 'serviceProviderCertificate'))
-      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys')?'\nMissing property: login.saml.keys' : '')
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys') ? '\nMissing property: login.saml.keys' : '')
       if errorinfo !~ /login.saml.keys/
         #validate that the keys are intact
         currentMap['login']['saml']['keys'].each do |keyName,keyContents|
-          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'certificate')?'\nMissing property: login.saml.keys.' + keyName + '.certificate' : '')
-          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'passphrase')?'\nMissing property: login.saml.keys.' + keyName + '.passphrase' : '')
-          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'key')?'\nMissing property: login.saml.keys.' + keyName + '.key' : '')
+          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'certificate') ? '\nMissing property: login.saml.keys.' + keyName + '.certificate' : '')
+          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'passphrase') ? '\nMissing property: login.saml.keys.' + keyName + '.passphrase' : '')
+          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'key') ? '\nMissing property: login.saml.keys.' + keyName + '.key' : '')
         end
       end
-      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'activeKeyId')?'\nMissing property: login.saml.activeKeyId' : '')
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'activeKeyId') ? '\nMissing property: login.saml.activeKeyId' : '')
       if errorinfo !~ /login.saml.activeKeyId/
         #validate that activeKeyId points to a valid key
         keyId = currentMap['login']['saml']['activeKeyId']
-        errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyId)?'\Invalid login.saml.activeKeyId: login.saml.keys.' + keyId + ' does not exist' : '')
+        errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyId) ? '\Invalid login.saml.activeKeyId: login.saml.keys.' + keyId + ' does not exist' : '')
       end
     else
-      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderKey')?'\nMissing property: login.saml.serviceProviderKey' : '')
-      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderKeyPassword')?'\nMissing property: login.saml.serviceProviderKeyPassword' : '')
-      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderCertificate')?'\nMissing property: login.saml.serviceProviderCertificate' : '')
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderKey') ? '\nMissing property: login.saml.serviceProviderKey' : '')
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderKeyPassword') ? '\nMissing property: login.saml.serviceProviderKeyPassword' : '')
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderCertificate') ? '\nMissing property: login.saml.serviceProviderCertificate' : '')
     end
     return errorinfo
   end

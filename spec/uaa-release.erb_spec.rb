@@ -522,7 +522,26 @@ describe 'uaa-release erb generation' do
           generated_cf_manifest['properties']['uaa']['clients']['app'].delete('scope');
           expect {
             parsed_yaml
-          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.scope/)
+          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.scope or uaa.clients.app.scopes/)
+        end
+      end
+    end
+
+    context "and either 'scope' string or 'scopes' list is required on a client" do
+      let(:erb_template) { '../jobs/uaa/templates/config/uaa.yml.erb' }
+      grant_types_requiring_secret = ['implicit',
+                                      'authorization_code',
+                                      'password',
+                                      'urn:ietf:params:oauth:grant-type:saml2-bearer',
+                                      'user_token',
+                                      'urn:ietf:params:oauth:grant-type:jwt-bearer']
+      grant_types_requiring_secret.each do |grant_type|
+        it "raises an error for type:#{grant_type}" do
+          generated_cf_manifest['properties']['uaa']['clients']['app-with-yaml-scopes']['authorized-grant-types'] = grant_type;
+          generated_cf_manifest['properties']['uaa']['clients']['app-with-yaml-scopes'].delete('scopes');
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app-with-yaml-scopes.scope or uaa.clients.app-with-yaml-scopes.scopes/)
         end
       end
     end

@@ -426,6 +426,21 @@ properties:
         scope: test_resource.test_action,test_resource.other_action
         secret: app-secret
         show-on-homepage: true
+      app-with-yaml-scopes:
+        app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
+        app-launch-url: http://myapppage.com
+        authorities: test_resource.test_action
+        authorized-grant-types: authorization_code,client_credentials,refresh_token
+        autoapprove:
+        - test_resource.test_action
+        - test_resource.other_action
+        override: true
+        redirect-uri: http://login.example.com
+        scopes:
+          - test_resource.test_action
+          - test_resource.other_action
+        secret: app-secret
+        show-on-homepage: true
       cf:
         access-token-validity: 600
         authorities: uaa.none

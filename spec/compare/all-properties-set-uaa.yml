@@ -190,6 +190,20 @@ oauth:
       app-launch-url: http://myapppage.com
       show-on-homepage: true
       app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
+    app-with-yaml-scopes:
+      id: app-with-yaml-scopes
+      override: true
+      secret: app-secret
+      authorized-grant-types: authorization_code,client_credentials,refresh_token
+      authorities: test_resource.test_action
+      scope: test_resource.test_action,test_resource.other_action
+      redirect-uri: http://login.example.com
+      autoapprove:
+      - test_resource.test_action
+      - test_resource.other_action
+      app-launch-url: http://myapppage.com
+      show-on-homepage: true
+      app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
     admin:
       authorized-grant-types: client_credentials
       authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write

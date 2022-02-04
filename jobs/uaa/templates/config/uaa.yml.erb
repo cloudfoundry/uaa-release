@@ -1,4 +1,6 @@
 <%
+  require 'uri'
+
   message = ''
 
   hex_code_regex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
@@ -72,25 +74,25 @@
     if (is_missing(currentMap, 'login', 'serviceProviderKey') &&
         is_missing(currentMap, 'login', 'serviceProviderKeyPassword') &&
         is_missing(currentMap, 'login', 'serviceProviderCertificate'))
-      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys')?'\nMissing property: login.saml.keys' : '')
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys') ? '\nMissing property: login.saml.keys' : '')
       if errorinfo !~ /login.saml.keys/
         #validate that the keys are intact
         currentMap['login']['saml']['keys'].each do |keyName,keyContents|
-          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'certificate')?'\nMissing property: login.saml.keys.' + keyName + '.certificate' : '')
-          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'passphrase')?'\nMissing property: login.saml.keys.' + keyName + '.passphrase' : '')
-          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'key')?'\nMissing property: login.saml.keys.' + keyName + '.key' : '')
+          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'certificate') ? '\nMissing property: login.saml.keys.' + keyName + '.certificate' : '')
+          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'passphrase') ? '\nMissing property: login.saml.keys.' + keyName + '.passphrase' : '')
+          errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyName, 'key') ? '\nMissing property: login.saml.keys.' + keyName + '.key' : '')
         end
       end
-      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'activeKeyId')?'\nMissing property: login.saml.activeKeyId' : '')
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'activeKeyId') ? '\nMissing property: login.saml.activeKeyId' : '')
       if errorinfo !~ /login.saml.activeKeyId/
         #validate that activeKeyId points to a valid key
         keyId = currentMap['login']['saml']['activeKeyId']
-        errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyId)?'\Invalid login.saml.activeKeyId: login.saml.keys.' + keyId + ' does not exist' : '')
+        errorinfo = errorinfo + (is_missing(currentMap, 'login', 'saml', 'keys', keyId) ? '\Invalid login.saml.activeKeyId: login.saml.keys.' + keyId + ' does not exist' : '')
       end
     else
-      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderKey')?'\nMissing property: login.saml.serviceProviderKey' : '')
-      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderKeyPassword')?'\nMissing property: login.saml.serviceProviderKeyPassword' : '')
-      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderCertificate')?'\nMissing property: login.saml.serviceProviderCertificate' : '')
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderKey') ? '\nMissing property: login.saml.serviceProviderKey' : '')
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderKeyPassword') ? '\nMissing property: login.saml.serviceProviderKeyPassword' : '')
+      errorinfo = errorinfo + (is_missing(currentMap, 'login', 'serviceProviderCertificate') ? '\nMissing property: login.saml.serviceProviderCertificate' : '')
     end
     return errorinfo
   end
@@ -364,6 +366,12 @@
       client.each do |key,value|
         client_data[key] = value
       end
+      if !client['scopes'].nil?
+        client_data.delete('scopes')
+        if client['scopes'].is_a? Array
+          client_data['scope'] = client['scopes'].join(',')
+        end
+      end
       add_value(oauth, client_data, 'clients', id)
       add_value(oauth, id, 'clients', id, 'id')
       if is_missing(client_data, 'authorized-grant-types')
@@ -376,7 +384,7 @@
           message = message + "\nClient redirect-uri is invalid: uaa.clients.#{id}.redirect-uri"
         end
         message = message + "\nMissing property: uaa.clients.#{id}.authorities" if (client_data['authorities'].nil?) && (client_data['authorized-grant-types'] =~ /client_credentials/)
-        message = message + "\nMissing property: uaa.clients.#{id}.scope" if (client_data['scope'].nil?) && (client_data['authorized-grant-types'] != 'client_credentials')
+        message = message + "\nMissing property: uaa.clients.#{id}.scope or uaa.clients.#{id}.scopes" if (client_data['scope'].nil?) && (client_data['authorized-grant-types'] != 'client_credentials')
       end
 
       ['refresh-token-validity', 'access-token-validity'].each do |numberProperty|

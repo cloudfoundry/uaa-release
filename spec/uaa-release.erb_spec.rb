@@ -1328,6 +1328,29 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  describe 'uaa.cors.enforceSystemZonePolicyInAllZones' do
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
+
+    context 'by default' do
+      it 'is true in uaa.yml' do
+        expect(parsed_yaml['cors']['enforceSystemZonePolicyInAllZones']).to eq(true)
+      end
+    end
+
+    context 'when configured to false' do
+      before do
+        generated_cf_manifest['properties']['uaa']['cors']['enforceSystemZonePolicyInAllZones'] = false
+      end
+
+      it 'is false in uaa.yml' do
+        expect(parsed_yaml['cors']['enforceSystemZonePolicyInAllZones']).to eq(false)
+      end
+    end
+  end
+
   describe 'logging formats' do
     let(:input) {'spec/input/test-defaults.yml'}
 

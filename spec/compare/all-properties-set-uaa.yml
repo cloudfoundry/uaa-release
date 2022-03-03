@@ -627,3 +627,6 @@ notifications:
 analytics:
   code: code
   domain: domain
+
+cors:
+  enforceSystemZonePolicyInAllZones: true

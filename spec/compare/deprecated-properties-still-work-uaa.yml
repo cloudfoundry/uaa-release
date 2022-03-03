@@ -244,3 +244,6 @@ servlet:
   idle-timeout: 1800
   session-cookie:
     max-age: -1
+
+cors:
+  enforceSystemZonePolicyInAllZones: true

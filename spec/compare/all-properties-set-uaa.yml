@@ -693,3 +693,6 @@ rest:
     maxTotal: 20
     maxPerRoute: 2
     maxKeepAlive: 0
+
+cors:
+  enforceSystemZonePolicyInAllZones: true

@@ -223,6 +223,9 @@
         'hostnames' => {
         }
       }
+    },
+    'cors' => {
+      'enforceSystemZonePolicyInAllZones' => p('uaa.cors.enforceSystemZonePolicyInAllZones')
     }
   }
   params['delete'] = p('uaa.delete') if p_opt('uaa.delete')

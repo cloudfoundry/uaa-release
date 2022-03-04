@@ -85,6 +85,10 @@ Add the following properties to your manifest:
 
    https://bell-sw.com/pages/downloads/?java=11
 
+## Running Ruby template tests
+
+To run the Ruby template tests, run [`scripts/run-template-tests.rb`](scripts/run-template-tests.rb).
+
 ## Acknowledgements
 
 * We'd like to extend a thank you to all our users, contributors and supporters!

@@ -1305,7 +1305,7 @@ properties:
     default: -1
 
   # CORS
-  uaa.cors.enforceSystemZonePolicyInAllZones:
+  uaa.cors.enforce_system_zone_policy_in_all_zones:
     description: |
       When set to true, the CORS policy for custom identity zones will be ignored,
       and the system default identity zone policy will apply to all zones. When set

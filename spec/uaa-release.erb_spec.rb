@@ -1328,7 +1328,7 @@ describe 'uaa-release erb generation' do
     end
   end
 
-  describe 'uaa.cors.enforceSystemZonePolicyInAllZones' do
+  describe 'uaa.cors.enforce_system_zone_policy_in_all_zones' do
     let(:input) {'spec/input/test-defaults.yml'}
     let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
     let(:generated_cf_manifest) {generate_cf_manifest(input)}
@@ -1342,7 +1342,7 @@ describe 'uaa-release erb generation' do
 
     context 'when configured to false' do
       before do
-        generated_cf_manifest['properties']['uaa']['cors']['enforceSystemZonePolicyInAllZones'] = false
+        generated_cf_manifest['properties']['uaa']['cors']['enforce_system_zone_policy_in_all_zones'] = false
       end
 
       it 'is false in uaa.yml' do

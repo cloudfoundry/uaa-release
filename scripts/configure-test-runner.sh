@@ -23,7 +23,6 @@ popd
 
 export GOPATH="/root/uaa-release"
 export PATH="${GOPATH}/bin:$PATH"
-go get github.com/onsi/ginkgo/ginkgo
 go install github.com/onsi/ginkgo/ginkgo
 
 set +e # continue if the bosh deploy fails, to allow debugging

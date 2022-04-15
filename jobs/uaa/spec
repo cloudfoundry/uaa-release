@@ -381,9 +381,9 @@ properties:
     description: "Enable self-service account creation and password resets links."
     default: true
   login.analytics.code:
-    description: "Google analytics code. If Google Analytics is desired set both login.analytics.code and login.analytics.domain"
+    description: "NOTE: This feature longer works unless further development is done. Google analytics code. If Google Analytics is desired set both login.analytics.code and login.analytics.domain."
   login.analytics.domain:
-    description: "Google analytics domain. If Google Analytics is desired set both login.analytics.code and login.analytics.domain"
+    description: "NOTE: This feature longer works unless further development is done. Google analytics domain. If Google Analytics is desired set both login.analytics.code and login.analytics.domain"
   login.messages:
     description: |
       A nested or flat hash of messages that the login server uses to display UI message

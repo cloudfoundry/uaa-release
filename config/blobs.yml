@@ -2,10 +2,10 @@ bellsoft-11.0.15.1+2.tar.gz:
   size: 207497502
   object_id: feb17ec7-93fa-4afb-5b5d-21b8eb83b357
   sha: sha256:1221b7fdcfa34cd8956b2f36f0fd9077696d343a938c520235a7c85e691e29ce
-uaa/apache-tomcat-9.0.63.tar.gz:
-  size: 11576445
-  object_id: 69810c6a-6b5f-4b34-65cf-68b42213fc1b
-  sha: sha256:5ceea63808f68daa4501a72abbc02c6deff42a50eaf96aaa5ecfb36b1d28106d
+uaa/apache-tomcat-9.0.64.tar.gz:
+  size: 11579290
+  object_id: 2be5b167-0102-49f3-6c52-ffd89ecc2df4
+  sha: sha256:8a3cde1ff47e769065ea66470909b4e3b1a6d6ae5bd1b9ca55314c67ddd44f23
 uaa/newrelic.jar:
   size: 22248967
   object_id: c333d3e0-3916-4c08-53f0-ddd7e51773ff

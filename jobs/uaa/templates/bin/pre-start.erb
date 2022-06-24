@@ -123,7 +123,7 @@ function process_certs {
 function insert_ssl_cert {
     log "Installing Server SSL certificate"
 
-    openssl pkcs12 -export -name uaa_ssl_cert \
+    openssl pkcs12 -export -certpbe PBE-SHA1-3DES -name uaa_ssl_cert \
         -in /var/vcap/jobs/uaa/config/uaa.crt \
         -out /var/vcap/data/uaa/uaa_keystore.p12 \
         -password pass:k0*l*s3cur1tyr0ck$

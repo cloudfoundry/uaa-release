@@ -1,0 +1,8 @@
+<% 
+params = {}
+if_p('uaa.rate_limiter.config') do |config|
+  params = config
+end 
+%><%= 
+YAML.dump(params, :indentation => 2) 
+%>

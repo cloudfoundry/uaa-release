@@ -636,6 +636,40 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  describe 'uaa.rate_limiter.config' do
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/rate.limiter.config.yml.erb'}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
+
+    context 'when set' do
+      before do
+        generated_cf_manifest['properties']['uaa']['rate_limiter'] = {}
+        generated_cf_manifest['properties']['uaa']['rate_limiter']['config'] = {}
+        generated_cf_manifest['properties']['uaa']['rate_limiter']['config']['group'] = {}
+        generated_cf_manifest['properties']['uaa']['rate_limiter']['config']['key1'] = 'value1'
+        generated_cf_manifest['properties']['uaa']['rate_limiter']['config']['group']['key2'] = 'value2'
+        generated_cf_manifest['properties']['uaa']['rate_limiter']['config']['group']['key3'] = 'value3'
+      end
+
+      it 'renders the config into RateLimiterConfig.yml' do
+        expect(parsed_yaml['key1']).to eq('value1')
+        expect(parsed_yaml['group']['key2']).to eq('value2')
+        expect(parsed_yaml['group']['key3']).to eq('value3')
+      end
+    end
+
+    context 'when not set' do
+      before do
+        generated_cf_manifest['properties']['uaa']['rate_limiter'] = {}
+      end
+
+      it 'does not renders the config into RateLimiterConfig.yml' do
+          expect(parsed_yaml['rate_limiter']).to eq(nil)
+      end
+    end
+  end
+
   describe 'uaa.client.redirect_uri.matching_mode' do
     let(:generated_cf_manifest) {generate_cf_manifest(input)}
     let(:input) {'spec/input/test-defaults.yml'}

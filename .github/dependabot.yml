@@ -15,3 +15,24 @@ updates:
     interval: daily
     time: "11:00"
   open-pull-requests-limit: 10
+
+# dependabot configuration for 74.5.x branch
+version: 2
+updates:
+  - package-ecosystem: bundler
+    directory: "/"
+    schedule:
+      interval: weekly
+      time: "11:00"
+    target-branch: "74.5.x"
+    open-pull-requests-limit: 10
+    allow:
+      - dependency-type: direct
+      - dependency-type: indirect
+  - package-ecosystem: gomod
+    directory: "/src/acceptance_tests"
+    schedule:
+      interval: weekly
+      time: "11:00"
+    target-branch: "74.5.x"
+    open-pull-requests-limit: 10

@@ -154,7 +154,7 @@ cors:
         - OPTIONS
       credentials: true
     max_age: 10
-
+  enforceSystemZonePolicyInAllZones: true
 oauth:
   client:
     secret:

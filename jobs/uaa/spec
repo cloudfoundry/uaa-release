@@ -1303,3 +1303,11 @@ properties:
       Lifetime of the UAA session cookie in seconds.
       If -1, will use 'Session' lifetime.
     default: -1
+
+  # CORS
+  uaa.cors.enforce_system_zone_policy_in_all_zones:
+    description: |
+      When set to true, the CORS policy for custom identity zones will be ignored,
+      and the system default identity zone policy will apply to all zones. When set
+      to false, the CORS policy for custom identity zones will be honored.
+    default: true

@@ -154,7 +154,7 @@ cors:
         - OPTIONS
       credentials: true
     max_age: 10
-
+  enforceSystemZonePolicyInAllZones: true
 oauth:
   client:
     secret:
@@ -693,6 +693,3 @@ rest:
     maxTotal: 20
     maxPerRoute: 2
     maxKeepAlive: 0
-
-cors:
-  enforceSystemZonePolicyInAllZones: true

@@ -676,6 +676,9 @@ properties:
   uaa.jwt.refresh.unique:
     description: "Revokes existing refresh tokens for client-user combination when creating a new refresh token. Note: only applies if `uaa.jwt.revocable` is true."
     default: false
+  uaa.jwt.refresh.rotate:
+    description: "Rotate refresh tokens. Invalidate the existing one and issue a new refresh token when processing refresh token flow."
+    default: false
   uaa.jwt.refresh.format:
     description: "The format for the refresh token. Allowed values are `jwt`, `opaque`"
     default: jwt

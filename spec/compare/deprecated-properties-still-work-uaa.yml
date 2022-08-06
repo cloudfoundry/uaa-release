@@ -86,6 +86,7 @@ jwt:
     refresh:
       restrict_grant: false
       unique: false
+      rotate: false
       format: jwt
 oauth:
   clients:

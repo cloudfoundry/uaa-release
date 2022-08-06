@@ -113,6 +113,7 @@ jwt:
     refresh:
       restrict_grant: true
       unique: true
+      rotate: true
       format: opaque
 cors:
   default:

@@ -517,6 +517,7 @@ properties:
         format: opaque
         restrict_grant: true
         unique: true
+        rotate: true
       revocable: true
       signing_key: |
         signing-key with some

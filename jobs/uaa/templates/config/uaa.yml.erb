@@ -338,6 +338,7 @@
 
     add_value(jwt, p('uaa.jwt.refresh.restrict_grant'), 'token', 'refresh', 'restrict_grant')
     add_value(jwt, p('uaa.jwt.refresh.unique'), 'token', 'refresh', 'unique')
+    add_value(jwt, p('uaa.jwt.refresh.rotate'), 'token', 'refresh', 'rotate')
 
     refresh_token_format = p('uaa.jwt.refresh.format')
     valid_formats = ['opaque', 'jwt']

@@ -447,6 +447,9 @@ properties:
       max_idle_connections: 11
       min_idle_connections: 1
       remove_abandoned: true
+      additionalParameters:
+        tcpKeepAlive: "true"
+        usePipelineAuth: "false"
     delete:
       clients:
         - client-to-be-deleted-1

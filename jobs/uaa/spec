@@ -772,6 +772,11 @@ properties:
     default: true
   uaa.database.case_insensitive:
     description: "Set to true if you don't want to be using LOWER() SQL functions in search queries/filters, because you know that your DB is case insensitive. If this property is null, then it will be set to true if the UAA DB is MySQL and false otherwise, but even on MySQL you can override it by setting it explicitly to false"
+  uaa.database.additionalParameters:
+    description: "Additional parameters that should be added to the url that is used to connect to the database. Boolean values need to be passed as String."
+    example:
+      tcpKeepAlive: "true"
+      usePipelineAuth: "false"
 
   # LDAP
   uaa.ldap.enabled:

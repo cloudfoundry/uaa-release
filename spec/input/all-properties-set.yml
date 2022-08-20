@@ -450,6 +450,7 @@ properties:
       additionalParameters:
         tcpKeepAlive: "true"
         usePipelineAuth: "false"
+        useBatchMultiSend: "false"
     delete:
       clients:
         - client-to-be-deleted-1

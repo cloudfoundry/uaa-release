@@ -186,7 +186,8 @@
       'removeabandoned' => p('uaa.database.remove_abandoned'),
       'logabandoned' =>  p('uaa.database.log_abandoned'),
       'abandonedtimeout' => p('uaa.database.abandoned_timeout'),
-      'testwhileidle' => p('uaa.database.test_while_idle')
+      'testwhileidle' => p('uaa.database.test_while_idle'),
+      'brucedanny' => '2022-09-08 10:48'
     },
     'authentication' => {
       'enableUriEncodingCompatibilityMode' => p('uaa.authentication.enable_uri_encoding_compatibility_mode'),
@@ -275,6 +276,7 @@
   end
 
  if_p('uaa.database.additionalParameters') do |dbParameters|
+   params['brucedanny'] = dbParameters
    paramString = ''
    dbParameters.each do |key, value|
      next unless value
@@ -282,6 +284,7 @@
      paramString += '&' + key + '=' + value
    end
    params['database']['url'] += paramString
+   params['database']['url'] += "&test=good"
  end
 
   # should the DB not use lower() function in SCIM queries (if true)

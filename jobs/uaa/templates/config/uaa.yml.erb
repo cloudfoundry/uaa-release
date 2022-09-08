@@ -187,7 +187,6 @@
       'logabandoned' =>  p('uaa.database.log_abandoned'),
       'abandonedtimeout' => p('uaa.database.abandoned_timeout'),
       'testwhileidle' => p('uaa.database.test_while_idle'),
-      'brucedanny' => '2022-09-08 10:48'
     },
     'authentication' => {
       'enableUriEncodingCompatibilityMode' => p('uaa.authentication.enable_uri_encoding_compatibility_mode'),
@@ -275,6 +274,18 @@
     end
   end
 
+  params['brucedanny'] = { 'initialized' => true }
+  params['brucedanny'].database_section = p('uaa.database')
+  params['brucedanny'].uaadb_section = p('uaa.uaadb')
+  params['brucedanny'].uaa_section = p('uaa')
+
+  # this line tried to find the additional parameters in the BOSH link
+  # called "database", NOT where we put it, which is in the "uaadb"
+  # section of the manifest.
+  # To make it work for us, we could replace "database" with "uaadb",
+  # but then it would stop working for the BOSH link
+  # It's very strange to me that the link would have the additional Parameters,
+  # it feels like a bug to me.
  if_p('uaa.database.additionalParameters') do |dbParameters|
    params['brucedanny'] = dbParameters
    paramString = ''

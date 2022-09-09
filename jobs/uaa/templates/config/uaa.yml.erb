@@ -275,8 +275,7 @@
    paramString = ''
    dbParameters.each do |key, value|
      next unless value
-     # ? for first parameter already included in ssl parameter
-     paramString += '&' + key + '=' + value
+     paramString += '&' + key + '=' + value # assumes they will not be the first parameters in the URL
    end
    params['database']['url'] += paramString
  end

@@ -834,11 +834,6 @@
     end
   end
 
-  if_p('login.analytics.code', 'login.analytics.domain') do |code, domain|
-    add_value(params, code, 'analytics', 'code')
-    add_value(params, domain, 'analytics', 'domain')
-  end
-
   # cors settings
   add_value(params, p('uaa.cors.default.allowed.headers'), 'cors', 'default', 'allowed', 'headers') if p_opt('uaa.cors.default.allowed.headers')
   add_value(params, p('uaa.cors.default.allowed.origin'), 'cors', 'default', 'allowed', 'origin') if p_opt('uaa.cors.default.allowed.origin')

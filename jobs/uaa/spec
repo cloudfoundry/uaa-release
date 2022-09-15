@@ -955,7 +955,7 @@ properties:
 
   # Multifactor Authentication
   login.mfa.providers:
-    description: "A list of providers and their configuration. Provider names must be alphanumeric. Currently only `google-authenticator` is supported with no additional attributes. Issuer is optional."
+    description: "NOTE: This feature has been deprecated and will be removed in a future release. A list of providers and their configuration. Provider names must be alphanumeric. Currently only `google-authenticator` is supported with no additional attributes. Issuer is optional."
     example:
       myExampleProvider1:
         type: google-authenticator
@@ -965,10 +965,10 @@ properties:
     default: ~
 
   login.mfa.providerName:
-    description: "The unique name of the MFA provider to use for default zone."
+    description: "NOTE: This feature has been deprecated and will be removed in a future release. The unique name of the MFA provider to use for default zone."
     default: ~
   login.mfa.enabled:
-    description: "Set true to enable Multi-factor Authentication (MFA) for the default zone. Defaults to false."
+    description: "NOTE: This feature has been deprecated and will be removed in a future release. Set true to enable Multi-factor Authentication (MFA) for the default zone. Defaults to false."
     default: false
 
   # OpenID Connect/OAuth

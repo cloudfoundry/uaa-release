@@ -21,9 +21,6 @@ properties:
           config:
             providerDescription: test google authenticator
             issuer: google
-    analytics:
-      code: code
-      domain: domain
     asset_base_url: /resources/testing
     branding:
       company_name: company name

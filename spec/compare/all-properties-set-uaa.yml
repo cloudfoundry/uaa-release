@@ -684,9 +684,6 @@ smtp:
   sslprotocols: TLSv1.2
 notifications:
   url: http://notifications
-analytics:
-  code: code
-  domain: domain
 
 rest:
   template:

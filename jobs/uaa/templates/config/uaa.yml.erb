@@ -278,8 +278,7 @@
    paramString = ''
    dbParameters.each do |key, value|
      next unless value
-     # ? for first parameter already included in ssl parameter
-     paramString += '&' + key + '=' + value
+     paramString += '&' + key + '=' + value # assumes they will not be the first parameters in the URL
    end
    params['database']['url'] += paramString
  end
@@ -834,11 +833,6 @@
       end
       add_value(params, idpProvider['idpMetadata'], 'login', 'saml', 'providers', idpAlias, 'idpMetadata')
     end
-  end
-
-  if_p('login.analytics.code', 'login.analytics.domain') do |code, domain|
-    add_value(params, code, 'analytics', 'code')
-    add_value(params, domain, 'analytics', 'domain')
   end
 
   # cors settings

@@ -380,10 +380,6 @@ properties:
   login.self_service_links_enabled:
     description: "Enable self-service account creation and password resets links."
     default: true
-  login.analytics.code:
-    description: "Google analytics code. If Google Analytics is desired set both login.analytics.code and login.analytics.domain"
-  login.analytics.domain:
-    description: "Google analytics domain. If Google Analytics is desired set both login.analytics.code and login.analytics.domain"
   login.messages:
     description: |
       A nested or flat hash of messages that the login server uses to display UI message
@@ -822,6 +818,12 @@ properties:
             groups:
               my-test-group: 'My test group description'
               another-group: 'Another group description'
+  # probably belongs in uaadb instead
+  uaa.database.additionalParameters:
+    description: "Additional parameters that should be added to the url that is used to connect to the database. Boolean values need to be passed as String."
+    example:
+      tcpKeepAlive: "true"
+      usePipelineAuth: "false"
   # connection pool properties
   uaa.database.max_connections:
     description: "The max number of open connections to the DB from a running UAA instance"
@@ -846,11 +848,6 @@ properties:
   uaa.database.test_while_idle:
     description: "If true, connections will be validated by the idle connection evictor (if any). If the validation fails, the connection is destroyed and removed from the pool."
     default: false
-  uaa.database.additionalParameters:
-    description: "Addtional parameters that should be added to the url that is used to connect to the database. Boolean values need to be passed as String."
-    example:
-      tcpKeepAlive: "true"
-      usePipelineAuth: "false"
 
   # LDAP
   uaa.ldap.enabled:
@@ -961,7 +958,7 @@ properties:
 
   # Multifactor Authentication
   login.mfa.providers:
-    description: "A list of providers and their configuration. Provider names must be alphanumeric. Currently only `google-authenticator` is supported with no additional attributes. Issuer is optional."
+    description: "NOTE: This feature has been deprecated and will be removed in a future release. A list of providers and their configuration. Provider names must be alphanumeric. Currently only `google-authenticator` is supported with no additional attributes. Issuer is optional."
     example:
       myExampleProvider1:
         type: google-authenticator
@@ -971,10 +968,10 @@ properties:
     default: ~
 
   login.mfa.providerName:
-    description: "The unique name of the MFA provider to use for default zone."
+    description: "NOTE: This feature has been deprecated and will be removed in a future release. The unique name of the MFA provider to use for default zone."
     default: ~
   login.mfa.enabled:
-    description: "Set true to enable Multi-factor Authentication (MFA) for the default zone. Defaults to false."
+    description: "NOTE: This feature has been deprecated and will be removed in a future release. Set true to enable Multi-factor Authentication (MFA) for the default zone. Defaults to false."
     default: false
 
   # OpenID Connect/OAuth

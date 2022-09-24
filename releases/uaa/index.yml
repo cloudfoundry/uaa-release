@@ -169,6 +169,8 @@ builds:
     version: "30.2"
   62652a48-e5a0-4606-a560-81f1d1901eee:
     version: "12.2"
+  629b92c2-be94-423d-5f89-11242307f713:
+    version: 75.23.0
   64378050-8e68-4510-9ba3-16ce8578d698:
     version: "30.6"
   6518833f-7303-44db-988e-2c3aa9a06912:
@@ -185,6 +187,8 @@ builds:
     version: 75.8.0
   6a87abdb-0ca9-4faa-b216-95f4bbbe9dd6:
     version: "57"
+  6b63968b-6368-4179-7f4b-c870644b9926:
+    version: 76.0.0
   6bae4c5b-704a-43de-5ed8-4d46666a1282:
     version: 75.21.0
   6cfba1c0-f449-4b11-bdac-673e395cf97c:

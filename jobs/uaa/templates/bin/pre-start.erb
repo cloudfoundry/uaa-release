@@ -131,9 +131,17 @@ function process_certs {
 }
 
 function insert_ssl_cert {
+    local FIPS_OPTS=""
+    if [ -f "/proc/sys/crypto/fips_enabled" ]; then
+        local FIPS_ENABLED="$(cat /proc/sys/crypto/fips_enabled)"
+        if [ "${FIPS_ENABLED}" = 1 ]; then
+            FIPS_OPTS="-certpbe PBE-SHA1-3DES"
+            log "Detect FIPS enabled"
+        fi
+    fi
     log "Installing Server SSL certificate"
 
-    openssl pkcs12 -export -name uaa_ssl_cert \
+    openssl pkcs12 -export ${FIPS_OPTS} -name uaa_ssl_cert \
         -in /var/vcap/jobs/uaa/config/uaa.crt \
         -out /var/vcap/data/uaa/uaa_keystore.p12 \
         -password pass:k0*l*s3cur1tyr0ck$

@@ -13,7 +13,6 @@ templates:
   bin/dns/healthy.erb: bin/dns/healthy
 
   config/uaa.yml.erb: config/uaa.yml
-  config/rate.limiter.config.yml.erb: config/RateLimiterConfig.yml
   config/bpm.yml.erb: config/bpm.yml
   config/newrelic.yml.erb: config/newrelic.yml
   config/log4j2.properties.erb: config/log4j2.properties
@@ -55,9 +54,6 @@ packages:
 properties:
   uaa.rate_limiter:
     config:
-      dynamicConfigUrl: 
-        description: "(optional) String"
-        example: https://raw.githubusercontent.com/litesoft/RateLimiterExampleConfig/main/RateLimiters.yaml
       loggingOption:
         description: "(optional) String (see Details)"
         example: AllCallsWithDetails

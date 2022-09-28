@@ -311,6 +311,8 @@ builds:
     version: "61.0"
   b5e2c001-d7f9-439d-b7b7-0f7d2888688d:
     version: "13.10"
+  b674a6ba-a102-43e1-76de-f8762564b123:
+    version: 74.5.52
   b7eb6871-dfc2-4092-ae9f-076a8e75d931:
     version: "34.1"
   b953561c-6e78-4e2c-8f08-e36e0686ce6a:

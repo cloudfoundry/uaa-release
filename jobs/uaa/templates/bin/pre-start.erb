@@ -43,9 +43,19 @@ function build_new_cache_files {
     source /etc/os-release
     case "${ID}" in
       *ubuntu*)
-        # --certbundle is an undocumented flag in the update-ca-certificates script
-        # https://salsa.debian.org/debian/ca-certificates/blob/master/sbin/update-ca-certificates#L53
-        timeout --signal=KILL 180s /usr/sbin/update-ca-certificates -f -v --certbundle "$(basename "${OS_CERTS_FILE}")"
+        retry_count=0
+        max_retry_count=3
+
+        set +e
+        until [ $retry_count -ge $max_retry_count ]; do
+            # --certbundle is an undocumented flag in the update-ca-certificates script
+            # https://salsa.debian.org/debian/ca-certificates/blob/master/sbin/update-ca-certificates#L53
+            timeout --signal=KILL 180s /usr/sbin/update-ca-certificates -f -v --certbundle "$(basename "${OS_CERTS_FILE}")" && break
+            log "Failed to update-ca-certificates, retrying..."
+            retry_count=$((retry_count + 1))
+            sleep 5
+        done
+        set -e
       ;;
 
       *suse|sles*)
@@ -121,9 +131,17 @@ function process_certs {
 }
 
 function insert_ssl_cert {
+    local FIPS_OPTS=""
+    if [ -f "/proc/sys/crypto/fips_enabled" ]; then
+        local FIPS_ENABLED="$(cat /proc/sys/crypto/fips_enabled)"
+        if [ "${FIPS_ENABLED}" = 1 ]; then
+            FIPS_OPTS="-certpbe PBE-SHA1-3DES"
+            log "Detect FIPS enabled"
+        fi
+    fi
     log "Installing Server SSL certificate"
 
-    openssl pkcs12 -export -name uaa_ssl_cert \
+    openssl pkcs12 -export ${FIPS_OPTS} -name uaa_ssl_cert \
         -in /var/vcap/jobs/uaa/config/uaa.crt \
         -out /var/vcap/data/uaa/uaa_keystore.p12 \
         -password pass:k0*l*s3cur1tyr0ck$

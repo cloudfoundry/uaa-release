@@ -87,6 +87,10 @@ Add the following properties to your manifest:
    JDK - https://java-buildpack.cloudfoundry.org/openjdk-jdk/trusty/x86_64/index.yml
    JRE - https://java-buildpack.cloudfoundry.org/openjdk/trusty/x86_64/index.yml
 
+## Running Ruby template tests
+
+To run the Ruby template tests, run [`scripts/run-template-tests.rb`](scripts/run-template-tests.rb).
+
 ## Acknowledgements
 
 * We'd like to extend a thank you to all our users, contributors and supporters!

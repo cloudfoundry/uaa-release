@@ -331,6 +331,8 @@ builds:
     version: "11.2"
   c449da8a-d49b-4c77-522b-802f9e8330b1:
     version: 74.5.34
+  c4afcac4-1a21-48fa-4c37-1586152591de:
+    version: 74.5.54
   c56ddd74-124c-4c7c-bb72-ac46f542eeb1:
     version: "12.4"
   c6582d37-43a8-40cc-a912-98ac95ffaad6:

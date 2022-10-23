@@ -271,6 +271,8 @@ builds:
     version: "24.11"
   95a91c79-dcaa-44de-a5dc-6ba2a1da38bb:
     version: "13.6"
+  95b8cc31-7473-477f-4906-c6c55a17d186:
+    version: 76.2.0
   979375d9-8575-4a94-89e6-5e7415302659:
     version: "24.7"
   97ff4cfa-9622-4414-9b94-68a5af594385:

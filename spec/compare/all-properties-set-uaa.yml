@@ -690,3 +690,16 @@ rest:
     maxTotal: 20
     maxPerRoute: 2
     maxKeepAlive: 0
+
+ratelimit:
+  loggingOption: AllCalls
+  credentialID: 'JWT:Claims+"sub"\s*:\s*"(.*?)"'
+  limiterMappings:
+    - name: AuthToken
+      withCallerRemoteAddressID: 50r/s
+      pathSelectors:
+        - "equals:/oauth/token"
+    - name: EverythingElse
+      global: 200r/s
+      pathSelectors:
+        - "other"

@@ -43,7 +43,7 @@ GEM
       rspec-support (~> 3.11.0)
     rspec-support (3.11.0)
     semi_semantic (1.2.0)
-    tzinfo (2.0.4)
+    tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
     zeitwerk (2.6.0)
 

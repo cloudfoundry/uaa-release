@@ -52,6 +52,33 @@ packages:
   - uaa
 
 properties:
+  uaa.rate_limiter:
+    config:
+      loggingOption:
+        description: "(optional) String (see Details)"
+        example: AllCallsWithDetails
+      credentialID: 
+        description: "(optional) String (see Details)"
+        example: 'JWT:Claims+"email"\s*:\s*"(.*?)"'
+      limiterMappings.name: 
+        description: "(required) String"
+        example: Info
+      limiterMappings.withCallerRemoteAddressID: 
+        description: "(optional but) String - (see Window Type)"
+        example: 1r/s
+      limiterMappings.withCallerCredentialsID: 
+        description: "(optional but) String - (see Window Type)"
+        example: 1r/s
+      limiterMappings.withoutCallerID: 
+        description: "(optional but) String - (see Window Type)"
+        example: 1r/s
+      limiterMappings.global: 
+        description: "(optional but) String - (see Window Type)"
+        example: 1r/s
+      limiterMappings.pathSelectors: 
+        description: "(required non-empty) List of String(s) - (see Path Selector)"
+        example: "equals:/info"
+
   encryption.encryption_keys:
     description: "Map of key labels and encryption passphrases that will be used to create keys using a Key Derivation Function. All passphrase values must be at least 8 characters long."
     example: |

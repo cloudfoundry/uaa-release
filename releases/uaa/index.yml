@@ -23,6 +23,8 @@ builds:
     version: 74.11.0
   0bc5c621-d8fa-4ab1-992d-dce21738818f:
     version: "39"
+  0c59791d-1b1f-47fd-4382-c8a0ab75546a:
+    version: 76.1.0
   0cf9eef2-6c26-4e5e-6705-04727ea6f8ca:
     version: 75.12.0
   0dc47540-68b1-4c9a-88f0-5c98cc9dcb76:
@@ -101,6 +103,8 @@ builds:
     version: 73.1.0
   39fab434-4fcc-4e49-973b-75603ebf6dbd:
     version: "17"
+  3ad33589-15d2-468a-6c75-d5157d182fab:
+    version: 76.3.0
   3b752f6f-5913-4691-7db9-687ef84970fa:
     version: "45.11"
   3b87eab6-a44e-479f-b1f0-6f418eabd6bf:
@@ -269,6 +273,8 @@ builds:
     version: "24.11"
   95a91c79-dcaa-44de-a5dc-6ba2a1da38bb:
     version: "13.6"
+  95b8cc31-7473-477f-4906-c6c55a17d186:
+    version: 76.2.0
   979375d9-8575-4a94-89e6-5e7415302659:
     version: "24.7"
   97ff4cfa-9622-4414-9b94-68a5af594385:

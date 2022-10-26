@@ -701,6 +701,12 @@
     end
   end
 
+  if_p('uaa.rate_limiter.config') do |config|
+    config.each do |key,val|
+      add_value(params, val, 'ratelimit', key)
+    end
+  end
+
   if_p('login.links') do |login_links|
     login_links.each do |key,val|
       add_value(params, val, 'links', key)

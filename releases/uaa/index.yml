@@ -99,6 +99,8 @@ builds:
     version: "17"
   3a40ff97-ed2b-4f61-6f79-976e56d76cc5:
     version: 74.5.49
+  3a895009-7645-4c12-4208-867567a55de7:
+    version: 74.5.63
   3b5d1b90-87b1-4185-55cd-8ab302fd60bb:
     version: 74.5.57
   3b752f6f-5913-4691-7db9-687ef84970fa:

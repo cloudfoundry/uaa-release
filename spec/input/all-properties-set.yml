@@ -562,6 +562,9 @@ properties:
             - OPTIONS
           credentials: true
         max_age: 10
+    csp:
+      script-src:
+        - "'self'"
     ldap:
       override: false
       add_shadow_user_on_login: false

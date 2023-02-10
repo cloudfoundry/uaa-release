@@ -257,3 +257,6 @@ rest:
 
 cors:
   enforceSystemZonePolicyInAllZones: true
+csp:
+  script-src:
+    - "'self'"

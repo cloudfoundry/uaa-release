@@ -861,7 +861,7 @@
   end
 
   # content security policy (csp) settings
-  add_value(params, p('csp.script-src'), 'csp', 'script-src') if p_opt('csp.script-src')
+  add_value(params, p('uaa.csp.script-src'), 'csp', 'script-src') if p_opt('uaa.csp.script-src')
 
   #validate that we have all required parameters
 

@@ -376,3 +376,6 @@ rest:
     maxKeepAlive: 0
 cors:
   enforceSystemZonePolicyInAllZones: true
+csp:
+  script-src:
+    - "'self'"

@@ -110,3 +110,6 @@ properties:
               oYaZoYWi6DzbQQUaIsKxAkEA2rXQjQFsfnSm+w/9067ChWg46p4lq5Na2NpcpFgH
               waZKhM1W0oB8MX78M+0fG3xGUtywTx0D4N7pr1Tk2GTgNw==
               -----END RSA PRIVATE KEY-----
+    csp:
+      script-src:
+        - "'self'"

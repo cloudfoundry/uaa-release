@@ -156,6 +156,9 @@ cors:
       credentials: true
     max_age: 10
   enforceSystemZonePolicyInAllZones: true
+csp:
+  script-src:
+    - "'self'"
 oauth:
   client:
     secret:

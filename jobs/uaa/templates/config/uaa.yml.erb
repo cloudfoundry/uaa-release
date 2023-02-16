@@ -860,6 +860,9 @@
     add_value(params, ca_certs, 'uaa', 'ca_certs')
   end
 
+  # content security policy (csp) settings
+  add_value(params, p('uaa.csp.script-src'), 'csp', 'script-src') if p_opt('uaa.csp.script-src')
+
   #validate that we have all required parameters
 
   message = message + validateSamlKeys(params)

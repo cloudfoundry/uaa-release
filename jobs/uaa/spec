@@ -744,6 +744,16 @@ properties:
     description: "how long the results of a preflight request is cached"
     default: ~
 
+  # Content Security Policy (csp) settings
+  uaa.csp.script-src:
+    description: "Overrides the default script-src CSP header value of 'self'. Set this to allow scripts to be loaded from sources besides UAA. Because this overrides (not appends to) the value, be sure to include an entry for 'self' so scripts from UAA are allowed."
+    default:
+      - "'self'"
+    example:
+      - "'self'"
+      - "'unsafe-inline'"
+      - "js.example.com"
+
   # Global security policies (for all zones)
   uaa.authentication.policy.global.lockoutAfterFailures:
     description: "Number of allowed failures before account is locked"

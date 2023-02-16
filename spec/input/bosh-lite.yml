@@ -273,6 +273,9 @@ properties:
       internal:
         hostnames:
         - uaa.service.cf.internal
+    csp:
+      script-src:
+        - "'self'"
   uaadb:
     address: 10.244.0.30
     databases:

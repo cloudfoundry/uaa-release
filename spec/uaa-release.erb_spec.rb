@@ -1436,6 +1436,29 @@ describe 'uaa-release erb generation' do
           end
       end
 
+      describe 'uaa.csp.script-src' do
+        let(:input) {'spec/input/test-defaults.yml'}
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+        let(:generated_cf_manifest) {generate_cf_manifest(input)}
+        let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
+
+        context 'by default' do
+          it 'is self in uaa.yml' do
+            expect(parsed_yaml['csp']['script-src']).to eq ["'self'"]
+          end
+        end
+
+        context 'when configured to empty' do
+          before do
+            generated_cf_manifest['properties']['uaa']['csp']['script-src'] = ['']
+          end
+
+          it 'raises an error' do
+            expect {parsed_yaml}.to raise_error(ArgumentError, /Empty value for uaa.csp.script-src./)
+          end
+        end
+      end
+
   end
 
   def self.perform_compare(input)

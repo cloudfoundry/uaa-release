@@ -861,7 +861,12 @@
   end
 
   # content security policy (csp) settings
-  add_value(params, p('uaa.csp.script-src'), 'csp', 'script-src') if p_opt('uaa.csp.script-src')
+  if p_opt('uaa.csp.script-src')
+    p('uaa.csp.script-src').each do |src|
+      raise ArgumentError, 'Empty value for uaa.csp.script-src.' unless !src.nil? && src != ''
+    end
+    add_value(params, p('uaa.csp.script-src'), 'csp', 'script-src')
+  end
 
   #validate that we have all required parameters
 

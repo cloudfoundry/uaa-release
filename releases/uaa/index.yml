@@ -365,6 +365,8 @@ builds:
     version: "12.4"
   c6582d37-43a8-40cc-a912-98ac95ffaad6:
     version: "28"
+  c727b788-b6f2-4229-78a2-d4ab128fe325:
+    version: 74.5.73
   c79d6629-198e-48a6-beba-470f703b8fc4:
     version: "52.6"
   c7dad4ee-fe78-484b-5bed-346ee9db384a:

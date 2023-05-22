@@ -81,6 +81,8 @@ builds:
     version: "13.17"
   2c13c37b-ec9f-4032-41f8-4d51814293db:
     version: 74.24.0
+  2d10e2f9-2441-4143-6bf7-dbc3aba995ec:
+    version: 76.13.0
   2d3726dc-71a5-4a44-8127-cdb1489ea9c5:
     version: "45.3"
   31bd40e3-d144-4fae-4441-c86f48088e57:

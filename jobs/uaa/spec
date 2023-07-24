@@ -1350,6 +1350,11 @@ properties:
       Lifetime of the UAA session cookie in seconds.
       If -1, will use 'Session' lifetime.
     default: -1
+  uaa.servlet.session-cookie.encode-base64:
+    description: |
+      Use base64 to encode the UAA session cookie.
+      If true, base64 encode is used, if false url encode is used.
+    default: true
 
   # CORS
   uaa.cors.enforce_system_zone_policy_in_all_zones:

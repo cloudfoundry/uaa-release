@@ -595,7 +595,8 @@
       'session-store' => session_store,
       'idle-timeout' => p('uaa.servlet.idle-timeout'),
       'session-cookie' => {
-        'max-age' => p('uaa.servlet.session-cookie.max-age')
+        'max-age' => p('uaa.servlet.session-cookie.max-age'),
+        'encode-base64' => p('uaa.servlet.session-cookie.encode-base64')
       }
     }
   else

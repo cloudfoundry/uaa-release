@@ -247,6 +247,7 @@ servlet:
   idle-timeout: 1800
   session-cookie:
     max-age: -1
+    encode-base64: true
 
 rest:
   template:

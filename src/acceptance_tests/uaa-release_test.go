@@ -140,6 +140,8 @@ var _ = Describe("UaaRelease", func() {
 
 	})
 
+	logLineWithoutTimestampRegex := ` uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`
+
 	DescribeTable("UAA log format", func(uaaLogFormat string, optFiles ...string) {
 		deployUAA(optFiles...)
 
@@ -157,15 +159,15 @@ var _ = Describe("UaaRelease", func() {
 		Expect(string(session.Wait().Out.Contents())).To(MatchRegexp(uaaLogFormat))
 	},
 		Entry("when UAA log format is not set and default value is used",
-            `^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{6})Z\] uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`),
-        Entry("when UAA logs are configured to rfc3339",
-            `^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{6})Z\] uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`,
-            "./opsfiles/configure-to-rfc3339-log-format.yml"),
+			`^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{6})Z\]`+logLineWithoutTimestampRegex),
+		Entry("when UAA logs are configured to rfc3339",
+			`^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{6})Z\]`+logLineWithoutTimestampRegex,
+			"./opsfiles/configure-to-rfc3339-log-format.yml"),
 		Entry("when UAA logs are configured to rfc3339-legacy",
-            `^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{3})Z\] uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`,
-            "./opsfiles/configure-to-rfc3339-legacy-log-format.yml"),
+			`^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{3})Z\]`+logLineWithoutTimestampRegex,
+			"./opsfiles/configure-to-rfc3339-legacy-log-format.yml"),
 		Entry("when UAA logs are configured to deprecated",
-			`^\[(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}\.\d{3})\] uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`,
+			`^\[(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}\.\d{3})\]`+logLineWithoutTimestampRegex,
 			"./opsfiles/configure-to-deprecated-log-format.yml"),
 	)
 })

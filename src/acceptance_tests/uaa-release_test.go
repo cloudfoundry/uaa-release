@@ -140,7 +140,7 @@ var _ = Describe("UaaRelease", func() {
 
 	})
 
-	logLineWithoutTimestampRegex := ` uaa.* - \d+ \[(.+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`
+	logLineWithoutTimestampRegex := ` uaa.* - \d+ \[([^]]+)\] .... (DEBUG|\sINFO|\sWARN) --- .+: .+`
 
 	DescribeTable("UAA log format", func(uaaLogFormat string, optFiles ...string) {
 		deployUAA(optFiles...)

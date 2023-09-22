@@ -11,9 +11,7 @@ find . -name '*.sh' \
 	| \
 	xargs \
 		-0 \
-		-I{} \
 		-n1 \
 		-t \
 		shellcheck \
-		--severity="${SEVERITY_THRESHOLD}" \
-		{}
+		--severity="${SEVERITY_THRESHOLD}"

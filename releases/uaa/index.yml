@@ -135,6 +135,8 @@ builds:
     version: "31"
   4487f88c-c1bd-40e5-7b46-4744b4d181dd:
     version: 74.5.9
+  44da1e11-22e6-4f90-4319-db5e50255671:
+    version: 74.5.89
   455a98ac-d1d4-4fec-4d76-2714b2131398:
     version: 73.2.0
   45c0e1f1-fe5a-4783-972b-7964393d58ac:

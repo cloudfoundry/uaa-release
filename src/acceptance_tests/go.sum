@@ -1,6 +1,6 @@
 code.cloudfoundry.org/clock v1.0.0 h1:kFXWQM4bxYvdBw2X8BbBeXwQNgfoWv1vqAk2ZZyBN2o=
-code.cloudfoundry.org/tlsconfig v0.0.0-20230929201433-6cd2b78aba25 h1:vfCOuqnZi86Jg1EXMWtdCb9ieko4hna/CLzI6ECTgFA=
-code.cloudfoundry.org/tlsconfig v0.0.0-20230929201433-6cd2b78aba25/go.mod h1:C8SxvGRSutmgzV2FxH8Zwqz2Q8HsaAITQRQFKhlDzPw=
+code.cloudfoundry.org/tlsconfig v0.0.0-20231017135636-f0e44068c22f h1:5OUq3fp3kg9ztdzVX7V7SvSZ06rKWhG3CybVmXsj8O8=
+code.cloudfoundry.org/tlsconfig v0.0.0-20231017135636-f0e44068c22f/go.mod h1:C8SxvGRSutmgzV2FxH8Zwqz2Q8HsaAITQRQFKhlDzPw=
 filippo.io/edwards25519 v1.0.0-rc.1 h1:m0VOOB23frXZvAOK44usCgLWvtsxIoMCTBGJZlpmGfU=
 github.com/bmatcuk/doublestar v1.3.4 h1:gPypJ5xD31uhX6Tf54sDPUOBXTqKH4c9aPY66CyQrS0=
 github.com/bmatcuk/doublestar v1.3.4/go.mod h1:wiQtGV+rzVYxB7WIlirSN++5HPtPlXEo9MEoZQC/PmE=
@@ -8,8 +8,8 @@ github.com/charlievieth/fs v0.0.3 h1:3lZQXTj4PbE81CVPwALSn+JoyCNXkZgORHN6h2XHGlg
 github.com/charlievieth/fs v0.0.3/go.mod h1:hD4sRzto1Hw8zCua76tNVKZxaeZZr1RiKftjAJQRLLo=
 github.com/cloudfoundry/bosh-cli v6.4.1+incompatible h1:n5/+NIF9QxvGINOrjh6DmO+GTen78MoCj5+LU9L8bR4=
 github.com/cloudfoundry/bosh-cli v6.4.1+incompatible/go.mod h1:rzIB+e1sn7wQL/TJ54bl/FemPKRhXby5BIMS3tLuWFM=
-github.com/cloudfoundry/bosh-utils v0.0.407 h1:GsKZjxCq4vzjPQBx4haO/8JV+O8KmX6thDRQ39TAbK8=
-github.com/cloudfoundry/bosh-utils v0.0.407/go.mod h1:U5ZsmNWz328FggoJgU0qfK0SUk6XhIpzkdhwe6OMVYE=
+github.com/cloudfoundry/bosh-utils v0.0.408 h1:raFXRn7xvkPx9G+vPWfa54I3S+HqxVjoCWbK7v6DSno=
+github.com/cloudfoundry/bosh-utils v0.0.408/go.mod h1:ErHiIxKKdR/WWo/mWn1+aJNawkSTqYmgy4SySTCQ0hQ=
 github.com/cloudfoundry/go-socks5 v0.0.0-20180221174514-54f73bdb8a8e h1:FQdRViaoDphGRfgrotl2QGsX1gbloe57dbGBS5CG6KY=
 github.com/cloudfoundry/go-socks5 v0.0.0-20180221174514-54f73bdb8a8e/go.mod h1:PXmcacyJB/pJjSxEl15IU6rEIKXrhZQRzsr0UTkgNNs=
 github.com/cloudfoundry/socks5-proxy v0.2.101 h1:Gm6PXakT48r0yYNtC7stkP4JHmyCiG9jiLXN6n+eYXc=

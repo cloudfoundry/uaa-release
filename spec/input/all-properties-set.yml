@@ -107,6 +107,7 @@ properties:
           tokenKeyUrl: http://tokenKeyUrl
           tokenUrl: http://tokenUrl
           passwordGrantEnabled: false
+          performRpInitiatedLogout: true
           prompts:
             - name: username
               type: text

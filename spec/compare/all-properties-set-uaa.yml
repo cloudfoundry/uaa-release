@@ -650,6 +650,7 @@ login:
         skipSslValidation: false
         storeCustomAttributes: false
         passwordGrantEnabled: false
+        performRpInitiatedLogout: true
         prompts:
           - name: username
             type: text

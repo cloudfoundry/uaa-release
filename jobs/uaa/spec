@@ -1049,6 +1049,7 @@ properties:
         relyingPartySecret: <OAuth Client secret>
         skipSslValidation: false
         storeCustomAttributes: true
+        performRpInitiatedLogout: true
         attributeMappings:
           given_name: <Attribute holding given name in the OAuth if an ID Token is present or the access token has claims>
           family_name: <Attribute holding family name in the OAuth if an ID Token is present or the access token has claims>
@@ -1077,6 +1078,7 @@ properties:
         skipSslValidation: false
         storeCustomAttributes: true
         passwordGrantEnabled: false
+        performRpInitiatedLogout: true
         attributeMappings:
           given_name: <Attribute holding given name in the OIDC ID Token>
           family_name: <Attribute holding family name in the OIDC ID Token>

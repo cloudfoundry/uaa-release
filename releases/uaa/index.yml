@@ -403,6 +403,8 @@ builds:
     version: 75.17.0
   cea83f09-4d9a-4b0a-ad25-e14785629c76:
     version: "52.4"
+  cf2fd069-a0f9-4673-6144-a142e38b8280:
+    version: 76.26.0
   d03e5968-ac3f-4811-878d-1c5a36928cc4:
     version: "30.9"
   d0eaad8a-a838-477c-bbce-97490cb35736:

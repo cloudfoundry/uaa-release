@@ -79,6 +79,8 @@ builds:
     version: "52.10"
   2bc6ca5f-9b93-49a4-87dd-b4bbd30e1284:
     version: "13.17"
+  2c40edd7-f287-426c-4503-d94f182b292e:
+    version: 74.5.96
   2c6d54ab-e1d0-4d6c-4f53-fba8dc64259e:
     version: 74.5.44
   2d3726dc-71a5-4a44-8127-cdb1489ea9c5:

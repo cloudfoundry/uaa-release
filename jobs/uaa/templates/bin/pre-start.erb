@@ -135,7 +135,7 @@ function insert_ssl_cert {
     if [ -f "/proc/sys/crypto/fips_enabled" ]; then
         local FIPS_ENABLED="$(cat /proc/sys/crypto/fips_enabled)"
         if [ "${FIPS_ENABLED}" = 1 ]; then
-            FIPS_OPTS="-certpbe PBE-SHA1-3DES"
+            FIPS_OPTS="-nomac"
             log "Detect FIPS enabled"
         fi
     fi

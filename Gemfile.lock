@@ -28,7 +28,7 @@ GEM
     mini_portile2 (2.8.5)
     minitest (5.20.0)
     mutex_m (0.2.0)
-    nokogiri (1.15.5)
+    nokogiri (1.16.0)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     pry (0.14.2)
@@ -63,7 +63,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   bosh-template
-  nokogiri (= 1.15.5)
+  nokogiri (= 1.16.0)
   pry-byebug
   rake
   rspec

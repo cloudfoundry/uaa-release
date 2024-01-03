@@ -220,20 +220,20 @@ variables:
 releases:
 - name: uaa
   version: latest
-- name: bosh-dns
-  version: 1.10.0
-  url: https://bosh.io/d/github.com/cloudfoundry/bosh-dns-release?v=1.10.0
-  sha1: d1aadbda5d60c44dec4a429cda872cf64f6d8d0b
-- name: bpm
-  version: 1.0.4
-  url: https://bosh.io/d/github.com/cloudfoundry-incubator/bpm-release?v=1.0.4
-  sha1: 41df19697d6a69d2552bc2c132928157fa91abe0
-- name: postgres
-  version: 38
-  url: https://bosh.io/d/github.com/cloudfoundry/postgres-release?v=38
-  sha1: 23620deb20c34cefadff74c0e5bfdffaaea1a807
+- name: "bosh-dns"
+  version: "1.36.11"
+  url: "https://bosh.io/d/github.com/cloudfoundry/bosh-dns-release?v=1.36.11"
+  sha1: "aecfaea7a3a6d6215c9ff2f382984cb11d8e30d3"
+- name: "bpm"
+  version: "1.2.12"
+  url: "https://bosh.io/d/github.com/cloudfoundry/bpm-release?v=1.2.12"
+  sha1: "aff9f4397c931c7b9cdb992c62d3f3f629756198"
+- name: "postgres"
+  version: "48"
+  url: "https://bosh.io/d/github.com/cloudfoundry/postgres-release?v=48"
+  sha1: "eeb3df0d6d8bb174a83d19fcdbac8dd4ed33e73d"
 
 stemcells:
 - alias: default
-  os: ubuntu-xenial
+  os: ubuntu-jammy
   version: latest

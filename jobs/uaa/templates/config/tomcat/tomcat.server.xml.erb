@@ -70,12 +70,14 @@
                clientAuth="false"
                sslProtocol="TLS"
                keystoreFile="/var/vcap/data/uaa/uaa_keystore.p12"
-               keystoreType="PKCS12"
-               keyAlias="uaa_ssl_cert"
-               keystorePass="k0*l*s3cur1tyr0ck$"
+               defaultSSLHostConfigName="localhost"
                bindOnInit="false"
-               maxHttpHeaderSize="14336"
-    />
+               maxHttpHeaderSize="14336">
+      <SSLHostConfig hostName="localhost" protocols="<%= p('uaa.ssl.enabled_protocols') %>">
+        <Certificate certificateKeystoreFile="/var/vcap/data/uaa/uaa_keystore.p12" certificateKeyAlias="uaa_ssl_cert"
+                     type="RSA" certificateKeystoreType="PKCS12"  certificateKeystorePassword="k0*l*s3cur1tyr0ck$"/>
+      </SSLHostConfig>
+    </Connector>
 
     <Engine name="Catalina" defaultHost="localhost">
 

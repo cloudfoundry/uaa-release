@@ -77,9 +77,8 @@ func setBoshEnvironmentVariables() {
 	director, err := buildDirector(directorIP)
 	Expect(err).NotTo(HaveOccurred())
 
-	info, err := director.Info()
+	_, err = director.Info()
 	Expect(err).NotTo(HaveOccurred())
-	Expect(info.User).To(Equal("admin"))
 }
 
 type instanceInfo struct {

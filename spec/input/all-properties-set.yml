@@ -611,10 +611,6 @@ properties:
         timestamp: rfc3339
     login:
       client_secret: loginsecret
-    newrelic:
-      testing_new_relic_values_1: value1
-      testing_new_relic_values_2:
-        sub_2: value2
     password:
       policy:
         expirePasswordInMonths: 0

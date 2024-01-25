@@ -5,7 +5,6 @@ description: "The UAA is the identity management service for Cloud Foundry. It's
 
 templates:
   bin/uaa: bin/uaa
-  bin/configure_newrelic.erb: bin/configure_newrelic
   bin/configure_proxy.erb: bin/configure_proxy
   bin/health_check.erb: bin/health_check
   bin/pre-start.erb: bin/pre-start
@@ -14,7 +13,6 @@ templates:
 
   config/uaa.yml.erb: config/uaa.yml
   config/bpm.yml.erb: config/bpm.yml
-  config/newrelic.yml.erb: config/newrelic.yml
   config/log4j2.properties.erb: config/log4j2.properties
   config/ldap.crt.erb: config/ldap.crt
   config/messages.properties.erb: config/messages.properties
@@ -181,20 +179,6 @@ properties:
   uaa.proxy.servers:
     description: "Array of the router IPs acting as the first group of HTTP/TCP backends. These will be added to the proxy_ips_regex as exact matches."
     default: []
-  uaa.newrelic:
-    description: |
-      To enable newrelic monitoring, the sub element of this property will be placed in
-      a configuration file called newrelic.yml in the jobs config directory.
-      The syntax that must adhere to documentation in https://docs.newrelic.com/docs/agents/java-agent/configuration/java-agent-configuration-config-file
-      The JVM option -javaagent:/path/to/newrelic.jar will be added to Apache Tomcat's startup script
-      The enablement of the NewRelic agent in the UAA is triggered by the property uaa.newrelic.common.license_key
-      The property uaa.newrelic.common.license_key must be set.
-    example: |
-      uaa:
-        newrelic:
-          common:
-            app_name: ((uaa_app_name))
-            license_key: ((uaa_license_key))
 
   env.http_proxy:
     description: "The http_proxy across the VMs used for all requests over http"

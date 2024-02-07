@@ -618,15 +618,6 @@ login:
     waZKhM1W0oB8MX78M+0fG3xGUtywTx0D4N7pr1Tk2GTgNw==
     -----END RSA PRIVATE KEY-----
   selfServiceLinksEnabled: false
-  mfa:
-    enabled: true
-    providerName: myExampleProvider
-    providers:
-      myExampleProvider:
-        type: google-authenticator
-        config:
-          providerDescription: test google authenticator
-          issuer: google
   oauth:
     providers:
       my-oauth-provider:

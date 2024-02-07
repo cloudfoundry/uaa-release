@@ -7,9 +7,6 @@ properties:
       passphrase: my-passphrase
   login:
     defaultIdentityProvider: uaa
-    mfa:
-      enabled: true
-      providerName: myExampleProvider
     brand: oss
     enabled: true
     links:

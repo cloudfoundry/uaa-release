@@ -12,15 +12,6 @@ properties:
     https_proxy: http://test.ssl.proxy:8080
     no_proxy: localhost,127.0.0.0/8
   login:
-    mfa:
-      enabled: true
-      providerName: myExampleProvider
-      providers:
-        myExampleProvider:
-          type: google-authenticator
-          config:
-            providerDescription: test google authenticator
-            issuer: google
     asset_base_url: /resources/testing
     branding:
       company_name: company name

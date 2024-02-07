@@ -987,24 +987,6 @@ properties:
     description: "If set to false, only users pre-populated in the UAA user database will be allowed to authenticate via LDAP. If set to true, any user from LDAP will be allowed to authenticate and an internal user will be created if one does not yet exist."
     default: true
 
-  # Multifactor Authentication
-  login.mfa.providers:
-    description: "NOTE: This feature has been deprecated and will be removed in a future release. A list of providers and their configuration. Provider names must be alphanumeric. Currently only `google-authenticator` is supported with no additional attributes. Issuer is optional."
-    example:
-      myExampleProvider1:
-        type: google-authenticator
-        config:
-          providerDescription: test adding a google authenticator to the default zone
-          issuer: uaa
-    default: ~
-
-  login.mfa.providerName:
-    description: "NOTE: This feature has been deprecated and will be removed in a future release. The unique name of the MFA provider to use for default zone."
-    default: ~
-  login.mfa.enabled:
-    description: "NOTE: This feature has been deprecated and will be removed in a future release. Set true to enable Multi-factor Authentication (MFA) for the default zone. Defaults to false."
-    default: false
-
   # OpenID Connect/OAuth
 
   login.oauth.providers:

@@ -795,18 +795,6 @@
     end
   end
 
-  if_p('login.mfa.providers') do |providers|
-    providers.each do |mfaName, provider|
-      provider.each do |key,value|
-        add_value(params, value, 'login', 'mfa', 'providers', mfaName, key)
-      end
-      add_value(params, p('login.mfa.providers.'+mfaName+'.config.issuer'), 'login', 'mfa', 'providers', mfaName, 'config', 'issuer') if p_opt('login.mfa.providers.'+mfaName+'.config.issuer')
-    end
-  end
-
-  add_value(params, p('login.mfa.providerName'), 'login', 'mfa', 'providerName') if p_opt('login.mfa.providerName')
-  add_value(params, p('login.mfa.enabled'), 'login', 'mfa', 'enabled') if p_opt('login.mfa.enabled')
-
   if_p('login.oauth.providers') do |providers|
     providers.each do |idpAlias, provider|
       provider.each do |key,value|

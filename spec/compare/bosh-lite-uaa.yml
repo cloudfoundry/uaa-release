@@ -259,9 +259,6 @@ logout:
       disable: false
 
 login:
-  mfa:
-    enabled: true
-    providerName: myExampleProvider
   url: https://login.bosh-lite.com
   selfServiceLinksEnabled: true
   defaultIdentityProvider: uaa

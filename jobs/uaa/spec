@@ -1016,6 +1016,8 @@ properties:
         skipSslValidation: false
         storeCustomAttributes: true
         performRpInitiatedLogout: true
+        jwtClientAuthentication:
+          kid: key-id
         attributeMappings:
           given_name: <Attribute holding given name in the OAuth if an ID Token is present or the access token has claims>
           family_name: <Attribute holding family name in the OAuth if an ID Token is present or the access token has claims>
@@ -1045,6 +1047,8 @@ properties:
         storeCustomAttributes: true
         passwordGrantEnabled: false
         performRpInitiatedLogout: true
+        jwtClientAuthentication:
+          kid: key-id
         attributeMappings:
           given_name: <Attribute holding given name in the OIDC ID Token>
           family_name: <Attribute holding family name in the OIDC ID Token>

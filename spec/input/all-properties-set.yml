@@ -72,6 +72,8 @@ properties:
         my-oauth-provider:
           override: false
           addShadowUserOnLogin: true
+          jwtClientAuthentication:
+            kid: key-2
           attributeMappings:
             external_groups:
             - group1

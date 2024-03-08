@@ -652,6 +652,8 @@ login:
           - name: passcode
             type: password
             text: Temporary Authentication Code (Get on at /passcode)
+        jwtClientAuthentication:
+          kid: key-2
         attributeMappings:
           given_name: first_name
           family_name: last_name

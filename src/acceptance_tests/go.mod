@@ -4,17 +4,17 @@ go 1.21.5
 
 require (
 	github.com/cloudfoundry/bosh-cli v6.4.1+incompatible
-	github.com/cloudfoundry/bosh-utils v0.0.449
+	github.com/cloudfoundry/bosh-utils v0.0.450
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.31.1
 )
 
 require (
-	code.cloudfoundry.org/tlsconfig v0.0.0-20240301143844-95036809ae27 // indirect
+	code.cloudfoundry.org/tlsconfig v0.0.0-20240308143921-4b874b341ed6 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/charlievieth/fs v0.0.3 // indirect
 	github.com/cloudfoundry/go-socks5 v0.0.0-20180221174514-54f73bdb8a8e // indirect
-	github.com/cloudfoundry/socks5-proxy v0.2.114 // indirect
+	github.com/cloudfoundry/socks5-proxy v0.2.115 // indirect
 	github.com/cppforlife/go-semi-semantic v0.0.0-20160921010311-576b6af77ae4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect

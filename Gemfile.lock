@@ -12,7 +12,7 @@ GEM
       mutex_m
       tzinfo (~> 2.0)
     base64 (0.2.0)
-    bigdecimal (3.1.6)
+    bigdecimal (3.1.7)
     bosh-template (2.4.0)
       semi_semantic (~> 1.2.0)
     byebug (11.1.3)

@@ -4,13 +4,13 @@ go 1.21.5
 
 require (
 	github.com/cloudfoundry/bosh-cli v6.4.1+incompatible
-	github.com/cloudfoundry/bosh-utils v0.0.452
+	github.com/cloudfoundry/bosh-utils v0.0.453
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.32.0
 )
 
 require (
-	code.cloudfoundry.org/tlsconfig v0.0.0-20240308143921-4b874b341ed6 // indirect
+	code.cloudfoundry.org/tlsconfig v0.0.0-20240322144156-e73504174425 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/charlievieth/fs v0.0.3 // indirect
 	github.com/cloudfoundry/go-socks5 v0.0.0-20180221174514-54f73bdb8a8e // indirect

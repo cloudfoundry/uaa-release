@@ -1,0 +1,26 @@
+name: uaa
+version: 77.4.0
+commit_hash: c0909318
+uncommitted_changes: false
+jobs:
+- name: bbr-uaadb
+  version: b10586c070c07129cd8f62188cd4754c403fb163812607dce31985e8e61781f0
+  fingerprint: b10586c070c07129cd8f62188cd4754c403fb163812607dce31985e8e61781f0
+  sha1: sha256:d1ed1f3056979fdac54590424d9be63ba9e9b03eaf6292984d1028de7dae96a9
+  packages: []
+- name: uaa
+  version: 6bf581389fa638c82dbf7ed700cf9f3740bee2c9282d65870fb110fdf40e98b2
+  fingerprint: 6bf581389fa638c82dbf7ed700cf9f3740bee2c9282d65870fb110fdf40e98b2
+  sha1: sha256:426542fb8d407d5c74adae05933f54e653d8d477e4df317879a998a68d504033
+  packages:
+  - uaa
+packages:
+- name: uaa
+  version: 70aa40fed9ff08bbf0ff5e7a09bbc5aa7adeccb2bb4504a965930c40f1c21426
+  fingerprint: 70aa40fed9ff08bbf0ff5e7a09bbc5aa7adeccb2bb4504a965930c40f1c21426
+  sha1: sha256:8218d71ef259b7290bf4e8295160f362831d407ab6648dac3711d9d1b1fe0bb1
+  dependencies: []
+license:
+  version: cc48a230dddf0499912777ce8ccf63b8ed7c22a4106f30b6934679272826f430
+  fingerprint: cc48a230dddf0499912777ce8ccf63b8ed7c22a4106f30b6934679272826f430
+  sha1: sha256:f98289619ac04578182dd62ac10ea1e940d05c35a045d87287ea8183af4e0315

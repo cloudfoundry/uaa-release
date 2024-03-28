@@ -181,13 +181,13 @@ properties:
     default: []
 
   env.http_proxy:
-    description: "The http_proxy across the VMs used for all requests over http"
+    description: "The value of the HTTP_PROXY environment variable across the VMs. It is the proxy URL used for all requests over http."
     example: http://test.proxy:8080
   env.https_proxy:
-    description: "The http_proxy across the VMs used for all requests over https"
+    description: "The value of the HTTPS_PROXY environment variable across the VMs. It is the proxy URL used for all requests over https."
     example: http://test.proxy:8080
   env.no_proxy:
-    description: "Set No_Proxy across the VMs"
+    description: "The value of the NO_PROXY environment variable across the VMs. It is a comma-separated list of hostnames that should be excluded from proxying."
     example: "localhost,127.0.0.0/8,127.0.1.1"
   uaa.issuer:
     description: "The url to use as the issuer URI"

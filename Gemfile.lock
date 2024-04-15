@@ -24,7 +24,7 @@ GEM
     i18n (1.14.4)
       concurrent-ruby (~> 1.0)
     method_source (1.0.0)
-    mini_portile2 (2.8.5)
+    mini_portile2 (2.8.6)
     minitest (5.22.3)
     mutex_m (0.2.0)
     nokogiri (1.16.4)

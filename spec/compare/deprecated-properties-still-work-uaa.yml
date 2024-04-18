@@ -261,3 +261,11 @@ cors:
 csp:
   script-src:
     - "'self'"
+global:
+  jwt:
+    oidc-trust:
+      key: "key-value"
+      cert: "cert-value"
+    uaa:
+      key: "uaa-zone-key-value"
+      cert: "uaa-zone-cert-value"

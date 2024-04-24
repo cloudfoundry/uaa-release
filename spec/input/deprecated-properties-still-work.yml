@@ -114,7 +114,7 @@ properties:
       script-src:
         - "'self'"
     global:
-      jwt:
+      jwk:
         oidc-trust:
           key: "key-value"
           cert: "cert-value"

@@ -1337,15 +1337,15 @@ properties:
     default: true
 
   # Global references
-  uaa.global.jwt:
+  uaa.global.jwk:
     description: |
-      Support configuration of key and cert entries in uaa.yml to be used as
-      reference in other sections, e.g. oidc trust creation, sub configuration
+      Support configuration of global key and cert entries in uaa.yml to be used
+      as reference in other sections, e.g. oidc trust creation, sub configuration
       of jwtClientAuthentication allows to define key and cert with a reference.
-      The goal is, that a central key can be used for many trusts but the key is
-      not persistent in the database. Supports a structue of maps. Name
+      The goal is, that central keys can be used for situations where the keys are
+      not persistent in the database. Supports a structure of maps. Name
       oidc-trust is an example for one entry. In jwtClientAuthentication
-      configuration key can be set to ${global.jwt.oidc-trust.key}.
+      configuration key can be set to ${global.jwk.oidc-trust.key}.
     example: |
       oidc-trust:
          key: |

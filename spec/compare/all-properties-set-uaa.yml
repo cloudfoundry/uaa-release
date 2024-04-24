@@ -704,7 +704,7 @@ ratelimit:
         - "other"
 
 global:
-  jwt:
+  jwk:
     oidc-trust:
       key: "key-value"
       cert: "cert-value"

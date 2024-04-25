@@ -559,6 +559,14 @@ properties:
     csp:
       script-src:
         - "'self'"
+    global:
+      jwk:
+        oidc-trust:
+          key: "key-value"
+          cert: "cert-value"
+        uaa:
+          key: "uaa-zone-key-value"
+          cert: "uaa-zone-cert-value"
     ldap:
       override: false
       add_shadow_user_on_login: false

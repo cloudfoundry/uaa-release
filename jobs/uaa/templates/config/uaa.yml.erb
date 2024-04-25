@@ -857,6 +857,14 @@
     add_value(params, p('uaa.csp.script-src'), 'csp', 'script-src')
   end
 
+  # issue https://github.com/cloudfoundry/uaa-release/issues/850, support global.jwk.client.key and global.jwk.client.cert references
+  if_p('uaa.global.jwk') do |jwtKeys|
+    jwtKeys.each do |keyName, keyValue|
+      add_value(params, keyValue, 'global', 'jwk', keyName, )
+    end
+  end
+
+
   #validate that we have all required parameters
 
   message = message + validateSamlKeys(params)

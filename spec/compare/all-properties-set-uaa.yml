@@ -702,3 +702,12 @@ ratelimit:
       global: 200r/s
       pathSelectors:
         - "other"
+
+global:
+  jwk:
+    oidc-trust:
+      key: "key-value"
+      cert: "cert-value"
+    uaa:
+      key: "uaa-zone-key-value"
+      cert: "uaa-zone-cert-value"

@@ -409,6 +409,8 @@ builds:
     version: "25"
   b9a54749-b024-4fa0-6613-828664f46b89:
     version: 74.5.70
+  ba145762-72f1-4d7e-6fc5-209caf49e616:
+    version: 74.5.112
   ba3235f1-d11b-46fa-b3e3-1c6b69d8c585:
     version: "13.12"
   bab49cc0-092b-480d-bbdb-005f899f429e:

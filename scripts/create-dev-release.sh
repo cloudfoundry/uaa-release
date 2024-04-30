@@ -3,7 +3,7 @@
 set -euo pipefail
 
 export UAA_VERSION=0.0.0
-JAVA_HOME=$(/usr/libexec/java_home -v 11)
+JAVA_HOME=$(/usr/libexec/java_home -v 17)
 
 export JAVA_HOME
 

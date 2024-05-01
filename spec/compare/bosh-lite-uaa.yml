@@ -179,7 +179,7 @@ oauth:
       scope: uaa.user
       authorized-grant-types: authorization_code
       secret: secret
-      redirect-uri: http://localhost,http://localhost:8080,http://localhost:8080/uaa,http://valid.com,http://sub.valid.com,http://valid.com/with/path,https://subsub.sub.valid.com/**,https://valid.com/path/*/path,http://sub.valid.com/*/with/path**,http*://sub.valid.com/*/with/path**,http*://*.valid.com/*/with/path**,http://*.valid.com/*/with/path**,https://*.valid.com/*/with/path**,https://*.*.valid.com/*/with/path**,http://sub*.valid.com/*/with/path**,http://*.domain.com,http://username:password@some.server.com,http://username:password@some.server.com/path
+      redirect-uri: http://localhost,http://localhost:8080,http://localhost:8080/uaa,http://valid.cloudfoundry.org,http://sub.valid.cloudfoundry.org,http://valid.cloudfoundry.org/with/path,https://subsub.sub.valid.cloudfoundry.org/**,https://valid.cloudfoundry.org/path/*/path,http://sub.valid.cloudfoundry.org/*/with/path**,http*://sub.valid.cloudfoundry.org/*/with/path**,http*://*.valid.cloudfoundry.org/*/with/path**,http://*.valid.cloudfoundry.org/*/with/path**,https://*.valid.cloudfoundry.org/*/with/path**,https://*.*.valid.cloudfoundry.org/*/with/path**,http://sub*.valid.cloudfoundry.org/*/with/path**,http://*.domain.com,http://username:password@some.server.com,http://username:password@some.server.com/path
 
   user:
     authorities:

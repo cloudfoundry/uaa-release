@@ -1166,8 +1166,8 @@ describe 'uaa-release erb generation' do
 
       invalid_redirect_uris = %w(http://* http://** http://*/** http://*/* http://**/* http://a*
           http://*.com http://*domain* http://*domain.com http://*domain/path http://local*
-          *.valid.com/*/with/path** http://**/path https://*.*.*.com/*/with/path** www.*/path www.invalid.com/*/with/path**
-          www.*.invalid.com/*/with/path** http://username:password@*.com http://username:password@*.com/path)
+          *.valid.cloudfoundry.org/*/with/path** http://**/path https://*.*.*.com/*/with/path** www.*/path www.invalid.cloudfoundry.org/*/with/path**
+          www.*.invalid.cloudfoundry.org/*/with/path** http://username:password@*.com http://username:password@*.com/path)
 
       context 'redirect-uri is invalid' do
         let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}

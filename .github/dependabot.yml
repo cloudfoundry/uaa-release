@@ -40,3 +40,6 @@ updates:
     # we use for in uaa-ci/concourse/v74-5-x-lts/pipeline.yml has go 1.19.
     # Can be bumped only after we change the legacy-bosh-docker-image
     # there.
+    - dependency-name: "github.com/cloudfoundry/bosh-utils"
+    # bosh-utils 0.0.466 requires go 1.20. So ignore for the same reason as
+    # the above.

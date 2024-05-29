@@ -199,6 +199,8 @@ builds:
     version: 74.6.0
   5e7caaa1-d84d-4056-b8e1-fd20caac6fda:
     version: "13.15"
+  60187007-5b35-429f-6f9e-b4eca43a01fb:
+    version: 77.10.0
   60a6ef3f-bcdc-425a-80d8-c872d5d62432:
     version: "24.1"
   61e7b2c4-6dd0-4cc8-9b00-cc1fb458cda6:

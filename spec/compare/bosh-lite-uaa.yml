@@ -264,6 +264,7 @@ login:
   defaultIdentityProvider: uaa
   idpDiscoveryEnabled: false
   accountChooserEnabled: false
+  aliasEntitiesEnabled: false
   entityBaseURL: https://login.bosh-lite.com
   entityID: login.bosh-lite.com
   prompt:

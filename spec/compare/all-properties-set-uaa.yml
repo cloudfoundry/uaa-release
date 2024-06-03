@@ -346,6 +346,7 @@ login:
   defaultIdentityProvider: uaa
   idpDiscoveryEnabled: true
   accountChooserEnabled: true
+  aliasEntitiesEnabled: false
   entityBaseURL: http://all-properties-set:8888/uaa
   entityID: all-properties-set:8888/uaa
   prompt:

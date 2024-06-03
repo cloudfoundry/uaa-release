@@ -38,7 +38,7 @@ properties:
     defaultIdentityProvider: uaa
     idpDiscoveryEnabled: true
     accountChooserEnabled: true
-    aliasEntitiesEnabled: false
+    aliasEntitiesEnabled: true
     links:
       global:
         passwd: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/forgot_password"

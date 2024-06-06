@@ -438,6 +438,16 @@ properties:
     description: "This value can be set to the origin key of an identity provider. If set, the user will be directed to this identity provider automatically if no other identity provider is discovered or selected via login_hint. When not set, legacy chained authentication (where uaa is attempted first followed by ldap) is used."
     example: uaa
     default: null
+  login.aliasEntitiesEnabled:
+    description: |
+      Enable the creation, update and deletion of identity providers and users with an alias. The alias feature enables
+      the synchronization of an identity provider or user entity between a custom identity zone and the "uaa" zone (its
+      "alias"). By this, the entity can be managed in an isolated custom identity zone while still being effective for
+      other components that only operate on the "uaa" zone, e.g. the CF Cloud Controller. An entity and its alias
+      reference each other through the properties "aliasId" (ID of the alias) and "aliasZid" (ID of the zone containing
+      the alias). Note that existing entities with an alias will not be removed when deactivating the flag. Instead, the
+      creation, update and deletion of identity providers and users with an alias is prohibited.
+    default: false
 
   # Email
   login.notifications.url:

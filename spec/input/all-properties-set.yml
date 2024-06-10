@@ -100,6 +100,7 @@ properties:
             here
           tokenKeyUrl: http://tokenKeyUrl
           tokenUrl: http://tokenUrl
+          cacheJwks: true
           passwordGrantEnabled: false
           performRpInitiatedLogout: true
           prompts:

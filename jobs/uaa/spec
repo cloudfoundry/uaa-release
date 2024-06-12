@@ -1014,6 +1014,7 @@ properties:
         tokenUrl: <URL to the token endpoint of the provider>
         tokenKey: <Token verification key>
         tokenKeyUrl: <URL for token verification. Will be used if tokenKey is not specified.>
+        cacheJwks: <Option to control caching behavior for the JWKS (verification key for validating token signatures, default true)>
         issuer: <optional - if the issuer URL is different than tokenUrl URL>
         scopes:
           - openid

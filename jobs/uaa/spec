@@ -448,6 +448,9 @@ properties:
       the alias). Note that existing entities with an alias will not be removed when deactivating the flag. Instead, the
       creation, update and deletion of identity providers and users with an alias is prohibited.
     default: false
+  login.checkOriginEnabled:
+    description: "This flag enables the origin check in SCIM. Otherwise, the assignments of users to an origin are not validated."
+    default: false
 
   # Email
   login.notifications.url:

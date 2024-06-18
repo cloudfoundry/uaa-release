@@ -39,6 +39,7 @@ properties:
     idpDiscoveryEnabled: true
     accountChooserEnabled: true
     aliasEntitiesEnabled: true
+    checkOriginEnabled: true
     links:
       global:
         passwd: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/forgot_password"

@@ -219,6 +219,7 @@ login:
   idpDiscoveryEnabled: false
   accountChooserEnabled: false
   aliasEntitiesEnabled: false
+  checkOriginEnabled: false
   entityBaseURL: http://test.uaa.url
   entityID: test.uaa.url
   prompt:

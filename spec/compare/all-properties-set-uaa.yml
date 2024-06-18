@@ -632,6 +632,10 @@ login:
           here
         tokenKeyUrl: http://tokenKeyUrl
         cacheJwks: true
+        pkce: true
+        authMethod: client_secret_basic
+        additionalAuthzParameters:
+          - token_format: jwt
         issuer: http://tokenUrl
         scopes:
         - openid

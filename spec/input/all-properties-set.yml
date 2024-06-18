@@ -101,6 +101,10 @@ properties:
           tokenKeyUrl: http://tokenKeyUrl
           tokenUrl: http://tokenUrl
           cacheJwks: true
+          pkce: true
+          authMethod: client_secret_basic
+          additionalAuthzParameters:
+            - token_format: jwt
           passwordGrantEnabled: false
           performRpInitiatedLogout: true
           prompts:

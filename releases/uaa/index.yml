@@ -405,6 +405,8 @@ builds:
     version: 74.5.43
   af7bddce-3623-47af-7dcb-b7100ff7cbdb:
     version: "61.0"
+  b0a5679b-8fe2-4347-58d2-ac43fff980bc:
+    version: 74.5.120
   b0bb748c-6d2d-4645-6e6b-c3621fb356e8:
     version: 74.5.55
   b5e2c001-d7f9-439d-b7b7-0f7d2888688d:

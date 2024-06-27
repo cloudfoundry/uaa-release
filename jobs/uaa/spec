@@ -1027,6 +1027,7 @@ properties:
         skipSslValidation: false
         storeCustomAttributes: true
         performRpInitiatedLogout: true
+        authMethod: client_secret_basic
         jwtClientAuthentication:
           kid: key-id
         attributeMappings:
@@ -1058,6 +1059,10 @@ properties:
         storeCustomAttributes: true
         passwordGrantEnabled: false
         performRpInitiatedLogout: true
+        pkce: true
+        authMethod: client_secret_basic
+        additionalAuthzParameters:
+          - token_format: jwt <Additional attributes to be added to authorization request>
         jwtClientAuthentication:
           kid: key-id
         attributeMappings:

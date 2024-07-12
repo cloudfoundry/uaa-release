@@ -265,6 +265,7 @@ login:
   idpDiscoveryEnabled: false
   accountChooserEnabled: false
   aliasEntitiesEnabled: false
+  checkOriginEnabled: false
   entityBaseURL: https://login.bosh-lite.com
   entityID: login.bosh-lite.com
   prompt:

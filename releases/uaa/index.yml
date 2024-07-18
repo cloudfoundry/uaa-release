@@ -239,6 +239,8 @@ builds:
     version: 74.5.111
   6cfba1c0-f449-4b11-bdac-673e395cf97c:
     version: "13.11"
+  6d76ced2-51fd-4ccb-587a-318564002d3a:
+    version: 74.5.124
   6f20f5e0-a5a5-4304-8a43-4270fb911121:
     version: "52.8"
   6fc07a36-e2f6-496d-b1cb-2e079066b13a:

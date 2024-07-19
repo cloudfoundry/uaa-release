@@ -452,7 +452,7 @@ properties:
     description: "This flag enables the origin check in SCIM. Otherwise, the assignments of users to an origin are not validated."
     default: false
   login.allowOriginLoop:
-    description: "This flag enables the loop over all origins of a certain type during login, e.g. all SAML or OIDC providers in case of such a logon. Otherwise, only index access is allowed."
+    description: "This flag allows to retrieve all origins during login or configuration, e.g. all SAML or OIDC identity providers. Otherwise, only filtered access is possible."
     default: true
 
   # Email

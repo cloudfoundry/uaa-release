@@ -266,6 +266,7 @@ login:
   accountChooserEnabled: false
   aliasEntitiesEnabled: false
   checkOriginEnabled: false
+  allowOriginLoop: true
   entityBaseURL: https://login.bosh-lite.com
   entityID: login.bosh-lite.com
   prompt:

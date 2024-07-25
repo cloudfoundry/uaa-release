@@ -451,6 +451,9 @@ properties:
   login.checkOriginEnabled:
     description: "This flag enables the origin check in SCIM. Otherwise, the assignments of users to an origin are not validated."
     default: false
+  login.allowOriginLoop:
+    description: "This flag allows to retrieve all origins during login or configuration, e.g. all SAML or OIDC identity providers. Otherwise, only filtered access is possible."
+    default: true
 
   # Email
   login.notifications.url:

@@ -348,6 +348,7 @@ login:
   accountChooserEnabled: true
   aliasEntitiesEnabled: true
   checkOriginEnabled: true
+  allowOriginLoop: false
   entityBaseURL: http://all-properties-set:8888/uaa
   entityID: all-properties-set:8888/uaa
   prompt:

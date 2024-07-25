@@ -171,6 +171,7 @@ login:
   accountChooserEnabled: false
   aliasEntitiesEnabled: false
   checkOriginEnabled: false
+  allowOriginLoop: true
   entityBaseURL: http://test.uaa.url
   entityID: test.uaa.url
   prompt:

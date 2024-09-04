@@ -24,7 +24,7 @@ GEM
     drb (2.2.1)
     i18n (1.14.5)
       concurrent-ruby (~> 1.0)
-    logger (1.6.0)
+    logger (1.6.1)
     method_source (1.1.0)
     mini_portile2 (2.8.7)
     minitest (5.25.1)

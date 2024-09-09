@@ -4,7 +4,7 @@ go 1.23
 
 require (
 	github.com/cloudfoundry/bosh-cli v6.4.1+incompatible
-	github.com/cloudfoundry/bosh-utils v0.0.494
+	github.com/cloudfoundry/bosh-utils v0.0.495
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.34.2
 )
@@ -14,7 +14,7 @@ require (
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/charlievieth/fs v0.0.3 // indirect
 	github.com/cloudfoundry/go-socks5 v0.0.0-20240831012420-2590b55236ee // indirect
-	github.com/cloudfoundry/socks5-proxy v0.2.122 // indirect
+	github.com/cloudfoundry/socks5-proxy v0.2.123 // indirect
 	github.com/cppforlife/go-semi-semantic v0.0.0-20160921010311-576b6af77ae4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect

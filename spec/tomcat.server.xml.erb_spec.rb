@@ -131,6 +131,16 @@ describe 'tomcat.server.xml' do
     end
   end
 
+  context 'when uaa.keepalive_timeout is invalid (-1)' do
+    before(:each) do
+      manifest['properties']['uaa']['keepalive_timeout'] = -1
+    end
+
+    it 'returns an error' do
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (-1) specified for uaa.keepalive_timeout, please specify a positive integer value')
+    end
+  end
+
   context 'using bosh links' do
     let(:internal_proxies) do
       config = Nokogiri::XML.parse(compiled_xml)

@@ -179,6 +179,9 @@ properties:
   uaa.proxy.servers:
     description: "Array of the router IPs acting as the first group of HTTP/TCP backends. These will be added to the proxy_ips_regex as exact matches."
     default: []
+  uaa.keepalive_timeout:
+    description: Timeout value in milliseconds for the connection keepalive of the tomcat server
+    default: 120000
 
   env.http_proxy:
     description: "The value of the HTTP_PROXY environment variable across the VMs. It is the proxy URL used for all requests over http."

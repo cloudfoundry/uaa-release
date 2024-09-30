@@ -11,6 +11,7 @@
     <Connector class="org.apache.coyote.http11.Http11NioProtocol"
                protocol="HTTP/1.1"
                connectionTimeout="20000"
+               keepAliveTimeout="120000"
                address="127.0.0.1"
                port="55555"
                bindOnInit="true"
@@ -32,6 +33,7 @@
                keystorePass="k0*l*s3cur1tyr0ck$"
                bindOnInit="false"
                maxHttpHeaderSize="14336"
+               keepAliveTimeout="120000"
     />
 
     <Engine name="Catalina" defaultHost="localhost">

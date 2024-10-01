@@ -52,8 +52,8 @@
     %>
 
     <%
-      if p("uaa.keepalive_timeout") < 0
-        raise ArgumentError, "Invalid value (#{p("uaa.keepalive_timeout")}) specified for uaa.keepalive_timeout, please specify a positive integer value"
+      if p("uaa.keepalive_timeout") < -1
+        raise ArgumentError, "Invalid value (#{p("uaa.keepalive_timeout")}) specified for uaa.keepalive_timeout, please specify either a positive integer value or -1"
       end
     %>
 

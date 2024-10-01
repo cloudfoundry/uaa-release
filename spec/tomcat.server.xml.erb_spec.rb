@@ -133,11 +133,11 @@ describe 'tomcat.server.xml' do
 
   context 'when uaa.keepalive_timeout is invalid (-1)' do
     before(:each) do
-      manifest['properties']['uaa']['keepalive_timeout'] = -1
+      manifest['properties']['uaa']['keepalive_timeout'] = -2
     end
 
     it 'returns an error' do
-      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (-1) specified for uaa.keepalive_timeout, please specify a positive integer value')
+      expect {compiled_xml}.to raise_error(ArgumentError, 'Invalid value (-2) specified for uaa.keepalive_timeout, please specify either a positive integer value or -1')
     end
   end
 

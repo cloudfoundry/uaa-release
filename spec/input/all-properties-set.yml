@@ -391,6 +391,7 @@ properties:
         lockoutPeriodSeconds: 300
     catalina_opts: -Xmx1g -Xms512m
     localhost_http_port: 55555
+    keepalive_timeout: 120000
     limitedFunctionality:
       statusFile: /var/vcap/data/uaa/test_bbr_limited_mode.lock
       whitelist:

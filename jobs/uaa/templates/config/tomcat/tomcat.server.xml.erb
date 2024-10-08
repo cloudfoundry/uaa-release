@@ -51,9 +51,16 @@
        end
     %>
 
+    <%
+      if p("uaa.keepalive_timeout") < -1
+        raise ArgumentError, "Invalid value (#{p("uaa.keepalive_timeout")}) specified for uaa.keepalive_timeout, please specify either a positive integer value or -1"
+      end
+    %>
+
     <Connector class="org.apache.coyote.http11.Http11NioProtocol"
                protocol="HTTP/1.1"
                connectionTimeout="20000"
+               keepAliveTimeout="<%= p('uaa.keepalive_timeout') %>"
                address="127.0.0.1"
                port="<%= p('uaa.localhost_http_port') %>"
                bindOnInit="true"
@@ -75,6 +82,7 @@
                keystorePass="k0*l*s3cur1tyr0ck$"
                bindOnInit="false"
                maxHttpHeaderSize="14336"
+               keepAliveTimeout="<%= p('uaa.keepalive_timeout') %>"
     />
 
     <Engine name="Catalina" defaultHost="localhost">

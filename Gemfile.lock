@@ -29,7 +29,11 @@ GEM
       concurrent-ruby (~> 1.0)
     logger (1.6.1)
     method_source (1.1.0)
+    mini_portile2 (2.8.7)
     minitest (5.25.1)
+    nokogiri (1.16.7)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
     nokogiri (1.16.7-aarch64-linux)
       racc (~> 1.4)
     nokogiri (1.16.7-arm-linux)
@@ -67,13 +71,13 @@ GEM
     semi_semantic (1.2.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    uri (1.0.1)
+    uri (1.0.2)
 
 PLATFORMS
-  ruby
   aarch64-linux
   arm-linux
   arm64-darwin
+  ruby
   x86-linux
   x86_64-darwin
   x86_64-linux
@@ -81,7 +85,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   bosh-template
-  nokogiri (>= 1.16.7)
+  nokogiri (= 1.16.7)
   pry-byebug
   rake
   rspec

@@ -31,6 +31,8 @@ builds:
     version: 76.1.0
   0c7cd78a-578a-4276-56a6-fbac085bd4d2:
     version: 77.13.0
+  0ce9abd8-211f-46f7-6b00-4429a8c18eab:
+    version: 77.15.0
   0cf9eef2-6c26-4e5e-6705-04727ea6f8ca:
     version: 75.12.0
   0dc47540-68b1-4c9a-88f0-5c98cc9dcb76:
@@ -71,8 +73,12 @@ builds:
     version: "34.3"
   22d15e18-30a6-4d35-7968-d7d744b5dbf9:
     version: "59"
+  22f2b1dd-2fd0-4fc8-5f1c-fe4cabb7fa5c:
+    version: 77.16.0
   23600608-2b5c-417c-4781-01db8bd2de3b:
     version: 75.15.0
+  238a5636-7f4b-4ef1-7079-fecd7f6b6ac8:
+    version: 77.19.0
   24001650-b7b0-4813-41e1-fd5e0e896aca:
     version: 75.1.0
   24dca834-abce-4612-b708-499ff3d05023:
@@ -81,6 +87,8 @@ builds:
     version: 77.2.0
   259ac2dd-987c-41d2-6226-6a0e000f018a:
     version: "64.0"
+  260adf69-351b-4ba0-7de7-d1a29cf43389:
+    version: 77.18.0
   272a6cea-3bdd-498c-8a34-ac932149d11b:
     version: "30.7"
   2784410e-412c-4d6e-5063-29d4e7312282:
@@ -93,6 +101,8 @@ builds:
     version: "52.10"
   2bc6ca5f-9b93-49a4-87dd-b4bbd30e1284:
     version: "13.17"
+  2c07754a-d77d-4983-5b5c-f2d907e61ca2:
+    version: 77.22.0
   2c13c37b-ec9f-4032-41f8-4d51814293db:
     version: 74.24.0
   2d10e2f9-2441-4143-6bf7-dbc3aba995ec:
@@ -295,6 +305,8 @@ builds:
     version: "1"
   875d7324-0aca-4bd3-9e96-d289ee2b6144:
     version: "13.2"
+  886d3eb9-afae-4ac3-4d9e-f604adade2c3:
+    version: 77.21.0
   88c137a9-7d75-47da-4341-99bd8c07ac70:
     version: 77.11.0
   8a59d468-ab42-43b0-6560-df7e7ff4d1cf:
@@ -343,6 +355,8 @@ builds:
     version: 74.1.0
   9e667d7c-6e4a-475c-ab59-2bde2657e90d:
     version: "30.1"
+  9e952a55-c5a2-4a6c-7311-876541c28e85:
+    version: 77.17.0
   9fabf160-6b32-44c0-b762-609124df582a:
     version: "30.8"
   a06ea58e-e41d-4538-6f37-2b5bb7d67747:
@@ -425,6 +439,8 @@ builds:
     version: "52.6"
   c7dad4ee-fe78-484b-5bed-346ee9db384a:
     version: 74.0.0
+  c81a9ba7-9576-48e4-4b8c-86bfb760fb71:
+    version: 77.20.0
   c9cf4d74-115e-48cd-4ad0-161a121b94b2:
     version: "45.10"
   c9feacd7-7782-4a39-9025-fbb6a7a89d8a:

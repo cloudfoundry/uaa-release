@@ -15,31 +15,3 @@ updates:
     interval: daily
     time: "11:00"
   open-pull-requests-limit: 10
-
-# dependabot configuration for 74.5.x branch
-- package-ecosystem: bundler
-  directory: "/"
-  schedule:
-    interval: weekly
-    time: "11:00"
-  target-branch: "74.5.x"
-  open-pull-requests-limit: 10
-  allow:
-    - dependency-type: direct
-    - dependency-type: indirect
-- package-ecosystem: gomod
-  directory: "/src/acceptance_tests"
-  schedule:
-    interval: weekly
-    time: "11:00"
-  target-branch: "74.5.x"
-  open-pull-requests-limit: 10
-  ignore:
-    - dependency-name: "github.com/onsi/gomega"
-    # gomega 1.31 requires go 1.20. However, legacy-bosh-docker-image
-    # we use for in uaa-ci/concourse/v74-5-x-lts/pipeline.yml has go 1.19.
-    # Can be bumped only after we change the legacy-bosh-docker-image
-    # there.
-    - dependency-name: "github.com/cloudfoundry/bosh-utils"
-    # bosh-utils 0.0.466 requires go 1.20. So ignore for the same reason as
-    # the above.

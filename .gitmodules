@@ -1,3 +1,4 @@
 [submodule "src/uaa"]
 	path = src/uaa
 	url = https://github.com/cloudfoundry/uaa.git
+	branch = 77.20.x

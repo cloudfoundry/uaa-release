@@ -9,6 +9,8 @@ builds:
     version: "66.0"
   05b41a79-72c8-47cd-678a-45606401cfe3:
     version: "60"
+  05e39dde-8f83-42c9-48f6-11e33a4b3adc:
+    version: 77.20.1
   063b9b00-a479-4ed5-73ef-82fcf89605f0:
     version: "58"
   07d01a28-da00-42aa-706a-2c9001620b18:

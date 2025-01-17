@@ -125,6 +125,8 @@ builds:
     version: "45"
   34ba0488-e99e-4f9f-5098-4645ef56699e:
     version: 76.11.0
+  3597c89d-d280-45ee-7d0e-48d19c867d32:
+    version: 77.20.2
   35fcb756-0cb9-442a-4eeb-e07a858b57b8:
     version: 74.17.0
   36b2c033-8a10-4282-bf84-204a1c70c4c4:

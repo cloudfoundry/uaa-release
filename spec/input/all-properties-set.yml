@@ -39,6 +39,9 @@ properties:
     idpDiscoveryEnabled: true
     accountChooserEnabled: true
     aliasEntitiesEnabled: true
+    loginInfoIdpCache:
+      enabled: true
+      durationInMs: 10000
     checkOriginEnabled: true
     allowOriginLoop: false
     links:

@@ -219,6 +219,8 @@ login:
   idpDiscoveryEnabled: false
   accountChooserEnabled: false
   aliasEntitiesEnabled: false
+  loginInfoIdpCache:
+    enabled: false
   checkOriginEnabled: false
   allowOriginLoop: true
   entityBaseURL: http://test.uaa.url

@@ -691,6 +691,10 @@
           'connectionManagerTimeout' => p_opt('login.saml.socket.connectionManagerTimeout'),
           'soTimeout' => p_opt('login.saml.socket.soTimeout')
         }
+      },
+      'loginInfoIdpCache' => {
+        'enabled' => p('login.loginInfoIdpCache.enabled'),
+        'durationInMs' => p('login.loginInfoIdpCache.durationInMs'),
       }
     }
   })

@@ -457,6 +457,12 @@ properties:
   login.allowOriginLoop:
     description: "This flag allows to retrieve all origins during login or configuration, e.g. all SAML or OIDC identity providers. Otherwise, only filtered access is possible."
     default: true
+  login.loginInfoIdpCache.enabled:
+    description: "This flag enables or disables caching of OAuth/OIDC and SAML identity providers returned in the login info endpoint. Please note that the cache is not synchronized across several UAA instances and is not invalidated when IdPs are created, updated or deleted."
+    default: false
+  login.loginInfoIdpCache.durationInMs:
+    description: "The duration, in milliseconds, that entries are cached for the login information endpoint. Only relevant if 'enabled' is true."
+    default: 3000
 
   # Email
   login.notifications.url:

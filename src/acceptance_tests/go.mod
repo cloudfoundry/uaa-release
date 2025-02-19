@@ -1,6 +1,6 @@
 module acceptance_tests
 
-go 1.23
+go 1.24
 require (
 	github.com/cloudfoundry/bosh-cli v6.4.1+incompatible
 	github.com/cloudfoundry/bosh-utils v0.0.531

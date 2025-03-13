@@ -30,19 +30,19 @@ GEM
     logger (1.6.6)
     method_source (1.1.0)
     mini_portile2 (2.8.8)
-    minitest (5.25.4)
-    nokogiri (1.18.2)
+    minitest (5.25.5)
+    nokogiri (1.18.3)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    nokogiri (1.18.2-aarch64-linux-gnu)
+    nokogiri (1.18.3-aarch64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.18.2-arm-linux-gnu)
+    nokogiri (1.18.3-arm-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.18.2-arm64-darwin)
+    nokogiri (1.18.3-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.18.2-x86_64-darwin)
+    nokogiri (1.18.3-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.18.2-x86_64-linux-gnu)
+    nokogiri (1.18.3-x86_64-linux-gnu)
       racc (~> 1.4)
     pry (0.14.2)
       coderay (~> 1.1)
@@ -69,7 +69,7 @@ GEM
     semi_semantic (1.2.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    uri (1.0.2)
+    uri (1.0.3)
 
 PLATFORMS
   aarch64-linux
@@ -83,7 +83,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   bosh-template
-  nokogiri (= 1.18.2)
+  nokogiri (= 1.18.3)
   pry-byebug
   rake
   rspec

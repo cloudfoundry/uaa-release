@@ -2,7 +2,7 @@ bellsoft-17.0.15+10.tar.gz:
   size: 214198445
   object_id: dfa93f0e-b392-4d78-5bc0-38bb174ca18a
   sha: sha256:74a292c2b326435e6fee4df9e097908bf22e2c53d0db4054078d5860f14e5334
-uaa/apache-tomcat-9.0.102.tar.gz:
-  size: 12787373
-  object_id: a424f41f-1f41-4dc0-73fa-7aed44e9eef7
-  sha: sha256:23e0a3b16d53a121c8c86b0ea4e6967d1a4ab689ccf6490ce09eae57ac394787
+uaa/apache-tomcat-9.0.104.tar.gz:
+  size: 12787166
+  object_id: da799d43-7a8f-4dae-6769-3946efa9121b
+  sha: sha256:fa19751c8f81b294dde346ad93517bded84f40885c442e0a7130da982a22abae

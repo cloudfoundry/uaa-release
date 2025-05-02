@@ -651,6 +651,8 @@ properties:
         maxTotal: 20
         maxPerRoute: 2
         maxKeepAlive: 0
+        validateAfterInactivity: 2000
+        retryCount: 0
     rate_limiter:
       config:
         loggingOption: AllCalls

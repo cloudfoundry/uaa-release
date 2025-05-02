@@ -259,7 +259,7 @@ rest:
     maxPerRoute: 5
     maxKeepAlive: 0
     validateAfterInactivity: 2000
-    retryCount: ß
+    retryCount: 0
 
 cors:
   enforceSystemZonePolicyInAllZones: true

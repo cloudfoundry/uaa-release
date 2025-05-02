@@ -244,6 +244,14 @@ properties:
     description: "Maximum time in ms that the connections of the RestTemplates are kept alive in the UAA"
     example: 0
     default: 0
+  uaa.rest.template.validateAfterInactivity:
+      description: "Defines period of inactivity in milliseconds after which persistent connections must be re-validated prior to being leased to the consumer"
+      example: 2000
+      default: 2000
+  uaa.rest.template.retryCount:
+      description: "Defines number of retry attempts to ignore NoHttpResponseException. This exception is thrown when the server fails to respond to a request. The default value is 0, which means that no retries will be attempted."
+      example: 0
+      default: 0
 
   # SSL
   login.protocol:

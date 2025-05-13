@@ -29,7 +29,7 @@ GEM
       concurrent-ruby (~> 1.0)
     logger (1.7.0)
     method_source (1.1.0)
-    mini_portile2 (2.8.8)
+    mini_portile2 (2.8.9)
     minitest (5.25.5)
     nokogiri (1.18.8)
       mini_portile2 (~> 2.8.2)

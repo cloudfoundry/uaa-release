@@ -2,10 +2,10 @@
 set -e -x
 
 cd "${BOSH_INSTALL_TARGET}"
-JAVA_TAR_FILE=$(ls ${BOSH_COMPILE_TARGET}/bellsoft-*.tar.gz | sort --version-sort| tail -n1)
+java_tar_file=$(find "${BOSH_COMPILE_TARGET}" -name "bellsoft-*.tar.gz" | sort --version-sort| tail -n1)
 
 mkdir jdk
-tar zxvf ${JAVA_TAR_FILE} -C jdk --strip 1
+tar zxvf "${java_tar_file}" -C jdk --strip 1
 if [[ $? != 0 ]] ; then
   echo "Cannot unpack JDK"
   exit 1
@@ -14,9 +14,9 @@ fi
 # Ensure correct permissions
 chmod -R a+r jdk
 
-TOMCAT_TAR_FILE=$(ls ${BOSH_COMPILE_TARGET}/apache-tomcat-*.tar.gz | sort --version-sort| tail -n1)
+tomcat_tar_file=$(find "${BOSH_COMPILE_TARGET}" -name "apache-tomcat-*.tar.gz" | sort --version-sort| tail -n1)
 mkdir tomcat
-tar zxvf "${TOMCAT_TAR_FILE}" -C tomcat --strip 1
+tar zxvf "${tomcat_tar_file}" -C tomcat --strip 1
 if [[ $? != 0 ]] ; then
   echo "Cannot unpack Tomcat"
   exit 1
@@ -24,9 +24,9 @@ fi
 
 cd tomcat
 rm -rf webapps/*
-cp -a ${BOSH_COMPILE_TARGET}/wars/cloudfoundry-identity-uaa.war webapps/ROOT.war
-cp -a ${BOSH_COMPILE_TARGET}/wars/cloudfoundry-identity-statsd.war webapps/statsd.war
-cp -a ${BOSH_COMPILE_TARGET}/wars/tomcat-listener.jar lib/tomcat-listener.jar
+cp -a "${BOSH_COMPILE_TARGET}"/wars/cloudfoundry-identity-uaa.war webapps/ROOT.war
+cp -a "${BOSH_COMPILE_TARGET}"/wars/cloudfoundry-identity-statsd.war webapps/statsd.war
+cp -a "${BOSH_COMPILE_TARGET}"/wars/tomcat-listener.jar lib/tomcat-listener.jar
 
 chmod 0755 bin/
 chmod 0755 bin/*.sh

@@ -16,7 +16,7 @@ GEM
       uri (>= 0.13.1)
     base64 (0.3.0)
     benchmark (0.4.1)
-    bigdecimal (3.2.1)
+    bigdecimal (3.2.2)
     bosh-template (2.4.0)
       semi_semantic (~> 1.2.0)
     byebug (12.0.0)

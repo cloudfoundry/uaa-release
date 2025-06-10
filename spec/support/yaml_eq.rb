@@ -23,7 +23,8 @@ RSpec::Matchers.define :yaml_eq do |expected|
       end
 
       puts
-      puts `spiff diff #{expected_manifest.path} #{actual_manifest.path}`
+      # in case the spiff command doesn't exist. Don't fail
+      puts `spiff diff #{expected_manifest.path} #{actual_manifest.path} || true`
   end
 
   def object_eq(actual, expected, path=[])

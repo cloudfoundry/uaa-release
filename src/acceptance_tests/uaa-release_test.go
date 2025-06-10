@@ -239,7 +239,7 @@ func assertUAAIsHealthy(healthCheckPath string) {
 }
 
 func verifyTomcatIsUsingCorrectTruststore() bool {
-	tomcatProcessCmdOutput := runCommandOnUaaViaSsh("ps aux | grep tomcat")
+	tomcatProcessCmdOutput := runCommandOnUaaViaSsh("ps aux | grep -E 'tomcat|uaa-boot.war'")
 	return strings.Contains(tomcatProcessCmdOutput, "-Djavax.net.ssl.trustStore=/var/vcap/data/uaa/cert-cache/cacerts")
 }
 

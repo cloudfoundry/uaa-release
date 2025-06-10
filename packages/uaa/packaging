@@ -30,3 +30,8 @@ cp -a "${BOSH_COMPILE_TARGET}"/wars/tomcat-listener.jar lib/tomcat-listener.jar
 
 chmod 0755 bin/
 chmod 0755 bin/*.sh
+
+# setup a spring boot directory
+cd ${BOSH_INSTALL_TARGET}
+mkdir boot
+cp -a "${BOSH_COMPILE_TARGET}"/wars/cloudfoundry-identity-uaa.war boot/uaa-boot.war

@@ -36,11 +36,35 @@ JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=${uaa_log_dir}"
 export PATH
 export JAVA_OPTS
 
-log "Calling Tomcat start up command"
-/var/vcap/packages/uaa/tomcat/bin/catalina.sh run &
-CATALINA_PID=$!
-log "uaa/tomcat started in background. Waiting for signals."
-wait "${CATALINA_PID}"
-EXIT_STATUS=$?
-log "uaa/tomcat job exiting"
-exit $EXIT_STATUS
+BOOT_RUN_LOCATION=/var/vcap/data/uaa/boot
+BOOT_OPTS="${JAVA_OPTS}"
+### TODO what is the difference between -Dlog4j.configurationFile and -Dlogging.config?
+BOOT_OPTS="${BOOT_OPTS} -Dlogging.config=/var/vcap/jobs/uaa/config/log4j2.properties"
+BOOT_OPTS="${BOOT_OPTS} -DSECRETS_DIR=/var/vcap/jobs/uaa/config"
+BOOT_OPTS="${BOOT_OPTS} -Dmetrics.perRequestMetrics=true"
+BOOT_OPTS="${BOOT_OPTS} -Dserver.servlet.context-path=/"
+BOOT_OPTS="${BOOT_OPTS} -Dstatsd.enabled=true"
+BOOT_OPTS="${BOOT_OPTS} <%= p("uaa.catalina_opts") %>"
+BOOT_FILE=${BOOT_RUN_LOCATION}/uaa-boot.war
+
+TOMCAT_ENABLED=<%= p("runtime.tomcat.enabled") %>
+if [[ "${TOMCAT_ENABLED}" == "true" ]]; then
+  log "Calling Tomcat start up command"
+  /var/vcap/packages/uaa/tomcat/bin/catalina.sh run &
+  CATALINA_PID=$!
+  log "uaa/tomcat started in background. Waiting for signals."
+  wait "${CATALINA_PID}"
+  EXIT_STATUS=$?
+  log "uaa/tomcat job exiting"
+  exit $EXIT_STATUS
+else
+  # location of application.yml
+  cd ${BOOT_RUN_LOCATION}
+  java ${BOOT_OPTS} -jar ${BOOT_FILE} &
+  BOOT_PID=$!
+  log "uaa/boot started in background. Waiting for signals."
+  wait "${BOOT_PID}"
+  EXIT_STATUS=$?
+  log "uaa/boot job exiting"
+  exit $EXIT_STATUS
+fi

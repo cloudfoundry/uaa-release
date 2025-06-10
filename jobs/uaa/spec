@@ -17,6 +17,7 @@ templates:
   config/ldap.crt.erb: config/ldap.crt
   config/messages.properties.erb: config/messages.properties
   config/uaa.crt.erb: config/uaa.crt
+  config/boot/application.yml.erb: config/boot/application.yml
   config/tomcat/tomcat.logging.properties: config/tomcat/logging.properties
   config/tomcat/tomcat.server.xml.erb: config/tomcat/server.xml
   config/tomcat/tomcat.context.xml.erb: config/tomcat/context.xml
@@ -50,6 +51,12 @@ packages:
   - uaa
 
 properties:
+  runtime.tomcat.enabled:
+    description: |
+      Deprecated. Set to true to force UAA to run within a Apache Tomcat container.
+      Set to false, to use a Spring Boot runtime with an embedded Apache Tomcat container.
+      This property will be removed when Apache Tomcat as a runtime is removed.
+    default: false
   uaa.rate_limiter:
     config:
       loggingOption:

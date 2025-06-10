@@ -160,6 +160,19 @@ function configure_tomcat {
     chown -R vcap:vcap /var/vcap/data/uaa/
 }
 
+function configure_spring_boot {
+    # When run with bpm, the vcap user does not have permissions to read
+    # files in the jobs and packages directories. Consequently, we move
+    # our spring boot installation into a directory where we have full permissions.
+    rm -rf /var/vcap/data/uaa/boot
+    mkdir -p /var/vcap/data/uaa
+    cp -a /var/vcap/packages/uaa/boot /var/vcap/data/uaa/
+    cp -a /var/vcap/jobs/uaa/config/boot/* /var/vcap/data/uaa/boot/
+    mkdir -p /var/vcap/data/uaa/boot/webapps
+    mkdir -p /var/vcap/data/uaa/boot/work
+    chown -R vcap:vcap /var/vcap/data/uaa/boot
+}
+
 log "Starting"
 
 TMP_DIR="$(mktemp -d)"
@@ -178,6 +191,8 @@ PERSISTENT_LDAP_CERTS_FILE=$PERSISTENT_CERTS_DIR/ldap-certs-cache.txt
 process_certs
 
 configure_tomcat
+
+configure_spring_boot
 
 rm -rf $TMP_DIR
 

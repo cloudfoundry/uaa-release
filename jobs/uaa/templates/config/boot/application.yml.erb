@@ -1,0 +1,76 @@
+<%
+default_internal_proxies = "10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}"
+
+def escape(str)
+  str.gsub(".","\\.").gsub(":","\\:")
+end
+
+internal_proxies = p('uaa.proxy_ips_regex')
+
+if_p('uaa.proxy.servers') do |proxyServers|
+  internal_proxies = proxyServers.map { |ip| escape(ip) }
+                                 .push(internal_proxies)
+                                 .join('|')
+end
+if_link('router') do |router|
+  internal_proxies = router.instances.map { |instance| escape(instance.address) }
+                                     .push(internal_proxies)
+                                     .join('|')
+end
+
+if internal_proxies.to_s.strip.length == 0
+    internal_proxies = default_internal_proxies
+end
+
+if p("uaa.localhost_http_port") < 1024 || p("uaa.localhost_http_port") > 65535
+    raise ArgumentError, "Invalid value (#{p("uaa.localhost_http_port")}) specified for uaa.localhost_http_port, please specify a valid port number in this range [1024-65535]"
+end
+
+if p("uaa.ssl.port") < 1024 || p("uaa.ssl.port") > 65535
+    raise ArgumentError, "Invalid value (#{p("uaa.ssl.port")}) specified for uaa.ssl.port, please specify a valid port number in this range [1024-65535]"
+end
+
+if p("uaa.ssl.port") == p("uaa.localhost_http_port")
+    raise ArgumentError, 'Please specify different values for uaa.ssl.port and uaa.localhost_http_port'
+end
+
+if p("uaa.keepalive_timeout") < -1
+    raise ArgumentError, "Invalid value (#{p("uaa.keepalive_timeout")}) specified for uaa.keepalive_timeout, please specify either a positive integer value or -1"
+end
+%>
+
+server:
+  http: ## TODO these are extension properties for an additional port
+    port: <%= p('uaa.localhost_http_port') %>
+    address: "127.0.0.1"
+    connection-timeout: 20000
+    keep-alive-timeout: <%= p('uaa.keepalive_timeout') %>
+    max-http-header-size: 14336
+    bind-on-init: true
+  port: <%= p('uaa.ssl.port') %>
+  max-http-header-size: 14336
+  tomcat:
+    basedir: "/var/vcap/data/uaa/boot/"
+    connection-timeout: 20000
+    keep-alive-timeout: <%= p('uaa.keepalive_timeout') %>
+    remoteip:
+      remote-ip-header: "x-forwarded-for"
+      protocol-header: "<%= p('uaa.ssl.protocol_header') %>"
+      internal-proxies: <%= internal_proxies.gsub("\\","\\\\") %>
+      port-header: "<%= p('uaa.ssl.port_header') %>"
+    accesslog:
+      enabled: true
+      directory: "/var/vcap/sys/log/uaa"
+      prefix: "localhost_access"
+      suffix: ".log"
+      rotate: false
+      pattern: "%h %l %u %t &quot;%m %U %H&quot; %s %{Content-Length}i %b &quot;X-Vcap-Request-Id: %{X-Vcap-Request-Id}i&quot; %I"
+  ssl:
+    enabled: true
+    enabled-protocols: "<%= p('uaa.ssl.enabled_protocols') %>"
+    ciphers: "<%= p('uaa.ssl.ciphers') %>"
+    protocol: TLS
+    key-store: "/var/vcap/data/uaa/uaa_keystore.p12"
+    key-store-type: "PKCS12"
+    key-alias: "uaa_ssl_cert"
+    key-store-password: "k0*l*s3cur1tyr0ck$"

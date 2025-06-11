@@ -1,8 +1,8 @@
+apache-tomcat-9.0.106.tar.gz:
+  size: 13007554
+  object_id: 1cfa8f18-2b07-462c-797f-deb35a93c594
+  sha: sha256:1013311960cbc88be6d87ef946c685e16052a0d9d1a76e35d3d1ac4191b8e27d
 bellsoft-21.0.7+9.tar.gz:
   size: 230717041
   object_id: c3d1d986-7939-4e6c-5fb9-3e253402d0cf
   sha: sha256:52104f50eeb5f5299ea83dd25262a2f9847ee57b0240adced538cbebb19a42f2
-apache-tomcat-9.0.105.tar.gz:
-  size: 13000541
-  object_id: 234376f8-95cd-402f-4226-8592f77d8f34
-  sha: sha256:ee86ee179493e610358b23a0f79ba70b9e76ade71157aada9ac7cdcdcdbe35f5

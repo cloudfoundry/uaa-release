@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
-# Failed with 3.0.3, not sure why
-if Gem::Version.new(RUBY_VERSION) > Gem::Version.new('3.0.2')
-  puts "********\n******** WARNING: Ruby template tests might not be compatible with Ruby version > 3.0.2\n********"
+# Works with 3.4.4, require as minimum
+if Gem::Version.new(RUBY_VERSION) < Gem::Version.new('3.4.4')
+  puts "********\n******** WARNING: Ruby template works well with Ruby version = 3.4.4, please upgrade.\n********"
 end
 Dir.chdir "#{__dir__}/.."
 system "gem install bundle"

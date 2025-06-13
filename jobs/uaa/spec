@@ -56,7 +56,7 @@ properties:
       Deprecated. Set to true to force UAA to run within a Apache Tomcat container.
       Set to false, to use a Spring Boot runtime with an embedded Apache Tomcat container.
       This property will be removed when Apache Tomcat as a runtime is removed.
-    default: false
+    default: true
   uaa.rate_limiter:
     config:
       loggingOption:

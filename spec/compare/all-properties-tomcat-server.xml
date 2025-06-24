@@ -8,8 +8,7 @@
   <Listener className="org.cloudfoundry.identity.uaa.web.tomcat.UaaStartupFailureListener" />
 
   <Service name="Catalina">
-    <Connector class="org.apache.coyote.http11.Http11NioProtocol"
-               protocol="HTTP/1.1"
+    <Connector protocol="HTTP/1.1"
                connectionTimeout="20000"
                keepAliveTimeout="120000"
                address="127.0.0.1"
@@ -18,23 +17,20 @@
                maxHttpHeaderSize="14336"
     />
 
-    <Connector class="org.apache.coyote.http11.Http11NioProtocol" protocol="HTTP/1.1" connectionTimeout="20000"
+    <Connector protocol="org.apache.coyote.http11.Http11NioProtocol" connectionTimeout="20000"
                scheme="https"
                port="33333"
                SSLEnabled="true"
-               sslEnabledProtocols="TLSv1.2,TLSv1.3"
                ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384"
                secure="true"
-               clientAuth="false"
-               sslProtocol="TLS"
-               keystoreFile="/var/vcap/data/uaa/uaa_keystore.p12"
-               keystoreType="PKCS12"
-               keyAlias="uaa_ssl_cert"
-               keystorePass="k0*l*s3cur1tyr0ck$"
+               defaultSSLHostConfigName="localhost"
                bindOnInit="false"
-               maxHttpHeaderSize="14336"
-               keepAliveTimeout="120000"
-    />
+               maxHttpHeaderSize="14336">
+      <SSLHostConfig hostName="localhost" certificateVerification="none" protocols="TLSv1.2,TLSv1.3">
+        <Certificate certificateKeystoreFile="/var/vcap/data/uaa/uaa_keystore.p12" certificateKeyAlias="uaa_ssl_cert"
+                     type="RSA" certificateKeystoreType="PKCS12"  certificateKeystorePassword="k0*l*s3cur1tyr0ck$"/>
+      </SSLHostConfig>
+    </Connector>
 
     <Engine name="Catalina" defaultHost="localhost">
       <Host name="localhost"

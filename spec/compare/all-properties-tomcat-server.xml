@@ -27,7 +27,7 @@
                bindOnInit="false"
                maxHttpHeaderSize="14336">
       <SSLHostConfig hostName="localhost" certificateVerification="none" protocols="TLSv1.2,TLSv1.3">
-        <Certificate certificateKeystoreFile="/var/vcap/data/uaa/uaa_keystore.p12"
+        <Certificate certificateKeystoreFile="/var/vcap/data/uaa/uaa_keystore.p12" certificateKeyAlias="uaa_ssl_cert"
                      type="RSA" certificateKeystoreType="PKCS12"  certificateKeystorePassword="k0*l*s3cur1tyr0ck$"/>
       </SSLHostConfig>
     </Connector>

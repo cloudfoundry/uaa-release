@@ -38,7 +38,6 @@ if p("uaa.keepalive_timeout") < -1
     raise ArgumentError, "Invalid value (#{p("uaa.keepalive_timeout")}) specified for uaa.keepalive_timeout, please specify either a positive integer value or -1"
 end
 %>
-
 server:
   http: ## TODO these are extension properties for an additional port
     port: <%= p('uaa.localhost_http_port') %>

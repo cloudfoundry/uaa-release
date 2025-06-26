@@ -7,10 +7,6 @@ processes:
     CLOUDFOUNDRY_CONFIG_PATH: /var/vcap/jobs/uaa/config
     CLOUDFOUNDRY_LOG_PATH: /var/vcap/sys/log/uaa
     CATALINA_OPTS: "<%= p('uaa.catalina_opts') %>"
-  additional_volumes:
-  - path: /var/vcap/data/uaa/exec-tmp
-    writable: true
-    allow_executions: true
   args: []
   ephemeral_disk: true
   limits:

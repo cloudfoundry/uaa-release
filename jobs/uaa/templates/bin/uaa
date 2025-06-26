@@ -44,6 +44,7 @@ BOOT_OPTS="${BOOT_OPTS} -DSECRETS_DIR=/var/vcap/jobs/uaa/config"
 BOOT_OPTS="${BOOT_OPTS} -Dmetrics.perRequestMetrics=true"
 BOOT_OPTS="${BOOT_OPTS} -Dserver.servlet.context-path=/"
 BOOT_OPTS="${BOOT_OPTS} -Dstatsd.enabled=true"
+BOOT_OPTS="${BOOT_OPTS} -Djava.io.tmpdir=/var/vcap/sys/log/uaa/"
 BOOT_OPTS="${BOOT_OPTS} <%= p("uaa.catalina_opts") %>"
 BOOT_FILE=${BOOT_RUN_LOCATION}/uaa-boot.war
 

@@ -50,6 +50,7 @@ BOOT_FILE=${BOOT_RUN_LOCATION}/uaa-boot.war
 
 TOMCAT_ENABLED=<%= p("runtime.tomcat.enabled") %>
 if [[ "${TOMCAT_ENABLED}" == "true" ]]; then
+  export CATALINA_TMPDIR=/var/vcap/data/sys/run/uaa/exec-tmp
   log "Calling Tomcat start up command"
   /var/vcap/packages/uaa/tomcat/bin/catalina.sh run &
   CATALINA_PID=$!

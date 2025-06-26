@@ -166,14 +166,14 @@ function configure_spring_boot {
     # our spring boot installation into a directory where we have full permissions.
     rm -rf /var/vcap/data/uaa/boot
     mkdir -p /var/vcap/data/uaa
-    mkdir -p /var/vcap/data/uaa/exec-tmp
+    mkdir -p /var/vcap/data/sys/run/uaa/exec-tmp
     cp -a /var/vcap/packages/uaa/boot /var/vcap/data/uaa/
     cp -a /var/vcap/jobs/uaa/config/boot/* /var/vcap/data/uaa/boot/
     mkdir -p /var/vcap/data/uaa/boot/webapps
     mkdir -p /var/vcap/data/uaa/boot/work
     chown -R vcap:vcap /var/vcap/data/uaa/boot
-    chown -R vcap:vcap /var/vcap/data/uaa/exec-tmp
-    chmod 0755 /var/vcap/data/uaa/exec-tmp
+    chown -R vcap:vcap /var/vcap/data/sys/run/uaa/exec-tmp
+    chmod 0755 /var/vcap/data/sys/run/uaa/exec-tmp
 }
 
 log "Starting"

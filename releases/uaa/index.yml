@@ -177,6 +177,8 @@ builds:
     version: 73.2.0
   45c0e1f1-fe5a-4783-972b-7964393d58ac:
     version: "24.8"
+  461d0fb3-7e7d-46ab-75bb-400b40bede72:
+    version: 78.1.0
   4681cf89-9df1-4409-5606-e19fc5eab60f:
     version: 77.9.0
   47b40671-a118-481a-a957-3de8269d6db5:

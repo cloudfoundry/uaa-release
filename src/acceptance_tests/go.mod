@@ -4,17 +4,17 @@ go 1.24
 
 require (
 	github.com/cloudfoundry/bosh-cli v6.4.1+incompatible
-	github.com/cloudfoundry/bosh-utils v0.0.544
+	github.com/cloudfoundry/bosh-utils v0.0.547
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.37.0
 )
 
 require (
-	code.cloudfoundry.org/tlsconfig v0.28.0 // indirect
+	code.cloudfoundry.org/tlsconfig v0.30.0 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/charlievieth/fs v0.0.3 // indirect
 	github.com/cloudfoundry/go-socks5 v0.0.0-20250423223041-4ad5fea42851 // indirect
-	github.com/cloudfoundry/socks5-proxy v0.2.152 // indirect
+	github.com/cloudfoundry/socks5-proxy v0.2.155 // indirect
 	github.com/cppforlife/go-semi-semantic v0.0.0-20160921010311-576b6af77ae4 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
@@ -24,8 +24,8 @@ require (
 	github.com/nxadm/tail v1.4.11 // indirect
 	github.com/pivotal-cf/paraphernalia v0.0.0-20180203224945-a64ae2051c20 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
-	golang.org/x/crypto v0.38.0 // indirect
-	golang.org/x/net v0.40.0 // indirect
+	golang.org/x/crypto v0.39.0 // indirect
+	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.26.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect

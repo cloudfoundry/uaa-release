@@ -335,6 +335,8 @@ builds:
     version: "13.9"
   903f95f0-b1af-4252-56e8-0ee3e3056a1e:
     version: 75.16.0
+  92af9582-a0e5-4bba-5c60-e3d129b6272b:
+    version: 77.20.7
   92be7a6b-ad53-49a3-ae66-3b63456b7e7f:
     version: "24.11"
   93076824-0791-478b-444d-c3ae33e96ea9:

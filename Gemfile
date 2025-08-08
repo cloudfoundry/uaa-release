@@ -1,9 +1,10 @@
 source 'https://rubygems.org'
 gem 'rspec'
 gem 'rake'
-gem 'nokogiri', '1.18.9'
+gem 'nokogiri'
 gem 'activesupport'
 gem 'bosh-template'
+gem 'ostruct'
 
 group :test do
   gem 'pry-byebug'

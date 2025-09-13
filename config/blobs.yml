@@ -1,7 +1,7 @@
-apache-tomcat-10.1.45.tar.gz:
-  size: 14118832
-  object_id: f0e10a14-49a5-4aa3-7e24-e59d8ff72ece
-  sha: sha256:c191330e194199ab600537410dacac600020cca8615b403ef3c0c82f0b5714d5
+apache-tomcat-10.1.46.tar.gz:
+  size: 14123043
+  object_id: fe203a22-d37e-4a79-7169-069eceece5ea
+  sha: sha256:45e9d5ef561ab46b74c75f40c33b83f49e13e79e99f736dff8e8948557e968da
 bellsoft-21.0.8+12.tar.gz:
   size: 231004056
   object_id: 837461e6-7a51-4f50-4e18-ec9570bfebe2

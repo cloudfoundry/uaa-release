@@ -18,9 +18,6 @@ templates:
   config/messages.properties.erb: config/messages.properties
   config/uaa.crt.erb: config/uaa.crt
   config/boot/application.yml.erb: config/boot/application.yml
-  config/tomcat/tomcat.logging.properties: config/tomcat/logging.properties
-  config/tomcat/tomcat.server.xml.erb: config/tomcat/server.xml
-  config/tomcat/tomcat.context.xml.erb: config/tomcat/context.xml
 
   bbr/pre-backup-lock.sh.erb: bin/bbr/pre-backup-lock
   bbr/pre-restore-lock.sh.erb: bin/bbr/pre-restore-lock
@@ -51,12 +48,6 @@ packages:
   - uaa
 
 properties:
-  runtime.tomcat.enabled:
-    description: |
-      Deprecated. Set to true to force UAA to run within a Apache Tomcat container.
-      Set to false, to use a Spring Boot runtime with an embedded Apache Tomcat container.
-      This property will be removed when Apache Tomcat as a runtime is removed.
-    default: true
   uaa.rate_limiter:
     config:
       loggingOption:
@@ -149,7 +140,7 @@ properties:
 
   # General server properties
   uaa.catalina_opts:
-    description: "The options used to configure Tomcat"
+    description: "The options used to configure the UAA Server"
     default: -Xmx768m -XX:MaxMetaspaceSize=256m
   uaa.localhost_http_port:
     description: |
@@ -187,7 +178,7 @@ properties:
     description: "Array of the router IPs acting as the first group of HTTP/TCP backends. These will be added to the proxy_ips_regex as exact matches."
     default: []
   uaa.keepalive_timeout:
-    description: Timeout value in milliseconds for the connection keepalive of the tomcat server
+    description: Timeout value in milliseconds for the connection keepalive of the UAA server
     default: 120000
 
   env.http_proxy:

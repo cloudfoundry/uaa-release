@@ -149,29 +149,21 @@ function insert_ssl_cert {
     log "Installed Server SSL certificate"
 }
 
-function configure_tomcat {
-    # When run with bpm, the vcap user does not have permissions to read
-    # files in the jobs and packages directories. Consequently, we move
-    # our tomcat installation into a directory where we have full permissions.
-    rm -rf /var/vcap/data/uaa/tomcat
-    mkdir -p /var/vcap/data/uaa/
-    cp -a /var/vcap/packages/uaa/tomcat /var/vcap/data/uaa/
-    cp -a /var/vcap/jobs/uaa/config/tomcat/* /var/vcap/data/uaa/tomcat/conf/
-    chown -R vcap:vcap /var/vcap/data/uaa/
-}
-
 function configure_spring_boot {
+    log "Configure Spring Boot directories"
+
     # When run with bpm, the vcap user does not have permissions to read
     # files in the jobs and packages directories. Consequently, we move
     # our spring boot installation into a directory where we have full permissions.
     rm -rf /var/vcap/data/uaa/boot
-    mkdir -p /var/vcap/data/uaa
-    mkdir -p /var/vcap/data/sys/run/uaa/exec-tmp
-    cp -a /var/vcap/packages/uaa/boot /var/vcap/data/uaa/
-    cp -a /var/vcap/jobs/uaa/config/boot/* /var/vcap/data/uaa/boot/
     mkdir -p /var/vcap/data/uaa/boot/webapps
     mkdir -p /var/vcap/data/uaa/boot/work
-    chown -R vcap:vcap /var/vcap/data/uaa/boot
+    cp -a /var/vcap/packages/uaa/boot /var/vcap/data/uaa/
+    cp -a /var/vcap/jobs/uaa/config/boot/* /var/vcap/data/uaa/boot/
+    chown -R vcap:vcap /var/vcap/data/uaa
+
+    # Bouncy Castle FIPS needs a tmp dir with exec permissions
+    mkdir -p /var/vcap/data/sys/run/uaa/exec-tmp
     chown -R vcap:vcap /var/vcap/data/sys/run/uaa/exec-tmp
     chmod 0755 /var/vcap/data/sys/run/uaa/exec-tmp
 }
@@ -191,11 +183,8 @@ PERSISTENT_UAA_CA_CERTS_FILE=$PERSISTENT_CERTS_DIR/uaa-ca-certs-cache.txt
 LDAP_CERTS_FILE=/var/vcap/jobs/uaa/config/ldap.crt
 PERSISTENT_LDAP_CERTS_FILE=$PERSISTENT_CERTS_DIR/ldap-certs-cache.txt
 
-process_certs
-
-configure_tomcat
-
 configure_spring_boot
+process_certs
 
 rm -rf $TMP_DIR
 

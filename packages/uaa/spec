@@ -4,4 +4,3 @@ dependencies:
 files:
 - uaa/**/*
 - bellsoft-*.tar.gz
-- apache-*.tar.gz

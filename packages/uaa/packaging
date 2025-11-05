@@ -14,23 +14,6 @@ fi
 # Ensure correct permissions
 chmod -R a+r jdk
 
-tomcat_tar_file=$(find "${BOSH_COMPILE_TARGET}" -name "apache-tomcat-*.tar.gz" | sort --version-sort| tail -n1)
-mkdir tomcat
-tar zxvf "${tomcat_tar_file}" -C tomcat --strip 1
-if [[ $? != 0 ]] ; then
-  echo "Cannot unpack Tomcat"
-  exit 1
-fi
-
-cd tomcat
-rm -rf webapps/*
-cp -a "${BOSH_COMPILE_TARGET}"/wars/cloudfoundry-identity-uaa.war webapps/ROOT.war
-cp -a "${BOSH_COMPILE_TARGET}"/wars/cloudfoundry-identity-statsd.war webapps/statsd.war
-cp -a "${BOSH_COMPILE_TARGET}"/wars/tomcat-listener.jar lib/tomcat-listener.jar
-
-chmod 0755 bin/
-chmod 0755 bin/*.sh
-
 # setup a spring boot directory
 cd ${BOSH_INSTALL_TARGET}
 mkdir boot

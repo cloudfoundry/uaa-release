@@ -32,12 +32,13 @@ JAVA_OPTS="$JAVA_OPTS -Dnetworkaddress.cache.ttl=0 $HTTP_PROXY_JAVA_OPTIONS $KEY
 JAVA_OPTS="$JAVA_OPTS -Dlog4j.configurationFile=/var/vcap/jobs/uaa/config/log4j2.properties"
 JAVA_OPTS="$JAVA_OPTS -Dlog4j2.formatMsgNoLookups=true"
 JAVA_OPTS="$JAVA_OPTS -Djava.io.tmpdir=/var/vcap/data/sys/run/uaa/exec-tmp"
+JAVA_OPTS="$JAVA_OPTS -Dorg.bouncycastle.native.loader.install_dir=/var/vcap/data/sys/run/uaa/exec-tmp"
 JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
 JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=${uaa_log_dir}"
 export PATH
 export JAVA_OPTS
 
-BOOT_RUN_LOCATION=/var/vcap/data/uaa/boot
+boot_run_location=/var/vcap/data/uaa/boot
 BOOT_OPTS="${JAVA_OPTS}"
 ### TODO what is the difference between -Dlog4j.configurationFile and -Dlogging.config?
 BOOT_OPTS="${BOOT_OPTS} -Dlogging.config=/var/vcap/jobs/uaa/config/log4j2.properties"
@@ -46,27 +47,17 @@ BOOT_OPTS="${BOOT_OPTS} -Dmetrics.perRequestMetrics=true"
 BOOT_OPTS="${BOOT_OPTS} -Dserver.servlet.context-path=/"
 BOOT_OPTS="${BOOT_OPTS} -Dstatsd.enabled=true"
 BOOT_OPTS="${BOOT_OPTS} <%= p("uaa.catalina_opts") %>"
-BOOT_FILE=${BOOT_RUN_LOCATION}/uaa-boot.war
+BOOT_FILE=${boot_run_location}/uaa-boot.war
 
-TOMCAT_ENABLED=<%= p("runtime.tomcat.enabled") %>
-if [[ "${TOMCAT_ENABLED}" == "true" ]]; then
-  export CATALINA_TMPDIR=/var/vcap/data/sys/run/uaa/exec-tmp
-  log "Calling Tomcat start up command"
-  /var/vcap/packages/uaa/tomcat/bin/catalina.sh run &
-  CATALINA_PID=$!
-  log "uaa/tomcat started in background. Waiting for signals."
-  wait "${CATALINA_PID}"
-  EXIT_STATUS=$?
-  log "uaa/tomcat job exiting"
-  exit $EXIT_STATUS
-else
-  # location of application.yml
-  cd ${BOOT_RUN_LOCATION}
-  java ${BOOT_OPTS} -jar ${BOOT_FILE} &
-  BOOT_PID=$!
-  log "uaa/boot started in background. Waiting for signals."
-  wait "${BOOT_PID}"
-  EXIT_STATUS=$?
-  log "uaa/boot job exiting"
-  exit $EXIT_STATUS
-fi
+# location of application.yml
+cd ${boot_run_location}
+java ${BOOT_OPTS} -jar ${BOOT_FILE} > ${uaa_log_dir}/boot.log 2>&1 &
+boot_pid=$!
+mkdir -p /var/vcap/sys/run/bpm/uaa
+echo "${boot_pid}" > /var/vcap/sys/run/bpm/uaa/uaa.pid
+sleep 1
+log "uaa/boot(pid=${boot_pid}) started in background. Waiting for signals."
+wait "${boot_pid}"
+exit_status=$?
+log "uaa/boot(pid=${boot_pid}) job exiting, with status: ${exit_status}"
+exit ${exit_status}

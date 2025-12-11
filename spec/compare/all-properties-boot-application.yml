@@ -4,10 +4,9 @@ server:
     address: "127.0.0.1"
     connection-timeout: 20000
     keep-alive-timeout: 120000
-    max-http-header-size: 14336
     bind-on-init: true
   port: 33333
-  max-http-header-size: 14336
+  max-http-request-header-size: 14336
   tomcat:
     basedir: "/var/vcap/data/uaa/boot/"
     connection-timeout: 20000

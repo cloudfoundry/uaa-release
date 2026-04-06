@@ -15,7 +15,7 @@ GEM
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
     base64 (0.3.0)
-    bigdecimal (4.1.0)
+    bigdecimal (4.1.1)
     bosh-template (2.4.0)
       semi_semantic (~> 1.2.0)
     byebug (13.0.0)

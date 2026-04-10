@@ -71,6 +71,7 @@ properties:
     notifications:
       url: http://notifications
     oauth:
+      external_groups_from_mapped_authorities: true
       providers:
         my-oauth-provider:
           override: false

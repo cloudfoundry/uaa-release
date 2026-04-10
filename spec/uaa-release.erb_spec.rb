@@ -1347,6 +1347,38 @@ describe 'uaa-release erb generation' do
     end
   end
 
+  describe 'login.oauth.external_groups_from_mapped_authorities' do
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+    let(:generated_cf_manifest) {generate_cf_manifest(input)}
+    let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, true)}
+
+    context 'by default' do
+      it 'is false in uaa.yml under login.oauth' do
+        expect(parsed_yaml['login']['oauth']['externalGroupsFromMappedAuthorities']).to eq(false)
+      end
+    end
+
+    context 'when configured to true via manifest override' do
+      before do
+        generated_cf_manifest['properties']['login']['oauth']['external_groups_from_mapped_authorities'] = true
+      end
+
+      it 'renders login.oauth.externalGroupsFromMappedAuthorities as true in uaa.yml' do
+        expect(parsed_yaml['login']['oauth']['externalGroupsFromMappedAuthorities']).to eq(true)
+      end
+    end
+
+    context 'when set to true in all-properties-set.yml (with OAuth providers)' do
+      let(:input) { 'spec/input/all-properties-set.yml' }
+
+      it 'renders true and preserves login.oauth.providers' do
+        expect(parsed_yaml['login']['oauth']['externalGroupsFromMappedAuthorities']).to eq(true)
+        expect(parsed_yaml['login']['oauth']['providers'].keys).to include('my-oauth-provider')
+      end
+    end
+  end
+
   describe 'uaa.cors.enforce_system_zone_policy_in_all_zones' do
     let(:input) {'spec/input/test-defaults.yml'}
     let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}

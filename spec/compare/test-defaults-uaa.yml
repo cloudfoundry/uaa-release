@@ -181,6 +181,8 @@ login:
       text: Password
   authorize:
     url: http://test.uaa.url/oauth/authorize
+  oauth:
+    externalGroupsFromMappedAuthorities: false
   saml:
     activeKeyId: saml-key-1
     keys:

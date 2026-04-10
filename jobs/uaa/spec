@@ -1111,6 +1111,14 @@ properties:
             type: password
             text: Temporary Authentication Code (Get on at /passcode)
 
+  login.oauth.external_groups_from_mapped_authorities:
+    description: |
+      Controls how role claim in the UAA generated id_token appears when processing authentication from an
+      an external token. When false (the default), behavior matches SAML and LDAP: mapped values from the external
+      group claim are reflected after passing through the external group whitelist filtering strategy.
+      When true, UAA uses the internal UAA group names produced by the configured group mapping strategy
+      (backwards compatible to UAA v77) instead of only the externally sourced claim values.
+    default: false
   # Saml
   login.saml.entityid:
     description: |

@@ -686,6 +686,9 @@
       'authorize' => {
         'url' => login_authorizeUrl
       },
+      'oauth' => {
+        'externalGroupsFromMappedAuthorities' => p('login.oauth.external_groups_from_mapped_authorities')
+      },
       'saml' => {
         'socket' => {
           'connectionManagerTimeout' => p_opt('login.saml.socket.connectionManagerTimeout'),

@@ -622,6 +622,7 @@ login:
     -----END RSA PRIVATE KEY-----
   selfServiceLinksEnabled: false
   oauth:
+    externalGroupsFromMappedAuthorities: true
     providers:
       my-oauth-provider:
         override: false

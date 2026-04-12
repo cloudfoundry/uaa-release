@@ -230,6 +230,8 @@ login:
       text: Password
   authorize:
     url: http://test.uaa.url/oauth/authorize
+  oauth:
+    externalGroupsFromMappedAuthorities: false
   saml:
     socket:
       connectionManagerTimeout: 10000

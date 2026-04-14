@@ -115,6 +115,8 @@ builds:
     version: "45.3"
   2fc43773-5b1a-49b5-7c3a-39ad25c4ae83:
     version: 77.33.0
+  3043d3ba-c3a1-4ba7-5aa2-6e22c6dff5cc:
+    version: 78.12.0
   31bd40e3-d144-4fae-4441-c86f48088e57:
     version: 74.27.0
   31c3cc81-fe6e-4312-8900-b663c7677ae0:

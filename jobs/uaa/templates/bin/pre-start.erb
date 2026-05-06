@@ -114,12 +114,26 @@ function build_trust_store_file {
 }
 
 function save_new_cache_files_to_persistent_disk {
+    # Do not follow vcap-planted symlinks: unlink destinations before cp.
+    rm -f "$PERSISTENT_OS_CERTS_FILE" "$PERSISTENT_UAA_CA_CERTS_FILE" "$PERSISTENT_LDAP_CERTS_FILE"
     cp $OS_CERTS_FILE $PERSISTENT_OS_CERTS_FILE
     cp $UAA_CA_CERTS_FILE $PERSISTENT_UAA_CA_CERTS_FILE
     cp $LDAP_CERTS_FILE $PERSISTENT_LDAP_CERTS_FILE
 }
 
+function ensure_persistent_cert_dir_secure {
+    # cert-cache is handed to vcap after pre-start; it must not be a symlink
+    # or attacker-controlled mount when root writes here.
+    if [[ -L "${PERSISTENT_CERTS_DIR}" ]] || [[ -e "${PERSISTENT_CERTS_DIR}" && ! -d "${PERSISTENT_CERTS_DIR}" ]]; then
+        rm -rf "${PERSISTENT_CERTS_DIR}"
+    fi
+    mkdir -p "${PERSISTENT_CERTS_DIR}"
+    chown root:root "${PERSISTENT_CERTS_DIR}"
+    chmod 0700 "${PERSISTENT_CERTS_DIR}"
+}
+
 function process_certs {
+    ensure_persistent_cert_dir_secure
     build_new_cache_files
     if ! new_cache_files_are_identical; then
         build_trust_store_file
@@ -140,6 +154,8 @@ function insert_ssl_cert {
         fi
     fi
     log "Installing Server SSL certificate"
+
+    rm -f /var/vcap/data/uaa/uaa_keystore.p12
 
     openssl pkcs12 -export ${FIPS_OPTS} -name uaa_ssl_cert \
         -in /var/vcap/jobs/uaa/config/uaa.crt \

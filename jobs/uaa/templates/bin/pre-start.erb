@@ -176,6 +176,17 @@ function configure_tomcat {
     chown -R vcap:vcap /var/vcap/data/uaa/
 }
 
+function resecure_cert_cache {
+    # configure_tomcat hands all of /var/vcap/data/uaa/ to vcap via chown -R.
+    # Re-secure cert-cache so that the vcap process cannot tamper with the
+    # truststore between deploys. vcap retains read-only access via the
+    # execute bit on the directory and world-readable mode on the files.
+    chown root:root "${PERSISTENT_CERTS_DIR}"
+    chmod 0711 "${PERSISTENT_CERTS_DIR}"
+    find "${PERSISTENT_CERTS_DIR}" -maxdepth 1 -type f -exec chown root:root {} +
+    find "${PERSISTENT_CERTS_DIR}" -maxdepth 1 -type f -exec chmod 0644 {} +
+}
+
 function configure_spring_boot {
     # When run with bpm, the vcap user does not have permissions to read
     # files in the jobs and packages directories. Consequently, we move
@@ -212,6 +223,8 @@ process_certs
 configure_tomcat
 
 configure_spring_boot
+
+resecure_cert_cache
 
 rm -rf $TMP_DIR
 

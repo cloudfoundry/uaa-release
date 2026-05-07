@@ -7,8 +7,7 @@ CYAN='\033[0;36m'
 BOLD='\033[0;1m'
 NC='\033[0m' # No Color
 
-TMPDIR=/tmp
-SAVEDIR=$TMPDIR/uaa-release-save
+SAVEDIR=$(mktemp -d)
 RELEASES=$SAVEDIR/releases
 FINAL_BUILDS=$SAVEDIR/.final_builds
 
@@ -123,12 +122,16 @@ git fetch --all --prune > /dev/null
 
 echo -e "${CYAN}Creating bosh UAA-release ${GREEN} ${1} ${NC} using `bosh -v`"
 
-# we save private.yml to a temp directory
-# just in case it gets deleted during branch switch
+# we save private.yml to a secure temp file so it survives branch switches
+# and is cleaned up automatically on exit.
+PRIVATE_YML_COPY=$(mktemp)
+chmod 0600 "${PRIVATE_YML_COPY}"
+trap 'rm -f "${PRIVATE_YML_COPY}"' EXIT
+
 if [ "$#" -ge 3 ]; then
-    cp $3 /tmp/private.yml
+    cp "$3" "${PRIVATE_YML_COPY}"
 elif [ -f config/private.yml ]; then
-    cp config/private.yml /tmp/private.yml
+    cp config/private.yml "${PRIVATE_YML_COPY}"
 else
     echo -e "${RED}ERROR:${NC} Missing private.yml file" >&2
     usage
@@ -140,7 +143,7 @@ git checkout $branch_to_release_from
 sub_update
 
 # restore private.yml in case it got deleted
-cp /tmp/private.yml config/
+cp "${PRIVATE_YML_COPY}" config/
 
 echo -e "${CYAN}Building tarball ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
 # create a release tar ball - and a dev release

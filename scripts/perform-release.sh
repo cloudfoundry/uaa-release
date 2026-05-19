@@ -126,7 +126,7 @@ echo -e "${CYAN}Creating bosh UAA-release ${GREEN} ${1} ${NC} using `bosh -v`"
 # and is cleaned up automatically on exit.
 PRIVATE_YML_COPY=$(mktemp)
 chmod 0600 "${PRIVATE_YML_COPY}"
-trap 'rm -f "${PRIVATE_YML_COPY}"' EXIT
+trap 'rm -rf "${SAVEDIR}" "${PRIVATE_YML_COPY}"' EXIT
 
 if [ "$#" -ge 3 ]; then
     cp "$3" "${PRIVATE_YML_COPY}"
@@ -143,7 +143,7 @@ git checkout $branch_to_release_from
 sub_update
 
 # restore private.yml in case it got deleted
-cp "${PRIVATE_YML_COPY}" config/
+install -m 0600 "${PRIVATE_YML_COPY}" config/private.yml
 
 echo -e "${CYAN}Building tarball ${GREEN}${1}${NC} and tag with ${GREEN}v${1}${NC}"
 # create a release tar ball - and a dev release

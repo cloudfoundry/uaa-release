@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -e -x
+
+# Thin package: the heavy lifting (compiling the ginkgo suite with the Go
+# toolchain, and fetching its modules) is done in CI -- see uaa-ci's
+# shared/tasks/uaa-release-acceptance-tests/task.sh -- which assembles a
+# single tarball and `bosh add-blob`s it as "acceptance-tests.tgz". The
+# tarball contains, at its top level:
+#   acceptance_tests.test  (the ginkgo v1 suite, go-test-compiled, static)
+#   bosh                   (the bosh CLI the suite shells out to)
+#   opsfiles/              (the suite's scenario ops files)
+# so on the compilation VM we only have to unpack it -- no Go, no network.
+
+cd "${BOSH_INSTALL_TARGET}"
+
+tgz="$(find "${BOSH_COMPILE_TARGET}" -name 'acceptance-tests.tgz' | sort | tail -n1)"
+if [[ -z "${tgz}" ]]; then
+  echo "acceptance-tests.tgz blob not found under ${BOSH_COMPILE_TARGET}" >&2
+  exit 1
+fi
+
+tar zxvf "${tgz}" -C "${BOSH_INSTALL_TARGET}"
+
+chmod +x "${BOSH_INSTALL_TARGET}/acceptance_tests.test" "${BOSH_INSTALL_TARGET}/bosh"

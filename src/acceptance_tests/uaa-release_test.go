@@ -45,10 +45,10 @@ var _ = Describe("UaaRelease", func() {
 
 		expectedNumberOfCerts := len(caCertificatesPemEncodedMap) + numberOfCertsInUaaDockerDeploymentYml
 
-		countNumberOfCerts := runCommandOnUaaViaSsh("/var/vcap/packages/uaa/jdk/bin/keytool -list -storepass 'changeit' -keystore /var/vcap/data/uaa/cert-cache/cacerts")
+		countNumberOfCerts := runCommandOnUaaViaSsh("sudo /var/vcap/packages/uaa/jdk/bin/keytool -list -storepass 'changeit' -keystore /var/vcap/data/uaa/cert-cache/cacerts")
 		Expect(countNumberOfCerts).To(ContainSubstring("Your keystore contains " + strconv.Itoa(expectedNumberOfCerts) + " entries"))
 
-		uaaTrustStoreFingerprints := runCommandOnUaaViaSsh("/var/vcap/packages/uaa/jdk/bin/keytool  -keystore /var/vcap/data/uaa/cert-cache/cacerts -storepass 'changeit' -list  | grep 'Certificate fingerprint'| cut -d ' ' -f 4 ")
+		uaaTrustStoreFingerprints := runCommandOnUaaViaSsh("sudo /var/vcap/packages/uaa/jdk/bin/keytool  -keystore /var/vcap/data/uaa/cert-cache/cacerts -storepass 'changeit' -list  | grep 'Certificate fingerprint'| cut -d ' ' -f 4 ")
 
 		for certificate := range caCertificatesPemEncodedMap {
 			fingerprint, err := getFingerPrint([]byte(certificate))
@@ -60,6 +60,65 @@ var _ = Describe("UaaRelease", func() {
 		Eventually(verifyTomcatIsUsingCorrectTruststore(),
 			5*time.Minute,
 			10*time.Second).Should(BeTrue())
+	})
+
+	Context("hardens the on-disk truststore against symlink attacks", func() {
+		BeforeEach(func() {
+			deployUAA()
+		})
+
+		It("locks down cert-cache to 0700 vcap:vcap so only the uaa process can read it", func() {
+			statOutput := runCommandOnUaaViaSsh("sudo stat -c '%a %U:%G' /var/vcap/data/uaa/cert-cache")
+			Expect(strings.TrimSpace(statOutput)).To(Equal("700 vcap:vcap"))
+		})
+
+		It("replaces a pre-planted symlink at cert-cache with a real directory on next pre-start", func() {
+			// Threat model: an attacker with vcap-level access (a compromised
+			// UAA process) plants a symlink at cert-cache before the next
+			// pre-start runs. Without the defense in ensure_persistent_cert_dir_secure,
+			// pre-start would run as root and follow the symlink, writing
+			// keystore material into the attacker-chosen target.
+			runCommandOnUaaViaSsh(strings.Join([]string{
+				"sudo rm -rf /tmp/canary-dir",
+				"sudo mkdir -p /tmp/canary-dir",
+				"echo untouched | sudo tee /tmp/canary-dir/sentinel > /dev/null",
+				"sudo rm -rf /var/vcap/data/uaa/cert-cache",
+				"sudo ln -s /tmp/canary-dir /var/vcap/data/uaa/cert-cache",
+				"sudo /var/vcap/jobs/uaa/bin/pre-start > /dev/null 2>&1",
+			}, " && "))
+			defer runCommandOnUaaViaSsh("sudo rm -rf /tmp/canary-dir")
+
+			kind := runCommandOnUaaViaSsh("sudo test -L /var/vcap/data/uaa/cert-cache && echo LINK || echo DIR")
+			Expect(strings.TrimSpace(kind)).To(Equal("DIR"))
+
+			listing := runCommandOnUaaViaSsh("sudo ls /tmp/canary-dir")
+			Expect(strings.TrimSpace(listing)).To(Equal("sentinel"))
+
+			sentinel := runCommandOnUaaViaSsh("sudo cat /tmp/canary-dir/sentinel")
+			Expect(strings.TrimSpace(sentinel)).To(Equal("untouched"))
+		})
+
+		It("does not follow vcap-planted symlinks for individual cache files on next pre-start", func() {
+			// Threat model: vcap can write inside cert-cache (which is
+			// 0700 vcap:vcap after configure_tomcat). An attacker replaces
+			// one of the cache files with a symlink to a privileged path;
+			// without the rm -f before cp in save_new_cache_files_to_persistent_disk,
+			// pre-start's cp would follow the symlink and overwrite the
+			// attacker-chosen target.
+			runCommandOnUaaViaSsh(strings.Join([]string{
+				"sudo rm -f /tmp/canary-file",
+				"echo untouched | sudo tee /tmp/canary-file > /dev/null",
+				"sudo ln -sf /tmp/canary-file /var/vcap/data/uaa/cert-cache/os-certs-cache.txt",
+				"sudo /var/vcap/jobs/uaa/bin/pre-start > /dev/null 2>&1",
+			}, " && "))
+			defer runCommandOnUaaViaSsh("sudo rm -f /tmp/canary-file")
+
+			canary := runCommandOnUaaViaSsh("sudo cat /tmp/canary-file")
+			Expect(strings.TrimSpace(canary)).To(Equal("untouched"))
+
+			kind := runCommandOnUaaViaSsh("sudo test -L /var/vcap/data/uaa/cert-cache/os-certs-cache.txt && echo LINK || echo FILE")
+			Expect(strings.TrimSpace(kind)).To(Equal("FILE"))
+		})
 	})
 
 	XContext("UAA consuming the `database` link", func() {
@@ -112,7 +171,7 @@ var _ = Describe("UaaRelease", func() {
 			deployUAA("./opsfiles/two-db-instances.yml")
 
 			By("stopping the first DB instance", func() {
-				cmd := exec.Command(boshBinaryPath, "-d", "uaa", "stop", "-n", "database/0")
+				cmd := exec.Command(boshBinaryPath, "-d", os.Getenv("BOSH_DEPLOYMENT"), "stop", "-n", "database/0")
 				session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 				Expect(err).NotTo(HaveOccurred())
 				Eventually(session, 5*time.Minute).Should(gexec.Exit(0))

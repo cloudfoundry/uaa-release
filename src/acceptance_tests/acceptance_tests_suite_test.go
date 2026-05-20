@@ -34,15 +34,19 @@ var (
 	directorClient       string
 	directorClientSecret string
 
+	// No "-d uaa": the deployment is taken from $BOSH_DEPLOYMENT so the
+	// suite operates on whatever deployment the caller targets (e.g. a
+	// build-unique name on a shared director) rather than a hardcoded
+	// "uaa" that would collide with cf-deployment's own uaa.
 	deployCmd = []string{"-n", "deploy", "/tmp/uaa-deployment.yml", "-o", "./opsfiles/enable-local-uaa.yml", "--vars-store=/tmp/uaa-store.json", "-v", "system_domain=localhost"}
-	deleteCmd = []string{"-n", "delete-deployment", "-d", "uaa"}
+	deleteCmd = []string{"-n", "delete-deployment"}
 )
 
 var _ = BeforeSuite(func() {
 	setBoshEnvironmentVariables()
 
 	By("disabling bosh resurrection", func() {
-		disableResurrectionCmd := exec.Command(boshBinaryPath, "-d", "uaa", "update-resurrection", "-n", "off")
+		disableResurrectionCmd := exec.Command(boshBinaryPath, "-d", os.Getenv("BOSH_DEPLOYMENT"), "update-resurrection", "-n", "off")
 		session, err := gexec.Start(disableResurrectionCmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 		Eventually(session, 5*time.Minute).Should(gexec.Exit(0))

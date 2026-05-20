@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+#
+# Errand entrypoint for the uaa-release acceptance suite. BOSH renders
+# this ERB (substituting the director credentials and the rendered UAA
+# manifest), copies it to /var/vcap/jobs/acceptance-tests/bin/run, and
+# runs it as root on a VM the director places on the deployment network.
+#
+# Running here -- rather than from the Concourse worker -- is the whole
+# point of the errand: it is in-region, so `bosh ssh`/`bosh scp` through
+# the jumpbox and the HTTP calls to the UAA instance are LAN-fast and the
+# suite's hardcoded 10s scp Eventually passes, and /etc/hosts is a normal
+# writable file (so the suite's addLocalDNS helper works).
+
+set -euo pipefail
+
+PKG=/var/vcap/packages/acceptance-tests
+RUN_DIR=/var/vcap/data/acceptance-tests
+mkdir -p "${RUN_DIR}"
+
+# The BOSH agent runs errands with no $HOME; the bosh CLI needs it to
+# create ~/.bosh (else: "Getting current user home dir: $HOME is not
+# defined"). Point it at our writable data dir.
+export HOME="${RUN_DIR}"
+
+# The suite reads BOSH_CA_CERT as a *path* (it os.ReadFile()s it), so
+# materialise the cert contents to a file. Quoted heredoc: ERB has
+# already substituted the cert text; the quotes stop the shell from
+# mangling it.
+CA_CERT_FILE="${RUN_DIR}/bosh-ca.pem"
+cat > "${CA_CERT_FILE}" <<'EOF_BOSH_CA_CERT'
+<%= p('bosh.ca_cert') %>
+EOF_BOSH_CA_CERT
+
+export BOSH_ENVIRONMENT="<%= p('bosh.environment') %>"
+export BOSH_CLIENT="<%= p('bosh.client') %>"
+export BOSH_CLIENT_SECRET="<%= p('bosh.client_secret') %>"
+export BOSH_CA_CERT="${CA_CERT_FILE}"
+export BOSH_DEPLOYMENT="<%= p('bosh.deployment') %>"
+
+# The suite builds a BOSH SDK client from BOSH_DIRECTOR_IP (bbl print-env
+# does not set it); derive it from the director URL host.
+director_host="${BOSH_ENVIRONMENT#http*://}"
+export BOSH_DIRECTOR_IP="${director_host%%:*}"
+
+# The director's :25555 is firewalled to the jumpbox, so even from this
+# on-network VM we must reach it through the jumpbox SOCKS5 proxy.
+# Materialise the jumpbox key and point BOSH_ALL_PROXY at it. Quoted
+# heredoc: ERB has already substituted the key; the quotes keep the
+# shell from mangling it.
+JUMPBOX_KEY_FILE="${RUN_DIR}/jumpbox.key"
+cat > "${JUMPBOX_KEY_FILE}" <<'EOF_JUMPBOX_KEY'
+<%= p('bosh.jumpbox_private_key') %>
+EOF_JUMPBOX_KEY
+chmod 600 "${JUMPBOX_KEY_FILE}"
+export BOSH_ALL_PROXY="<%= p('bosh.all_proxy') %>?private-key=${JUMPBOX_KEY_FILE}"
+
+# The suite (re)deploys from this exact path per scenario. The manifest
+# is delivered base64-encoded so BOSH never sees its inner ((vars)) when
+# it interpolates THIS errand deployment; decode it back verbatim here
+# (its ((vars)) are resolved later by the suite's own --vars-store).
+printf '%s' '<%= p('uaa_deployment_manifest_b64') %>' | base64 -d > /tmp/uaa-deployment.yml
+
+# Silence the v1.16.5 "Ginkgo 2.0 is coming soon!" banner.
+export ACK_GINKGO_RC=true
+
+# Our bosh CLI ships in the package; the suite shells out to `bosh`.
+export PATH="${PKG}:${PATH}"
+
+# The suite reads opsfiles via "./opsfiles/..." relative to its working
+# directory, so run from the package dir where they were unpacked.
+cd "${PKG}"
+
+# acceptance_tests.test is the ginkgo v1 suite compiled in CI (go test
+# -c). A compiled v1 binary exposes the runtime flags under the -ginkgo.
+# prefix. The old task used the ginkgo CLI:
+#   ginkgo -v --progress --trace -keepGoing -randomizeAllSpecs -randomizeSuites -r .
+# but -r/-keepGoing/-randomizeSuites are CLI-only multi-suite concepts
+# and are NOT registered on a single compiled binary -- passing them
+# would abort with "flag provided but not defined". They are also moot
+# here: this is one suite, and ginkgo already runs every spec regardless
+# of failures unless -ginkgo.failFast is set (it is not). So the set
+# below is the faithful single-binary equivalent.
+exec ./acceptance_tests.test \
+  -ginkgo.v \
+  -ginkgo.progress \
+  -ginkgo.trace \
+  -ginkgo.randomizeAllSpecs

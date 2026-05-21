@@ -1,0 +1,5 @@
+---
+name: acceptance-tests
+dependencies:
+files:
+- acceptance-tests.tgz

@@ -1,0 +1,37 @@
+---
+name: acceptance-tests
+
+# Errand job: runs the uaa-release ginkgo acceptance suite from a VM that
+# the director schedules on the deployment network. Running on-network is
+# deliberate -- the suite shells out to `bosh ssh`/`bosh scp` against the
+# UAA instance and makes HTTP calls to it. From a Concourse worker those
+# went through the bbl SOCKS5 jumpbox and timed out (the suite's scp
+# helpers hardcode a 10s Eventually), and /etc/hosts there is a read-only
+# runc bind mount so the suite's addLocalDNS helper failed with EACCES.
+# A normal BOSH VM on the deployment network has direct line-of-sight to
+# the director/instances (no jumpbox) and a writable /etc/hosts, so both
+# of those bosh-lite-era assumptions in the suite hold again.
+
+templates:
+  run.erb: bin/run
+
+packages:
+- acceptance-tests
+
+properties:
+  bosh.environment:
+    description: "BOSH director URL the suite targets for deploy/ssh/scp (e.g. https://10.0.0.6:25555)."
+  bosh.client:
+    description: "BOSH director client (username) the suite authenticates with."
+  bosh.client_secret:
+    description: "BOSH director client secret."
+  bosh.ca_cert:
+    description: "PEM contents of the BOSH director CA certificate. Materialised to a file because the suite reads BOSH_CA_CERT as a path."
+  bosh.deployment:
+    description: "Name of the UAA deployment the suite deploys/targets. Exported as BOSH_DEPLOYMENT; the suite has no hardcoded deployment name."
+  bosh.all_proxy:
+    description: "Jumpbox SOCKS5 endpoint (ssh+socks5://jumpbox@host:port, no private-key query). The director's :25555 is firewalled to the jumpbox, so the suite reaches it via this proxy. run.erb appends ?private-key=<file> after materialising the key."
+  bosh.jumpbox_private_key:
+    description: "PEM contents of the jumpbox SSH private key. Materialised to a file referenced by BOSH_ALL_PROXY."
+  uaa_deployment_manifest_b64:
+    description: "Base64 of the rendered UAA deployment manifest. Base64 so BOSH does not try to resolve the manifest's own ((vars)) against the errand deployment when it interpolates the errand manifest. run.erb decodes it to /tmp/uaa-deployment.yml; the suite (re)deploys from that exact path per scenario and resolves the ((vars)) itself via its --vars-store."

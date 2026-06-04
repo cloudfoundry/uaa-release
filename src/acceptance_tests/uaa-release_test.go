@@ -221,9 +221,9 @@ var _ = Describe("UaaRelease", func() {
 		Expect(string(session.Wait().Out.Contents())).To(MatchRegexp(uaaLogFormat))
 	},
 		Entry("when UAA log format is not set and default value is used",
-			`^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{6})Z\]`+logLineWithoutTimestampRegex),
+			`^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{6,9})Z\]`+logLineWithoutTimestampRegex),
 		Entry("when UAA logs are configured to rfc3339",
-			`^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{6})Z\]`+logLineWithoutTimestampRegex,
+			`^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{6,9})Z\]`+logLineWithoutTimestampRegex,
 			"./opsfiles/configure-to-rfc3339-log-format.yml"),
 		Entry("when UAA logs are configured to rfc3339-legacy",
 			`^\[(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}\.\d{3})Z\]`+logLineWithoutTimestampRegex,

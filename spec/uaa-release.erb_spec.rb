@@ -1415,7 +1415,7 @@ describe 'uaa-release erb generation' do
       context 'when uaa.logging.format.timestamp is not set' do
           it 'uses default value of rfc3339 and sets log_pattern to conform to rfc3339 with microsecond and UTC timezone' do
               log4j2_template = File.read(log4j2_template_path)
-              expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.SSSSSS}{GMT+0}Z"
+              expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.nnnnnn}{GMT+0}Z"
               expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
           end
       end
@@ -1428,7 +1428,7 @@ describe 'uaa-release erb generation' do
 
             it 'sets log_pattern to conform to rfc3339 with microsecond and UTC timezone' do
                 log4j2_template = File.read(log4j2_template_path)
-                expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.SSSSSS}{GMT+0}Z"
+                expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.nnnnnn}{GMT+0}Z"
                 expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
             end
           end

@@ -64,7 +64,7 @@ jobs:
           curl --location --output "${BELLSOFT_JDK_TARBALL}" "${download_url}"
           echo "${download_checksum}  ${BELLSOFT_JDK_TARBALL}" | shasum --algorithm=1 --check -
           
-          if [[ $? -ne 0 ]]; then
+          if ! echo "${download_checksum}  ${BELLSOFT_JDK_TARBALL}" | shasum --algorithm=1 --check -; then
             echo "Invalid download SHA1"
             exit 1
           fi

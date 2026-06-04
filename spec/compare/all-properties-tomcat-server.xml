@@ -16,6 +16,7 @@
                    port="55555"
                    bindOnInit="true"
                    maxHttpHeaderSize="14336"
+                   maxParameterCount="10000"
         />
 
         <Connector protocol="org.apache.coyote.http11.Http11NioProtocol"
@@ -26,6 +27,7 @@
                    secure="true"
                    bindOnInit="false"
                    maxHttpHeaderSize="14336"
+                   maxParameterCount="10000"
                    keepAliveTimeout="120000">
             <SSLHostConfig protocols="TLSv1.2,TLSv1.3"
                            ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384">

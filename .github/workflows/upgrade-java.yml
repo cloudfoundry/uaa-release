@@ -1,0 +1,93 @@
+name: Update Java Blob
+
+on:
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+
+jobs:
+  upgrade-java:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        java: [ '25' ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup BOSH CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir /tmp/bosh
+          gh release download --repo cloudfoundry/bosh-cli --pattern "*-linux-amd64" --output /tmp/bosh/bosh
+          chmod +x /tmp/bosh/bosh
+          PATH=$PATH:/tmp/bosh
+          echo "/tmp/bosh" >> $GITHUB_PATH
+          bosh --version
+
+      - name: Setup Git
+        run: |
+          git config --global user.email "identity-uaa+ci@pivotal.io"
+          git config --global user.name "UAA Identity Bot"
+
+      - name: Setup BOSH
+        env:
+          PRIVATE_YML: ${{ secrets.PRIVATE_YML }}
+        run: |
+          echo "${PRIVATE_YML}" > config/private.yml
+          echo "key_id: $(sed -nE 's/.*access_key_id:.(.{2}).*(.{4})$/\1...\2/p' config/private.yml)"
+
+      - name: Check Java Version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          java_major_version=${{ matrix.java }}
+          binary_metadata_url="https://api.bell-sw.com/v1/liberica/releases?version-modifier=latest"
+          binary_metadata_url+="&version-feature=${java_major_version}"
+          binary_metadata_url+="&os=linux"
+          binary_metadata_url+="&arch=x86"
+          binary_metadata_url+="&bitness=64"
+          binary_metadata_url+="&bundle-type=jdk"
+          binary_metadata_url+="&installation-type=archive"
+          
+          binary_metadata="$(curl "${binary_metadata_url}" --silent)"
+          echo "${binary_metadata}" | jq '.'
+          download_url="$(echo "${binary_metadata}" | jq '.[0].downloadUrl' -r)"
+          download_checksum="$(echo "${binary_metadata}" | jq '.[0].sha1' -r)"
+          
+          JDK_VERSION="$(echo "${binary_metadata}" | jq '.[0].version' -r)"
+          BELLSOFT_JDK_TARBALL="bellsoft-${JDK_VERSION}.tar.gz"
+          echo "# Bellsoft JDK v${JDK_VERSION}" >> $GITHUB_STEP_SUMMARY
+          curl --location --output "${BELLSOFT_JDK_TARBALL}" "${download_url}"
+          echo "${download_checksum}  ${BELLSOFT_JDK_TARBALL}" | shasum --algorithm=1 --check -
+          
+          if ! echo "${download_checksum}  ${BELLSOFT_JDK_TARBALL}" | shasum --algorithm=1 --check -; then
+            echo "Invalid download SHA1"
+            exit 1
+          fi
+
+          OLD_JDK_NAME=$(bosh blobs | grep bellsoft | cut -f1 | tr -d ' ')
+          
+          if [[ "${OLD_JDK_NAME}" == "${BELLSOFT_JDK_TARBALL}" ]]; then
+            echo "## ☑️ No new version of bellsoft-${JDK_VERSION} found." >> $GITHUB_STEP_SUMMARY 
+            exit 0
+          fi
+          
+          echo "## ✅ Found new version ${BELLSOFT_JDK_TARBALL}" >> $GITHUB_STEP_SUMMARY
+          echo "Previous Version: ${OLD_JDK_NAME}" >> $GITHUB_STEP_SUMMARY
+
+          bosh add-blob --sha2 "${BELLSOFT_JDK_TARBALL}" "${BELLSOFT_JDK_TARBALL}"
+          bosh upload-blobs
+          bosh remove-blob "${OLD_JDK_NAME}"
+          
+          git status
+          git add config/blobs.yml
+          git status
+          
+          git commit -m "Upgrade Bellsoft JDK to version ${JDK_VERSION}"
+          git push
+          
+          echo "✅ Committed $(git log -n 1 --graph --pretty='%Cred%h%Creset - %s%Creset' | sed 's/^.//')" >> $GITHUB_STEP_SUMMARY

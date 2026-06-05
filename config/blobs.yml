@@ -2,10 +2,10 @@ acceptance-tests.tgz:
   size: 35674055
   object_id: 6f8e4fdc-7aba-4917-679a-a51d353b01cc
   sha: sha256:4c80c7550fbfbbc811e16b0317dbf431623216acd3ae4511e2f565814c916e50
-apache-tomcat-10.1.55.tar.gz:
-  size: 14343328
-  object_id: fdc08f28-84bc-4126-768a-3e2b90c999e4
-  sha: sha256:978a0d0890345eec52a38c9670a8e112d4cc8cf8cb10ef41d05d6b7178857495
+apache-tomcat-11.0.22.tar.gz:
+  size: 14370214
+  object_id: d46ff8be-29a9-4e55-5b18-5fead450f600
+  sha: sha256:73d239232f14dfde2278e8d931f767ed454aed9b018e4d70a1d404c2579b5998
 bellsoft-25.0.3+11.tar.gz:
   size: 259966993
   object_id: f714c648-e46a-4ed9-66fa-7ab1da5ce9b7

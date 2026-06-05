@@ -1,0 +1,96 @@
+name: Update Tomcat Blob
+
+on:
+  schedule:
+    - cron: "15 1 * * *"
+  workflow_dispatch:
+
+env:
+  TOMCAT_BASE_URL: "https://dlcdn.apache.org/tomcat"
+
+jobs:
+  upgrade-tomcat:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        tomcat: [ '11' ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup BOSH CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir /tmp/bosh
+          gh release download --repo cloudfoundry/bosh-cli --pattern "*-linux-amd64" --output /tmp/bosh/bosh
+          chmod +x /tmp/bosh/bosh
+          PATH=$PATH:/tmp/bosh
+          echo "/tmp/bosh" >> $GITHUB_PATH
+          bosh --version
+
+      - name: Setup Git
+        run: |
+          git config --global user.email "identity-uaa+ci@pivotal.io"
+          git config --global user.name "UAA Identity Bot"
+
+      - name: BOSH Setup
+        env:
+          PRIVATE_YML: ${{ secrets.PRIVATE_YML }}
+        run: |
+          echo "${PRIVATE_YML}" > config/private.yml
+          echo "key_id: $(sed -nE 's/.*access_key_id:.(.{2}).*(.{4})$/\1...\2/p' config/private.yml)"
+      - name: Check Tomcat Version
+        env:
+          TOMCAT_VERSION: ${{ matrix.tomcat }}
+        run: |
+          TOMCAT_INDEX_URL=${TOMCAT_BASE_URL}/tomcat-${TOMCAT_VERSION}
+          tomcat_versions="$(curl -sSfL "${TOMCAT_INDEX_URL}" \
+            | sed -nr 's/^.*<a href="v([0-9\.]+)\/">.*$/\1/p' \
+            | sort --version-sort )"
+          echo "${tomcat_versions}" 
+          LATEST_TOMCAT_VERSION=$( echo "${tomcat_versions}" | tail -n 1 )
+          
+          echo "# Apache Tomcat v${LATEST_TOMCAT_VERSION}" >> $GITHUB_STEP_SUMMARY
+          if [[ -z "${LATEST_TOMCAT_VERSION}" ]]; then
+            echo "## ERROR: Did not find any versions of tomcat at $TOMCAT_INDEX_URL" >> $GITHUB_STEP_SUMMARY 
+            exit 1
+          fi
+        
+          TOMCAT_URL="${TOMCAT_INDEX_URL}/v${LATEST_TOMCAT_VERSION}/bin/apache-tomcat-${LATEST_TOMCAT_VERSION}.tar.gz"
+          OLD_TOMCAT_NAME=$(bosh blobs | grep "tomcat-${TOMCAT_VERSION}" | cut -f1 | tr -d ' ')        
+          NEW_TOMCAT_NAME="apache-tomcat-${LATEST_TOMCAT_VERSION}.tar.gz"
+          if [[ "${OLD_TOMCAT_NAME}" == "${NEW_TOMCAT_NAME}" ]]; then
+            echo "## ☑️ No new version of tomcat-${TOMCAT_VERSION} found." >> $GITHUB_STEP_SUMMARY 
+            exit 0
+          fi
+          
+          echo "## ✅ Found new version ${LATEST_TOMCAT_VERSION} of tomcat" >> $GITHUB_STEP_SUMMARY
+          echo "Previous Version: ${OLD_TOMCAT_NAME}" >> $GITHUB_STEP_SUMMARY
+
+          TOMCAT_FILENAME=$(basename "${NEW_TOMCAT_NAME}")
+          curl -fL -o "${TOMCAT_FILENAME}" "${TOMCAT_URL}"
+          curl -fL -o tomcat_sha "${TOMCAT_URL}.sha512"
+          DOWNLOADED_FILE_SUM=$(sha512sum "${TOMCAT_FILENAME}" | cut -f1 -d ' ')
+          EXPECTED_SUM=$(cat tomcat_sha | cut -f1 -d ' ')
+          
+          if [[ "${DOWNLOADED_FILE_SUM}" != "${EXPECTED_SUM}" ]]; then
+            echo "## ERROR: Downloaded file did not match expected checksum" >> $GITHUB_STEP_SUMMARY 
+            exit 1
+          fi
+          
+          bosh add-blob --sha2 "${TOMCAT_FILENAME}" "${NEW_TOMCAT_NAME}"
+          bosh upload-blobs
+          bosh remove-blob "${OLD_TOMCAT_NAME}"
+          
+          git status
+          git add config/blobs.yml
+          git status
+          
+          git commit -m "Upgrade Tomcat to version $LATEST_TOMCAT_VERSION"
+          git push
+          
+          commit_id=$(git log -n 1 --graph --pretty='%Cred%h%Creset - %s%Creset' | sed 's/^.//')
+          echo "✅ Committed ${commit_id}" >> $GITHUB_STEP_SUMMARY

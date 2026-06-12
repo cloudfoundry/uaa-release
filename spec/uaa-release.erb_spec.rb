@@ -196,6 +196,107 @@ describe 'uaa-release erb generation' do
       end
 
     end
+
+    context 'for a bosh-lite.yml with new security defaults' do
+      let(:input) {'spec/input/bosh-lite.yml'}
+      let(:output_uaa) {'spec/compare/bosh-lite-uaa-defaults.yml'}
+      let(:output_log4j2) {'spec/compare/bosh-lite-log4j2-defaults.properties'}
+
+      before do
+        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['matching_mode'] = 'exact'
+        generated_cf_manifest['properties']['uaa']['logging_level'] = 'INFO'
+      end
+
+      context 'when uaa.yml.erb is provided' do
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+
+        it 'matches' do
+          yml_compare(output_uaa, parsed_yaml.to_yaml)
+        end
+      end
+
+      context 'when log4j2.properties.erb is provided' do
+        let(:erb_template) {'../jobs/uaa/templates/config/log4j2.properties.erb'}
+        let(:as_yml) {false}
+
+        it 'matches' do
+          str_compare output_log4j2, parsed_yaml.to_s
+        end
+      end
+    end
+
+    context 'for a all-properties-set.yml with new security defaults' do
+      let(:input) {'spec/input/all-properties-set.yml'}
+      let(:output_uaa) {'spec/compare/all-properties-set-uaa-defaults.yml'}
+      let(:output_log4j2) {'spec/compare/all-properties-set-log4j2-defaults.properties'}
+
+      before do
+        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['matching_mode'] = 'exact'
+        generated_cf_manifest['properties']['uaa']['logging_level'] = 'INFO'
+      end
+
+      context 'when uaa.yml.erb is provided' do
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+
+        it 'matches' do
+          yml_compare(output_uaa, parsed_yaml.to_yaml)
+        end
+      end
+
+      context 'when log4j2.properties.erb is provided' do
+        let(:erb_template) {'../jobs/uaa/templates/config/log4j2.properties.erb'}
+        let(:as_yml) {false}
+
+        it 'matches' do
+          str_compare output_log4j2, parsed_yaml.to_s
+        end
+      end
+    end
+
+    context 'for test-defaults.yml with new security defaults' do
+      let(:input) {'spec/input/test-defaults.yml'}
+      let(:output_uaa) {'spec/compare/test-defaults-uaa-defaults.yml'}
+      let(:output_log4j2) {'spec/compare/test-defaults-log4j2-defaults.properties'}
+
+      before do
+        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['matching_mode'] = 'exact'
+        generated_cf_manifest['properties']['uaa']['logging_level'] = 'INFO'
+      end
+
+      context 'when uaa.yml.erb is provided' do
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+
+        it 'matches' do
+          yml_compare output_uaa, parsed_yaml.to_yaml
+        end
+      end
+
+      context 'when log4j2.properties.erb is provided' do
+        let(:erb_template) {'../jobs/uaa/templates/config/log4j2.properties.erb'}
+        let(:as_yml) {false}
+
+        it 'matches' do
+          str_compare output_log4j2, parsed_yaml.to_s
+        end
+      end
+    end
+
+    context 'for deprecated-properties-still-work.yml with new security defaults' do
+      let(:input) {'spec/input/deprecated-properties-still-work.yml'}
+      let(:output_uaa) {'spec/compare/deprecated-properties-still-work-uaa-defaults.yml'}
+
+      before do
+        generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['matching_mode'] = 'exact'
+      end
+
+      context 'when uaa.yml.erb is provided' do
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+
+        it 'matches' do
+          yml_compare output_uaa, parsed_yaml.to_yaml
+        end
+      end
+    end
   end
 
   context 'health_check' do
@@ -674,11 +775,19 @@ describe 'uaa-release erb generation' do
       end
     end
 
-    context 'when set to legacy' do
+    context 'when not explicitly set (pre-fix: input defaults to legacy)' do
       before { generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['matching_mode'] = 'legacy' }
 
       it 'results in allow_unsafe_matching: true' do
         expect(parsed_yaml['uaa']['oauth']['redirect_uri']['allow_unsafe_matching']).to eq(true)
+      end
+    end
+
+    context 'when not set by the user' do
+      before { generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['matching_mode'] = 'exact' }
+
+      it 'defaults to false (exact matching)' do
+        expect(parsed_yaml['uaa']['oauth']['redirect_uri']['allow_unsafe_matching']).to eq(false)
       end
     end
   end
@@ -1493,6 +1602,67 @@ describe 'uaa-release erb generation' do
         end
       end
 
+  end
+
+  describe 'logging formats with new security defaults' do
+      let(:input) {'spec/input/test-defaults.yml'}
+
+      let(:erb_template) {'../jobs/uaa/templates/config/log4j2.properties.erb'}
+      let(:log4j2_template_path) {'spec/compare/default-log4j2-template-defaults.properties'}
+      let(:as_yml) {false}
+
+      let(:generated_cf_manifest) {generate_cf_manifest(input)}
+      let(:parsed_yaml) {read_and_parse_string_template(erb_template, generated_cf_manifest, as_yml)}
+
+      before do
+        generated_cf_manifest['properties']['uaa']['logging_level'] = 'INFO'
+      end
+
+      context 'when uaa.logging.format.timestamp is not set' do
+          it 'uses default value of rfc3339 and sets log_pattern with INFO log level' do
+              log4j2_template = File.read(log4j2_template_path)
+              expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.nnnnnn}{GMT+0}Z"
+              expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+          end
+      end
+
+      context 'when uaa.logging.format.timestamp is configured to' do
+          context 'rfc3339' do
+            before do
+              generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'rfc3339'}}
+            end
+
+            it 'sets log_pattern to conform to rfc3339 with INFO log level' do
+                log4j2_template = File.read(log4j2_template_path)
+                expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.nnnnnn}{GMT+0}Z"
+                expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+            end
+          end
+
+          context 'rfc3339-legacy' do
+            before do
+              generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'rfc3339-legacy'}}
+            end
+
+            it 'sets log_pattern for rfc3339-legacy format with INFO log level' do
+              log4j2_template = File.read(log4j2_template_path)
+              expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}"
+              expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+            end
+          end
+
+          context 'deprecated' do
+            before do
+              generated_cf_manifest['properties']['uaa']['logging'] = {'format' => {'timestamp' => 'deprecated'}}
+            end
+
+            it 'sets log_pattern to deprecated format with INFO log level' do
+              log4j2_template = File.read(log4j2_template_path)
+              expected_output_log4j2 = log4j2_template.sub! 'EXPECTED_LOG_PATTERN_PLACEHOLDER', "%d{yyyy-MM-dd HH:mm:ss.SSS}"
+              expect(parsed_yaml.to_s).to eq(expected_output_log4j2)
+            end
+          end
+      end
   end
 
   def self.perform_compare(input)

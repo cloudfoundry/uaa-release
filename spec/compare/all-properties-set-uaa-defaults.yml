@@ -1,0 +1,724 @@
+---
+name: uaa
+encryption:
+  active_key_label: key1
+  encryption_keys:
+    - label: key1
+      passphrase: 12345678
+disableInternalAuth: true
+disableInternalUserManagement: true
+issuer:
+  uri: http://all-properties-set:8888/uaa
+spring_profiles: mysql,ldap
+logging:
+  config: "/var/vcap/jobs/uaa/config/log4j2.properties"
+database:
+  url: jdbc:mysql://10.244.0.30:5524/uaadb?useSSL=true&enabledSslProtocolSuites=TLSv1.2&tcpKeepAlive=true&usePipelineAuth=false
+  username: uaaadmin
+  password: admin
+  maxactive: 101
+  maxidle: 11
+  minidle: 1
+  removeabandoned: true
+  logabandoned: false
+  abandonedtimeout: 301
+  caseinsensitive: true
+  testwhileidle: true
+
+delete:
+  clients:
+    - client-to-be-deleted-1
+    - client-to-be-deleted-2
+  users:
+    - user-to-be-deleted-1
+    - user-to-be-deleted-2
+  identityProviders:
+    - google
+    - octa
+
+authentication:
+  enableUriEncodingCompatibilityMode: false
+  policy:
+    lockoutAfterFailures: 5
+    countFailuresWithinSeconds: 1200
+    lockoutPeriodSeconds: 300
+    global:
+      lockoutAfterFailures: 5
+      countFailuresWithinSeconds: 1200
+      lockoutPeriodSeconds: 300
+password:
+  policy:
+    minLength: 0
+    maxLength: 255
+    requireUpperCaseCharacter: 0
+    requireLowerCaseCharacter: 0
+    requireDigit: 0
+    requireSpecialCharacter: 0
+    expirePasswordInMonths: 0
+    global:
+      minLength: 0
+      maxLength: 255
+      requireUpperCaseCharacter: 0
+      requireLowerCaseCharacter: 0
+      requireDigit: 0
+      requireSpecialCharacter: 0
+      expirePasswordInMonths: 0
+zones:
+  internal:
+    hostnames:
+    - login.test-domain.com
+    - host1.test
+    - host2.test
+    - host3.test
+jwt:
+  token:
+    queryString:
+      enabled: false
+    revocable: true
+    policy:
+      accessTokenValiditySeconds: 43200
+      refreshTokenValiditySeconds: 2592000
+      global:
+        accessTokenValiditySeconds: 43200
+        refreshTokenValiditySeconds: 2592000
+      activeKeyId: key-1
+      keys:
+        key-1:
+          signingKey: |
+            -----BEGIN RSA PRIVATE KEY-----
+            MIICXgIBAAKBgQDfTLadf6QgJeS2XXImEHMsa+1O7MmIt44xaL77N2K+J/JGpfV3
+            AnkyB06wFZ02sBLB7hko42LIsVEOyTuUBird/3vlyHFKytG7UEt60Fl88SbAEfsU
+            JN1i1aSUlunPS/NCz+BKwwKFP9Ss3rNImE9Uc2LMvGy153LHFVW2zrjhTwIDAQAB
+            AoGBAJDh21LRcJITRBQ3CUs9PR1DYZPl+tUkE7RnPBMPWpf6ny3LnDp9dllJeHqz
+            a3ACSgleDSEEeCGzOt6XHnrqjYCKa42Z+Opnjx/OOpjyX1NAaswRtnb039jwv4gb
+            RlwT49Y17UAQpISOo7JFadCBoMG0ix8xr4ScY+zCSoG5v0BhAkEA8llNsiWBJF5r
+            LWQ6uimfdU2y1IPlkcGAvjekYDkdkHiRie725Dn4qRiXyABeaqNm2bpnD620Okwr
+            sf7LY+BMdwJBAOvgt/ZGwJrMOe/cHhbujtjBK/1CumJ4n2r5V1zPBFfLNXiKnpJ6
+            J/sRwmjgg4u3Anu1ENF3YsxYabflBnvOP+kCQCQ8VBCp6OhOMcpErT8+j/gTGQUL
+            f5zOiPhoC2zTvWbnkCNGlqXDQTnPUop1+6gILI2rgFNozoTU9MeVaEXTuLsCQQDC
+            AGuNpReYucwVGYet+LuITyjs/krp3qfPhhByhtndk4cBA5H0i4ACodKyC6Zl7Tmf
+            oYaZoYWi6DzbQQUaIsKxAkEA2rXQjQFsfnSm+w/9067ChWg46p4lq5Na2NpcpFgH
+            waZKhM1W0oB8MX78M+0fG3xGUtywTx0D4N7pr1Tk2GTgNw==
+            -----END RSA PRIVATE KEY-----
+    claims:
+      exclude:
+      - authorities
+      - username
+    signing-key: |
+      signing-key with some
+      line feeds in it
+    verification-key: |
+      verification-key with some
+      line feeds in it
+    refresh:
+      restrict_grant: true
+      unique: true
+      rotate: true
+      format: opaque
+cors:
+  default:
+    allowed:
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type
+        - X-Requested-With
+      origin:
+        - ^localhost$
+        - ^.*\.localhost$
+      uris:
+        - ^/uaa/userinfo$
+        - ^/uaa/logout\.do$
+      methods:
+        - GET
+        - PUT
+        - POST
+        - DELETE
+        - OPTIONS
+      credentials: true
+    max_age: 10
+  xhr:
+    allowed:
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type
+        - X-Requested-With
+      origin:
+        - ^localhost$
+        - ^.*\.localhost$
+      uris:
+        - ^/uaa/userinfo$
+        - ^/uaa/logout\.do$
+      methods:
+        - GET
+        - OPTIONS
+      credentials: true
+    max_age: 10
+  enforceSystemZonePolicyInAllZones: true
+csp:
+  script-src:
+    - "'self'"
+oauth:
+  client:
+    secret:
+      policy:
+        minLength: 8
+        maxLength: 128
+        requireUpperCaseCharacter: 1
+        requireLowerCaseCharacter: 3
+        requireDigit: 2
+        requireSpecialCharacter: 0
+        expireSecretInMonths: 7
+  clients:
+    cf:
+      id: cf
+      override: true
+      authorized-grant-types: password,refresh_token
+      scope: cloud_controller.read,cloud_controller.write,openid,password.write,cloud_controller.admin,scim.read,scim.write,doppler.firehose,uaa.user,routing.router_groups.read,routing.router_groups.write
+      authorities: uaa.none
+      access-token-validity: 600
+      refresh-token-validity: 2592000
+      secret: ""
+    app:
+      id: app
+      override: true
+      secret: app-secret
+      authorized-grant-types: authorization_code,client_credentials,refresh_token
+      authorities: test_resource.test_action
+      scope: test_resource.test_action,test_resource.other_action
+      redirect-uri: http://login.example.com
+      autoapprove:
+      - test_resource.test_action
+      - test_resource.other_action
+      app-launch-url: http://myapppage.com
+      show-on-homepage: true
+      app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
+    app-with-yaml-scopes:
+      id: app-with-yaml-scopes
+      override: true
+      secret: app-secret
+      authorized-grant-types: authorization_code,client_credentials,refresh_token
+      authorities: test_resource.test_action
+      scope: test_resource.test_action,test_resource.other_action
+      redirect-uri: http://login.example.com
+      autoapprove:
+      - test_resource.test_action
+      - test_resource.other_action
+      app-launch-url: http://myapppage.com
+      show-on-homepage: true
+      app-icon: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWZttQvMDEoKisqKywAAAApvvoVAAAAGElEQVQYlWNgYUQBLAxMDCiAeXgLoHsfAD03AHOyfqy1AAAAAElFTkSuQmCC
+    admin:
+      authorized-grant-types: client_credentials
+      authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
+      id: admin
+      secret: adminsecret
+    implicit_ok:
+      id: implicit_ok
+      authorities: uaa.none
+      authorized-grant-types: implicit
+      redirect-uri: "http://some.redirect.com/callback"
+      override: true
+      show-on-homepage: true
+      scope: openid
+  user:
+    authorities:
+    - openid
+    - scim.me
+    - cloud_controller.read
+    - cloud_controller.write
+    - approvals.me
+    - oauth.approvals
+    - notification_preferences.read
+    - notification_preferences.write
+    - profile
+    - roles
+    - user_attributes
+    - uaa.offline_token
+scim:
+  userids_enabled: true
+  user:
+    override: true
+  users:
+  - shortuser|password|shortuser|||group1,group2|uaa
+  - longuser|password|email|first name|lastName|group1,group2|origin-value - most
+    commonly uaa
+  groups:
+    my-test-group: My test group description
+    another-group: Another group description
+  external_groups:
+    origin1:
+      external_group1:
+      - internal_group1
+      - internal_group2
+      - internal_group3
+      external_group2:
+      - internal_group2
+      - internal_group4
+    origin2:
+      external_group3:
+      - internal_group3
+      - internal_group4
+      - internal_group5
+    ldap:
+      "cn=admin\\, test,ou=scopes,dc=test,dc=com":
+      - ldap.test
+ldap:
+  override: false
+  ldapdebug: Ldap configured through UAA
+  profile:
+    file: ldap/ldap-search-and-bind.xml
+  ssl:
+    tls: simple
+    skipverification: true
+    sslCertificate: ldap-ssl-cert
+  base:
+    url: ldap://192.168.50.4:389/
+    mailAttributeName: mail
+    mailSubstitute: "{0}@test.com"
+    mailSubstituteOverridesLdap: true
+    referral: follow
+    userDn: cn=admin,dc=test,dc=com
+    password: password
+    searchBase: dc=test,dc=com
+    searchFilter: cn={0}
+  addShadowUserOnLogin: false
+  emailDomain:
+  - whitelist-domain1.org
+  - whitelist-domain2.org
+  attributeMappings:
+    given_name: givenName
+    family_name: sn
+    phone_number: telephoneNumber
+    user.attribute.name-of-attribute-in-uaa-id-token: name-of-attribute-in-ldap-record
+    user.attribute.name-of-other-attribute-in-uaa-id-token: name-of-other-attribute-in-ldap-record
+  storeCustomAttributes: false
+  externalGroupsWhitelist:
+  - admin
+  - user
+  groups:
+    file: ldap/ldap-groups-map-to-scopes.xml
+    searchBase: dc=test,dc=com
+    groupRoleAttribute: spring.security.ldap.dn
+    groupSearchFilter: member={0}
+    searchSubtree: true
+    maxSearchDepth: 10
+
+assetBaseUrl: "/resources/testing"
+logout:
+  redirect:
+    url: "/"
+    parameter:
+      disable: false
+
+require_https: true
+https_port: 33333
+
+uaa:
+  url: http://all-properties-set:8888/uaa
+  limitedFunctionality:
+    statusFile: /var/vcap/data/uaa/test_bbr_limited_mode.lock
+    whitelist:
+      endpoints:
+      - /oauth/authorize/**
+      - /oauth/token/**
+      - /check_token/**
+      methods:
+      - GET
+      - HEAD
+  shutdown:
+    sleep: 10000
+  oauth:
+    redirect_uri:
+      allow_unsafe_matching: false
+
+links:
+  global:
+    passwd: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/forgot_password"
+    signup: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/create_account"
+    homeRedirect: "https://{zone.subdomain}.myaccountmanager.domain.com/z/{zone.id}/success"
+  passwd: "/reset_password"
+  signup: http://signup.somewhere.else
+  custom: http://custom.link
+  homeRedirect: http://custom.home.redirect
+login:
+  url: http://all-properties-set:8888/uaa
+  defaultIdentityProvider: uaa
+  idpDiscoveryEnabled: true
+  accountChooserEnabled: true
+  aliasEntitiesEnabled: true
+  checkOriginEnabled: true
+  allowOriginLoop: false
+  entityBaseURL: http://all-properties-set:8888/uaa
+  entityID: all-properties-set:8888/uaa
+  prompt:
+    username:
+      text: Username
+    password:
+      text: Secret
+  authorize:
+    url: http://all-properties-set:8888/uaa/oauth/authorize
+  saml:
+    activeKeyId: key1
+    keys:
+      key1:
+        key: |
+          -----BEGIN RSA PRIVATE KEY-----
+          MIIEogIBAAKCAQEArRkvkddLUoNyuvu0ktkcLL0CyGG8Drh9oPsaVOLVHJqB1Ebr
+          oNMTPbY0HPjuD5WBDZTi3ftNLp1mPn9wFy6FhMTvIYeQmTskH8m/kyVReXG/zfWq
+          a4+V6UW4nmUcvfF3YNrHvN5VPTWTJrc2KBzseWQ70OaBNfBi6z4XbdOF45dDfck2
+          oRnasinUv+rG+PUl7x8OjgdVyyen6qeCQ6xt8W9fHg//Nydlfwb3/L+syPoBujdu
+          Hai7GoLUzm/zqOM9dhlR5mjuEJ3QUvnmGKrGDoeHFog0CMgLC+C0Z4ZANB6GbjlM
+          bsQczsaYxHMqAMOnOe6xIXUrPOoc7rclwZeHMQIDAQABAoIBAAFB2ZKZmbZztfWd
+          tmYKpaW9ibOi4hbJSEBPEpXjP+EBTkgYa8WzQsSD+kTrme8LCvDqT+uE076u7fsu
+          OcYxVE7ujz4TGf3C7DQ+5uFOuBTFurroOeCmHlSfaQPdgCPxCQjvDdxVUREsvnDd
+          i8smyqDnFXgi9HVL1awXu1vU2XgZshfl6wBOCNomVMCN8mVcBQ0KM88SUvoUwM7i
+          sSdj1yQV16Za8+nVnMW41FMHegVRd3Y5EsXJfwGuXnZMIG87PavH1nUqn9NOFq9Y
+          kb4SeOO47PaMxv7jMaXltVVokdGH8L/BY4we8tBL+wVeUJ94aYx/Q/LUAtRPbKPS
+          ZSEi/7ECgYEA3dUg8DXzo59zl5a8kfz3aoLl8RqRYzuf8F396IuiVcqYlwlWOkZW
+          javwviEOEdZhUZPxK1duXKTvYw7s6eDFwV+CklTZu4A8M3Os0D8bSL/pIKqcadt5
+          JClIRmOmmQpj9AYhSdBTdQtJGjVDaDXJBb7902pDm9I4jMFbjAKLZNsCgYEAx8J3
+          Y1c7GwHw6dxvTywrw3U6z1ILbx2olVLY6DIgZaMVT4EKTAv2Ke4xF4OZYG+lLRbt
+          hhOHYzRMYC38MNl/9RXHBgUlQJXOQb9u644motl5dcMvzIIuWFCn5vXxR2C3McNy
+          vPdzYS2M64xRGy+IENtPSCcUs9C99bEajRcuG+MCgYAONabEfFA8/OvEnA08NL4M
+          fpIIHbGOb7VRClRHXxpo8G9RzXFOjk7hCFCFfUyPa/IT7awXIKSbHp2O9NfMK2+/
+          cUTF5tWDozU3/oLlXAV9ZX2jcApQ5ZQe8t4EVEHJr9azPOlI9yVBbBWkriDBPiDA
+          U3mi3z2xb4fbzE726vrO3QKBgA6PfTZPgG5qiM3zFGX3+USpAd1kxJKX3dbskAT0
+          ymm+JmqCJGcApDPQOeHV5NMjsC2GM1AHkmHHyR1lnLFO2UXbDYPB0kJP6RXfx00C
+          MozCP1k3Hf/RKWGkl2h9WtXyFchZz744Zz+ZG2F7+9l4cHmSEshWmOq2d3I2M5I/
+          M0wzAoGAa2oM4Q6n+FMHl9e8H+2O4Dgm7wAdhuZI1LhnLL6GLVC1JTmGrz/6G2TX
+          iNFhc0lnDcVeZlwg4i7M7MH8UFdWj3ZEylsXjrjIspuAJg7a/6qmP9s2ITVffqYk
+          2slwG2SIQchM5/0uOiP9W0YIjYEe7hgHUmL9Rh8xFuo9y72GH8c=
+          -----END RSA PRIVATE KEY-----
+        passphrase: password
+        certificate: |
+          -----BEGIN CERTIFICATE-----
+          MIID0DCCArgCCQDBRxU0ucjw6DANBgkqhkiG9w0BAQsFADCBqTELMAkGA1UEBhMC
+          VVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMR8wHQYDVQQK
+          ExZDbG91ZCBGb3VuZHJ5IElkZW50aXR5MQ4wDAYDVQQLEwVLZXkgMTEiMCAGA1UE
+          AxMZbG9naW4uaWRlbnRpdHkuY2YtYXBwLmNvbTEgMB4GCSqGSIb3DQEJARYRZmhh
+          bmlrQHBpdm90YWwuaW8wHhcNMTcwNDEwMTkxMTIyWhcNMTgwNDEwMTkxMTIyWjCB
+          qTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1TYW4gRnJhbmNp
+          c2NvMR8wHQYDVQQKExZDbG91ZCBGb3VuZHJ5IElkZW50aXR5MQ4wDAYDVQQLEwVL
+          ZXkgMTEiMCAGA1UEAxMZbG9naW4uaWRlbnRpdHkuY2YtYXBwLmNvbTEgMB4GCSqG
+          SIb3DQEJARYRZmhhbmlrQHBpdm90YWwuaW8wggEiMA0GCSqGSIb3DQEBAQUAA4IB
+          DwAwggEKAoIBAQCtGS+R10tSg3K6+7SS2RwsvQLIYbwOuH2g+xpU4tUcmoHURuug
+          0xM9tjQc+O4PlYENlOLd+00unWY+f3AXLoWExO8hh5CZOyQfyb+TJVF5cb/N9apr
+          j5XpRbieZRy98Xdg2se83lU9NZMmtzYoHOx5ZDvQ5oE18GLrPhdt04Xjl0N9yTah
+          GdqyKdS/6sb49SXvHw6OB1XLJ6fqp4JDrG3xb18eD/83J2V/Bvf8v6zI+gG6N24d
+          qLsagtTOb/Oo4z12GVHmaO4QndBS+eYYqsYOh4cWiDQIyAsL4LRnhkA0HoZuOUxu
+          xBzOxpjEcyoAw6c57rEhdSs86hzutyXBl4cxAgMBAAEwDQYJKoZIhvcNAQELBQAD
+          ggEBAB72QKF9Iri+UdCGAIok/qIeKw5AwZ0wtiONa+DF4B80/yAA1ObpuO3eeeka
+          t0s4wtCRflE08zLrwqHlvKQAGKmJkfRLfEqfKStIUOTHQxE6wOaBtfW41M9ZF1hX
+          NHpnkfmSQjaHVNTRbABiFH6eTq8J6CuO12PyDf7lW3EofvcTU3ulsDhuMAz02ypJ
+          BgcOufnl+qP/m/BhVQsRD5mtJ56uJpHvri1VR2kj8N59V8f6KPO2m5Q6MulEhWml
+          TsxyxUl03oyICDP1cbpYtDk2VddVNWipHHPH/mBVW41EBVv0VDV03LH3RfS9dXiK
+          ynuP3shhqhFvaaiUTZP4l5yF/GQ=
+          -----END CERTIFICATE-----
+      key2:
+        key: |
+          -----BEGIN RSA PRIVATE KEY-----
+          MIIEpAIBAAKCAQEAwt7buITRZhXX98apcgJbiHhrPkrgn5MCsCphRQ89oWPUHWjN
+          j9Kz2m9LaKgq9DnNLl22U4e6/LUQToBCLxkIqwaobZKjIUjNAmNomqbNO7AD2+K7
+          RCiQ2qijWUwXGu+5+fSmF/MOermNKUDiQnRJSSSAPObAHOI980zTWVsApKpcFVaV
+          vk/299L/0rk8I/mNvf63cdw4Nh3xn4Ct+oCnTaDg5OtpGz8sHlocOAti+LdrtNzH
+          uBWq8q2sdhFQBRGe1MOeH8CAEHgKYwELTBCJEyLhykdRgxXJHSaL56+mb6HQvGO/
+          oyZHn+qHsCCjcdR1L/U4qt4m7HBimv0qbvApQwIDAQABAoIBAQCftmmcnHbG1WZR
+          NChSQa5ldlRnFJVvE90jJ0jbgfdAHAKQLAI2Ozme8JJ8bz/tNKZ+tt2lLlxJm9iG
+          jkYwNbNOAMHwNDuxHuqvZ2wnPEh+/+7Zu8VBwoGeRJLEsEFLmWjyfNnYTSPz37nb
+          Mst+LbKW2OylfXW89oxRqQibdqNbULpcU4NBDkMjToH1Z4dUFx3X2R2AAwgDz4Ku
+          HN4HoxbsbUCI5wLDJrTGrJgEntMSdsSdOY48YOMBnHqqfw7KoJ0sGjrPUy0vOGq2
+          CeP3uqbXX/mJpvJ+jg3Y2b1Zeu2I+vAnZrxlaZ+hYnZfoNqVjBZ/EEq/lmEovMvr
+          erP8FYI5AoGBAOrlmMZYdhW0fRzfpx6WiBJUkFfmit4qs9nQRCouv+jHS5QL9aM9
+          c+iKeP6kWuxBUYaDBmf5J1OBW4omNd384NX5PCiL/Fs/lxgdMZqEhnhT4Dj4Q6m6
+          ZXUuY6hamoF5+z2mtkZzRyvD1LUAARKJw6ggUtcH28cYC3RkZ5P6SWHVAoGBANRg
+          scI9pF2VUrmwpgIGhynLBEO26k8j/FyE3S7lPcUZdgPCUZB0/tGklSo183KT/KQY
+          TgO2mqb8a8xKCz41DTnUPqJWZzBOFw5QaD2i9O6soXUAKqaUm3g40/gyWX1hUtHa
+          K0Kw5z1Sf3MoCpW0Ozzn3znYbAoSvBRr53d0EVK3AoGAOD1ObbbCVwIGroIR1i3+
+          WD0s7g7Bkt2wf+bwWxUkV4xX2RNf9XyCItv8iiM5rbUZ2tXGE+DAfKrNCu+JGCQy
+          hKiOsbqKaiJ4f4qF1NQECg0y8xDlyl5Zakv4ClffBD77W1Bt9cIl+SGC7O8aUqDv
+          WnKawucbxLhKDcz4S6KyLR0CgYEAhuRrw24XqgEgLCVRK9QtoZP7P28838uBjNov
+          Cow8caY8WSLhX5mQCGQ7AjaGTG5Gd4ugcadYD1wgs/8LqRVVMzfmGII8xGe1KThV
+          HWEVpUssuf3DGU8meHPP3sNMJ+DbE8M42wE1vrNZlDEImBGD1qmIFVurM7K2l1n6
+          CNtF7X0CgYBuFf0A0cna8LnxOAPm8EPHgFq4TnDU7BJzzcO/nsORDcrh+dZyGJNS
+          fUTMp4k+AQCm9UwJAiSf4VUwCbhXUZ3S+xB55vrH+Yc2OMtsIYhzr3OCkbgKBMDn
+          nBVKSGAomYD2kCUmSbg7bUrFfGntmvOLqTHtVfrCyE5i8qS63RbHlA==
+          -----END RSA PRIVATE KEY-----
+        passphrase: password
+        certificate: |
+          -----BEGIN CERTIFICATE-----
+          MIID0DCCArgCCQDqnPTUvA17+TANBgkqhkiG9w0BAQsFADCBqTELMAkGA1UEBhMC
+          VVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMR8wHQYDVQQK
+          ExZDbG91ZCBGb3VuZHJ5IElkZW50aXR5MQ4wDAYDVQQLEwVLZXkgMjEiMCAGA1UE
+          AxMZbG9naW4uaWRlbnRpdHkuY2YtYXBwLmNvbTEgMB4GCSqGSIb3DQEJARYRZmhh
+          bmlrQHBpdm90YWwuaW8wHhcNMTcwNDEwMTkxNTAyWhcNMTgwNDEwMTkxNTAyWjCB
+          qTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1TYW4gRnJhbmNp
+          c2NvMR8wHQYDVQQKExZDbG91ZCBGb3VuZHJ5IElkZW50aXR5MQ4wDAYDVQQLEwVL
+          ZXkgMjEiMCAGA1UEAxMZbG9naW4uaWRlbnRpdHkuY2YtYXBwLmNvbTEgMB4GCSqG
+          SIb3DQEJARYRZmhhbmlrQHBpdm90YWwuaW8wggEiMA0GCSqGSIb3DQEBAQUAA4IB
+          DwAwggEKAoIBAQDC3tu4hNFmFdf3xqlyAluIeGs+SuCfkwKwKmFFDz2hY9QdaM2P
+          0rPab0toqCr0Oc0uXbZTh7r8tRBOgEIvGQirBqhtkqMhSM0CY2iaps07sAPb4rtE
+          KJDaqKNZTBca77n59KYX8w56uY0pQOJCdElJJIA85sAc4j3zTNNZWwCkqlwVVpW+
+          T/b30v/SuTwj+Y29/rdx3Dg2HfGfgK36gKdNoODk62kbPyweWhw4C2L4t2u03Me4
+          Faryrax2EVAFEZ7Uw54fwIAQeApjAQtMEIkTIuHKR1GDFckdJovnr6ZvodC8Y7+j
+          Jkef6oewIKNx1HUv9Tiq3ibscGKa/Spu8ClDAgMBAAEwDQYJKoZIhvcNAQELBQAD
+          ggEBAKzeh/bRDEEP/WGsiYhCCfvESyt0QeKwUk+Hfl0/oP4m9pXNrnMRApyoi7FB
+          owpmXIeqDqGigPai6pJ3xCO94P+Bz7WTk0+jScYm/hGpcIOeKh8FBfW0Fddu9Otn
+          qVk0FdRSCTjUZKQlNOqVTjBeKOjHmTkgh96IR3EP2/hp8Ym4HLC+w265V7LnkqD2
+          SoMez7b2V4NmN7z9OxTALUbTzmFG77bBDExHvfbiFlkIptx8+IloJOCzUsPEg6Ur
+          kueuR7IB1S4q6Ja7Gb9b9NYQDFt4hjb5mC9aPxaX+KK2JlZg4cTFVCdkIyp2/fHI
+          iQpMzNWb7zZWlCfDL4dJZHYoNfg=
+          -----END CERTIFICATE-----
+
+    socket:
+      connectionManagerTimeout: 10000
+      soTimeout: 10000
+    signMetaData: true
+    signRequest: true
+    wantAssertionSigned: true
+    disableInResponseToCheck: true
+    providers:
+      my-identity-provider:
+        metadataTrustCheck: false
+        nameID: urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
+        assertionConsumerIndex: 0
+        signMetaData: false
+        signRequest: false
+        iconUrl: https://my.identityprovider.com/icon.png
+        showSamlLoginLink: true
+        linkText: Log in with My Saml Identity Provider
+        groupMappingMode: AS_SCOPES
+        idpMetadata: http://my.identityprovider.com/saml2/idp/metadata.php
+        skipSslValidation: false
+      CA_SM1:
+        override: false
+        assertionConsumerIndex: 0
+        attributeMappings:
+          email: mail
+        emailDomain:
+        - casecurecenter.com
+        linkText: SiteMinder
+        metadataTrustCheck: false
+        nameID: urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
+        showSamlLoginLink: true
+        signMetaData: false
+        signRequest: false
+        storeCustomAttributes: false
+        idpMetadata: |
+          <EntityDescriptor ID="SM1598b525eada26863eb23b38177f5bc861b48bf93309" entityID="smidp" xmlns="urn:oasis:names:tc:SAML:2.0:metadata">
+                <IDPSSODescriptor ID="SM213f05e6446b0930163464f8875298c3b5ed62a2f9b" WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+                      <KeyDescriptor use="signing">
+                            <ns1:KeyInfo Id="SM1371f007ef6afdd435cd105782eff7a275ee57c45d6" xmlns:ns1="http://www.w3.org/2000/09/xmldsig#">
+                                  <ns1:X509Data>
+                                        <ns1:X509IssuerSerial>
+                                              <ns1:X509IssuerName>CN=siteminder,OU=security,O=ca,L=islandia,ST=new york,C=US</ns1:X509IssuerName>
+                                              <ns1:X509SerialNumber>1389887106</ns1:X509SerialNumber>
+                                        </ns1:X509IssuerSerial>
+                                        <ns1:X509Certificate>MIICRzCCAbCgAwIBAgIEUtf+gjANBgkqhkiG9w0BAQQFADBoMQswCQYDVQQGEwJVUzERMA8GA1UECBMIbmV3IHlvcmsxETAPBgNVBAcTCGlzbGFuZGlhMQswCQYDVQQKEwJjYTERMA8GA1UECxMIc2VjdXJpdHkxEzARBgNVBAMTCnNpdGVtaW5kZXIwHhcNMTQwMTE2MTU0NTA2WhcNMjQwMTE0MTU0NTA2WjBoMQswCQYDVQQGEwJVUzERMA8GA1UECBMIbmV3IHlvcmsxETAPBgNVBAcTCGlzbGFuZGlhMQswCQYDVQQKEwJjYTERMA8GA1UECxMIc2VjdXJpdHkxEzARBgNVBAMTCnNpdGVtaW5kZXIwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAOap0m7c+LSOAoGLUD3TAdS7BcJFns6HPSGAYK9NBY6MxITKElqVWHaVoaqxHCQxdQsF9oZvhPAmiNsbIRniKA+cypUov8U0pNIRPPBfl7p9ojGPZf5OtotnUnEN2ZcYuZwxRnKPfpfEs5fshSvcZIa34FCSCw8L0sRDoWFIucBjAgMBAAEwDQYJKoZIhvcNAQEEBQADgYEAFbsuhxBm3lUkycfZZuNYft1j41k+FyLLTyXyPJKmc2s2RPOYtLQyolNB214ZCIZzVSExyfo959ZBvdWz+UinpFNPd8cEc0nuXOmfW/XBEgT0YS1vIDUzfeVRyZLj2u4BdBGwmK5oYRbgHxViFVnn3C6UN5rcg5mZl0FBXJ31Zuk=</ns1:X509Certificate>
+                                        <ns1:X509SubjectName>CN=siteminder,OU=security,O=ca,L=islandia,ST=new york,C=US</ns1:X509SubjectName>
+                                  </ns1:X509Data>
+                            </ns1:KeyInfo>
+                      </KeyDescriptor>
+                      <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
+                      <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://vp6.casecurecenter.com/affwebservices/public/saml2sso"/>
+                      <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://vp6.casecurecenter.com/affwebservices/public/saml2sso"/>
+                </IDPSSODescriptor>
+          </EntityDescriptor>
+      okta-preview:
+        metadataTrustCheck: false
+        nameID: urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
+        signMetaData: false
+        signRequest: false
+        idpMetadata: |
+          <?xml version="1.0" encoding="UTF-8"?><md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://www.okta.com/k2lw4l5bPODCMIIDBRYZ"><md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><md:KeyDescriptor use="signing"><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:X509Data><ds:X509Certificate>MIICmTCCAgKgAwIBAgIGAUPATqmEMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYDVQQGEwJVUzETMBEG
+          A1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzENMAsGA1UECgwET2t0YTEU
+          MBIGA1UECwwLU1NPUHJvdmlkZXIxEDAOBgNVBAMMB1Bpdm90YWwxHDAaBgkqhkiG9w0BCQEWDWlu
+          Zm9Ab2t0YS5jb20wHhcNMTQwMTIzMTgxMjM3WhcNNDQwMTIzMTgxMzM3WjCBjzELMAkGA1UEBhMC
+          VVMxEzARBgNVBAgMCkNhbGlmb3JuaWExFjAUBgNVBAcMDVNhbiBGcmFuY2lzY28xDTALBgNVBAoM
+          BE9rdGExFDASBgNVBAsMC1NTT1Byb3ZpZGVyMRAwDgYDVQQDDAdQaXZvdGFsMRwwGgYJKoZIhvcN
+          AQkBFg1pbmZvQG9rdGEuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCeil67/TLOiTZU
+          WWgW2XEGgFZ94bVO90v5J1XmcHMwL8v5Z/8qjdZLpGdwI7Ph0CyXMMNklpaR/Ljb8fsls3amdT5O
+          Bw92Zo8ulcpjw2wuezTwL0eC0wY/GQDAZiXL59npE6U+fH1lbJIq92hx0HJSru/0O1q3+A/+jjZL
+          3tL/SwIDAQABMA0GCSqGSIb3DQEBBQUAA4GBAI5BoWZoH6Mz9vhypZPOJCEKa/K+biZQsA4Zqsuk
+          vvphhSERhqk/Nv76Vkl8uvJwwHbQrR9KJx4L3PRkGCG24rix71jEuXVGZUsDNM3CUKnARx4MEab6
+          GFHNkZ6DmoT/PFagngecHu+EwmuDtaG0rEkFrARwe+d8Ru0BN558abFb</ds:X509Certificate></ds:X509Data></ds:KeyInfo></md:KeyDescriptor><md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat><md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://pivotal.oktapreview.com/app/pivotal_pivotalcfstaging_1/k2lw4l5bPODCMIIDBRYZ/sso/saml"/><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://pivotal.oktapreview.com/app/pivotal_pivotalcfstaging_1/k2lw4l5bPODCMIIDBRYZ/sso/saml"/></md:IDPSSODescriptor></md:EntityDescriptor>
+      simplesamlphp-url:
+        assertionConsumerIndex: 0
+        attributeMappings:
+          user.attribute.employeeCostCenter: costCenter
+          user.attribute.terribleBosses: manager
+        linkText: Log in with Simple SAML PHP URL
+        metadataTrustCheck: false
+        nameID: urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
+        showSamlLoginLink: true
+        signMetaData: false
+        signRequest: false
+        skipSslValidation: true
+        idpMetadata: http://simplesamlphp.identity.cf-app.com/saml2/idp/metadata.php
+  branding:
+    companyName: company name
+    productLogo: |
+      base 64 with line feeds
+      for product logo
+    squareLogo: |
+      base 64 with line feeds
+      for square logo
+    footerLegalText: Legal text
+    footerLinks:
+      terms of service: http://terms.of.service/
+    banner:
+      logo: |
+        base 64 with line feeds
+        for banner logo
+      text: banner text
+      textColor: "#AABBCC"
+      backgroundColor: "#DDEEFF"
+      link: http://www.example.com
+    consent:
+      text: Terms and Conditions
+      link: http://www.example.com
+  serviceProviderKeyPassword: ""
+  serviceProviderCertificate: |
+    -----BEGIN CERTIFICATE-----
+    MIIEJTCCA46gAwIBAgIJANIqfxWTfhpkMA0GCSqGSIb3DQEBBQUAMIG+MQswCQYD
+    VQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZyYW5j
+    aXNjbzEdMBsGA1UEChMUUGl2b3RhbCBTb2Z0d2FyZSBJbmMxJDAiBgNVBAsTG0Ns
+    b3VkIEZvdW5kcnkgSWRlbnRpdHkgVGVhbTEcMBoGA1UEAxMTaWRlbnRpdHkuY2Yt
+    YXBwLmNvbTEfMB0GCSqGSIb3DQEJARYQbWFyaXNzYUB0ZXN0Lm9yZzAeFw0xNTA1
+    MTQxNzE5MTBaFw0yNTA1MTExNzE5MTBaMIG+MQswCQYDVQQGEwJVUzETMBEGA1UE
+    CBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZyYW5jaXNjbzEdMBsGA1UEChMU
+    UGl2b3RhbCBTb2Z0d2FyZSBJbmMxJDAiBgNVBAsTG0Nsb3VkIEZvdW5kcnkgSWRl
+    bnRpdHkgVGVhbTEcMBoGA1UEAxMTaWRlbnRpdHkuY2YtYXBwLmNvbTEfMB0GCSqG
+    SIb3DQEJARYQbWFyaXNzYUB0ZXN0Lm9yZzCBnzANBgkqhkiG9w0BAQEFAAOBjQAw
+    gYkCgYEA30y2nX+kICXktl1yJhBzLGvtTuzJiLeOMWi++zdivifyRqX1dwJ5MgdO
+    sBWdNrASwe4ZKONiyLFRDsk7lAYq3f975chxSsrRu1BLetBZfPEmwBH7FCTdYtWk
+    lJbpz0vzQs/gSsMChT/UrN6zSJhPVHNizLxstedyxxVVts644U8CAwEAAaOCAScw
+    ggEjMB0GA1UdDgQWBBSvWY/TyHysYGxKvII95wD/CzE1AzCB8wYDVR0jBIHrMIHo
+    gBSvWY/TyHysYGxKvII95wD/CzE1A6GBxKSBwTCBvjELMAkGA1UEBhMCVVMxEzAR
+    BgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBGcmFuY2lzY28xHTAbBgNV
+    BAoTFFBpdm90YWwgU29mdHdhcmUgSW5jMSQwIgYDVQQLExtDbG91ZCBGb3VuZHJ5
+    IElkZW50aXR5IFRlYW0xHDAaBgNVBAMTE2lkZW50aXR5LmNmLWFwcC5jb20xHzAd
+    BgkqhkiG9w0BCQEWEG1hcmlzc2FAdGVzdC5vcmeCCQDSKn8Vk34aZDAMBgNVHRME
+    BTADAQH/MA0GCSqGSIb3DQEBBQUAA4GBAL5j1JCN5EoXMOOBSBUL8KeVZFQD3Nfy
+    YkYKBatFEKdBFlAKLBdG+5KzE7sTYesn7EzBISHXFz3DhdK2tg+IF1DeSFVmFl2n
+    iVxQ1sYjo4kCugHBsWo+MpFH9VBLFzsMlP3eIDuVKe8aPXFKYCGhctZEJdQTKlja
+    lshe50nayKrT
+    -----END CERTIFICATE-----
+  serviceProviderKey: |
+    -----BEGIN RSA PRIVATE KEY-----
+    MIICXgIBAAKBgQDfTLadf6QgJeS2XXImEHMsa+1O7MmIt44xaL77N2K+J/JGpfV3
+    AnkyB06wFZ02sBLB7hko42LIsVEOyTuUBird/3vlyHFKytG7UEt60Fl88SbAEfsU
+    JN1i1aSUlunPS/NCz+BKwwKFP9Ss3rNImE9Uc2LMvGy153LHFVW2zrjhTwIDAQAB
+    AoGBAJDh21LRcJITRBQ3CUs9PR1DYZPl+tUkE7RnPBMPWpf6ny3LnDp9dllJeHqz
+    a3ACSgleDSEEeCGzOt6XHnrqjYCKa42Z+Opnjx/OOpjyX1NAaswRtnb039jwv4gb
+    RlwT49Y17UAQpISOo7JFadCBoMG0ix8xr4ScY+zCSoG5v0BhAkEA8llNsiWBJF5r
+    LWQ6uimfdU2y1IPlkcGAvjekYDkdkHiRie725Dn4qRiXyABeaqNm2bpnD620Okwr
+    sf7LY+BMdwJBAOvgt/ZGwJrMOe/cHhbujtjBK/1CumJ4n2r5V1zPBFfLNXiKnpJ6
+    J/sRwmjgg4u3Anu1ENF3YsxYabflBnvOP+kCQCQ8VBCp6OhOMcpErT8+j/gTGQUL
+    f5zOiPhoC2zTvWbnkCNGlqXDQTnPUop1+6gILI2rgFNozoTU9MeVaEXTuLsCQQDC
+    AGuNpReYucwVGYet+LuITyjs/krp3qfPhhByhtndk4cBA5H0i4ACodKyC6Zl7Tmf
+    oYaZoYWi6DzbQQUaIsKxAkEA2rXQjQFsfnSm+w/9067ChWg46p4lq5Na2NpcpFgH
+    waZKhM1W0oB8MX78M+0fG3xGUtywTx0D4N7pr1Tk2GTgNw==
+    -----END RSA PRIVATE KEY-----
+  selfServiceLinksEnabled: false
+  oauth:
+    externalGroupsFromMappedAuthorities: true
+    providers:
+      my-oauth-provider:
+        override: false
+        type: oidc1.0
+        authUrl: http://authUrl
+        tokenUrl: http://tokenUrl
+        tokenKey: |
+          token key
+          encoded value
+          here
+        tokenKeyUrl: http://tokenKeyUrl
+        cacheJwks: true
+        pkce: true
+        authMethod: client_secret_basic
+        additionalAuthzParameters:
+          - token_format: jwt
+        issuer: http://tokenUrl
+        scopes:
+        - openid
+        linkText: My Oauth Provider
+        showLinkText: true
+        addShadowUserOnLogin: true
+        relyingPartyId: "<OIDC Client ID>"
+        relyingPartySecret: "<OIDC Client secret>"
+        skipSslValidation: false
+        storeCustomAttributes: false
+        passwordGrantEnabled: false
+        performRpInitiatedLogout: true
+        prompts:
+          - name: username
+            type: text
+            text: Email
+          - name: password
+            type: password
+            text: Password
+          - name: passcode
+            type: password
+            text: Temporary Authentication Code (Get on at /passcode)
+        jwtClientAuthentication:
+          kid: key-2
+        attributeMappings:
+          given_name: first_name
+          family_name: last_name
+          user_name: username
+          external_groups:
+          - group1
+          - group2
+          user.attribute.name-of-attribute-in-uaa-id-token: name-of-attribute-in-provider-token
+          user.attribute.name-of-other-attribute-in-uaa-id-token: name-of-other-attribute-in-provider-token
+
+servlet:
+  session-store: memory
+  idle-timeout: 300
+  session-cookie:
+    max-age: 1800
+    encode-base64: false
+
+smtp:
+  host: smtp_host
+  port: 25
+  auth: true
+  starttls: true
+  user: smtp_user
+  password: smtp_password
+  from_address: from@from.com
+  sslprotocols: TLSv1.2
+notifications:
+  url: http://notifications
+
+rest:
+  template:
+    timeout: 10000
+    maxTotal: 20
+    maxPerRoute: 2
+    maxKeepAlive: 0
+    validateAfterInactivity: 2000
+    retryCount: 0
+
+ratelimit:
+  loggingOption: AllCalls
+  credentialID: 'JWT:Claims+"sub"\s*:\s*"(.*?)"'
+  limiterMappings:
+    - name: AuthToken
+      withCallerRemoteAddressID: 50r/s
+      pathSelectors:
+        - "equals:/oauth/token"
+    - name: EverythingElse
+      global: 200r/s
+      pathSelectors:
+        - "other"
+
+global:
+  jwk:
+    oidc-trust:
+      key: "key-value"
+      cert: "cert-value"
+    uaa:
+      key: "uaa-zone-key-value"
+      cert: "uaa-zone-cert-value"

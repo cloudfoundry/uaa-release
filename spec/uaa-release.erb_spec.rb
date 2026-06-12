@@ -674,8 +674,10 @@ describe 'uaa-release erb generation' do
       end
     end
 
-    context 'when not set by the user' do
-      it 'defaults to true' do
+    context 'when set to legacy' do
+      before { generated_cf_manifest['properties']['uaa']['client']['redirect_uri']['matching_mode'] = 'legacy' }
+
+      it 'results in allow_unsafe_matching: true' do
         expect(parsed_yaml['uaa']['oauth']['redirect_uri']['allow_unsafe_matching']).to eq(true)
       end
     end

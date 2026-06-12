@@ -404,6 +404,8 @@ properties:
         - GET
         - HEAD
     client:
+      redirect_uri:
+        matching_mode: legacy
       secret:
         policy:
           minLength: 8

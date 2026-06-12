@@ -78,6 +78,9 @@ properties:
         -----END CERTIFICATE-----
   uaa:
     url: http://test.uaa.url
+    client:
+      redirect_uri:
+        matching_mode: legacy
     login:
       client_secret: secret
     limitedFunctionality:

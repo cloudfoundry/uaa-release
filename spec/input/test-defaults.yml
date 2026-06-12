@@ -81,6 +81,10 @@ properties:
           passphrase: ''
   uaa:
     url: http://test.uaa.url
+    logging_level: DEBUG
+    client:
+      redirect_uri:
+        matching_mode: legacy
     login:
       client_secret: secret
     jwt:

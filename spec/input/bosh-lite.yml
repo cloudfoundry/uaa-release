@@ -98,6 +98,10 @@ properties:
     admin:
       client_secret: admin-secret
     catalina_opts: "-Xmx192m -XX:MaxMetaspaceSize=128m"
+    logging_level: DEBUG
+    client:
+      redirect_uri:
+        matching_mode: legacy
     cc:
       client_secret: cc-secret
     clients:

@@ -67,7 +67,7 @@ var _ = Describe("UaaRelease", func() {
 			deployUAA()
 		})
 
-		It("locks down cert-cache to 0711 root:root so only the uaa process can read it", func() {
+		It("locks down cert-cache to 0711 root:root to prevent the vcap process from tampering with it", func() {
 			statOutput := runCommandOnUaaViaSsh("sudo stat -c '%a %U:%G' /var/vcap/data/uaa/cert-cache")
 			Expect(strings.TrimSpace(statOutput)).To(Equal("711 root:root"))
 		})

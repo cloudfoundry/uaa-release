@@ -67,9 +67,9 @@ var _ = Describe("UaaRelease", func() {
 			deployUAA()
 		})
 
-		It("locks down cert-cache to 0700 vcap:vcap so only the uaa process can read it", func() {
+		It("locks down cert-cache to 0711 root:root so only the uaa process can read it", func() {
 			statOutput := runCommandOnUaaViaSsh("sudo stat -c '%a %U:%G' /var/vcap/data/uaa/cert-cache")
-			Expect(strings.TrimSpace(statOutput)).To(Equal("700 vcap:vcap"))
+			Expect(strings.TrimSpace(statOutput)).To(Equal("711 rootx:root"))
 		})
 
 		It("replaces a pre-planted symlink at cert-cache with a real directory on next pre-start", func() {

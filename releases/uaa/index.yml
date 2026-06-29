@@ -13,6 +13,8 @@ builds:
     version: "60"
   05e39dde-8f83-42c9-48f6-11e33a4b3adc:
     version: 77.20.1
+  06071e7c-89ca-46a1-452a-64ca95da3564:
+    version: 79.2.0
   063b9b00-a479-4ed5-73ef-82fcf89605f0:
     version: "58"
   07d01a28-da00-42aa-706a-2c9001620b18:

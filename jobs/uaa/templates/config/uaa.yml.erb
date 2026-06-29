@@ -870,6 +870,18 @@
     end
   end
 
+  # SPIFFE workload identity (Plan A signer); activated only when the instance identity CA is provided.
+  if_p('uaa.spiffe.instance_identity_ca') do |ca|
+    spiffe = {
+      'trust_domain' => p('uaa.spiffe.trust_domain'),
+      'instance_identity_ca' => ca,
+      'jwt_svid_ttl_seconds' => p('uaa.spiffe.jwt_svid_ttl_seconds'),
+      'pop_freshness_seconds' => p('uaa.spiffe.pop_freshness_seconds'),
+      'pop_enabled' => p('uaa.spiffe.pop_enabled')
+    }
+    add_value(params, spiffe, 'uaa', 'spiffe')
+  end
+
 
   #validate that we have all required parameters
 

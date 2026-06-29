@@ -737,6 +737,21 @@ properties:
     description: "The format for the refresh token. Allowed values are `jwt`, `opaque`"
     default: jwt
 
+  # SPIFFE workload identity (Plan A signer). Setting uaa.spiffe.instance_identity_ca activates the JWT-SVID signer endpoint.
+  uaa.spiffe.trust_domain:
+    description: "The SPIFFE trust domain for issued JWT-SVIDs (e.g. the CF deployment domain)."
+  uaa.spiffe.instance_identity_ca:
+    description: "PEM-encoded Diego instance identity CA certificate. When set, the SPIFFE JWT-SVID signer endpoint is activated; leave unset to keep SPIFFE disabled."
+  uaa.spiffe.jwt_svid_ttl_seconds:
+    description: "Validity in seconds of issued JWT-SVIDs."
+    default: 3600
+  uaa.spiffe.pop_freshness_seconds:
+    description: "Maximum age in seconds of a proof-of-possession challenge before it is rejected."
+    default: 60
+  uaa.spiffe.pop_enabled:
+    description: "Set to false to disable proof-of-possession verification on JWT-SVID requests."
+    default: true
+
   # cors settings
   uaa.cors.default.allowed.headers:
     description: "whitelist for allowed headers for non-xhr cors requests"

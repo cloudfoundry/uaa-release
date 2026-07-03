@@ -43,7 +43,7 @@ jobs:
 
       - name: Check Java Version
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           java_major_version=${{ matrix.java }}
           binary_metadata_url="https://api.bell-sw.com/v1/liberica/releases?version-modifier=latest"
@@ -89,6 +89,12 @@ jobs:
           git status
 
           BRANCH_NAME="Java-${JDK_VERSION}"
+
+          if [[ -n "$(gh pr list --head "${BRANCH_NAME}" --state open --json number --jq '.[0].number')" ]]; then
+            echo "## ☑️ PR already open for ${BRANCH_NAME}" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
           git checkout -b "${BRANCH_NAME}"
           git commit -m "Upgrade Bellsoft JDK to version ${JDK_VERSION}"
           git push -u origin "${BRANCH_NAME}"

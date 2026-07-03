@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
+      pull-requests: write
     strategy:
       matrix:
         java: [ '25' ]
@@ -86,8 +87,12 @@ jobs:
           git status
           git add config/blobs.yml
           git status
-          
+
+          BRANCH_NAME="Java-${JDK_VERSION}"
+          git checkout -b "${BRANCH_NAME}"
           git commit -m "Upgrade Bellsoft JDK to version ${JDK_VERSION}"
-          git push
-          
+          git push -u origin "${BRANCH_NAME}"
+
           echo "✅ Committed $(git log -n 1 --graph --pretty='%Cred%h%Creset - %s%Creset' | sed 's/^.//')" >> $GITHUB_STEP_SUMMARY
+
+          gh pr create --title "Upgrade Bellsoft JDK to version ${JDK_VERSION}" --body "Automated upgrade of Bellsoft JDK to version ${JDK_VERSION}."

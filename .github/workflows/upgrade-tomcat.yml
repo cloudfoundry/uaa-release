@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
+      pull-requests: write
     strategy:
       matrix:
         tomcat: [ '11' ]
@@ -45,6 +46,7 @@ jobs:
       - name: Check Tomcat Version
         env:
           TOMCAT_VERSION: ${{ matrix.tomcat }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TOMCAT_INDEX_URL=${TOMCAT_BASE_URL}/tomcat-${TOMCAT_VERSION}
           tomcat_versions="$(curl -sSfL "${TOMCAT_INDEX_URL}" \
@@ -88,9 +90,13 @@ jobs:
           git status
           git add config/blobs.yml
           git status
-          
+
+          BRANCH_NAME="Tomcat-${LATEST_TOMCAT_VERSION}"
+          git checkout -b "${BRANCH_NAME}"
           git commit -m "Upgrade Tomcat to version $LATEST_TOMCAT_VERSION"
-          git push
-          
+          git push -u origin "${BRANCH_NAME}"
+
           commit_id=$(git log -n 1 --graph --pretty='%Cred%h%Creset - %s%Creset' | sed 's/^.//')
           echo "✅ Committed ${commit_id}" >> $GITHUB_STEP_SUMMARY
+
+          gh pr create --title "Upgrade Tomcat to version ${LATEST_TOMCAT_VERSION}" --body "Automated upgrade of Tomcat to version ${LATEST_TOMCAT_VERSION}."

@@ -1304,8 +1304,16 @@ properties:
       BTADAQH/MA0GCSqGSIb3DQEBBQUAA4GBAL5j1JCN5EoXMOOBSBUL8KeVZFQD3Nfy
       YkYKBatFEKdBFlAKLBdG+5KzE7sTYesn7EzBISHXFz3DhdK2tg+IF1DeSFVmFl2n
       iVxQ1sYjo4kCugHBsWo+MpFH9VBLFzsMlP3eIDuVKe8aPXFKYCGhctZEJdQTKlja
-      lshe50nayKrT
-      -----END CERTIFICATE----
+            lshe50nayKrT
+            -----END CERTIFICATE----
+
+  uaa.mtls_enabled:
+    description: "Enable the RFC 8705 mTLS token endpoint at uaa.mtls_endpoint_path. Requires Gorouter forwarded_client_cert: sanitize_set."
+    default: false
+
+  uaa.mtls_endpoint_path:
+    description: "Path for the mTLS token endpoint"
+    default: "/oauth/mtls/token"
   login.saml.providers:
     description: |
       Contains a hash of SAML Identity Providers,

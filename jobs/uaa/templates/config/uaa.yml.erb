@@ -879,3 +879,7 @@
 
 %>
 <%= render(params) %>
+<% if p("uaa.mtls_enabled") %>
+mtls:
+  endpoint: <%= p("uaa.mtls_endpoint_path") %>
+<% end %>

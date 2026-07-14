@@ -1,0 +1,105 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [develop]
+
+jobs:
+  rspec-template-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2.3'
+          bundler-cache: true
+
+      - name: Run template specs
+        run: bundle exec rspec spec
+
+  # Targets the long-lived, shared, bbl-managed GCP BOSH director -- the same
+  # director the Concourse uaa-release-tests job used -- via the SAME shared
+  # task scripts in uaa-ci (kept as the single source of truth so a future
+  # push-pipeline port can reuse them too).
+  #
+  # UAA_CI_DEPLOY_KEY is a plain repository secret (this repo/org's plan
+  # doesn't support GitHub Environments with required reviewers), so it is
+  # available to every `pull_request`-triggered run the instant the job
+  # starts -- including fork PRs. Skip fork PRs entirely so their code never
+  # runs in a job that can see this secret; same-repo branch PRs still get
+  # the full acceptance run automatically.
+  acceptance-tests:
+    needs: rspec-template-tests
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    concurrency:
+      # Fixed, repo-wide group -- NOT keyed by ref/PR -- because this and any
+      # future push-pipeline job both drive the one shared director. A future
+      # push workflow must reuse this exact group string to serialize against
+      # this one, mirroring Concourse's `serial_groups: [uaa-acceptance-gcp]`.
+      group: uaa-acceptance-gcp-director
+      cancel-in-progress: false
+    env:
+      BBL_STATE_DIR: concourse/uaa-acceptance-gcp/state
+      BUILD_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+      # bbl print-env (used by task.sh/cleanup.sh) picks powershell output
+      # whenever $PSModulePath is non-empty. GitHub-hosted Linux runners ship
+      # PowerShell Core (for `shell: pwsh`) and set this var even on Ubuntu,
+      # which fools bbl into emitting `$env:X=...` instead of `export X=...`
+      # -- breaking the scripts' `eval "$(bbl print-env)"`. Blank it out for
+      # this job so bbl falls back to its posix renderer.
+      PSModulePath: ""
+    steps:
+      - name: Checkout uaa-release (PR head, with submodules)
+        uses: actions/checkout@v6
+        with:
+          path: uaa-release
+          submodules: recursive
+
+      - name: Checkout uaa-ci (private; contains director credential material)
+        uses: actions/checkout@v6
+        with:
+          repository: cloudfoundry/uaa-ci
+          ssh-key: ${{ secrets.UAA_CI_DEPLOY_KEY }}
+          path: uaa-ci
+          persist-credentials: false
+
+      - name: Link bbl-state to uaa-ci
+        # task.sh/cleanup.sh reference bbl-state/${BBL_STATE_DIR}; in Concourse
+        # that was just the same uaa-ci repo path-filtered to the state dir.
+        run: ln -s uaa-ci bbl-state
+
+      - name: Setup BOSH CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir /tmp/bosh
+          gh release download --repo cloudfoundry/bosh-cli --pattern "*-linux-amd64" --output /tmp/bosh/bosh
+          chmod +x /tmp/bosh/bosh
+          PATH=$PATH:/tmp/bosh
+          echo "/tmp/bosh" >> $GITHUB_PATH
+          bosh --version
+
+      - name: Setup bbl CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir /tmp/bbl
+          gh release download --repo cloudfoundry/bosh-bootloader --pattern "*_linux_amd64" --output /tmp/bbl/bbl
+          chmod +x /tmp/bbl/bbl
+          PATH=$PATH:/tmp/bbl
+          echo "/tmp/bbl" >> $GITHUB_PATH
+          bbl --version
+
+      - name: Run acceptance tests
+        timeout-minutes: 90
+        run: uaa-ci/shared/tasks/uaa-release-acceptance-tests/task.sh
+
+      - name: Cleanup deployments
+        if: always()
+        run: uaa-ci/shared/tasks/uaa-release-acceptance-tests/cleanup.sh

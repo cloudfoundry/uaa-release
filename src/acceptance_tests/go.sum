@@ -10,12 +10,12 @@ github.com/bmatcuk/doublestar v1.3.4 h1:gPypJ5xD31uhX6Tf54sDPUOBXTqKH4c9aPY66CyQ
 github.com/bmatcuk/doublestar v1.3.4/go.mod h1:wiQtGV+rzVYxB7WIlirSN++5HPtPlXEo9MEoZQC/PmE=
 github.com/cloudfoundry/bosh-cli v6.4.1+incompatible h1:n5/+NIF9QxvGINOrjh6DmO+GTen78MoCj5+LU9L8bR4=
 github.com/cloudfoundry/bosh-cli v6.4.1+incompatible/go.mod h1:rzIB+e1sn7wQL/TJ54bl/FemPKRhXby5BIMS3tLuWFM=
-github.com/cloudfoundry/bosh-utils v0.0.628 h1:mBkEytkq1aUx1Dq31utvchtVLeUngsIcV9QHgxjMttk=
-github.com/cloudfoundry/bosh-utils v0.0.628/go.mod h1:Oi1Or7wk6TljEEfyomf6xdKhkuvTpkrnEvdDd04/2Tc=
+github.com/cloudfoundry/bosh-utils v0.0.629 h1:6wubE+dKZ7Poo0OwEjXtidDY73rMBT/3mzNMyMaqSuY=
+github.com/cloudfoundry/bosh-utils v0.0.629/go.mod h1:Xn5ynPVGqJX/mKQSqcAYCVF6XlCEpcWu2rkC/kGxq+4=
 github.com/cloudfoundry/go-socks5 v0.0.0-20250423223041-4ad5fea42851 h1:oy59UYcspoP44ggE8DM3kjxl1+sTFd802bbZlBBhBMk=
 github.com/cloudfoundry/go-socks5 v0.0.0-20250423223041-4ad5fea42851/go.mod h1:72EEm1oq5oXqGfu9XGtaRPWEcAFYd/P10cMNln0QhA8=
-github.com/cloudfoundry/socks5-proxy v0.2.181 h1:PyCi+/mcWExaYj2zsou9qkkzE5uCkCf/ja3Nggw6ZEg=
-github.com/cloudfoundry/socks5-proxy v0.2.181/go.mod h1:dt011LzoUV2baR22dy7w6gxQjua2KmVATYcnFdnEMM0=
+github.com/cloudfoundry/socks5-proxy v0.2.182 h1:KiWqXWonigMyxTzmO5M3WZwthLbMsfIUzNrKePeiV+w=
+github.com/cloudfoundry/socks5-proxy v0.2.182/go.mod h1:dt011LzoUV2baR22dy7w6gxQjua2KmVATYcnFdnEMM0=
 github.com/cppforlife/go-semi-semantic v0.0.0-20160921010311-576b6af77ae4 h1:J+ghqo7ZubTzelkjo9hntpTtP/9lUCWH9icEmAW+B+Q=
 github.com/cppforlife/go-semi-semantic v0.0.0-20160921010311-576b6af77ae4/go.mod h1:socxpf5+mELPbosI149vWpNlHK6mbfWFxSWOoSndXR8=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=

@@ -144,26 +144,34 @@ function process_certs {
     save_new_cache_files_to_persistent_disk
 }
 
-function insert_ssl_cert {
-    local FIPS_OPTS=""
-    if [ -f "/proc/sys/crypto/fips_enabled" ]; then
-        local FIPS_ENABLED="$(cat /proc/sys/crypto/fips_enabled)"
-        if [ "${FIPS_ENABLED}" = 1 ]; then
-            FIPS_OPTS="-nomac"
-            log "Detect FIPS enabled"
-        fi
-    fi
-    log "Installing Server SSL certificate"
+function insert_ssl_cert (
+    umask 077
+    local cert_file=/var/vcap/data/uaa/uaa.crt
+    local fullchain_file=/var/vcap/data/uaa/uaa-fullchain.crt
+    local chain_file=/var/vcap/data/uaa/uaa-chain.crt
+    local key_file=/var/vcap/data/uaa/uaa.key
+    local source_file=/var/vcap/jobs/uaa/config/uaa.crt
+    log "Installing Server SSL certificate and private key"
 
+    rm -f "${cert_file}" "${fullchain_file}" "${chain_file}" "${key_file}"
     rm -f /var/vcap/data/uaa/uaa_keystore.p12
 
-    openssl pkcs12 -export ${FIPS_OPTS} -name uaa_ssl_cert \
-        -in /var/vcap/jobs/uaa/config/uaa.crt \
-        -out /var/vcap/data/uaa/uaa_keystore.p12 \
-        -password pass:k0*l*s3cur1tyr0ck$
+    # The property is rendered as the certificate chain followed by its private
+    # key. Keep the complete chain for Spring Boot and split the leaf from the
+    # chain for Tomcat's native PEM connector.
+    awk '/-----BEGIN CERTIFICATE-----/{in_cert=1} in_cert{print} /-----END CERTIFICATE-----/{in_cert=0}' \
+        "${source_file}" > "${fullchain_file}"
+    awk '/-----BEGIN CERTIFICATE-----/{cert++} cert == 1{print} /-----END CERTIFICATE-----/{if (cert == 1) exit}' \
+        "${fullchain_file}" > "${cert_file}"
+    awk '/-----BEGIN CERTIFICATE-----/{cert++} cert >= 2{print}' \
+        "${fullchain_file}" > "${chain_file}"
 
-    log "Installed Server SSL certificate"
-}
+    openssl pkcs8 -topk8 -nocrypt \
+        -in "${source_file}" \
+        -out "${key_file}"
+    chmod 0600 "${cert_file}" "${fullchain_file}" "${chain_file}" "${key_file}"
+    log "Installed Server SSL certificate and private key"
+)
 
 function configure_tomcat {
     # When run with bpm, the vcap user does not have permissions to read

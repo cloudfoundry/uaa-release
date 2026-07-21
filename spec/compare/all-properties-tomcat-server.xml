@@ -31,10 +31,8 @@
                    keepAliveTimeout="120000">
             <SSLHostConfig protocols="TLSv1.2,TLSv1.3"
                            ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384">
-                <Certificate certificateKeystoreFile="/var/vcap/data/uaa/uaa_keystore.p12"
-                             certificateKeystoreType="PKCS12"
-                             certificateKeystorePassword="k0*l*s3cur1tyr0ck$"
-                             certificateKeyAlias="uaa_ssl_cert"/>
+                <Certificate certificateFile="/var/vcap/data/uaa/uaa.crt"
+                             certificateKeyFile="/var/vcap/data/uaa/uaa.key" />
             </SSLHostConfig>
         </Connector>
 

@@ -59,7 +59,7 @@ GEM
       pry (>= 0.13, < 0.17)
     racc (1.8.1)
     rake (13.4.2)
-    reline (0.6.3)
+    reline (0.7.0)
       io-console (~> 0.5)
     rspec (3.13.2)
       rspec-core (~> 3.13.0)

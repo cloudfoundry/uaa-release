@@ -10,12 +10,12 @@ github.com/bmatcuk/doublestar v1.3.4 h1:gPypJ5xD31uhX6Tf54sDPUOBXTqKH4c9aPY66CyQ
 github.com/bmatcuk/doublestar v1.3.4/go.mod h1:wiQtGV+rzVYxB7WIlirSN++5HPtPlXEo9MEoZQC/PmE=
 github.com/cloudfoundry/bosh-cli v6.4.1+incompatible h1:n5/+NIF9QxvGINOrjh6DmO+GTen78MoCj5+LU9L8bR4=
 github.com/cloudfoundry/bosh-cli v6.4.1+incompatible/go.mod h1:rzIB+e1sn7wQL/TJ54bl/FemPKRhXby5BIMS3tLuWFM=
-github.com/cloudfoundry/bosh-utils v0.0.630 h1:4rI6FmbrHHRrIxf2451ggxP9AaGinfaLyRmkfSciJic=
-github.com/cloudfoundry/bosh-utils v0.0.630/go.mod h1:1/jbVG/VPXcTE8mlJ7QCTYqJBPFzxqv9ivSBTrE/0rM=
+github.com/cloudfoundry/bosh-utils v0.0.632 h1:dliFoVBBkNYUMtpbsp8wxMhhEbMNztjiGg7kiPmWK8M=
+github.com/cloudfoundry/bosh-utils v0.0.632/go.mod h1:Xajf+1dRuvLoBKmM06n5bJ1b40Ej+iDJMVmH3xv9IS0=
 github.com/cloudfoundry/go-socks5 v0.0.0-20250423223041-4ad5fea42851 h1:oy59UYcspoP44ggE8DM3kjxl1+sTFd802bbZlBBhBMk=
 github.com/cloudfoundry/go-socks5 v0.0.0-20250423223041-4ad5fea42851/go.mod h1:72EEm1oq5oXqGfu9XGtaRPWEcAFYd/P10cMNln0QhA8=
-github.com/cloudfoundry/socks5-proxy v0.2.183 h1:QgkOB5Od0pzRtyZPQotD6USsxuo13GyhmrAiA0nzjkg=
-github.com/cloudfoundry/socks5-proxy v0.2.183/go.mod h1:tnJUhAsMqnBPAt+p+SsNsaAo4lrqxYlpDHD+uURZX4s=
+github.com/cloudfoundry/socks5-proxy v0.2.184 h1:yZQCqkkJ9hr9Dv45ehXAzGLQBCHfJ8q9UTaodED605k=
+github.com/cloudfoundry/socks5-proxy v0.2.184/go.mod h1:V5XCi+PRKMIE3TelxfI2cCRPrJRTGrkmkKu1BymhSqo=
 github.com/cppforlife/go-semi-semantic v0.0.0-20160921010311-576b6af77ae4 h1:J+ghqo7ZubTzelkjo9hntpTtP/9lUCWH9icEmAW+B+Q=
 github.com/cppforlife/go-semi-semantic v0.0.0-20160921010311-576b6af77ae4/go.mod h1:socxpf5+mELPbosI149vWpNlHK6mbfWFxSWOoSndXR8=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
@@ -45,8 +45,8 @@ github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMyw
 github.com/google/go-cmp v0.4.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.7.0 h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=
 github.com/google/go-cmp v0.7.0/go.mod h1:pXiqmnSA92OHEEa9HXL2W4E7lf9JzCmGVUdgjX3N/iU=
-github.com/google/pprof v0.0.0-20260709232956-b9395ee17fa0 h1:du0WGc8xSKq/++e0cglxhS/mXVqsR7+c7jLEi5Vqduw=
-github.com/google/pprof v0.0.0-20260709232956-b9395ee17fa0/go.mod h1:MxpfABSjhmINe3F1It9d+8exIHFvUqtLIRCdOGNXqiI=
+github.com/google/pprof v0.0.0-20260802141513-ef3492d7dac3 h1:LMLX+LgTNWpfvCBdFebv6EsYotImrt/Ppc5cXIriCSo=
+github.com/google/pprof v0.0.0-20260802141513-ef3492d7dac3/go.mod h1:jl5iWTm0/hd5PjEYEOuwAJ57L/CibdZfrqZ5XA5GrCk=
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=
 github.com/jpillora/backoff v1.0.0 h1:uvFg412JmmHBHw7iwprIxkPMI+sGQ4kzOWsMeHnm2EA=
 github.com/jpillora/backoff v1.0.0/go.mod h1:J/6gKK9jxlEcS3zixgDgUAsiuZ7yrSoa/FX5e0EB2j4=

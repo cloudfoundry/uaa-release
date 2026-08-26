@@ -1274,6 +1274,44 @@ describe 'uaa-release erb generation' do
         end
       end
 
+      context 'client_credentials mTLS clients' do
+        let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+
+        before do
+          client = generated_cf_manifest['properties']['uaa']['clients']['app']
+          client['authorized-grant-types'] = 'client_credentials'
+          client.delete('secret')
+        end
+
+        it 'allows a secretless client with a nonblank tls-client-auth-ca' do
+          generated_cf_manifest['properties']['uaa']['clients']['app']['tls-client-auth-ca'] = "-----BEGIN CERTIFICATE-----\nCA\n-----END CERTIFICATE-----"
+
+          expect { parsed_yaml }.not_to raise_error
+        end
+
+        it 'requires a secret when tls-client-auth-ca is absent' do
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.secret/)
+        end
+
+        it 'requires a secret when tls-client-auth-ca is blank' do
+          generated_cf_manifest['properties']['uaa']['clients']['app']['tls-client-auth-ca'] = ' '
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.secret/)
+        end
+
+        it 'does not exempt a client with private-key trust configuration from requiring a secret' do
+          generated_cf_manifest['properties']['uaa']['clients']['app']['client_jwt_config'] = '{}'
+
+          expect {
+            parsed_yaml
+          }.to raise_error(ArgumentError, /Missing property: uaa.clients.app.secret/)
+        end
+      end
+
       context 'redirect-uri is missing from required grant types' do
         let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
         grant_types_requiring_secret = ['authorization_code', 'implicit']

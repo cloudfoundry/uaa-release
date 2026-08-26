@@ -1308,12 +1308,8 @@ properties:
             -----END CERTIFICATE----
 
   uaa.mtls_enabled:
-    description: "Enable the RFC 8705 mTLS token endpoint at uaa.mtls_endpoint_path. Requires Gorouter forwarded_client_cert: sanitize_set."
+    description: "Enable RFC 8705 mTLS client authentication at /oauth/mtls/token. Requires Gorouter forwarded_client_cert: sanitize_set."
     default: false
-
-  uaa.mtls_endpoint_path:
-    description: "Path for the mTLS token endpoint"
-    default: "/oauth/mtls/token"
   login.saml.providers:
     description: |
       Contains a hash of SAML Identity Providers,

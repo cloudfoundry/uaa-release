@@ -183,6 +183,19 @@ describe 'uaa-release erb generation' do
       end
     end
 
+    context 'when mTLS is enabled' do
+      let(:input) {'spec/input/test-defaults.yml'}
+      let(:erb_template) {'../jobs/uaa/templates/config/uaa.yml.erb'}
+
+      before do
+        generated_cf_manifest['properties']['uaa']['mtls_enabled'] = true
+      end
+
+      it 'does not render a configurable mtls endpoint block' do
+        expect(parsed_yaml).not_to have_key('mtls')
+      end
+    end
+
     context 'for deprecated-properties-still-work.yml' do
       let(:input) {'spec/input/deprecated-properties-still-work.yml'}
       let(:output_uaa) {'spec/compare/deprecated-properties-still-work-uaa.yml'}

@@ -1,7 +1,7 @@
 acceptance-tests.tgz:
-  size: 36595491
-  object_id: 377c8106-6552-45fb-4b12-58c2c7a76019
-  sha: sha256:4f8e409b6c7d332230565092ee063602f02e8ccede70af8b3bd987ff88901674
+  size: 36594983
+  object_id: e84ade9e-3f4b-463c-554d-bc878e93d0bd
+  sha: sha256:96901925d65f7d7d8c6ace1d42c097ba259b83e3aed91b03408070efb714c0f7
 apache-tomcat-11.0.25.tar.gz:
   size: 14466222
   object_id: 31708338-e22f-4d32-7036-b038c576798c

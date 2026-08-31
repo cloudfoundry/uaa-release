@@ -371,6 +371,9 @@
       end
       has_mtls_ca = client_data['tls-client-auth-ca'].is_a?(String) &&
           !client_data['tls-client-auth-ca'].strip.empty?
+      client_data.delete('tls-client-auth-trusted-proxy-ca') if
+          client_data['tls-client-auth-trusted-proxy-ca'].is_a?(String) &&
+          client_data['tls-client-auth-trusted-proxy-ca'].strip.empty?
       message = message + "\nInvalid property: uaa.clients.#{id}.token-endpoint-auth-method" if
           client_data.key?('token-endpoint-auth-method')
       if !client['scopes'].nil?

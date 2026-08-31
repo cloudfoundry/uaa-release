@@ -1289,6 +1289,12 @@ describe 'uaa-release erb generation' do
           expect { parsed_yaml }.not_to raise_error
         end
 
+        it 'omits a blank tls-client-auth-trusted-proxy-ca' do
+          generated_cf_manifest['properties']['uaa']['clients']['app']['tls-client-auth-trusted-proxy-ca'] = ' '
+
+          expect(parsed_yaml['oauth']['clients']['app']).not_to have_key('tls-client-auth-trusted-proxy-ca')
+        end
+
         it 'requires a secret when tls-client-auth-ca is absent' do
           expect {
             parsed_yaml

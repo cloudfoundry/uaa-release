@@ -145,23 +145,26 @@ function process_certs {
 }
 
 function insert_ssl_cert {
-    local FIPS_OPTS=""
-    if [ -f "/proc/sys/crypto/fips_enabled" ]; then
-        local FIPS_ENABLED="$(cat /proc/sys/crypto/fips_enabled)"
-        if [ "${FIPS_ENABLED}" = 1 ]; then
-            FIPS_OPTS="-nomac"
-            log "Detect FIPS enabled"
-        fi
-    fi
+    local pkcs8_key="${TMP_DIR}/uaa-key.pk8.pem"
     log "Installing Server SSL certificate"
 
     rm -f /var/vcap/data/uaa/uaa_keystore.p12
 
-    openssl pkcs12 -export ${FIPS_OPTS} -name uaa_ssl_cert \
+    openssl pkcs8 -topk8 -nocrypt \
         -in /var/vcap/jobs/uaa/config/uaa.crt \
-        -out /var/vcap/data/uaa/uaa_keystore.p12 \
-        -password pass:k0*l*s3cur1tyr0ck$
+        -out "${pkcs8_key}"
 
+    /var/vcap/packages/uaa/jdk/bin/java \
+        -cp /var/vcap/packages/uaa/keystore-helper \
+        PemToKeyStore \
+        "${pkcs8_key}" \
+        /var/vcap/jobs/uaa/config/uaa.crt \
+        /var/vcap/data/uaa/uaa_keystore.p12 \
+        uaa_ssl_cert \
+        'k0*l*s3cur1tyr0ck$' \
+        PKCS12
+
+    rm -f "${pkcs8_key}"
     log "Installed Server SSL certificate"
 }
 

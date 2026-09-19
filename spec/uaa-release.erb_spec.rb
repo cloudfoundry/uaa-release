@@ -56,6 +56,19 @@ describe 'uaa-release erb generation' do
     expect(actual).to eq(expected)
   end
 
+  context 'when rendering the pre-start script' do
+    let(:input) {'spec/input/test-defaults.yml'}
+    let(:manifest) {generate_cf_manifest(input)}
+    let(:template) {'../jobs/uaa/templates/bin/pre-start.erb'}
+    let(:script) {read_and_parse_string_template(template, manifest, false)}
+
+    it 'creates the server PKCS12 keystore without OpenSSL PKCS12' do
+      expect(script).to include('openssl pkcs8 -topk8 -nocrypt')
+      expect(script).to include('PemToKeyStore')
+      expect(script).not_to include('openssl pkcs12')
+    end
+  end
+
   context 'using bosh links' do
     let(:generated_cf_manifest) {generate_cf_manifest(input, links)}
     let(:input) {'spec/input/bosh-lite.yml'}

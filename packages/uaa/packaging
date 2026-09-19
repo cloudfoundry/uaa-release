@@ -14,6 +14,11 @@ fi
 # Ensure correct permissions
 chmod -R a+r jdk
 
+mkdir keystore-helper
+jdk/bin/javac --release 17 \
+  -d keystore-helper \
+  "${BOSH_COMPILE_TARGET}/keystore-helper/PemToKeyStore.java"
+
 tomcat_tar_file=$(find "${BOSH_COMPILE_TARGET}" -name "apache-tomcat-*.tar.gz" | sort --version-sort| tail -n1)
 mkdir tomcat
 tar zxvf "${tomcat_tar_file}" -C tomcat --strip 1

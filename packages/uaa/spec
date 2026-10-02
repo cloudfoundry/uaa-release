@@ -5,3 +5,4 @@ files:
 - uaa/**/*
 - bellsoft-*.tar.gz
 - apache-*.tar.gz
+- keystore-helper/**/*

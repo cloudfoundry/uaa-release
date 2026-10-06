@@ -95,9 +95,17 @@ jobs:
           # 2. PGP signature, signed by a key whose fingerprint is pinned in this repo
           export GNUPGHOME="$(mktemp -d)"
           gpg --batch --import tomcat_keys
-          SIGNER=$(gpg --batch --status-fd 1 --verify tomcat.asc "${TOMCAT_FILENAME}" \
-            | awk '$2 == "VALIDSIG" { print $NF }')
-          [[ -n "${SIGNER}" ]] || fail "No valid PGP signature on ${TOMCAT_FILENAME}"
+          gpg_rc=0
+          gpg_status="$(gpg --batch --status-fd 1 --verify tomcat.asc "${TOMCAT_FILENAME}" 2>/dev/null)" || gpg_rc=$?
+          [[ "${gpg_rc}" -eq 0 ]] || fail "gpg could not verify the PGP signature on ${TOMCAT_FILENAME} (exit ${gpg_rc})"
+          # gpg prints VALIDSIG even when the signing key is expired or revoked, so reject those explicitly
+          if echo "${gpg_status}" | awk '$2 ~ /^(EXPKEYSIG|REVKEYSIG|EXPSIG|BADSIG|ERRSIG)$/ { found = 1 } END { exit !found }'; then
+            fail "PGP signature on ${TOMCAT_FILENAME} was made with an expired or revoked key, or is invalid"
+          fi
+          echo "${gpg_status}" | awk '$2 == "GOODSIG" { found = 1 } END { exit !found }' \
+            || fail "No good PGP signature on ${TOMCAT_FILENAME}"
+          SIGNER=$(echo "${gpg_status}" | awk '$2 == "VALIDSIG" { print $NF }')
+          [[ -n "${SIGNER}" && "${SIGNER}" != *$'\n'* ]] || fail "Expected exactly one valid PGP signature on ${TOMCAT_FILENAME}"
           grep -qi "^${SIGNER}\b" .github/tomcat-signing-fingerprints.txt \
             || fail "Signed by ${SIGNER}, which is not in .github/tomcat-signing-fingerprints.txt"
           echo "Verified sha512 and PGP signature (${SIGNER})" >> $GITHUB_STEP_SUMMARY

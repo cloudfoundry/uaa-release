@@ -1,6 +1,8 @@
-name: Pull Request
+name: UAA Release Tests
 
 on:
+  push:
+    branches: [develop]
   pull_request:
     branches: [develop]
 
@@ -31,10 +33,11 @@ jobs:
   # available to every `pull_request`-triggered run the instant the job
   # starts -- including fork PRs. Skip fork PRs entirely so their code never
   # runs in a job that can see this secret; same-repo branch PRs still get
-  # the full acceptance run automatically.
+  # the full acceptance run automatically, as do pushes to develop (only
+  # users with write access can push there).
   acceptance-tests:
     needs: rspec-template-tests
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     concurrency:
@@ -61,7 +64,7 @@ jobs:
           path: uaa-release
           submodules: recursive
 
-      - name: Checkout uaa-ci (private; contains director credential material)
+      - name: Checkout uaa-ci
         uses: actions/checkout@v6
         with:
           repository: cloudfoundry/uaa-ci

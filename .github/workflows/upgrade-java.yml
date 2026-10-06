@@ -53,22 +53,45 @@ jobs:
           binary_metadata_url+="&bitness=64"
           binary_metadata_url+="&bundle-type=jdk"
           binary_metadata_url+="&installation-type=archive"
-          
-          binary_metadata="$(curl "${binary_metadata_url}" --silent)"
+
+          # Newest first; don't rely on the API's ordering. patchVersion must outrank buildVersion
+          # (25.0.4.1+1 is newer than 25.0.4+9).
+          binary_metadata="$(curl "${binary_metadata_url}" --silent \
+            | jq 'sort_by([.interimVersion, .updateVersion, .patchVersion, .buildVersion]) | reverse')"
           echo "${binary_metadata}" | jq '.'
           download_url="$(echo "${binary_metadata}" | jq '.[0].downloadUrl' -r)"
           download_checksum="$(echo "${binary_metadata}" | jq '.[0].sha1' -r)"
-          
+
           JDK_VERSION="$(echo "${binary_metadata}" | jq '.[0].version' -r)"
           BELLSOFT_JDK_TARBALL="bellsoft-${JDK_VERSION}.tar.gz"
           echo "# Bellsoft JDK v${JDK_VERSION}" >> $GITHUB_STEP_SUMMARY
-          curl --location --output "${BELLSOFT_JDK_TARBALL}" "${download_url}"
-          echo "${download_checksum}  ${BELLSOFT_JDK_TARBALL}" | shasum --algorithm=1 --check -
-          
-          if ! echo "${download_checksum}  ${BELLSOFT_JDK_TARBALL}" | shasum --algorithm=1 --check -; then
-            echo "Invalid download SHA1"
+
+          fail() {
+            echo "## ERROR: $1" >> $GITHUB_STEP_SUMMARY
             exit 1
-          fi
+          }
+
+          # The release tag is the JDK version (e.g. 25.0.4.1+1)
+          release_tag="${JDK_VERSION}"
+          asset_name="$(echo "${binary_metadata}" | jq '.[0].filename' -r)"
+          expected_url="https://github.com/bell-sw/Liberica/releases/download/${release_tag}/${asset_name}"
+          [[ "${download_url}" == "${expected_url}" ]] \
+            || fail "Download URL ${download_url} is not the expected ${expected_url}"
+
+          curl --fail --location --output "${BELLSOFT_JDK_TARBALL}" "${download_url}"
+
+          # 1. SHA1 published by the BellSoft API (api.bell-sw.com)
+          echo "${download_checksum}  ${BELLSOFT_JDK_TARBALL}" | shasum --algorithm=1 --check - \
+            || fail "Downloaded file did not match SHA1 from the BellSoft API"
+
+          # 2. Independent SHA256 digest GitHub recorded for the release asset
+          github_digest="$(gh api "repos/bell-sw/Liberica/releases/tags/${release_tag}" \
+            --jq ".assets[] | select(.name == \"${asset_name}\") | .digest")"
+          [[ "${github_digest}" == sha256:* ]] \
+            || fail "GitHub has no sha256 digest for ${asset_name} in release ${release_tag}"
+          echo "${github_digest#sha256:}  ${BELLSOFT_JDK_TARBALL}" | shasum --algorithm=256 --check - \
+            || fail "Downloaded file did not match the SHA256 digest from the GitHub release"
+          echo "Verified SHA1 (BellSoft API) and SHA256 (GitHub release digest)" >> $GITHUB_STEP_SUMMARY
 
           OLD_JDK_NAME=$(bosh blobs | grep bellsoft | cut -f1 | tr -d ' ')
           

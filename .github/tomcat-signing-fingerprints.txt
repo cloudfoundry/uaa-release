@@ -1,0 +1,7 @@
+# Pinned primary-key fingerprints allowed to sign Apache Tomcat releases.
+# Verified against https://downloads.apache.org/tomcat/tomcat-9/KEYS
+# Used by .github/workflows/upgrade-tomcat.yml. Add a key here only after
+# confirming the fingerprint out of band (e.g. the Tomcat release announcement).
+DCFD35E0BF8CA7344752DE8B6FB21E8933C60243  # Mark E D Thomas <markt@apache.org>
+A9C5DF4D22E99998D9875A5110C01C5A2F6059E7  # Mark E D Thomas <markt@apache.org>
+48F8E69F6390C9F25CFEDCD268248959359E722B  # Remy Maucherat <remm@apache.org>

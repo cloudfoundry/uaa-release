@@ -7,6 +7,7 @@ on:
 
 env:
   TOMCAT_BASE_URL: "https://dlcdn.apache.org/tomcat"
+  TOMCAT_CHECKSUM_BASE_URL: "https://downloads.apache.org/tomcat"
 
 jobs:
   upgrade-tomcat:
@@ -43,6 +44,7 @@ jobs:
         run: |
           echo "${PRIVATE_YML}" > config/private.yml
           echo "key_id: $(sed -nE 's/.*access_key_id:.(.{2}).*(.{4})$/\1...\2/p' config/private.yml)"
+
       - name: Check Tomcat Version
         env:
           TOMCAT_VERSION: ${{ matrix.tomcat }}
@@ -60,7 +62,7 @@ jobs:
             echo "## ERROR: Did not find any versions of tomcat at $TOMCAT_INDEX_URL" >> $GITHUB_STEP_SUMMARY 
             exit 1
           fi
-        
+          
           TOMCAT_URL="${TOMCAT_INDEX_URL}/v${LATEST_TOMCAT_VERSION}/bin/apache-tomcat-${LATEST_TOMCAT_VERSION}.tar.gz"
           OLD_TOMCAT_NAME=$(bosh blobs | grep "tomcat-${TOMCAT_VERSION}" | cut -f1 | tr -d ' ')        
           NEW_TOMCAT_NAME="apache-tomcat-${LATEST_TOMCAT_VERSION}.tar.gz"
@@ -74,19 +76,36 @@ jobs:
 
           TOMCAT_FILENAME=$(basename "${NEW_TOMCAT_NAME}")
           curl -fL -o "${TOMCAT_FILENAME}" "${TOMCAT_URL}"
-          curl -fL -o tomcat_sha "${TOMCAT_URL}.sha512"
-          DOWNLOADED_FILE_SUM=$(sha512sum "${TOMCAT_FILENAME}" | cut -f1 -d ' ')
-          EXPECTED_SUM=$(cat tomcat_sha | cut -f1 -d ' ')
-          
-          if [[ "${DOWNLOADED_FILE_SUM}" != "${EXPECTED_SUM}" ]]; then
-            echo "## ERROR: Downloaded file did not match expected checksum" >> $GITHUB_STEP_SUMMARY 
+          TOMCAT_RELEASE_URL="${TOMCAT_CHECKSUM_BASE_URL}/tomcat-${TOMCAT_VERSION}/v${LATEST_TOMCAT_VERSION}/bin/${TOMCAT_FILENAME}"
+          curl -fL -o tomcat_sha "${TOMCAT_RELEASE_URL}.sha512"
+          curl -fL -o tomcat.asc "${TOMCAT_RELEASE_URL}.asc"
+          curl -fL -o tomcat_keys "${TOMCAT_CHECKSUM_BASE_URL}/tomcat-${TOMCAT_VERSION}/KEYS"
+
+          fail() {
+            echo "## ERROR: $1" >> $GITHUB_STEP_SUMMARY
             exit 1
-          fi
-          
-          bosh add-blob --sha2 "${TOMCAT_FILENAME}" "${NEW_TOMCAT_NAME}"
+          }
+
+          # 1. Checksum from downloads.apache.org
+          DOWNLOADED_FILE_SUM=$(sha512sum "${TOMCAT_FILENAME}" | cut -f1 -d ' ')
+          EXPECTED_SUM=$(cut -f1 -d ' ' tomcat_sha)
+          [[ "${DOWNLOADED_FILE_SUM}" == "${EXPECTED_SUM}" ]] \
+            || fail "Downloaded file did not match checksum from downloads.apache.org"
+
+          # 2. PGP signature, signed by a key whose fingerprint is pinned in this repo
+          export GNUPGHOME="$(mktemp -d)"
+          gpg --batch --import tomcat_keys
+          SIGNER=$(gpg --batch --status-fd 1 --verify tomcat.asc "${TOMCAT_FILENAME}" \
+            | awk '$2 == "VALIDSIG" { print $NF }')
+          [[ -n "${SIGNER}" ]] || fail "No valid PGP signature on ${TOMCAT_FILENAME}"
+          grep -qi "^${SIGNER}\b" .github/tomcat-signing-fingerprints.txt \
+            || fail "Signed by ${SIGNER}, which is not in .github/tomcat-signing-fingerprints.txt"
+          echo "Verified sha512 and PGP signature (${SIGNER})" >> $GITHUB_STEP_SUMMARY
+
+          bosh add-blob "${TOMCAT_FILENAME}" "${NEW_TOMCAT_NAME}"
           bosh upload-blobs
           bosh remove-blob "${OLD_TOMCAT_NAME}"
-          
+
           git status
           git add config/blobs.yml
           git status
@@ -99,7 +118,7 @@ jobs:
           fi
 
           git checkout -b "${BRANCH_NAME}"
-          git commit -m "Upgrade Tomcat to version $LATEST_TOMCAT_VERSION"
+          git commit -m "Upgrade Tomcat to version ${LATEST_TOMCAT_VERSION}"
           git push -u origin "${BRANCH_NAME}"
 
           commit_id=$(git log -n 1 --graph --pretty='%Cred%h%Creset - %s%Creset' | sed 's/^.//')

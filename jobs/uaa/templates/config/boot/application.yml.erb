@@ -68,7 +68,5 @@ server:
     enabled-protocols: "<%= p('uaa.ssl.enabled_protocols') %>"
     ciphers: "<%= p('uaa.ssl.ciphers') %>"
     protocol: TLS
-    key-store: "/var/vcap/data/uaa/uaa_keystore.p12"
-    key-store-type: "PKCS12"
-    key-alias: "uaa_ssl_cert"
-    key-store-password: "k0*l*s3cur1tyr0ck$"
+    certificate: "/var/vcap/data/uaa/uaa-fullchain.crt"
+    certificate-private-key: "/var/vcap/data/uaa/uaa.key"

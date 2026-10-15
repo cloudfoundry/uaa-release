@@ -42,6 +42,17 @@ Add the following properties to your manifest:
 
 - `uaa.sslPrivateKey`: Specifies your private key.  The key must be a passphrase-less key.
 
+Both the standalone Tomcat and Spring Boot runtimes load the TLS identity directly
+from PEM files. Supply `uaa.sslCertificate` with the leaf certificate first,
+followed by any intermediate certificates. Pre-start normalizes the private key
+to unencrypted PKCS#8 and writes the runtime PEM files under `/var/vcap/data/uaa/`
+with mode `0600`, owned by `vcap`. The key must remain available while UAA runs.
+
+Loading PEM files directly avoids the OpenSSL PKCS#12 password-derivation path
+that fails with the Noble FIPS provider. JVM truststore handling is unchanged;
+PEM loading alone does not establish FIPS 140-3 compliance for the application's
+cryptographic providers.
+
 ## Generating a self-signed certificate
 
 1. Generate your private key with any passphrase

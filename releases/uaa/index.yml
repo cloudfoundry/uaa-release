@@ -501,6 +501,8 @@ builds:
     version: 77.32.0
   c3e920ad-6399-43f2-b2a0-04f4ee93e752:
     version: "11.2"
+  c46e30e8-2974-4fb0-65d9-bf91a3d7e508:
+    version: 79.10.0
   c56ddd74-124c-4c7c-bb72-ac46f542eeb1:
     version: "12.4"
   c5bf7957-a6ee-4b2e-7ab2-188529e63573:

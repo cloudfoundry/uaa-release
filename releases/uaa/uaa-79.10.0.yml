@@ -1,0 +1,38 @@
+name: uaa
+version: 79.10.0
+commit_hash: b7b0c6e0
+uncommitted_changes: false
+jobs:
+- name: acceptance-tests
+  version: 6805d66d1e1fd6043bd4646f81d4ea59fcba868bbbf1d0f32fdbbb7d2bd83b4f
+  fingerprint: 6805d66d1e1fd6043bd4646f81d4ea59fcba868bbbf1d0f32fdbbb7d2bd83b4f
+  sha1: sha256:d14bab33ad0ff934cd91872ec3c0ded43c26d36421223ed35ec1b1ce528f8b3f
+  packages:
+  - acceptance-tests
+- name: bbr-uaadb
+  version: b10586c070c07129cd8f62188cd4754c403fb163812607dce31985e8e61781f0
+  fingerprint: b10586c070c07129cd8f62188cd4754c403fb163812607dce31985e8e61781f0
+  sha1: sha256:d1ed1f3056979fdac54590424d9be63ba9e9b03eaf6292984d1028de7dae96a9
+  packages: []
+- name: uaa
+  version: fa33582b46346b3d1e997ed10e9eeef6e3590cbfe4d307f9a39feb2a3d40b0b3
+  fingerprint: fa33582b46346b3d1e997ed10e9eeef6e3590cbfe4d307f9a39feb2a3d40b0b3
+  sha1: sha256:b4fd23e7202782874b058747817a01ef9755f977f0ea9a96d91bccb4dc25a288
+  packages:
+  - uaa
+packages:
+- name: acceptance-tests
+  version: fb7727c98745da87b8309df21d64f8a1b9bfeb18398bf9a053a754f16c929615
+  fingerprint: fb7727c98745da87b8309df21d64f8a1b9bfeb18398bf9a053a754f16c929615
+  sha1: sha256:e62884e51d3ad9f3fca45f8480d2dc71db06b2c55ad6585e9de843cafcbc0be0
+  dependencies: []
+- name: uaa
+  version: 0858a9617358784639e8fca4c330b674834235caeea4ca69806f9b45fe75ca0e
+  fingerprint: 0858a9617358784639e8fca4c330b674834235caeea4ca69806f9b45fe75ca0e
+  sha1: sha256:23165be94f956fcd4a4038e3218e9652f70de4cd7f3b2d99667248c7b270b8b4
+  dependencies: []
+license:
+  version: cc48a230dddf0499912777ce8ccf63b8ed7c22a4106f30b6934679272826f430
+  fingerprint: cc48a230dddf0499912777ce8ccf63b8ed7c22a4106f30b6934679272826f430
+  sha1: sha256:f98289619ac04578182dd62ac10ea1e940d05c35a045d87287ea8183af4e0315
+no_compression: false

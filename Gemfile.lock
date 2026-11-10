@@ -73,7 +73,7 @@ GEM
     rspec-mocks (3.13.8)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-support (3.13.7)
+    rspec-support (3.13.8)
     securerandom (0.4.1)
     semi_semantic (1.2.0)
     tzinfo (2.0.6)

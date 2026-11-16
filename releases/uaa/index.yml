@@ -343,6 +343,8 @@ builds:
     version: "13.16"
   824cc409-ec9d-490f-4914-d258bc53555e:
     version: 74.3.0
+  830c3c2e-e087-42bd-6ce4-08034de9e97e:
+    version: 79.11.0
   836b5c4f-7ed3-450c-66be-446800840513:
     version: 74.23.0
   83fe5d6e-de80-44fb-6c31-6ceae5ef17e9:

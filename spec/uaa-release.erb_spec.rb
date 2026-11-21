@@ -12,6 +12,26 @@ class MockDNSEncoder
 end
 
 describe 'uaa-release erb generation' do
+  context 'administrative token network policy' do
+    let(:manifest) { generate_cf_manifest('spec/input/bosh-lite.yml') }
+    let(:template) { File.read('jobs/uaa/templates/config/uaa.yml.erb') }
+
+    it 'defaults to disabled with no allowed networks' do
+      rendered = perform_erb_transformation_as_yaml(template, manifest)
+      expect(rendered['uaa']).not_to have_key('admin_token_network_policy')
+    end
+
+    it 'renders operator-controlled IPv4/IPv6 networks and additional scopes' do
+      configured = {
+        'enabled' => true,
+        'allowed_cidrs' => ['192.0.2.0/24', '2001:db8::/32'],
+        'additional_protected_scopes' => ['clients.write']
+      }
+      manifest['properties']['uaa']['admin_token_network_policy'] = configured
+      rendered = perform_erb_transformation_as_yaml(template, manifest)
+      expect(rendered['uaa']['admin_token_network_policy']).to eq(configured)
+    end
+  end
   def perform_erb_transformation_as_yaml(erb_file, manifest_file)
     YAML.load(perform_erb_transformation_as_string(erb_file, manifest_file))
   end

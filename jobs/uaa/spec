@@ -51,6 +51,15 @@ packages:
   - uaa
 
 properties:
+  uaa.admin_token_network_policy.enabled:
+    description: Restrict issuance, refresh, and UAA bearer-token use for administrative scopes in every identity zone. Requires a UAA version supporting this policy. Empty allowed_cidrs denies all administrative tokens when enabled. Configure trusted ingress proxies separately.
+    default: false
+  uaa.admin_token_network_policy.allowed_cidrs:
+    description: Numeric IPv4/IPv6 addresses or CIDRs allowed to issue and use administrative tokens, as observed after trusted proxy resolution and NAT. Configure the same allowlist in Cloud Controller for independent token-use enforcement.
+    default: []
+  uaa.admin_token_network_policy.additional_protected_scopes:
+    description: Additional exact scope/authority names to protect beyond uaa.admin, cloud_controller.admin, cloud_controller.admin_read_only, cloud_controller.global_auditor, and zones.<id>.admin. Cannot remove built-in protected scopes.
+    default: []
   runtime.tomcat.enabled:
     description: |
       Deprecated. Set to true to force UAA to run within a Apache Tomcat container.

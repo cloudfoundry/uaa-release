@@ -871,7 +871,17 @@
   end
 
 
-  #validate that we have all required parameters
+   # Preserve default output for older applications and existing manifest snapshots.
+   admin_network_policy = {
+     'enabled' => p('uaa.admin_token_network_policy.enabled'),
+     'allowed_cidrs' => p('uaa.admin_token_network_policy.allowed_cidrs'),
+     'additional_protected_scopes' => p('uaa.admin_token_network_policy.additional_protected_scopes')
+   }
+   if admin_network_policy['enabled'] || !admin_network_policy['allowed_cidrs'].empty? || !admin_network_policy['additional_protected_scopes'].empty?
+     add_value(params, admin_network_policy, 'uaa', 'admin_token_network_policy')
+   end
+
+   #validate that we have all required parameters
 
   message = message + validateSamlKeys(params)
 
